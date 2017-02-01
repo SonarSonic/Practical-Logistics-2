@@ -32,17 +32,17 @@ import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.EmptyNetworkCache;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.cache.RefreshType;
-import sonar.logistics.api.connecting.CableConnection;
-import sonar.logistics.api.connecting.ConnectableType;
-import sonar.logistics.api.connecting.IDataCable;
-import sonar.logistics.api.connecting.ILogicTile;
-import sonar.logistics.api.connecting.IOperatorProvider;
-import sonar.logistics.api.connecting.IOperatorTile;
-import sonar.logistics.api.connecting.OperatorMode;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
+import sonar.logistics.api.cabling.CableConnection;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.IDataCable;
+import sonar.logistics.api.cabling.ILogicTile;
+import sonar.logistics.api.connecting.EmptyNetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.operator.IOperatorProvider;
+import sonar.logistics.api.operator.IOperatorTile;
+import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.helpers.CableHelper;
 
 public class DataCablePart extends SonarMultipart implements ISlotOccludingPart, IDataCable, IOperatorTile, IOperatorProvider {
@@ -181,7 +181,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 			}
 			IMultipart part = container.getPartInSlot(PartSlot.getFaceSlot(dir));
 			if (part == null)
-				part = (IMultipart) LogisticsAPI.getCableHelper().getDisplayScreen(this.getCoords(), dir);
+				part = (IMultipart) LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), dir);
 			if (part != null && part instanceof ILogicTile) {
 				if (part instanceof SidedMultipart) {
 					SidedMultipart sided = (SidedMultipart) part;

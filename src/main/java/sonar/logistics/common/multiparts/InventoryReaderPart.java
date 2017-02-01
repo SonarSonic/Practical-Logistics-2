@@ -20,13 +20,10 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
+import sonar.logistics.api.cabling.ChannelType;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ChannelType;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.types.LogicInfo;
-import sonar.logistics.api.info.types.LogicInfoList;
-import sonar.logistics.api.info.types.ProgressInfo;
-import sonar.logistics.api.settings.InventoryReader;
+import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.common.containers.ContainerInventoryReader;
@@ -35,6 +32,9 @@ import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.LogicInfoRegistry.RegistryType;
+import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.ProgressInfo;
 
 public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> implements IByteBufTile {
 

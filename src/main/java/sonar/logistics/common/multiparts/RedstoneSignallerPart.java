@@ -14,11 +14,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.logistics.RedstoneEmitterStatement;
 
 public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePart, IByteBufTile {
 

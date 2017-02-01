@@ -11,10 +11,10 @@ import net.minecraft.util.text.TextFormatting;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.api.cache.EmptyNetworkCache;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.ILogicTile;
-import sonar.logistics.api.connecting.IOperatorProvider;
+import sonar.logistics.api.cabling.ILogicTile;
+import sonar.logistics.api.connecting.EmptyNetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.operator.IOperatorProvider;
 
 public abstract class LogisticsMultipart extends SonarMultipart implements ILogicTile, IOperatorProvider {
 

@@ -5,13 +5,12 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.display.IDisplayInfo;
-import sonar.logistics.api.display.InfoContainer;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
-import sonar.logistics.api.info.types.BaseInfo;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.BaseInfo;
 
 @LogicInfoType(id = MonitoredBlockCoords.id, modid = Logistics.MODID)
 public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> implements INameableInfo<MonitoredBlockCoords> {

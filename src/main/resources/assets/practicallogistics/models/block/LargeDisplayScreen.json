@@ -2,7 +2,7 @@
     "textures": {
         "front": "practicallogistics:model/large_display_screen_front",
         "0": "practicallogistics:model/large_display_screen_front",
-        "back": "practicallogistics:model/large_display_screen_back"
+        "back": "practicallogistics:model/large_screen_back/large_display_none"
     },
     "elements": [
         {

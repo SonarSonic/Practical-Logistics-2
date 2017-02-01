@@ -14,7 +14,7 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.connecting.ClientDataEmitter;
+import sonar.logistics.api.wireless.ClientDataEmitter;
 
 public class PacketClientEmitters implements IMessage {
 

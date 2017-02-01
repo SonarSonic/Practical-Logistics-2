@@ -25,7 +25,7 @@ public class HammerRecipes extends DefinedRecipeHelper {
 
 	@Override
 	public String getRecipeID() {
-		return "Hammer Recipes";
+		return "forginghammer";
 	}
 
 }

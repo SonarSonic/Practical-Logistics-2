@@ -10,7 +10,16 @@ import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.IGuiItem;
 import sonar.core.utils.IGuiTile;
-import sonar.logistics.network.*;
+import sonar.logistics.network.PacketClickEventClient;
+import sonar.logistics.network.PacketClickEventServer;
+import sonar.logistics.network.PacketClientEmitters;
+import sonar.logistics.network.PacketConnectedDisplayScreen;
+import sonar.logistics.network.PacketInfoList;
+import sonar.logistics.network.PacketInventoryReader;
+import sonar.logistics.network.PacketLogicMonitors;
+import sonar.logistics.network.PacketMonitorType;
+import sonar.logistics.network.PacketMonitoredCoords;
+import sonar.logistics.network.PacketMonitoredList;
 
 public class LogisticsCommon implements IGuiHandler {
 

@@ -13,9 +13,9 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.ISyncPart;
 import sonar.logistics.Logistics;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.monitor.IReader;
+import sonar.logistics.api.readers.IReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.helpers.LogisticsHelper;
 

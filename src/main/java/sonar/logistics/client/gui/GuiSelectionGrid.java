@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.connections.monitoring.MonitoredList;
 

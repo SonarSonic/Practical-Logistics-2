@@ -20,7 +20,7 @@ import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.core.network.PacketStackUpdate;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.INetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 
 /** called when the player clicks an item in the inventory reader */

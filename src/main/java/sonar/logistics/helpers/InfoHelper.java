@@ -19,20 +19,19 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
-import sonar.core.utils.SortingDirection;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsASMLoader;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.display.DisplayType;
-import sonar.logistics.api.display.IInfoDisplay;
-import sonar.logistics.api.display.IScaleableDisplay;
-import sonar.logistics.api.display.RenderInfoProperties;
-import sonar.logistics.api.display.ScreenLayout;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.types.LogicInfo;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.displays.DisplayType;
+import sonar.logistics.api.displays.IInfoDisplay;
+import sonar.logistics.api.displays.IScaleableDisplay;
+import sonar.logistics.api.displays.ScreenLayout;
+import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.common.multiparts.LogisticsMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.info.types.LogicInfo;
 
 public class InfoHelper {
 

@@ -10,7 +10,7 @@ import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.api.settings.EnergyReader.SortingType;
+import sonar.logistics.api.readers.EnergyReader.SortingType;
 import sonar.logistics.api.wrappers.EnergyWrapper;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 
@@ -27,7 +27,7 @@ public class EnergyHelper extends EnergyWrapper {
 		return providers;
 	}
 
-	public static void sortItemList(ArrayList<MonitoredEnergyStack> info, final SortingDirection dir, SortingType type) {
+	public static void sortEnergyList(ArrayList<MonitoredEnergyStack> info, final SortingDirection dir, SortingType type) {
 		info.sort(new Comparator<MonitoredEnergyStack>() {
 			public int compare(MonitoredEnergyStack str1, MonitoredEnergyStack str2) {
 				StoredEnergyStack item1 = str1.energyStack.getObject(), item2 = str2.energyStack.getObject();

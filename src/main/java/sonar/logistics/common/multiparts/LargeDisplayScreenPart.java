@@ -36,21 +36,20 @@ import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.ConnectableType;
-import sonar.logistics.api.connecting.IOperatorTool;
-import sonar.logistics.api.connecting.OperatorMode;
-import sonar.logistics.api.display.ConnectedDisplayScreen;
-import sonar.logistics.api.display.DisplayConnections;
-import sonar.logistics.api.display.DisplayType;
-import sonar.logistics.api.display.IInfoDisplay;
-import sonar.logistics.api.display.ILargeDisplay;
-import sonar.logistics.api.display.InfoContainer;
-import sonar.logistics.api.display.ScreenLayout;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.DisplayConnections;
+import sonar.logistics.api.displays.DisplayType;
+import sonar.logistics.api.displays.IInfoDisplay;
+import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.displays.ScreenLayout;
+import sonar.logistics.api.operator.IOperatorTool;
+import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.viewers.EmptyViewersList;
 import sonar.logistics.api.viewers.IViewersList;
 import sonar.logistics.client.gui.GuiDisplayScreen;
-import sonar.logistics.connections.managers.DisplayManager;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDisplay {
@@ -298,43 +297,45 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			if (face == this.face || face == this.face.getOpposite()) {
 				continue;
 			}
-			IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(getCoords(), face), this.face);
-			if (display != null && display.getDisplayType() == DisplayType.LARGE) {
-				switch (this.face) {
-				case DOWN:
-					EnumFacing toAdd = face.rotateAround(Axis.Y);
-					if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
-						toAdd = toAdd.getOpposite();
-					}
-					faces.add(toAdd);
-					break;
-				case EAST:
-					toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.Y);
-					if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
-						toAdd = toAdd.getOpposite();
-					}
-					faces.add(toAdd);
-					break;
-				case NORTH:
-					toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.X).rotateAround(Axis.Y);
-					if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
-						toAdd = toAdd.getOpposite();
-					}
-					faces.add(toAdd);
-					break;
-				case SOUTH:
-					toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.X).rotateAround(Axis.Y).getOpposite();
-					faces.add(toAdd);
-					break;
-				case UP:
-					faces.add(face);
-					break;
-				case WEST:
-					faces.add(face.rotateAround(Axis.Z).rotateAround(Axis.Y).getOpposite());
-					break;
-				default:
-					break;
+			if (this.getWorld() != null) {
+				IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(getCoords(), face), this.face);
+				if (display != null && display.getDisplayType() == DisplayType.LARGE) {
+					switch (this.face) {
+					case DOWN:
+						EnumFacing toAdd = face.rotateAround(Axis.Y);
+						if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
+							toAdd = toAdd.getOpposite();
+						}
+						faces.add(toAdd);
+						break;
+					case EAST:
+						toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.Y);
+						if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
+							toAdd = toAdd.getOpposite();
+						}
+						faces.add(toAdd);
+						break;
+					case NORTH:
+						toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.X).rotateAround(Axis.Y);
+						if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
+							toAdd = toAdd.getOpposite();
+						}
+						faces.add(toAdd);
+						break;
+					case SOUTH:
+						toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.X).rotateAround(Axis.Y).getOpposite();
+						faces.add(toAdd);
+						break;
+					case UP:
+						faces.add(face);
+						break;
+					case WEST:
+						faces.add(face.rotateAround(Axis.Z).rotateAround(Axis.Y).getOpposite());
+						break;
+					default:
+						break;
 
+					}
 				}
 			}
 		}

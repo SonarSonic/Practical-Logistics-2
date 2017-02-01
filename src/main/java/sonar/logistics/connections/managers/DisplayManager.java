@@ -1,7 +1,5 @@
 package sonar.logistics.connections.managers;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -9,10 +7,10 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.ConnectableType;
-import sonar.logistics.api.display.ConnectedDisplayScreen;
-import sonar.logistics.api.display.IInfoDisplay;
-import sonar.logistics.api.display.ILargeDisplay;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.IInfoDisplay;
+import sonar.logistics.api.displays.ILargeDisplay;
 
 public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	

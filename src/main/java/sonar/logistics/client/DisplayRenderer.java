@@ -3,9 +3,8 @@ package sonar.logistics.client;
 import mcmultipart.client.multipart.MultipartSpecialRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.display.ConnectedDisplayScreen;
-import sonar.logistics.api.display.ILargeDisplay;
-import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.helpers.InfoRenderer;
 

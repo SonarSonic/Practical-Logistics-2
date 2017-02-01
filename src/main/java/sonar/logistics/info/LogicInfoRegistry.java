@@ -29,7 +29,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IInfoRegistry;
-import sonar.logistics.api.info.types.LogicInfo;
+import sonar.logistics.info.types.LogicInfo;
 
 /** where all the registering for LogicInfo happens */
 public class LogicInfoRegistry {
@@ -137,7 +137,6 @@ public class LogicInfoRegistry {
 		cachedMethods.clear();
 	}
 
-	/* public static void registerInfoHandlers() { infoRegistries.add(new VanillaInfoRegistry()); registerInfoRegistry("calculator", new CalculatorInfoRegistry()); } */
 	public static void registerInfoRegistry(String modid, IInfoRegistry handler) {
 		if (Loader.isModLoaded(modid)) {
 			infoRegistries.add(handler);

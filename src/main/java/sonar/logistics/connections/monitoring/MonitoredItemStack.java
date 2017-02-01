@@ -12,26 +12,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.display.DisplayType;
-import sonar.logistics.api.display.IDisplayInfo;
-import sonar.logistics.api.display.InfoContainer;
-import sonar.logistics.api.display.ScreenInteractionEvent;
-import sonar.logistics.api.info.IAdvancedClickableInfo;
+import sonar.logistics.api.displays.DisplayType;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
+import sonar.logistics.api.info.IJoinableInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.monitor.IJoinableInfo;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
-import sonar.logistics.api.info.types.BaseInfo;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.info.types.BaseInfo;
 
 @LogicInfoType(id = MonitoredItemStack.id, modid = Logistics.MODID)
 public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack> {

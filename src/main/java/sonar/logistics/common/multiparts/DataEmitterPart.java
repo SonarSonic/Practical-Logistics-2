@@ -19,14 +19,16 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.ISyncPart;
+import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.STRING;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.IDataEmitter;
-import sonar.logistics.api.connecting.IDataReceiver;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.wireless.DataEmitterSecurity;
+import sonar.logistics.api.wireless.IDataEmitter;
+import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataEmitter;
 import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.helpers.LogisticsHelper;
@@ -38,16 +40,17 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault("Unnamed Emitter");
 	public SyncUUID playerUUID = new SyncUUID(3);
 	public SyncUUID emitterUUID = new SyncUUID(4);
+	public SyncEnum<DataEmitterSecurity> security = new SyncEnum(DataEmitterSecurity.values(), 5);
 	{
-		syncList.addParts(emitterName, playerUUID, emitterUUID);
+		syncList.addParts(emitterName, playerUUID, emitterUUID, security);
 	}
 
 	public DataEmitterPart() {
-		super(0.0625*5, 0.0625/2, 0.0625*4);
+		super(0.0625 * 5, 0.0625 / 2, 0.0625 * 4);
 	}
 
 	public DataEmitterPart(EntityPlayer player, EnumFacing dir) {
-		super(dir, 0.0625*5, 0.0625/2, 0.0625*4);
+		super(dir, 0.0625 * 5, 0.0625 / 2, 0.0625 * 4);
 		playerUUID.setObject(player.getGameProfile().getId());
 	}
 
@@ -81,21 +84,12 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 		}
 	}
 
-	/*
-	@Override
-	public EnumSet<PartSlot> getSlotMask() {
-		return getOccludedSlots();
-	}
+	/* @Override public EnumSet<PartSlot> getSlotMask() { return getOccludedSlots(); }
+	 * @Override public EnumSet<PartSlot> getOccludedSlots() { return EnumSet.of(PartSlot.getFaceSlot(face.getOpposite()), PartSlot.CENTER); } */
 
 	@Override
-	public EnumSet<PartSlot> getOccludedSlots() {
-		return EnumSet.of(PartSlot.getFaceSlot(face.getOpposite()), PartSlot.CENTER);
-	}
-	*/
-	
-	@Override
 	public boolean canPlayerConnect(UUID uuid) {
-		return true;
+		return playerUUID.getUUID().equals(uuid);
 	}
 
 	@Override
@@ -133,6 +127,10 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
 		if (part != null)
 			part.readFromBuf(buf);
+		
+		if(id==5){
+			EmitterManager.emitterChanged(this);
+		}
 	}
 
 	@Override
@@ -140,30 +138,19 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 		return emitterName.getObject();
 	}
 
+	@Override
+	public DataEmitterSecurity getSecurity() {
+		return security.getObject();
+	}
+
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.partEmitter);
+	}
+
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
 		super.addSelectionBoxes(list);
-		/*
-		double p = 0.0625;
-		double height = p * 12, width = p * 8, length = p * 14;
-
-		switch (face) {
-		case EAST:
-			list.add(new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2));
-			break;
-		case NORTH:
-			list.add(new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length));
-			break;
-		case SOUTH:
-			list.add(new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0));
-			break;
-		case WEST:
-			list.add(new AxisAlignedBB(1, 0, (width) / 2, 1 - length, height, 1 - width / 2));
-			break;
-		default:
-			break;
-
-		}
-		*/
+		/* double p = 0.0625; double height = p * 12, width = p * 8, length = p * 14; switch (face) { case EAST: list.add(new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2)); break; case NORTH: list.add(new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length)); break; case SOUTH: list.add(new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0)); break; case WEST: list.add(new AxisAlignedBB(1, 0, (width) / 2, 1 - length, height, 1 - width / 2)); break; default: break; } */
 	}
 
 	@Override
@@ -190,24 +177,11 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			return new ContainerMultipartSync(this);
-		}
-		return null;
+		return id == 0 ? new ContainerMultipartSync(this) : null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			return new GuiDataEmitter(this);
-		}
-		return null;
-	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partEmitter);
+		return id == 0 ? new GuiDataEmitter(this) : null;
 	}
 }

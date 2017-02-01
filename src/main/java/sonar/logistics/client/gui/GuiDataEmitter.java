@@ -2,6 +2,7 @@ package sonar.logistics.client.gui;
 
 import java.io.IOException;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
@@ -16,7 +17,7 @@ public class GuiDataEmitter extends GuiLogistics {
 	public GuiDataEmitter(DataEmitterPart part) {
 		super(new ContainerMultipartSync(part), part);
 		this.part = part;
-		this.ySize = 40;
+		this.ySize = 60;
 	}
 
 	public void initGui() {
@@ -24,6 +25,15 @@ public class GuiDataEmitter extends GuiLogistics {
 		nameField = new GuiTextField(0, this.fontRendererObj, 8, 18, 160, 12);
 		nameField.setMaxStringLength(20);
 		nameField.setText(part.getEmitterName());
+		this.buttonList.add(new GuiButton(1, guiLeft + 116 - (18 * 6), guiTop + 34, 160, 20, part.getSecurity().getClientName()));
+	}
+
+	public void actionPerformed(GuiButton button) {
+		if (button.id == 1) {
+			part.security.incrementEnum();
+			part.sendByteBufPacket(5);
+			reset();
+		}
 	}
 
 	@Override

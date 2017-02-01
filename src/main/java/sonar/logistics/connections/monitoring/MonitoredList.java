@@ -6,8 +6,8 @@ import com.google.common.collect.Lists;
 
 import sonar.core.api.StorageSize;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.info.monitor.IJoinableInfo;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.info.IJoinableInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 
 public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 

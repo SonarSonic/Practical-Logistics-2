@@ -10,8 +10,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.IEntityTransceiver;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.connections.managers.EmitterManager;
 
 public class LogisticsEvents {

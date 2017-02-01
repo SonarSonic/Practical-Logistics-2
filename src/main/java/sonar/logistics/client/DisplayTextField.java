@@ -20,8 +20,8 @@ import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import sonar.logistics.api.display.DisplayConstants;
-import sonar.logistics.api.display.IDisplayInfo;
+import sonar.logistics.api.displays.DisplayConstants;
+import sonar.logistics.api.displays.IDisplayInfo;
 
 @SideOnly(Side.CLIENT)
 public class DisplayTextField extends Gui {

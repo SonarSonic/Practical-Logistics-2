@@ -11,8 +11,8 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.settings.InventoryReader;
-import sonar.logistics.api.settings.InventoryReader.Modes;
+import sonar.logistics.api.readers.InventoryReader;
+import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 

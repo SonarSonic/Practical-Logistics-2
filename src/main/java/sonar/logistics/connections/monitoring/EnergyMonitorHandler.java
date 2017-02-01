@@ -3,16 +3,14 @@ package sonar.logistics.connections.monitoring;
 import java.util.List;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import sonar.core.SonarCore;
 import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
-import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.cache.INetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ITileMonitorHandler;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
+import sonar.logistics.api.nodes.NodeConnection;
 
 @TileMonitorHandler(handlerID = EnergyMonitorHandler.id, modid = Logistics.MODID)
 public class EnergyMonitorHandler extends LogicMonitorHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack> {
@@ -25,15 +23,15 @@ public class EnergyMonitorHandler extends LogicMonitorHandler<MonitoredEnergySta
 	}
 
 	@Override
-	public MonitoredList<MonitoredEnergyStack> updateInfo(INetworkCache network, MonitoredList<MonitoredEnergyStack> previousList, BlockCoords coords, EnumFacing side) {
+	public MonitoredList<MonitoredEnergyStack> updateInfo(INetworkCache network, MonitoredList<MonitoredEnergyStack> previousList, NodeConnection connection) {
 		MonitoredList<MonitoredEnergyStack> list = MonitoredList.<MonitoredEnergyStack>newMonitoredList(network.getNetworkID());
 		List<ISonarEnergyHandler> providers = SonarCore.energyHandlers;
 		for (ISonarEnergyHandler provider : providers) {
-			TileEntity tile = coords.getTileEntity();
-			if (tile != null && provider.canProvideEnergy(tile, side)) {
-				StoredEnergyStack info = provider.getEnergy(new StoredEnergyStack(provider.getProvidedType()), tile, side);
+			TileEntity tile = connection.coords.getTileEntity();
+			if (tile != null && provider.canProvideEnergy(tile, connection.face)) {
+				StoredEnergyStack info = provider.getEnergy(new StoredEnergyStack(provider.getProvidedType()), tile, connection.face);
 				if (info != null)
-					list.addInfoToList(new MonitoredEnergyStack(info, new MonitoredBlockCoords(coords, coords.getBlock().getUnlocalizedName())), previousList);
+					list.addInfoToList(new MonitoredEnergyStack(info, new MonitoredBlockCoords(connection.coords, connection.coords.getBlock().getUnlocalizedName())), previousList);
 
 			}
 		}

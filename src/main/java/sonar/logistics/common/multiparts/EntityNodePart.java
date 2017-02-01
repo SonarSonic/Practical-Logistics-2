@@ -1,6 +1,5 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import mcmultipart.raytrace.PartMOP;
@@ -10,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.connecting.IEntityNode;
+import sonar.logistics.api.nodes.IEntityNode;
 
 public class EntityNodePart extends SidedMultipart implements IEntityNode {
 

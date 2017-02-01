@@ -4,13 +4,12 @@ import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.display.IDisplayInfo;
-import sonar.logistics.api.display.InfoContainer;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.IJoinableInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.monitor.IJoinableInfo;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
-import sonar.logistics.api.info.types.BaseInfo;
+import sonar.logistics.info.types.BaseInfo;
 import sonar.logistics.network.SyncMonitoredType;
 
 @LogicInfoType(id = MonitoredEnergyStack.id, modid = Logistics.MODID)

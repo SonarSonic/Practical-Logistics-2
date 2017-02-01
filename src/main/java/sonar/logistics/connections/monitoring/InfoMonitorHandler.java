@@ -7,18 +7,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.cache.INetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
-import sonar.logistics.api.info.types.LogicInfo;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.info.types.LogicInfo;
 
 @EntityMonitorHandler(handlerID = InfoMonitorHandler.id, modid = Logistics.MODID)
 @TileMonitorHandler(handlerID = InfoMonitorHandler.id, modid = Logistics.MODID)
@@ -32,9 +31,9 @@ public class InfoMonitorHandler extends LogicMonitorHandler<LogicInfo> implement
 	}
 
 	@Override
-	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, BlockCoords coords, EnumFacing dir) {
+	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, NodeConnection connection) {
 		MonitoredList<LogicInfo> list = MonitoredList.<LogicInfo>newMonitoredList(network.getNetworkID());
-		EnumFacing face = dir.getOpposite();World world =coords.getWorld(); IBlockState state = coords.getBlockState(world); BlockPos pos = coords.getBlockPos(); Block block = coords.getBlock(world); TileEntity tile = coords.getTileEntity(world);
+		EnumFacing face = connection.face.getOpposite();World world =connection.coords.getWorld(); IBlockState state = connection.coords.getBlockState(world); BlockPos pos = connection.coords.getBlockPos(); Block block = connection.coords.getBlock(world); TileEntity tile = connection.coords.getTileEntity(world);
 		LogicInfoRegistry.getTileInfo(list,face, world, state, pos, face, block, tile);		
 		for(ICustomTileHandler handler : LogicInfoRegistry.customTileHandlers){
 			if(handler.canProvideInfo(world, state, pos, face, tile, block)){

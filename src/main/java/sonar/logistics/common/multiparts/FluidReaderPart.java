@@ -18,13 +18,10 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
+import sonar.logistics.api.cabling.ChannelType;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ChannelType;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.types.LogicInfo;
-import sonar.logistics.api.info.types.LogicInfoList;
-import sonar.logistics.api.info.types.ProgressInfo;
-import sonar.logistics.api.settings.FluidReader;
+import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiFluidReader;
 import sonar.logistics.common.containers.ContainerFluidReader;
@@ -33,6 +30,9 @@ import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.info.LogicInfoRegistry.RegistryType;
+import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.SyncMonitoredType;
 
 public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implements IByteBufTile {

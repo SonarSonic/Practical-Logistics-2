@@ -7,8 +7,8 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.connecting.ClientDataEmitter;
-import sonar.logistics.api.connecting.IDataEmitter;
+import sonar.logistics.api.wireless.ClientDataEmitter;
+import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.network.PacketClientEmitters;
 
 public class EmitterManager {

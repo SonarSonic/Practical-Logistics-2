@@ -21,20 +21,22 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarMultipartInventory;
 import sonar.core.utils.IGuiTile;
+import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.cache.RefreshType;
-import sonar.logistics.api.connecting.IConnectionNode;
-import sonar.logistics.api.connecting.IEntityNode;
-import sonar.logistics.api.connecting.IEntityTransceiver;
-import sonar.logistics.api.connecting.ITileTransceiver;
-import sonar.logistics.api.connecting.ITransceiver;
+import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.nodes.IConnectionNode;
+import sonar.logistics.api.nodes.IEntityNode;
+import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.wireless.IEntityTransceiver;
+import sonar.logistics.api.wireless.ITileTransceiver;
+import sonar.logistics.api.wireless.ITransceiver;
 import sonar.logistics.client.gui.GuiArray;
 import sonar.logistics.common.containers.ContainerArray;
 
 public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnectionNode, IEntityNode, IGuiTile {
 
-	public Map<BlockCoords, EnumFacing> coordList = Collections.EMPTY_MAP;
+	public ArrayList<NodeConnection> coordList = Lists.newArrayList();
 	public ArrayList<Entity> entityList = Lists.newArrayList();
 
 	public SonarMultipartInventory inventory = new SonarMultipartInventory(this, 8) {
@@ -62,14 +64,14 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	/* @Override public <T> T getCapability(Capability<T> capability, EnumFacing facing) { if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) { return (T) inventory; } return super.getCapability(capability, facing); } */
 	public void updateConnectionLists() {
 		if (this.isServer()) {
-			Map<BlockCoords, EnumFacing> coordList = new LinkedHashMap();
+			ArrayList<NodeConnection> coordList = Lists.newArrayList();
 			ArrayList<Entity> entityList = Lists.newArrayList();
 			for (int i = 0; i < 8; i++) {
 				ItemStack stack = inventory.getStackInSlot(i);
 				if (stack != null && stack.hasTagCompound()) {
 					if (stack.getItem() instanceof ITileTransceiver) {
 						ITileTransceiver trans = (ITileTransceiver) stack.getItem();
-						coordList.put(trans.getCoords(stack), trans.getDirection(stack));
+						coordList.add(new NodeConnection(this, trans.getCoords(stack), trans.getDirection(stack)));
 					}
 					if (stack.getItem() instanceof IEntityTransceiver) {
 						IEntityTransceiver trans = (IEntityTransceiver) stack.getItem();
@@ -91,8 +93,8 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 		}
 	}
 
-	public void onLoaded() {
-		super.onLoaded();
+	public void onFirstTick() {
+		super.onFirstTick();
 		this.updateConnectionLists();
 	}
 
@@ -101,8 +103,8 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	}
 
 	@Override
-	public void addConnections(Map<BlockCoords, EnumFacing> connections) {
-		connections.putAll(coordList);
+	public void addConnections(ArrayList<NodeConnection> connections) {
+		connections.addAll(coordList);
 	}
 
 	@Override
@@ -132,5 +134,10 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	@Override
 	public Object getGuiScreen(EntityPlayer player) {
 		return new GuiArray(player, this);
+	}
+
+	@Override
+	public int getPriority() {
+		return 0; // TODO
 	}
 }

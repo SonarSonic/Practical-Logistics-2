@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.api.connecting.IChannelledTile;
+import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.viewers.ViewerType;
 
 public class ContainerChannelSelection extends ContainerMultipartSync {

@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
-import sonar.logistics.api.cache.INetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
 
 public class FluidWrapper {
 

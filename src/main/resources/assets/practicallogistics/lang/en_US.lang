@@ -46,6 +46,10 @@ item.LargeDisplayScreen.name=Large Display Screen
 //messages
 dataBlock.denied=Access Denied
 
+//data emitter
+pl.emitter.public=Public
+pl.emitter.private=Private
+
 //inventory reader
 pl.inv.mode.stack=Stack
 pl.inv.mode.slot=Slot

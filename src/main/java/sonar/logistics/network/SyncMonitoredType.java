@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.helpers.InfoHelper;
 
 public class SyncMonitoredType<T extends IMonitorInfo> extends SyncPart {

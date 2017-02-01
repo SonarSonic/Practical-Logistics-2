@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.connecting.IChannelledTile;
+import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;

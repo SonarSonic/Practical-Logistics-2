@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
-import sonar.logistics.api.info.monitor.ILogicViewable;
 
 public class ViewersList implements IViewersList {
 

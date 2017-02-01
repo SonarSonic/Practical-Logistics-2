@@ -16,54 +16,62 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.EmptyNetworkCache;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.ConnectableType;
-import sonar.logistics.api.connecting.IDataCable;
-import sonar.logistics.api.connecting.ILogicTile;
-import sonar.logistics.api.connecting.INetworkConnectable;
-import sonar.logistics.api.display.IInfoDisplay;
-import sonar.logistics.api.display.ILargeDisplay;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.IDataCable;
+import sonar.logistics.api.cabling.ILogicTile;
+import sonar.logistics.api.cabling.INetworkConnectable;
+import sonar.logistics.api.connecting.EmptyNetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.displays.IInfoDisplay;
+import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.DataCablePart;
 
 public class CableHelper extends CablingWrapper {
 
 	public IDataCable getCableFromCoords(BlockCoords coords) {
-		IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
-		if (container != null) {
-			ISlottedPart part = container.getPartInSlot(PartSlot.CENTER);
-			if (part != null && part instanceof IDataCable) {
-				return (IDataCable) part;
+		if (coords.getWorld() != null) {
+			IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
+			if (container != null) {
+				ISlottedPart part = container.getPartInSlot(PartSlot.CENTER);
+				if (part != null && part instanceof IDataCable) {
+					return (IDataCable) part;
+				}
 			}
 		}
 		return null;
 	}
 
 	public ILogicTile getMultipart(BlockCoords coords, EnumFacing face) {
-		IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
-		if (container != null) {
-			ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(face));
-			if (part instanceof ILogicTile) {
-				return (ILogicTile) part;
+		if (coords.getWorld() != null) {
+			IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
+			if (container != null) {
+				ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(face));
+				if (part instanceof ILogicTile) {
+					return (ILogicTile) part;
+				}
 			}
 		}
 		return null;
 	}
 
-	public IInfoDisplay getDisplayScreen(BlockCoords coords, EnumFacing face) {		
-		IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
-		if (container != null) {
-			return getDisplayScreen(container, face);
+	public IInfoDisplay getDisplayScreen(BlockCoords coords, EnumFacing face) {
+		if (coords.getWorld() != null) {
+			IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
+			if (container != null) {
+				return getDisplayScreen(container, face);
+			}
 		}
 		return null;
 	}
 
 	public ILargeDisplay getDisplayScreen(BlockCoords coords, int registryID) {
-		IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
-		if (container != null) {
-			return getDisplayScreen(container, registryID);
+		if (coords.getWorld() != null) {
+			IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
+			if (container != null) {
+				return getDisplayScreen(container, registryID);
+			}
 		}
 		return null;
 	}
@@ -157,9 +165,8 @@ public class CableHelper extends CablingWrapper {
 		}
 		return null;
 	}
-	
 
-	public static  <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
+	public static <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
 		BlockPos offset = pos.offset(dir);
 		IMultipartContainer container = MultipartHelper.getPartContainer(world, offset);
 		if (container != null) {
@@ -174,7 +181,7 @@ public class CableHelper extends CablingWrapper {
 	}
 
 	/** checks what cable type can be connected via a certain direction, assumes the other block can connect from this side */
-	public static  <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, IMultipartContainer container, EnumFacing dir, ConnectableType cableType) {
+	public static <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, IMultipartContainer container, EnumFacing dir, ConnectableType cableType) {
 		ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(dir.getOpposite()));
 		if (part != null) {
 			return getConnectionTypeFromObject(source, part, dir, cableType);

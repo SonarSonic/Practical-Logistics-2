@@ -19,10 +19,16 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.SonarHelper;
+import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.settings.FluidReader.SortingType;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.nodes.IFilteredNode;
+import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.api.nodes.TransferMode;
+import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.readers.FluidReader.SortingType;
 import sonar.logistics.api.wrappers.FluidWrapper;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 
@@ -32,12 +38,15 @@ public class FluidHelper extends FluidWrapper {
 		if (add.stored == 0) {
 			return add;
 		}
-		Map<BlockCoords, EnumFacing> connections = network.getExternalBlocks(true);
-		for (Map.Entry<BlockCoords, EnumFacing> entry : connections.entrySet()) {
-			TileEntity tile = entry.getKey().getTileEntity();
+		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
+		for (NodeConnection entry : connections) {
+			if (!entry.canTransferFluid(add, NodeTransferMode.ADD)) {
+				continue;
+			}
+			TileEntity tile = entry.coords.getTileEntity();
 			for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
-				if (provider.canHandleFluids(tile, entry.getValue())) {
-					add = provider.addStack(add, tile, entry.getValue(), action);
+				if (provider.canHandleFluids(tile, entry.face)) {
+					add = provider.addStack(add, tile, entry.face, action);
 					if (add == null) {
 						return null;
 					}
@@ -51,12 +60,15 @@ public class FluidHelper extends FluidWrapper {
 		if (remove.stored == 0) {
 			return remove;
 		}
-		Map<BlockCoords, EnumFacing> connections = network.getExternalBlocks(true);
-		for (Map.Entry<BlockCoords, EnumFacing> entry : connections.entrySet()) {
-			TileEntity tile = entry.getKey().getTileEntity();
+		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
+		for (NodeConnection entry : connections) {
+			if (!entry.canTransferFluid(remove, NodeTransferMode.REMOVE)) {
+				continue;
+			}
+			TileEntity tile = entry.coords.getTileEntity();
 			for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
-				if (provider.canHandleFluids(tile, entry.getValue())) {
-					remove = provider.removeStack(remove, tile, entry.getValue(), action);
+				if (provider.canHandleFluids(tile, entry.face)) {
+					remove = provider.removeStack(remove, tile, entry.face, action);
 					if (remove == null) {
 						return null;
 					}

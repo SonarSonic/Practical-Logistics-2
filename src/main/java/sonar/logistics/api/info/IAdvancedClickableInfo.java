@@ -3,11 +3,9 @@ package sonar.logistics.api.info;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import sonar.logistics.api.display.IDisplayInfo;
-import sonar.logistics.api.display.InfoContainer;
-import sonar.logistics.api.display.ScreenInteractionEvent;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.displays.ScreenInteractionEvent;
 
 /** implemented on info which can be clicked by the player */
 public interface IAdvancedClickableInfo{

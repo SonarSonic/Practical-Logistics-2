@@ -13,24 +13,23 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.connecting.ClientLogicMonitor;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
+import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.helpers.CableHelper;
 
 public class PacketLogicMonitors implements IMessage {
 
-	public ArrayList<ClientLogicMonitor> monitors;
+	public ArrayList<ClientLogicReader> monitors;
 	public UUID screenID;
 
 	public PacketLogicMonitors() {
 	}
 
-	public PacketLogicMonitors(ArrayList<ClientLogicMonitor> monitors, UUID screenID) {
+	public PacketLogicMonitors(ArrayList<ClientLogicReader> monitors, UUID screenID) {
 		this.monitors = monitors;
 		this.screenID = screenID;
 	}
@@ -45,7 +44,7 @@ public class PacketLogicMonitors implements IMessage {
 		if (tag.hasKey("monitors")) {
 			NBTTagList tagList = tag.getTagList("monitors", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
-				monitors.add(NBTHelper.instanceNBTSyncable(ClientLogicMonitor.class, tagList.getCompoundTagAt(i)));
+				monitors.add(NBTHelper.instanceNBTSyncable(ClientLogicReader.class, tagList.getCompoundTagAt(i)));
 			}
 		}
 	}
@@ -68,7 +67,7 @@ public class PacketLogicMonitors implements IMessage {
 		@Override
 		public IMessage onMessage(PacketLogicMonitors message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				Map<UUID, ArrayList<ClientLogicMonitor>> monitors = Logistics.getClientManager().clientLogicMonitors;
+				Map<UUID, ArrayList<ClientLogicReader>> monitors = Logistics.getClientManager().clientLogicMonitors;
 				if (monitors.get(message.screenID) == null) {
 					monitors.put(message.screenID, message.monitors);
 				} else {
@@ -76,7 +75,7 @@ public class PacketLogicMonitors implements IMessage {
 					monitors.get(message.screenID).addAll(message.monitors);
 				}
 				ArrayList<Object> cache = new ArrayList();
-				for (ClientLogicMonitor clientMonitor : message.monitors) {
+				for (ClientLogicReader clientMonitor : message.monitors) {
 					ILogicMonitor monitor = CableHelper.getMonitorFromHashCode(clientMonitor.uuid.getUUID().hashCode(), true);
 					if (monitor != null) {
 						int hashCode = monitor.getIdentity().hashCode();

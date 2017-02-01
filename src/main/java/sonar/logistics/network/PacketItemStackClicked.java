@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import sonar.core.network.PacketMultipart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 

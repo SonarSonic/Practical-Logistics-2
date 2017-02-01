@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.api.connecting.ITileTransceiver;
+import sonar.logistics.api.wireless.ITileTransceiver;
 
 public class WirelessItemTransceiver extends SonarItem implements ITileTransceiver {
 

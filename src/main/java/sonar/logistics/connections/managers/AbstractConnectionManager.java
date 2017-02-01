@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.connecting.ConnectableType;
-import sonar.logistics.api.connecting.INetworkConnectable;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.INetworkConnectable;
 
 public abstract class AbstractConnectionManager<T extends INetworkConnectable> {
 

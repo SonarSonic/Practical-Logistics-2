@@ -8,11 +8,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.util.EnumFacing;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.types.LogicInfo;
-import sonar.logistics.api.info.types.ProgressInfo;
 import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.SyncMonitoredType;
 
 public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMultipart<T> {

@@ -20,10 +20,9 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.info.IInfoManager;
+import sonar.logistics.api.connecting.IInfoManager;
 import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.connections.managers.CableManager;
 import sonar.logistics.connections.managers.ClientInfoManager;
@@ -32,6 +31,7 @@ import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.connections.managers.NetworkManager;
 import sonar.logistics.connections.managers.ServerInfoManager;
 import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.utils.SapphireOreGen;
 
 @Mod(modid = Logistics.MODID, name = Logistics.NAME, version = Logistics.VERSION, dependencies = "required-after:sonarcore")

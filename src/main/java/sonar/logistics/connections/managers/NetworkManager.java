@@ -8,13 +8,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
+import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.cache.EmptyNetworkCache;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.cache.IRefreshCache;
-import sonar.logistics.api.cache.RefreshType;
+import sonar.logistics.api.connecting.EmptyNetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.IRefreshCache;
+import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.DefaultNetwork;
 import sonar.logistics.connections.monitoring.ChannelMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
@@ -33,14 +37,14 @@ public class NetworkManager {
 		cache.clear();
 	}
 
-	public Entry<BlockCoords, EnumFacing> getFirstConnection(int networkID) {
+	public NodeConnection getFirstConnection(int networkID) {
 		INetworkCache network = getNetwork(networkID);
 		return network != null ? network.getExternalBlock(true) : null;
 	}
 
-	public HashMap<BlockCoords, EnumFacing> getChannelArray(int networkID) {
+	public ArrayList<NodeConnection> getChannelArray(int networkID) {
 		INetworkCache network = getNetwork(networkID);
-		return network != null ? network.getExternalBlocks(true) : new HashMap();
+		return network != null ? network.getExternalBlocks(true) : Lists.newArrayList();
 	}
 
 	public void tick() {

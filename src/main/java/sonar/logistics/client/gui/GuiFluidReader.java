@@ -21,9 +21,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.api.settings.FluidReader;
-import sonar.logistics.api.settings.FluidReader.Modes;
-import sonar.logistics.api.settings.FluidReader.SortingType;
+import sonar.logistics.api.readers.FluidReader;
+import sonar.logistics.api.readers.FluidReader.Modes;
+import sonar.logistics.api.readers.FluidReader.SortingType;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.common.multiparts.FluidReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
@@ -99,11 +99,11 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
-		super.drawGuiContainerForegroundLayer(x, y);
 		searchField.drawTextBox();
 		if (getSetting() == Modes.POS) {
 			slotField.drawTextBox();
 		}
+		super.drawGuiContainerForegroundLayer(x, y);
 		if (getSetting() == Modes.SELECTED) {
 			if (x - guiLeft >= 103 && x - guiLeft <= 103 + 16 && y - guiTop >= 9 && y - guiTop <= 9 + 16) {
 				/* if (!part.getSelectedInfo().isEmpty()) { MonitoredFluidStack stack = ((MonitoredFluidStack) part.getSelectedInfo().get(0)); if (stack != null) { GL11.glDisable(GL11.GL_DEPTH_TEST); GL11.glDisable(GL11.GL_LIGHTING); List list = new ArrayList(); list.add(stack.fluidStack.getObject().fluid.getLocalizedName()); drawHoveringText(list, x - guiLeft, y - guiTop, fontRendererObj); GL11.glEnable(GL11.GL_LIGHTING); GL11.glEnable(GL11.GL_DEPTH_TEST); net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting(); } } */

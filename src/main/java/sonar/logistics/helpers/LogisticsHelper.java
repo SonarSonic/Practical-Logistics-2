@@ -1,7 +1,7 @@
 package sonar.logistics.helpers;
 
 import net.minecraft.entity.player.EntityPlayer;
-import sonar.logistics.api.connecting.IOperatorTool;
+import sonar.logistics.api.operator.IOperatorTool;
 
 public class LogisticsHelper {
 

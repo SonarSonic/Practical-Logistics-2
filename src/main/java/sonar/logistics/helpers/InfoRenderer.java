@@ -13,11 +13,11 @@ import net.minecraft.util.EnumFacing;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.logistics.api.display.DisplayType;
+import sonar.logistics.api.displays.DisplayType;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.types.LogicInfo;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
+import sonar.logistics.info.types.LogicInfo;
 
 public class InfoRenderer {
 
@@ -133,7 +133,7 @@ public class InfoRenderer {
 		case UP:
 			GL11.glRotated(270, 1, 0, 0);
 			
-			GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
+			//GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
 			translate = getUpMatrix(rotation.ordinal(), width, height);
 			//GL11.glTranslated(-3, 0, 0);
 			break;
@@ -151,7 +151,8 @@ public class InfoRenderer {
 	}
 	
 	public static double[] getUpMatrix(int i, int width, int height){
-		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { -width, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
+	//	double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { -width, -height, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { -(width), 1, -1 } };
+		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
 		return newMatrix[i];			
 	}
 

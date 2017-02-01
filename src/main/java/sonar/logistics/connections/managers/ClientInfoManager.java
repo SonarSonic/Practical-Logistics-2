@@ -13,14 +13,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.api.connecting.ClientDataEmitter;
-import sonar.logistics.api.connecting.ClientLogicMonitor;
-import sonar.logistics.api.display.ConnectedDisplayScreen;
-import sonar.logistics.api.display.ILargeDisplay;
-import sonar.logistics.api.info.IInfoManager;
+import sonar.logistics.api.connecting.IInfoManager;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
@@ -33,7 +33,7 @@ public class ClientInfoManager implements IInfoManager {
 	public LinkedHashMap<InfoUUID, IMonitorInfo> info = new LinkedHashMap();
 
 	public Map<UUID, ArrayList<Object>> sortedLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<Object>>();
-	public Map<UUID, ArrayList<ClientLogicMonitor>> clientLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<ClientLogicMonitor>>();
+	public Map<UUID, ArrayList<ClientLogicReader>> clientLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<ClientLogicReader>>();
 	
 	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();	
 	public LinkedHashMap<UUID, ILogicMonitor> monitors = new LinkedHashMap();

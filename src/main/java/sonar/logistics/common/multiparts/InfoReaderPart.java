@@ -8,13 +8,13 @@ import net.minecraft.world.World;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.info.monitor.ChannelType;
-import sonar.logistics.api.info.types.LogicInfo;
+import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.connections.monitoring.InfoMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.info.types.LogicInfo;
 
 public class InfoReaderPart extends LogisticsReader<LogicInfo> implements IByteBufTile {
 

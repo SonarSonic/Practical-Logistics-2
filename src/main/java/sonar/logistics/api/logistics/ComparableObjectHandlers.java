@@ -1,6 +1,5 @@
 package sonar.logistics.api.logistics;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;

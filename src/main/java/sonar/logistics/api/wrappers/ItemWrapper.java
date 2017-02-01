@@ -1,5 +1,6 @@
 package sonar.logistics.api.wrappers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +11,10 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.api.utils.BlockCoords;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.IConnectionNode;
-import sonar.logistics.api.connecting.IEntityNode;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.nodes.IConnectionNode;
+import sonar.logistics.api.nodes.IEntityNode;
+import sonar.logistics.api.nodes.NodeConnection;
 
 public class ItemWrapper {
 	
@@ -21,7 +23,7 @@ public class ItemWrapper {
 	 * @param storage currentStorageSize
 	 * @param node {@link IConnectionNode} to check from
 	 * @return list of {@link StoredItemStack} on the network */
-	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, Map<BlockCoords, EnumFacing> connections) {
+	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, ArrayList<NodeConnection> connections) {
 		return storage;
 	}
 

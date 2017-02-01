@@ -12,12 +12,12 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.display.DisplayConstants;
-import sonar.logistics.api.display.DisplayInfo;
+import sonar.logistics.api.displays.DisplayConstants;
+import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.client.DisplayTextField;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
@@ -265,7 +265,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		if (info == null)
 			return;
 
-		IMonitorInfo monitorInfo = info.getCachedInfo();
+		IMonitorInfo monitorInfo = info.getSidedCachedInfo(true);
 		if (monitorInfo instanceof INameableInfo) {
 			INameableInfo directInfo = (INameableInfo) monitorInfo;
 			FontHelper.text(directInfo.getClientIdentifier(), 11, top + 6, LogisticsColours.white_text.getRGB());

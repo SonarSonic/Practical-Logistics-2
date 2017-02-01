@@ -26,18 +26,18 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.cache.ILogisticsNetwork;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.ClientLogicMonitor;
-import sonar.logistics.api.display.ConnectedDisplayScreen;
-import sonar.logistics.api.display.IInfoDisplay;
-import sonar.logistics.api.display.ILargeDisplay;
-import sonar.logistics.api.display.ScreenInteractionEvent;
-import sonar.logistics.api.info.IInfoContainer;
-import sonar.logistics.api.info.IInfoManager;
+import sonar.logistics.api.connecting.IInfoManager;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.IInfoContainer;
+import sonar.logistics.api.displays.IInfoDisplay;
+import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.displays.ScreenInteractionEvent;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.viewers.IViewersList;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
@@ -377,10 +377,10 @@ public class ServerInfoManager implements IInfoManager {
 			monitors = getLocalMonitors(monitors, part);
 		}
 
-		ArrayList<ClientLogicMonitor> clientMonitors = new ArrayList();
+		ArrayList<ClientLogicReader> clientMonitors = new ArrayList();
 		monitors.forEach(monitor -> {
 			monitor.getViewersList().addViewer(player, ViewerType.TEMPORARY);
-			clientMonitors.add(new ClientLogicMonitor(monitor));
+			clientMonitors.add(new ClientLogicReader(monitor));
 		});
 		Logistics.network.sendTo(new PacketLogicMonitors(clientMonitors, identity), (EntityPlayerMP) player);
 	}

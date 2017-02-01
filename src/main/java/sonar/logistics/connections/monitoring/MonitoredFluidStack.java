@@ -2,30 +2,23 @@ package sonar.logistics.connections.monitoring;
 
 import org.lwjgl.opengl.GL11;
 
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.display.IDisplayInfo;
-import sonar.logistics.api.display.InfoContainer;
-import sonar.logistics.api.info.IAdvancedClickableInfo;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.IJoinableInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.monitor.IJoinableInfo;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
-import sonar.logistics.api.info.types.BaseInfo;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.BaseInfo;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = Logistics.MODID)
 public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack> {

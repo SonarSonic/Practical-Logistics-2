@@ -4,10 +4,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.cache.RefreshType;
-import sonar.logistics.api.connecting.ConnectableType;
-import sonar.logistics.api.connecting.IDataCable;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.IDataCable;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.helpers.CableHelper;
 
 public class CableManager extends AbstractConnectionManager<IDataCable> {

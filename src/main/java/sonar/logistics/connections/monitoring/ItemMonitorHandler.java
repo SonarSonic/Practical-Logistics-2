@@ -6,21 +6,18 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import sonar.core.SonarCore;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.inventory.GenericInventoryHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.cache.INetworkCache;
+import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
-import sonar.logistics.api.info.types.LogicInfo;
+import sonar.logistics.api.nodes.NodeConnection;
 
 @EntityMonitorHandler(handlerID = ItemMonitorHandler.id, modid = Logistics.MODID)
 @TileMonitorHandler(handlerID = ItemMonitorHandler.id, modid = Logistics.MODID)
@@ -34,15 +31,15 @@ public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> 
 	}
 
 	@Override
-	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, BlockCoords coords, EnumFacing side) {
+	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, NodeConnection connection) {
 		MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(network.getNetworkID());
 		List<ISonarInventoryHandler> providers = SonarCore.inventoryHandlers;
-		TileEntity tile = coords.getTileEntity();
+		TileEntity tile = connection.coords.getTileEntity();
 		if (tile != null) {
 			for (ISonarInventoryHandler provider : providers) {
-				if (provider.canHandleItems(tile, side)) {
+				if (provider.canHandleItems(tile, connection.face)) {
 					List<StoredItemStack> info = new ArrayList();
-					StorageSize size = provider.getItems(info, tile, side);
+					StorageSize size = provider.getItems(info, tile, connection.face);
 					list.sizing.add(size);
 					for (StoredItemStack item : info) {
 						list.addInfoToList(new MonitoredItemStack(item), previousList);

@@ -23,33 +23,36 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.handlers.inventories.IInventoryHandler;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.network.PacketInvUpdate;
+import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.connecting.IEntityNode;
-import sonar.logistics.api.settings.InventoryReader.SortingType;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.nodes.IEntityNode;
+import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.api.readers.InventoryReader.SortingType;
 import sonar.logistics.api.wrappers.ItemWrapper;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 
 public class ItemHelper extends ItemWrapper {
 
-	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, Map<BlockCoords, EnumFacing> connections) {
-		for (Map.Entry<BlockCoords, EnumFacing> entry : connections.entrySet()) {
+	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, ArrayList<NodeConnection> connections) {
+		for (NodeConnection entry : connections) {
 			storage = getTileInventory(storedStacks, storage, entry);
 		}
 		return storage;
 	}
 
-	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, Entry<BlockCoords, EnumFacing> entry) {
-		TileEntity tile = entry.getKey().getTileEntity();
+	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, NodeConnection entry) {
+		TileEntity tile = entry.coords.getTileEntity();
 		if (tile == null) {
 			return storage;
 		}
 		boolean specialProvider = false;
 		for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
-			if (provider.canHandleItems(tile, entry.getValue())) {
+			if (provider.canHandleItems(tile, entry.face)) {
 				if (!specialProvider) {
-					StorageSize size = provider.getItems(storedStacks, tile, entry.getValue());
+					StorageSize size = provider.getItems(storedStacks, tile, entry.face);
 					if (size != StorageSize.EMPTY) {
 						specialProvider = true;
 						storage.add(size);
@@ -76,15 +79,18 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack addItems(StoredItemStack add, INetworkCache network, ActionType action) {
-		Map<BlockCoords, EnumFacing> connections = network.getExternalBlocks(true);
-		for (Map.Entry<BlockCoords, EnumFacing> entry : connections.entrySet()) {
-			TileEntity tile = entry.getKey().getTileEntity();
+		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
+		for (NodeConnection entry : connections) {
+			if (!entry.canTransferItem(add, NodeTransferMode.ADD)) {
+				continue;
+			}
+			TileEntity tile = entry.coords.getTileEntity();
 			if (tile == null) {
 				continue;
 			}
 			for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
-				if (provider.canHandleItems(tile, entry.getValue())) {
-					add = provider.addStack(add, tile, entry.getValue(), action);
+				if (provider.canHandleItems(tile, entry.face)) {
+					add = provider.addStack(add, tile, entry.face, action);
 					if (add == null) {
 						return null;
 					}
@@ -111,9 +117,12 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack removeItems(StoredItemStack remove, INetworkCache network, ActionType action) {
-		Map<BlockCoords, EnumFacing> connections = network.getExternalBlocks(true);
-		for (Map.Entry<BlockCoords, EnumFacing> entry : connections.entrySet()) {
-			TileEntity tile = entry.getKey().getTileEntity();
+		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
+		for (NodeConnection entry : connections) {
+			if (!entry.canTransferItem(remove, NodeTransferMode.REMOVE)) {
+				continue;
+			}
+			TileEntity tile = entry.coords.getTileEntity();
 			if (tile == null) {
 				continue;
 			}
@@ -121,8 +130,8 @@ public class ItemHelper extends ItemWrapper {
 				if(provider instanceof IInventoryHandler){
 					continue;
 				}
-				if (provider.canHandleItems(tile, entry.getValue())) {
-					remove = provider.removeStack(remove, tile, entry.getValue(), action);
+				if (provider.canHandleItems(tile, entry.face)) {
+					remove = provider.removeStack(remove, tile, entry.face, action);
 					if (remove == null) {
 						return null;
 					}
@@ -134,7 +143,7 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack getStack(INetworkCache network, int slot) {
-		Entry<BlockCoords, EnumFacing> block = network.getExternalBlock(true);
+		NodeConnection block = network.getExternalBlock(true);
 		StoredItemStack stack = getTileStack(network, slot);
 		if (stack == null) {
 			// network.getFirstConnection(CacheTypes.EMITTER);
@@ -165,17 +174,16 @@ public class ItemHelper extends ItemWrapper {
 				}
 			}
 		}
-
 		return null;
 	}
 
 	public StoredItemStack getTileStack(INetworkCache network, int slot) {
-		Map<BlockCoords, EnumFacing> connections = network.getExternalBlocks(true);
-		for (Map.Entry<BlockCoords, EnumFacing> entry : connections.entrySet()) {
+		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
+		for (NodeConnection entry : connections) {			
 			for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
-				TileEntity tile = entry.getKey().getTileEntity();
-				if (tile != null && provider.canHandleItems(tile, entry.getValue())) {
-					return provider.getStack(slot, tile, entry.getValue());
+				TileEntity tile = entry.coords.getTileEntity();
+				if (tile != null && provider.canHandleItems(tile, entry.face)) {
+					return provider.getStack(slot, tile, entry.face);
 				}
 			}
 		}

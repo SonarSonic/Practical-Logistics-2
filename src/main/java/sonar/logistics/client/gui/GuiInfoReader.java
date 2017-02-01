@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.types.LogicInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.LogicInfo;
 
 public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 

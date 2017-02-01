@@ -22,11 +22,11 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.cache.INetworkCache;
-import sonar.logistics.api.cache.RefreshType;
-import sonar.logistics.api.connecting.ClientDataEmitter;
-import sonar.logistics.api.connecting.IDataEmitter;
-import sonar.logistics.api.connecting.IDataReceiver;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.wireless.ClientDataEmitter;
+import sonar.logistics.api.wireless.IDataEmitter;
+import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.common.containers.ContainerDataReceiver;
 import sonar.logistics.connections.managers.EmitterManager;
@@ -101,7 +101,8 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 
 	public void setLocalNetworkCache(INetworkCache network) {
 		super.setLocalNetworkCache(network);
-		network.markDirty(RefreshType.CONNECTED_NETWORKS);
+		if (isServer())
+			network.markDirty(RefreshType.FULL);
 	}
 
 	@Override
@@ -113,20 +114,12 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 	 * @Override public EnumSet<PartSlot> getOccludedSlots() { return EnumSet.of(PartSlot.getFaceSlot(face)); } */
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			return new ContainerDataReceiver(this);
-		}
-		return null;
+		return id == 0 ? new ContainerDataReceiver(this) : null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			return new GuiDataReceiver(this);
-		}
-		return null;
+		return id == 0 ? new GuiDataReceiver(this) : null;
 	}
 
 	@Override
@@ -134,6 +127,7 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 		super.onFirstTick();
 		if (this.isServer()) {
 			Logistics.getNetworkManager().updateEmitters = true;
+			network.markDirty(RefreshType.FULL);
 		}
 	}
 
@@ -177,9 +171,8 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 			}
 
 			clientEmitters.setObjects(emitters);
-			// SyncNBTAbstractList<ClientDataEmitter> deademitters = clientEmitters;
 			networks = getNetworks();
-			network.markDirty(RefreshType.CONNECTED_NETWORKS);
+			network.markDirty(RefreshType.FULL);
 			sendSyncPacket();
 			break;
 		}

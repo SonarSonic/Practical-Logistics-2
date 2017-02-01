@@ -1,8 +1,8 @@
 package sonar.logistics.common.multiparts;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import mcmultipart.MCMultiPartMod;
@@ -22,11 +22,13 @@ import sonar.core.api.SonarAPI;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncEnum;
+import sonar.core.utils.Pair;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.connecting.IConnectionNode;
-import sonar.logistics.api.connecting.IOperatorTile;
-import sonar.logistics.api.connecting.OperatorMode;
-import sonar.logistics.api.connecting.TransferMode;
+import sonar.logistics.api.nodes.IConnectionNode;
+import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.TransferMode;
+import sonar.logistics.api.operator.IOperatorTile;
+import sonar.logistics.api.operator.OperatorMode;
 
 public class TransferNodePart extends SidedMultipart implements IConnectionNode, IOperatorTile {
 
@@ -55,12 +57,12 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 				ticks = 0;
 				TileEntity localTile = new BlockCoords(getPos().offset(face), getWorld().provider.getDimension()).getTileEntity(getWorld());
 				if (localTile != null) {
-					HashMap<BlockCoords, EnumFacing> tiles = network.getExternalBlocks(true);
-					for (Entry<BlockCoords, EnumFacing> entry : tiles.entrySet()) {
-						TileEntity netTile = entry.getKey().getTileEntity();
+					ArrayList<NodeConnection> tiles = network.getExternalBlocks(true);
+					for (NodeConnection entry : tiles) {
+						TileEntity netTile = entry.coords.getTileEntity();
 						if (netTile != null) {
-							EnumFacing dirFrom = transferMode.getObject().shouldPull() ? face : entry.getValue();
-							EnumFacing dirTo = !transferMode.getObject().shouldPull() ? face : entry.getValue();
+							EnumFacing dirFrom = transferMode.getObject().shouldPull() ? face : entry.face;
+							EnumFacing dirTo = !transferMode.getObject().shouldPull() ? face : entry.face;
 							TileEntity from = transferMode.getObject().shouldPull() ? localTile : netTile;
 							TileEntity to = !transferMode.getObject().shouldPull() ? localTile : netTile;
 							SonarAPI.getItemHelper().transferItems(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), null);
@@ -74,7 +76,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	}
 
 	@Override
-	public void addConnections(Map<BlockCoords, EnumFacing> connections) {}
+	public void addConnections(ArrayList<NodeConnection> connections) {}
 
 	@Override
 	public ItemStack getItemStack() {
@@ -106,5 +108,10 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public void addInfo(List<String> info) {
 		super.addInfo(info);
 		info.add("Transfer Mode: " + transferMode.getObject());
+	}
+
+	@Override
+	public int getPriority() {
+		return 0; //TODO
 	}
 }

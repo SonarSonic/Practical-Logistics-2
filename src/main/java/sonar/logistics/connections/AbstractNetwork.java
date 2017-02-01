@@ -16,21 +16,22 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.cache.ILogisticsNetwork;
-import sonar.logistics.api.display.IInfoDisplay;
-import sonar.logistics.api.display.InfoContainer;
+import sonar.logistics.api.cabling.ChannelType;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
+import sonar.logistics.api.displays.IInfoContainer;
+import sonar.logistics.api.displays.IInfoDisplay;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IEntityMonitorHandler;
-import sonar.logistics.api.info.IInfoContainer;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.monitor.ChannelType;
-import sonar.logistics.api.info.monitor.ILogicMonitor;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
-import sonar.logistics.api.info.monitor.IdentifiedCoordsList;
-import sonar.logistics.api.info.monitor.LogicMonitorHandler;
+import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.IdentifiedCoordsList;
 import sonar.logistics.api.viewers.IViewersList;
 import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
@@ -41,7 +42,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 
 	public boolean resendAllLists = false;
 	public final Map<IEntityMonitorHandler, Map<Entity, MonitoredList<?>>> entityConnectionInfo = new LinkedHashMap();
-	public final Map<ITileMonitorHandler, Map<Pair<BlockCoords, EnumFacing>, MonitoredList<?>>> tileConnectionInfo = new LinkedHashMap(); // block coords stored with the info gathered
+	public final Map<ITileMonitorHandler, Map<NodeConnection, MonitoredList<?>>> tileConnectionInfo = new LinkedHashMap(); // block coords stored with the info gathered
 	public final Map<LogicMonitorHandler, Map<ILogicMonitor, MonitoredList<?>>> monitorInfo = new LinkedHashMap();
 	public final Map<IInfoDisplay, IInfoContainer> connectedDisplays = new LinkedHashMap();
 	public final ArrayList<ILogicMonitor> localMonitors = new ArrayList();
@@ -72,11 +73,11 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 		compileConnectionList(monitor.getHandler());
 	}
 
-	public <T extends IMonitorInfo> MonitoredList<T> updateMonitoredList(ILogicMonitor<T> monitor, int infoID, Map<Pair<BlockCoords, EnumFacing>, MonitoredList<?>> connections, Map<Entity, MonitoredList<?>> entityConnections) {
+	public <T extends IMonitorInfo> MonitoredList<T> updateMonitoredList(ILogicMonitor<T> monitor, int infoID, Map<NodeConnection, MonitoredList<?>> connections, Map<Entity, MonitoredList<?>> entityConnections) {
 		MonitoredList<T> updateList = MonitoredList.<T>newMonitoredList(getNetworkID());
 		IdentifiedCoordsList channels = monitor.getChannels(infoID); // TODO
-		for (Entry<Pair<BlockCoords, EnumFacing>, MonitoredList<?>> entry : connections.entrySet()) {
-			if ((entry.getValue() != null && !entry.getValue().isEmpty()) && (channels.isEmpty() || channels.contains(entry.getKey().a))) {
+		for (Entry<NodeConnection, MonitoredList<?>> entry : connections.entrySet()) {
+			if ((entry.getValue() != null && !entry.getValue().isEmpty()) && (channels.isEmpty() || channels.contains(entry.getKey().coords))) {
 				for (T coordInfo : (MonitoredList<T>) entry.getValue()) {
 					updateList.addInfoToList(coordInfo, (MonitoredList<T>) entry.getValue());
 				}
@@ -156,13 +157,13 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 		return monitorInfo.get(monitor.getHandler()).get(monitor);
 	}
 
-	public <T extends IMonitorInfo> Map<Pair<BlockCoords, EnumFacing>, MonitoredList<?>> getTileMonitoredList(LogicMonitorHandler<T> type) {
-		Map<Pair<BlockCoords, EnumFacing>, MonitoredList<?>> coordInfo = new LinkedHashMap();
+	public <T extends IMonitorInfo> Map<NodeConnection, MonitoredList<?>> getTileMonitoredList(LogicMonitorHandler<T> type) {
+		Map<NodeConnection, MonitoredList<?>> coordInfo = new LinkedHashMap();
 		if (type instanceof ITileMonitorHandler) {
-			Map<Pair<BlockCoords, EnumFacing>, MonitoredList<?>> infoList = tileConnectionInfo.getOrDefault(type, new LinkedHashMap());
-			for (Entry<Pair<BlockCoords, EnumFacing>, MonitoredList<?>> entry : infoList.entrySet()) {
+			Map<NodeConnection, MonitoredList<?>> infoList = tileConnectionInfo.getOrDefault(type, new LinkedHashMap());
+			for (Entry<NodeConnection, MonitoredList<?>> entry : infoList.entrySet()) {
 				MonitoredList<T> oldList = entry.getValue() == null ? MonitoredList.<T>newMonitoredList(getNetworkID()) : (MonitoredList<T>) entry.getValue();
-				MonitoredList<T> list = ((ITileMonitorHandler) type).updateInfo(this, oldList, entry.getKey().a, entry.getKey().b);
+				MonitoredList<T> list = ((ITileMonitorHandler) type).updateInfo(this, oldList, null);
 				coordInfo.put(entry.getKey(), list);
 			}
 		}		

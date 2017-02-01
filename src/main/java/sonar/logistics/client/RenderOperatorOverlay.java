@@ -21,8 +21,8 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.logistics.api.connecting.IOperatorProvider;
-import sonar.logistics.api.connecting.IOperatorTool;
+import sonar.logistics.api.operator.IOperatorProvider;
+import sonar.logistics.api.operator.IOperatorTool;
 
 public class RenderOperatorOverlay {
 

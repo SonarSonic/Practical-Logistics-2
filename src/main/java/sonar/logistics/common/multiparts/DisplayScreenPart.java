@@ -17,11 +17,11 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncEnum;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.connecting.OperatorMode;
-import sonar.logistics.api.display.DisplayType;
-import sonar.logistics.api.display.InfoContainer;
-import sonar.logistics.api.display.ScreenLayout;
-import sonar.logistics.api.info.IInfoContainer;
+import sonar.logistics.api.displays.DisplayType;
+import sonar.logistics.api.displays.IInfoContainer;
+import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.displays.ScreenLayout;
+import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.viewers.ViewersList;
 

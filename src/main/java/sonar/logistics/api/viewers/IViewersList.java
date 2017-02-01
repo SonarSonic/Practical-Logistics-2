@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
-import sonar.logistics.api.info.monitor.ILogicViewable;
 
 public interface IViewersList {
 	

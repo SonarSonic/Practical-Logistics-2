@@ -22,7 +22,7 @@ import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.settings.InventoryReader.Modes;
+import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;

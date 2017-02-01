@@ -5,10 +5,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.SonarCore;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.display.ConnectedDisplayScreen;
-import sonar.logistics.api.display.ILargeDisplay;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.ILargeDisplay;
 
 public class PacketConnectedDisplayScreen implements IMessage {
 
