@@ -69,16 +69,19 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 						tag.setBoolean(FlexibleGuiHandler.ITEM, true);
 						tag.setInteger(FlexibleGuiHandler.ID, 0);
 						tag.setInteger("hash", tile.getIdentity().hashCode());
-						SonarCore.instance.guiHandler.openGui(player, world, pos, 0, tag);
+						tag.setInteger("x", tile.getCoords().getX());
+						tag.setInteger("y", tile.getCoords().getY());
+						tag.setInteger("z", tile.getCoords().getZ());
+						SonarCore.instance.guiHandler.openGui(false, player, world, pos, 0, tag);
 					}
 					return EnumActionResult.SUCCESS;
 				}
-				//FIXME - Need a version for Logic Monitors
+				// FIXME - Need a version for Logic Monitors
 				break;
 			case INFO:
 				break;
 			case ROTATE:
-				return (part!=null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+				return (part != null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
 			default:
 				break;
 
@@ -130,9 +133,15 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		switch (id) {
 		case 0:
 			int hash = tag.getInteger("hash");
-			ILogicMonitor part = CableHelper.getMonitorFromHashCode(hash, world.isRemote);
-			if (part != null && part instanceof IChannelledTile) {
-				return new ContainerChannelSelection((IChannelledTile) part);
+			BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+			IMultipartContainer container = MultipartHelper.getPartContainer(world, pos);
+			for (IMultipart part : container.getParts()) {
+				if (part != null && part instanceof IChannelledTile) {
+					IChannelledTile tile = (IChannelledTile) part;
+					if (tile.getIdentity().hashCode() == hash) {
+						return new ContainerChannelSelection(tile);
+					}
+				}
 			}
 		}
 		return null;
@@ -143,12 +152,21 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		switch (id) {
 		case 0:
 			int hash = tag.getInteger("hash");
-			ILogicMonitor part = CableHelper.getMonitorFromHashCode(hash, world.isRemote);
-			if (part != null && part instanceof IChannelledTile) {
-				return new GuiChannelSelection((IChannelledTile) part, 0);
+			BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+			IMultipartContainer container = MultipartHelper.getPartContainer(world, pos);
+			for (IMultipart part : container.getParts()) {
+				if (part != null && part instanceof IChannelledTile) {
+					IChannelledTile tile = (IChannelledTile) part;
+					if (tile.getIdentity().hashCode() == hash) {
+						return new GuiChannelSelection(player, tile, 0);
+					}
+				}
 			}
 		}
 		return null;
 	}
+
+	@Override
+	public void onGuiOpened(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {}
 
 }

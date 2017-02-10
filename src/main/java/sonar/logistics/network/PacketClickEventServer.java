@@ -47,20 +47,24 @@ public class PacketClickEventServer implements IMessage {
 		@Override
 		public IMessage onMessage(PacketClickEventServer message, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null) {
-					ScreenInteractionEvent event = Logistics.getServerManager().clickEvents.get(message.hashCode);
-					if (event != null && event.hit.partHit instanceof IInfoDisplay) {
-						InfoContainer container = (InfoContainer) ((IInfoDisplay) event.hit.partHit).container();
-						IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
-						IMonitorInfo info = displayInfo.getSidedCachedInfo(false);
-						if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
-							((IAdvancedClickableInfo) info).onClickEvent(container, displayInfo, event, message.eventTag);
-						}
-						Logistics.getServerManager().clickEvents.remove(message.hashCode);
-					}
+				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+					public void run() {
+						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+						if (player != null) {
+							ScreenInteractionEvent event = Logistics.getServerManager().clickEvents.get(message.hashCode);
+							if (event != null && event.hit.partHit instanceof IInfoDisplay) {
+								InfoContainer container = (InfoContainer) ((IInfoDisplay) event.hit.partHit).container();
+								IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
+								IMonitorInfo info = displayInfo.getSidedCachedInfo(false);
+								if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
+									((IAdvancedClickableInfo) info).onClickEvent(container, displayInfo, event, message.eventTag);
+								}
+								Logistics.getServerManager().clickEvents.remove(message.hashCode);
+							}
 
-				}
+						}
+					}
+				});
 			}
 			return null;
 		}

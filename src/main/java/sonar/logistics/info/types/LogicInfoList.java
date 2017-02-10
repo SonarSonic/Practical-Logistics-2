@@ -11,10 +11,9 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -23,8 +22,6 @@ import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncUUID;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenInteractionEvent;
@@ -32,11 +29,11 @@ import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.readers.ILogicMonitor;
-import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
@@ -185,126 +182,22 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public NBTTagCompound onClientClick(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
 		NBTTagCompound clickTag = new NBTTagCompound();
 		if (infoID.getObject().equals(MonitoredItemStack.id) && event.hit != null) {
-			ScreenMultipart part = (ScreenMultipart) event.hit.partHit;
-			DisplayType displayType = part.getDisplayType();
-			double x = part.getPos().getX(), y = part.getPos().getY(), z = part.getPos().getZ();
-			Vec3d hitVec = event.hit.hitVec;
-
-			if (container.getDisplay() instanceof ConnectedDisplayScreen) {
-				ConnectedDisplayScreen connected = (ConnectedDisplayScreen) container.getDisplay();
-				if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) {
-					BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos();
-					double[] translation = renderInfo.getRenderProperties().getTranslation();
-					switch (part.face) {
-					case DOWN:
-						break;
-					case EAST:
-						break;
-					case NORTH:
-						y = leftPos.getY() - translation[1];
-						x = leftPos.getX() - translation[0];
-						z = leftPos.getZ();
-						break;
-					case SOUTH:
-						break;
-					case UP:
-						break;
-					case WEST:
-						break;
-					default:
-						break;
-					}
-				}
-			}
-
-			int slot = -1;
-
-			int maxH = (int) Math.ceil(renderInfo.getRenderProperties().getScaling()[0]);
-			int minH = 0;
-			int maxY = (int) Math.ceil(renderInfo.getRenderProperties().getScaling()[1]);
-			int minY = 0;
-			int hSlots = (Math.round(maxH - minH) * 2);
-			int yPos = (int) ((1 - (event.hit.hitVec.yCoord - y)) * Math.ceil(container.getDisplay().getDisplayType().height *2)), hPos = 0;
-
-			switch (part.face) {
-			case DOWN:
-				switch (part.rotation) {
-				case EAST:
-					hPos = (int) ((maxH - minH - (hitVec.zCoord - z)) * 2);
-					yPos = (int) ((maxH - minH - (hitVec.xCoord - x)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				case NORTH:
-					hPos = (int) ((maxH - minH - (hitVec.xCoord - x)) * 2);
-					yPos = (int) ((minH + (hitVec.zCoord - z)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				case SOUTH:
-					hPos = (int) ((minH + (hitVec.xCoord - x)) * 2);
-					yPos = (int) ((maxH - minH - (hitVec.zCoord - z)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				case WEST:
-					hPos = (int) ((minH + (hitVec.zCoord - z)) * 2);
-					yPos = (int) ((minH + (hitVec.xCoord - x)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				default:
-					break;
-				}
-				break;
-			case EAST:
-				hPos = (int) ((1 + minH - (hitVec.zCoord - z)) * 2);
-				slot = ((yPos * hSlots) + hPos);
-				break;
-			case NORTH:
-				hPos = (int) ((1 - (hitVec.xCoord - x)) * 2);
-				slot = ((yPos * hSlots) + hPos);
-				break;
-			case SOUTH:
-				hPos = (int) ((maxH - minH + (hitVec.xCoord - x)) * 2);
-				slot = ((yPos * hSlots) + hPos) - maxH * 2;
-				break;
-			case UP:
-				switch (part.rotation) {
-				case EAST:
-					hPos = (int) ((maxH - minH - (hitVec.zCoord - z)) * 2);
-					yPos = (int) ((minH + (hitVec.xCoord - x)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				case NORTH:
-					hPos = (int) ((maxH - minH - (hitVec.xCoord - x)) * 2);
-					yPos = (int) ((maxH - (hitVec.zCoord - z)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				case SOUTH:
-					hPos = (int) ((maxH - minH + (hitVec.xCoord - x)) * 2);
-					yPos = (int) ((minH + (hitVec.zCoord - z)) * 2);
-					slot = ((yPos * hSlots) + hPos) - maxH * 2;
-					break;
-				case WEST:
-					hPos = (int) ((maxH - minH + (hitVec.zCoord - z)) * 2);
-					yPos = (int) ((minH - (hitVec.xCoord - x)) * 2);
-					slot = ((yPos * hSlots) + hPos);
-					break;
-				default:
-					break;
-				}
-
-				break;
-			case WEST:
-				hPos = (int) ((maxH - minH + (hitVec.zCoord - z)) * 2);
-				slot = ((yPos * hSlots) + hPos) - maxH * 2;
-				break;
-			default:
-				break;
-			}
-
+			int slot = CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 2, 2);
 			MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredItemStack itemStack = (MonitoredItemStack) list.get(slot);
 				if (itemStack != null) {
 					itemStack.writeData(clickTag, SyncType.SAVE);
+				}
+				return clickTag;
+			}
+		} else if (infoID.getObject().equals(MonitoredFluidStack.id) && event.hit != null) {
+			int slot = CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 1, 1);
+			MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), renderInfo.getInfoUUID());
+			if (list != null && slot >= 0 && slot < list.size()) {
+				MonitoredFluidStack fluidStack = (MonitoredFluidStack) list.get(slot);
+				if (fluidStack != null) {
+					fluidStack.writeData(clickTag, SyncType.SAVE);
 				}
 				return clickTag;
 			}
@@ -317,6 +210,9 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			MonitoredItemStack clicked = NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag);
 			InfoHelper.screenItemStackClicked(clicked.itemStack.getObject(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
+		} else if (infoID.getObject().equals(MonitoredFluidStack.id)) {
+			MonitoredFluidStack clicked = NBTHelper.instanceNBTSyncable(MonitoredFluidStack.class, clickTag);
+			InfoHelper.screenFluidStackClicked(clicked.fluidStack.getObject(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
 		}
 	}
 

@@ -20,6 +20,7 @@ import sonar.logistics.network.PacketLogicMonitors;
 import sonar.logistics.network.PacketMonitorType;
 import sonar.logistics.network.PacketMonitoredCoords;
 import sonar.logistics.network.PacketMonitoredList;
+import sonar.logistics.network.PacketNodeFilter;
 
 public class LogisticsCommon implements IGuiHandler {
 
@@ -35,6 +36,7 @@ public class LogisticsCommon implements IGuiHandler {
 		Logistics.network.registerMessage(PacketConnectedDisplayScreen.Handler.class, PacketConnectedDisplayScreen.class, 7, Side.CLIENT);
 		Logistics.network.registerMessage(PacketClickEventServer.Handler.class, PacketClickEventServer.class, 8, Side.SERVER);
 		Logistics.network.registerMessage(PacketClickEventClient.Handler.class, PacketClickEventClient.class, 9, Side.CLIENT);
+		Logistics.network.registerMessage(PacketNodeFilter.Handler.class, PacketNodeFilter.class, 10, Side.SERVER);
 		/* Logistics.network.registerMessage(PacketProviders.Handler.class, PacketProviders.class, 0, Side.CLIENT); // Logistics.network.registerMessage(PacketInfoBlock.Handler.class, PacketInfoBlock.class, 1, Side.SERVER); Logistics.network.registerMessage(PacketDataEmitters.Handler.class, PacketDataEmitters.class, 2, Side.CLIENT); Logistics.network.registerMessage(PacketCoordsSelection.Handler.class, PacketCoordsSelection.class, 3, Side.SERVER); // Logistics.network.registerMessage(PacketFluidReader.Handler.class, PacketFluidReader.class, 5, Side.SERVER); Logistics.network.registerMessage(PacketRouterGui.Handler.class, PacketRouterGui.class, 6, Side.SERVER); Logistics.network.registerMessage(PacketGuiChange.Handler.class, PacketGuiChange.class, 7, Side.SERVER); Logistics.network.registerMessage(ItemHandler.class, PacketScreenInteraction.PacketItemStack.class, 8, Side.SERVER); Logistics.network.registerMessage(FluidHandler.class, PacketScreenInteraction.PacketFluidStack.class, 9, Side.SERVER); */
 	}
 

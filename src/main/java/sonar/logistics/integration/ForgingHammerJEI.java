@@ -16,6 +16,7 @@ import sonar.core.integration.jei.JEIRecipeV2;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.core.recipes.RecipeHelperV2;
 import sonar.core.recipes.RecipeObjectType;
+import sonar.logistics.Logistics;
 
 public class ForgingHammerJEI extends JEICategoryV2 {
 
@@ -24,7 +25,7 @@ public class ForgingHammerJEI extends JEICategoryV2 {
 
 	public ForgingHammerJEI(IGuiHelper guiHelper, IJEIHandler handler) {
 		super(handler);
-		ResourceLocation location = new ResourceLocation("practicallogistics", "textures/gui/" + handler.getTextureName() + ".png");
+		ResourceLocation location = new ResourceLocation(Logistics.MODID, "textures/gui/" + handler.getTextureName() + ".png");
 		background = guiHelper.createDrawable(location, 48, 19, 80, 27);
 		IDrawableStatic arrowDrawable = guiHelper.createDrawable(location, 177, 0, 22, 15);
 		this.arrow = guiHelper.createAnimatedDrawable(arrowDrawable, 100, IDrawableAnimated.StartDirection.LEFT, false);

@@ -21,6 +21,7 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.handlers.inventories.IInventoryHandler;
+import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.network.PacketInvUpdate;
 import sonar.core.utils.Pair;
@@ -45,7 +46,7 @@ public class ItemHelper extends ItemWrapper {
 
 	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, NodeConnection entry) {
 		TileEntity tile = entry.coords.getTileEntity();
-		if (tile == null) {
+		if (tile == null) {			
 			return storage;
 		}
 		boolean specialProvider = false;

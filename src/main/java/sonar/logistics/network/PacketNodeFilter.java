@@ -1,0 +1,146 @@
+package sonar.logistics.network;
+
+import java.util.Collections;
+import java.util.UUID;
+
+import io.netty.buffer.ByteBuf;
+import mcmultipart.multipart.IMultipart;
+import mcmultipart.multipart.IMultipartContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import sonar.core.SonarCore;
+import sonar.core.api.SonarAPI;
+import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.api.utils.ActionType;
+import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.network.PacketMultipart;
+import sonar.core.network.PacketMultipartHandler;
+import sonar.core.network.PacketStackUpdate;
+import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.filters.FilterPacket;
+import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.filters.INodeFilter;
+import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.helpers.InfoHelper;
+
+/** called when the player clicks an item in the inventory reader */
+public class PacketNodeFilter extends PacketMultipart {
+
+	public INodeFilter filter;
+	public FilterPacket packetType;
+
+	public PacketNodeFilter() {
+	}
+
+	public PacketNodeFilter(UUID partUUID, BlockPos pos, FilterPacket packetType) {
+		super(partUUID, pos);
+		this.packetType = packetType;
+	}
+
+	public PacketNodeFilter(UUID partUUID, BlockPos pos, FilterPacket packetType, INodeFilter filter) {
+		super(partUUID, pos);
+		this.filter = filter;
+		this.packetType = packetType;
+	}
+
+	@Override
+	public void fromBytes(ByteBuf buf) {
+		super.fromBytes(buf);
+		if (buf.readBoolean()) {
+			filter = InfoHelper.readFilterFromNBT(ByteBufUtils.readTag(buf));
+		}
+		packetType = FilterPacket.values()[buf.readInt()];
+	}
+
+	@Override
+	public void toBytes(ByteBuf buf) {
+		super.toBytes(buf);
+		buf.writeBoolean(filter != null);
+		if (filter != null){
+			ByteBufUtils.writeTag(buf, InfoHelper.writeFilterToNBT(new NBTTagCompound(), filter, SyncType.SAVE));
+		}
+		buf.writeInt(packetType.ordinal());
+	}
+
+	public static class Handler extends PacketMultipartHandler<PacketNodeFilter> {
+		@Override
+		public IMessage processMessage(PacketNodeFilter message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
+			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+
+				@Override
+				public void run() {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (player == null || player.getEntityWorld().isRemote || !(part instanceof IFilteredTile)) {
+						return;
+					}
+					IFilteredTile tile = (IFilteredTile) part;
+					SyncFilterList filters = tile.getFilters();
+					switch (message.packetType) {
+					case ADD:
+						for (INodeFilter filter : filters.getObjects()) {
+							if (filter.equals(message.filter)) {
+								filter.readData(message.filter.writeData(new NBTTagCompound(), SyncType.SAVE), SyncType.SAVE);
+								filters.markDirty();
+								return;
+							}
+						}
+						filters.addObject(message.filter);
+						break;
+					case MOVE_DOWN:
+
+						int listPos = -1;
+						for (int i = 0; i < filters.objs.size(); i++) {
+							INodeFilter filter = filters.getObjects().get(i);
+							if (filter.equals(message.filter)) {
+								listPos = i;
+							}
+						}
+						if (listPos + 1 > 0) {
+							if (listPos + 1 < filters.objs.size()) {
+								Collections.swap(filters.objs, listPos, listPos + 1);
+								filters.markDirty();
+							}
+						}
+						break;
+					case MOVE_UP:
+						listPos = -1;
+						for (int i = 0; i < filters.objs.size(); i++) {
+							INodeFilter filter = filters.getObjects().get(i);
+							if (filter.equals(message.filter)) {
+								listPos = i;
+							}
+						}
+						if (listPos - 1 >= 0) {
+							if (listPos - 1 < filters.objs.size()) {
+								Collections.swap(filters.objs, listPos, listPos - 1);
+								filters.markDirty();
+							}
+						}
+						break;
+					case REMOVE:
+						filters.removeObject(message.filter);
+						break;
+					case CLEAR:
+						filters.objs.clear();
+						filters.markDirty();
+						break;
+					default:
+						break;
+
+					}
+				}
+
+			});
+
+			return null;
+		}
+	}
+}

@@ -17,10 +17,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.SonarCore;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.common.containers.ContainerInventoryReader;
@@ -34,7 +36,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	// public static final ResourceLocation stackBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_stack.png");
 	// public static final ResourceLocation clearBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_clear.png");
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation("PracticalLogistics:textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(Logistics.MODID + ":textures/gui/sorting_icons.png");
 
 	private InventoryReaderPart part;
 	private GuiTextField slotField;
@@ -56,6 +58,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		this.buttonList.add(new GuiButton(-1, guiLeft + 120 - (18 * 6), guiTop + 7, 65 + 3, 20, getSettingsString()));
 		this.buttonList.add(new FilterButton(0, guiLeft + 193, guiTop + 9));
 		this.buttonList.add(new FilterButton(1, guiLeft + 193 + 18, guiTop + 9));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 193 + 18*2, guiTop + 9, 32, 96 + 16, "Channels"));
 		switch (getSetting()) {
 		case SLOT:
 		case POS:
@@ -90,6 +93,9 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			if (button.id == 1) {
 				part.sortingType.incrementEnum();
 				part.sendByteBufPacket(6);
+			}
+			if (button.id == 2) {
+				FlexibleGuiHandler.changeGui(part, 1, player.getEntityWorld(), player);
 			}
 		}
 	}
@@ -212,6 +218,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	@Override
 	public void renderSelection(MonitoredItemStack selection, int x, int y) {
+
+		RenderHelper.saveBlendState();
 		StoredItemStack storedStack = selection.itemStack.getObject();
 		if (storedStack == null) {
 			return;
@@ -219,8 +227,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		ItemStack stack = storedStack.item;
 		GlStateManager.disableDepth();
 		RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
-		// this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, stack, 13 + (x * 18), 32 + (y * 18), "" + storedStack.stored);
 		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
+		RenderHelper.restoreBlendState();
 	}
 
 	@Override
@@ -253,8 +261,6 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		// RenderHelper.restoreBlendState();
 	}
 
-	/* @Override public ResourceLocation getBackground() { if (getSetting() == Modes.STACK) { return stackBGround; } return clearBGround; } */
-	@SideOnly(Side.CLIENT)
 	public class FilterButton extends AnimatedButton {
 		public int id;
 
@@ -277,7 +283,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		}
 
 		@Override
-		public void onClicked() {}
+		public void onClicked() {
+		}
 
 		@Override
 		public int getTextureX() {

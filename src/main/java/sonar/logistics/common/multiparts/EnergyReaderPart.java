@@ -1,5 +1,8 @@
 package sonar.logistics.common.multiparts;
 
+import java.util.ArrayList;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,6 +17,7 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.connections.monitoring.EnergyMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
@@ -56,7 +60,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredEnergyStack> updateInfo, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredEnergyStack> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
 		/*
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {

@@ -94,8 +94,6 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		}
 		if (hit.sideHit != face) {
 			if (isServer()) {
-				Logistics.getServerManager().sendLocalMonitorsToClient(this, player);
-				SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 				openFlexibleGui(player, 0);
 			}
 			return true;
@@ -247,6 +245,10 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		return face;
 	}
 	
+	public EnumFacing getRotation(){
+		return rotation;
+	}
+	
 	public PartMOP getPartHit(EntityPlayer player){
         Vec3d start = RayTraceUtils.getStart(player);
         Vec3d end = RayTraceUtils.getEnd(player);
@@ -276,5 +278,15 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 
 	public UUID getIdentity() {
 		return getUUID();
+	}
+	
+	@Override
+	public void onGuiOpened(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		switch(id){
+		case 0:
+			Logistics.getServerManager().sendLocalMonitorsToClient(this, player);
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+			break;
+		}
 	}
 }

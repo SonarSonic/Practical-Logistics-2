@@ -23,4 +23,7 @@ public interface IInfoDisplay extends ILogicTile, ILogicViewable, ISyncableListe
 	/**which face the Display is facing, used for checking if LargeDisplayScreens can connect*/
 	public EnumFacing getFace();
 	
+	/**which face the Display is rotated*/
+	public EnumFacing getRotation();
+	
 }

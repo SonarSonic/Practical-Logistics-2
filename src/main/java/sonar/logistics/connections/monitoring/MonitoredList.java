@@ -59,20 +59,16 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 	}
 
 	public void addInfoToList(T newInfo, MonitoredList<T> previousList) {			
-		T lastInfo = findInfoInList(newInfo, previousList);
-		if(lastInfo == null){
-			
-		}		
 		if (newInfo instanceof IJoinableInfo) {
 			for (int i = 0; i < this.size(); i++) {
 				T storedInfo = this.get(i);
 				if (((IJoinableInfo) storedInfo).canJoinInfo(newInfo)) {
-					set(i, (T) ((IJoinableInfo) storedInfo).joinInfo(newInfo.copy()));
+					set(i, (T) ((IJoinableInfo) storedInfo).joinInfo(newInfo)); // should I copy the new info???? if stuff gets messed up copy it 
 					return;
 				}
 			}
 		}
-		add((T) newInfo.copy());
+		add(newInfo);
 	}
 
 	public MonitoredList<T> updateList(MonitoredList<T> lastList) {
@@ -106,8 +102,8 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 	 * @return a boolean for if the info was changed and the new info */
 	public Pair<Boolean, IMonitorInfo> getLatestInfo(IMonitorInfo oldInfo) {
 		for (T newInfo : this) {
-			if (newInfo.isMatchingType(oldInfo) && newInfo.isMatchingInfo(oldInfo) && !newInfo.isIdenticalInfo(oldInfo)) {
-				return new Pair(true, newInfo);
+			if (newInfo.isMatchingType(oldInfo) && newInfo.isMatchingInfo(oldInfo)) {
+				return new Pair(!newInfo.isIdenticalInfo(oldInfo), newInfo);
 			}
 		}
 		return new Pair(false, oldInfo);

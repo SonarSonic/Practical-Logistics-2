@@ -1,9 +1,16 @@
 package sonar.logistics.client.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.relauncher.Side;
+import sonar.core.SonarCore;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.FontHelper;
+import sonar.core.network.FlexibleGuiHandler;
+import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.client.LogisticsColours;
@@ -14,13 +21,17 @@ import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> {
-	IChannelledTile tile;
-	int channelID;
 
-	public GuiChannelSelection(IChannelledTile tile, int channelID) {
+	public EntityPlayer player;
+	public IChannelledTile tile;
+	public int channelID;
+
+	public GuiChannelSelection(EntityPlayer player, IChannelledTile tile, int channelID) {
 		super(new ContainerChannelSelection(tile), tile);
+		this.player = player;
 		this.tile = tile;
 		this.channelID = channelID;
+		this.xSize = 182 + 66;
 	}
 
 	@Override
@@ -75,4 +86,11 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 		return false;
 	}
 
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && tile instanceof IFlexibleGui && SonarCore.instance.guiHandler.lastContainer != null) {
+			SonarCore.network.sendToServer(new PacketFlexibleCloseGui(tile.getCoords().getBlockPos()));
+		} else {
+			super.keyTyped(typedChar, keyCode);
+		}
+	}
 }

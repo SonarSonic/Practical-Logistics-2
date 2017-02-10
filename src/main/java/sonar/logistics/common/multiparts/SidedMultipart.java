@@ -20,31 +20,39 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.network.sync.SyncEnum;
 import sonar.core.utils.Pair;
 
 public abstract class SidedMultipart extends LogisticsMultipart implements ISlottedPart {
 	public double width, heightMin, heightMax;
-	public EnumFacing face;
-
+	
+	public SyncEnum<EnumFacing> face = new SyncEnum(EnumFacing.values(), -1);
+	{
+		syncList.addPart(face);
+	}
 	public SidedMultipart(double width, double heightMin, double heightMax) {
 		super();
 		this.width = width;
 		this.heightMin = heightMin;
 		this.heightMax = heightMax;
 		if (face == null)
-			this.face = EnumFacing.DOWN;
+			this.face.setObject(EnumFacing.DOWN);
 	}
 
 	public SidedMultipart(EnumFacing face, double width, double heightMin, double heightMax) {
 		this(width, heightMin, heightMax);
-		this.face = face;
+		this.face.setObject(face);
+	}
+	
+	public EnumFacing getFacing(){
+		return face.getObject();
 	}
 
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
 		double p = 0.0625;
 		double w = (1 - width) / 2;
 		// double h = (1 - width) / 2;
-		switch (face) {
+		switch (face.getObject()) {
 		case DOWN:
 			list.add(new AxisAlignedBB(w, heightMin, w, 1 - w, heightMax, 1 - w));
 			break;
@@ -82,12 +90,12 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 
 	@Override
 	public EnumSet<PartSlot> getSlotMask() {
-		return EnumSet.of(PartSlot.getFaceSlot(face));
+		return EnumSet.of(PartSlot.getFaceSlot(face.getObject()));
 	}
 
 	@Override
 	public boolean rotatePart(EnumFacing axis) {
-		Pair<Boolean, EnumFacing> rotate = rotatePart(face, axis);
+		Pair<Boolean, EnumFacing> rotate = rotatePart(face.getObject(), axis);
 		if (rotate.a) {
 			if (getContainer().getPartInSlot(PartSlot.getFaceSlot(rotate.b)) != null) {
 				return false;
@@ -97,7 +105,7 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 				BlockPos pos = getPos();
 				World world = getWorld();
 				getContainer().removePart(this);
-				face = rotate.b;	
+				face.setObject(rotate.b);
 				firstTick=false;
 				MultipartHelper.addPart(world, pos, this, uuid);
 				//getWorld().notifyNeighborsOfStateChange(pos, getWorld().getBlockState(pos).getBlock());
@@ -115,33 +123,33 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
 		super.writeData(tag, type);
-		tag.setByte("face", (byte) face.ordinal());
+		//tag.setByte("face", (byte) face.ordinal());
 		return tag;
 	}
 
 	@Override
 	public void readData(NBTTagCompound tag, SyncType type) {
 		super.readData(tag, type);
-		face = EnumFacing.VALUES[tag.getByte("face")];
+		//face = EnumFacing.VALUES[tag.getByte("face")];
 	}
 
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
 		super.writeUpdatePacket(buf);
-		buf.writeByte((byte) face.ordinal());
+		face.writeToBuf(buf);
 	}
 
 	@Override
 	public void readUpdatePacket(PacketBuffer buf) {
 		super.readUpdatePacket(buf);
-		face = EnumFacing.VALUES[buf.readByte()];
+		face.readFromBuf(buf);
 	}
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
 		World w = getContainer().getWorldIn();
 		BlockPos pos = getContainer().getPosIn();
-		return state.withProperty(ORIENTATION, face);
+		return state.withProperty(ORIENTATION, face.getObject());
 	}
 
 	public BlockStateContainer createBlockState() {
@@ -150,6 +158,6 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 
 	@Override
 	public ConnectionType canConnect(EnumFacing dir) {
-		return dir != face ? ConnectionType.NETWORK : ConnectionType.NONE;
+		return dir != face.getObject() ? ConnectionType.NETWORK : ConnectionType.NONE;
 	}
 }

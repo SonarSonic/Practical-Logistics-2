@@ -12,6 +12,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -138,4 +139,5 @@ public class DisplayScreenPart extends ScreenMultipart {
 	public ScreenLayout getLayout() {
 		return layout.getObject();
 	}
+
 }

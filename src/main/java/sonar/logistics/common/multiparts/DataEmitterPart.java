@@ -96,7 +96,6 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
 		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
 			if (!getWorld().isRemote) {
-				SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 				openFlexibleGui(player, 0);
 			}
 			return true;
@@ -183,5 +182,14 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new GuiDataEmitter(this) : null;
+	}
+
+	@Override
+	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		switch(id){
+		case 0:
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+			break;
+		}		
 	}
 }

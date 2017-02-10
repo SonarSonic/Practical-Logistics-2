@@ -72,19 +72,19 @@ public class LogisticsItems extends Logistics {
 		partReceiver = register(new SonarRegistryItem(new ItemWirelessMultipart(DataReceiverPart.class), "DataReceiver"));
 		partRedstoneSignaller = register(new SonarRegistryItem(new ItemSidedMultipart(RedstoneSignallerPart.class), "RedstoneSignaller"));
 
-		MultipartRegistry.registerPart(DataCablePart.class, "practicallogistics:DataCable");
-		MultipartRegistry.registerPart(NodePart.class, "practicallogistics:Node");
-		MultipartRegistry.registerPart(TransferNodePart.class, "practicallogistics:TransferNode");
-		MultipartRegistry.registerPart(ArrayPart.class, "practicallogistics:Array");
-		MultipartRegistry.registerPart(InventoryReaderPart.class, "practicallogistics:InventoryReader");
-		MultipartRegistry.registerPart(FluidReaderPart.class, "practicallogistics:FluidReader");
-		MultipartRegistry.registerPart(InfoReaderPart.class, "practicallogistics:InfoReader");
-		MultipartRegistry.registerPart(DataEmitterPart.class, "practicallogistics:DataEmitter");
-		MultipartRegistry.registerPart(DataReceiverPart.class, "practicallogistics:DataReceiver");
-		MultipartRegistry.registerPart(DisplayScreenPart.class, "practicallogistics:DisplayScreen");
-		MultipartRegistry.registerPart(LargeDisplayScreenPart.class, "practicallogistics:LargeDisplayScreen");
-		MultipartRegistry.registerPart(EnergyReaderPart.class, "practicallogistics:EnergyReader");
-		MultipartRegistry.registerPart(RedstoneSignallerPart.class, "practicallogistics:RedstoneSignaller");
+		MultipartRegistry.registerPart(DataCablePart.class, Logistics.MODID + ":DataCable");
+		MultipartRegistry.registerPart(NodePart.class, Logistics.MODID + ":Node");
+		MultipartRegistry.registerPart(TransferNodePart.class, Logistics.MODID + ":TransferNode");
+		MultipartRegistry.registerPart(ArrayPart.class, Logistics.MODID + ":Array");
+		MultipartRegistry.registerPart(InventoryReaderPart.class, Logistics.MODID + ":InventoryReader");
+		MultipartRegistry.registerPart(FluidReaderPart.class, Logistics.MODID + ":FluidReader");
+		MultipartRegistry.registerPart(InfoReaderPart.class, Logistics.MODID + ":InfoReader");
+		MultipartRegistry.registerPart(DataEmitterPart.class, Logistics.MODID + ":DataEmitter");
+		MultipartRegistry.registerPart(DataReceiverPart.class, Logistics.MODID + ":DataReceiver");
+		MultipartRegistry.registerPart(DisplayScreenPart.class, Logistics.MODID + ":DisplayScreen");
+		MultipartRegistry.registerPart(LargeDisplayScreenPart.class, Logistics.MODID + ":LargeDisplayScreen");
+		MultipartRegistry.registerPart(EnergyReaderPart.class, Logistics.MODID + ":EnergyReader");
+		MultipartRegistry.registerPart(RedstoneSignallerPart.class, Logistics.MODID + ":RedstoneSignaller");
 
 		SonarCore.registerItems(registeredItems);
 	}

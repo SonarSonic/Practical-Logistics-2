@@ -8,6 +8,7 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.core.utils.Pair;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -20,19 +21,21 @@ import sonar.logistics.connections.monitoring.InfoMonitorHandler;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.info.LogicInfoRegistry.LogicPath;
 import sonar.logistics.info.LogicInfoRegistry.RegistryType;
 
 /** default info type, created by the LogicRegistry */
 @LogicInfoType(id = LogicInfo.id, modid = Logistics.MODID)
-public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<LogicInfo>,  ISuffixable, IComparableInfo<LogicInfo> {
+public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<LogicInfo>, ISuffixable, IComparableInfo<LogicInfo> {
 
 	public static final String id = "logic";
 	public static final LogicMonitorHandler<LogicInfo> handler = LogicMonitorHandler.instance(InfoMonitorHandler.id);
 	private String suffix, prefix;
-	private SyncTagType.STRING identifier = new SyncTagType.STRING(1);
-	private SyncEnum<RegistryType> registryType = new SyncEnum(RegistryType.values(), 2);
-	private SyncUnidentifiedObject obj = new SyncUnidentifiedObject(3);
-	private SyncTagType.BOOLEAN isCategory = new SyncTagType.BOOLEAN(4);
+	public SyncTagType.STRING identifier = new SyncTagType.STRING(1);
+	public SyncEnum<RegistryType> registryType = new SyncEnum(RegistryType.values(), 2);
+	public SyncUnidentifiedObject obj = new SyncUnidentifiedObject(3);
+	public SyncTagType.BOOLEAN isCategory = new SyncTagType.BOOLEAN(4);
+	public LogicPath path;
 
 	{
 		syncParts.addParts(identifier, registryType, obj, isCategory);
@@ -49,7 +52,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 		return info;
 	}
 
-	public static LogicInfo buildDirectInfo(String identifier, RegistryType type, Object obj) {
+	public static LogicInfo buildDirectInfo(String identifier, RegistryType type, Object obj, LogicPath path) {
 		LogicInfo info = new LogicInfo();
 		info.obj.set(obj, ObjectType.getInfoType(obj));
 		info.registryType.setObject(type);
@@ -58,6 +61,8 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 			Logistics.logger.error(String.format("Invalid Info: %s with object %s", identifier, obj));
 			return null;
 		}
+		if (path != null)
+			info.path = path.dupe();
 		return info;
 	}
 
@@ -68,7 +73,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 
 	@Override
 	public boolean isIdenticalInfo(LogicInfo info) {
-		return isMatchingInfo(info) && obj.get().equals(info.obj.get());
+		return obj.get().equals(info.obj.get());
 	}
 
 	@Override
@@ -147,7 +152,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 
 	@Override
 	public LogicInfo copy() {
-		return buildDirectInfo(identifier.getObject(), registryType.getObject(), obj.get());
+		return buildDirectInfo(identifier.getObject(), registryType.getObject(), obj.get(), path);
 	}
 
 	@Override

@@ -6,8 +6,10 @@ import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -39,13 +41,22 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
 		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
 			if (!getWorld().isRemote) {
-				SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-				viewers.addViewer(player, ViewerType.FULL_INFO);
 				openFlexibleGui(player, 0);
 			}
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		super.onGuiOpened(obj, id, world, player, tag);
+		switch (id) {
+		case 0:
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+			viewers.addViewer(player, ViewerType.FULL_INFO);
+			break;			
+		}
 	}
 
 	@Override
@@ -55,7 +66,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 
 	@Override
 	public ConnectionType canConnect(EnumFacing dir) {
-		return dir != face ? ConnectionType.NETWORK : ConnectionType.VISUAL;
+		return dir != getFacing() ? ConnectionType.NETWORK : ConnectionType.VISUAL;
 	}
 
 	@Override

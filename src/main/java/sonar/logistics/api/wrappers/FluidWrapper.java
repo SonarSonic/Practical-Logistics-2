@@ -13,7 +13,6 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to add to
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't added), can be null */
-	@Deprecated
 	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action) {
 		return add;
 	}
@@ -23,7 +22,6 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to remove from
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't removed), can be null */
-	@Deprecated
 	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action) {
 		return remove;
 	}
@@ -34,7 +32,6 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to fill from
 	 * @param action should this action be simulated
 	 * @return the new ItemStack */
-	@Deprecated
 	public ItemStack fillFluidItemStack(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
 		return container;
 	}
@@ -44,8 +41,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to drain into
 	 * @param action should this action be simulated
 	 * @return the new ItemStack */
-	@Deprecated
-	public ItemStack drainFluidItemStack(ItemStack container, INetworkCache network, ActionType action) {
+	public ItemStack drainFluidItemStack(ItemStack container, int toDrain, INetworkCache network, ActionType action) {
 		return container;
 	}
 
@@ -53,14 +49,12 @@ public class FluidWrapper {
 	 * @param player the player interacting
 	 * @param cache the network to fill from
 	 * @param toFill the {@link StoredFluidStack} to fill with */
-	@Deprecated
 	public void fillHeldItem(EntityPlayer player, INetworkCache cache, StoredFluidStack toFill) {
 	}
 
 	/** drains the players current item into the network
 	 * @param player the player interacting
 	 * @param cache the network to drain into */
-	@Deprecated
-	public void drainHeldItem(EntityPlayer player, INetworkCache cache) {
+	public void drainHeldItem(EntityPlayer player, INetworkCache cache, int toDrain) {
 	}
 }

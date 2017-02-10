@@ -49,7 +49,7 @@ public class InfoRenderer {
 		//GlStateManager.translate(0, height/2 - scale/1, 0);
 		for (int i = 0; i < toDisplay.size(); i++) {
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(0, (-1 + height / 2 + 0.23) + (i == centre ? 0 : i < centre ? yCentre - offset * -(i - centre) : yCentre + offset * (i - centre)), 0);
+			GlStateManager.translate(0, (-1 + height / 2 + 0.26) + (i == centre ? 0 : i < centre ? yCentre - offset * -(i - centre) : yCentre + offset * (i - centre)), 0);
 			GlStateManager.scale(scale, scale, 1.0f);
 			String string = toDisplay.get(i);
 			int length = RenderHelper.fontRenderer.getStringWidth(string);

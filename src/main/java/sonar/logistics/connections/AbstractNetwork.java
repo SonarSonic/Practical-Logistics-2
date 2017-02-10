@@ -17,6 +17,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.cabling.ChannelType;
+import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.IInfoDisplay;
@@ -55,9 +56,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 	}
 
 	public void removeDisplay(IInfoDisplay display) {
-		if (connectedDisplays.containsKey(display)) {
-			connectedDisplays.remove(display);
-		}
+		connectedDisplays.remove(display);
 	}
 
 	public <T extends IMonitorInfo> void addMonitor(ILogicMonitor<T> monitor) {
@@ -73,7 +72,8 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 		compileConnectionList(monitor.getHandler());
 	}
 
-	public <T extends IMonitorInfo> MonitoredList<T> updateMonitoredList(ILogicMonitor<T> monitor, int infoID, Map<NodeConnection, MonitoredList<?>> connections, Map<Entity, MonitoredList<?>> entityConnections) {
+
+	public <T extends IMonitorInfo> MonitoredList<T> updateMonitoredList(ILogicMonitor<T> monitor, int infoID, Map<NodeConnection, MonitoredList<?>> connections, Map<Entity, MonitoredList<?>> entityConnections, ArrayList<NodeConnection> nodeConnections, ArrayList<Entity> entities) {
 		MonitoredList<T> updateList = MonitoredList.<T>newMonitoredList(getNetworkID());
 		IdentifiedCoordsList channels = monitor.getChannels(infoID); // TODO
 		for (Entry<NodeConnection, MonitoredList<?>> entry : connections.entrySet()) {
@@ -82,17 +82,19 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 					updateList.addInfoToList(coordInfo, (MonitoredList<T>) entry.getValue());
 				}
 				updateList.sizing.add(entry.getValue().sizing);
+				nodeConnections.add(entry.getKey());
 				if (monitor.channelType() == ChannelType.SINGLE) {
 					break;
 				}
 			}
 		}
 		for (Entry<Entity, MonitoredList<?>> entry : entityConnections.entrySet()) {
-			if ((entry.getValue() != null && !entry.getValue().isEmpty())){ //&& (channels.isEmpty() || channels.contains(entry.getKey().a))) { TODO
+			if ((entry.getValue() != null && !entry.getValue().isEmpty())) { // && (channels.isEmpty() || channels.contains(entry.getKey().a))) { TODO
 				for (T coordInfo : (MonitoredList<T>) entry.getValue()) {
 					updateList.addInfoToList(coordInfo, (MonitoredList<T>) entry.getValue());
 				}
 				updateList.sizing.add(entry.getValue().sizing);
+				entities.add(entry.getKey());
 				if (monitor.channelType() == ChannelType.SINGLE) {
 					break;
 				}
@@ -163,10 +165,27 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 			Map<NodeConnection, MonitoredList<?>> infoList = tileConnectionInfo.getOrDefault(type, new LinkedHashMap());
 			for (Entry<NodeConnection, MonitoredList<?>> entry : infoList.entrySet()) {
 				MonitoredList<T> oldList = entry.getValue() == null ? MonitoredList.<T>newMonitoredList(getNetworkID()) : (MonitoredList<T>) entry.getValue();
-				MonitoredList<T> list = ((ITileMonitorHandler) type).updateInfo(this, oldList, null);
+				MonitoredList<T> list = ((ITileMonitorHandler) type).updateInfo(this, oldList, entry.getKey());
 				coordInfo.put(entry.getKey(), list);
 			}
-		}		
+		}
+		return coordInfo;
+	}
+
+	public <T extends IMonitorInfo> Map<NodeConnection, MonitoredList<?>> getTileMonitoredList(LogicMonitorHandler<T> type, ArrayList<BlockCoords> coords) {
+		Map<NodeConnection, MonitoredList<?>> coordInfo = new LinkedHashMap();
+		if (type instanceof ITileMonitorHandler) {
+			Map<NodeConnection, MonitoredList<?>> infoList = tileConnectionInfo.getOrDefault(type, new LinkedHashMap());
+			for (Entry<NodeConnection, MonitoredList<?>> entry : infoList.entrySet()) {
+				MonitoredList<T> oldList = entry.getValue() == null ? MonitoredList.<T>newMonitoredList(getNetworkID()) : (MonitoredList<T>) entry.getValue();
+				if (coords.contains(entry.getKey().coords)) {
+					MonitoredList<T> list = ((ITileMonitorHandler) type).updateInfo(this, oldList, entry.getKey());
+					coordInfo.put(entry.getKey(), list);
+				} else {
+					coordInfo.put(entry.getKey(), oldList);
+				}
+			}
+		}
 		return coordInfo;
 	}
 
@@ -179,7 +198,24 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 				MonitoredList<T> list = ((IEntityMonitorHandler) type).updateInfo(this, oldList, entry.getKey());
 				coordInfo.put(entry.getKey(), list);
 			}
-		}		
+		}
+		return coordInfo;
+	}
+
+	public <T extends IMonitorInfo> Map<Entity, MonitoredList<?>> getEntityMonitoredList(LogicMonitorHandler<T> type, ArrayList<Entity> coords) {
+		Map<Entity, MonitoredList<?>> coordInfo = new LinkedHashMap();
+		if (type instanceof IEntityMonitorHandler) {
+			Map<Entity, MonitoredList<?>> infoList = entityConnectionInfo.getOrDefault(type, new LinkedHashMap());
+			for (Entry<Entity, MonitoredList<?>> entry : infoList.entrySet()) {
+				MonitoredList<T> oldList = entry.getValue() == null ? MonitoredList.<T>newMonitoredList(getNetworkID()) : (MonitoredList<T>) entry.getValue();
+				if (coords.contains(entry.getKey())) {
+					MonitoredList<T> list = ((IEntityMonitorHandler) type).updateInfo(this, oldList, entry.getKey());
+					coordInfo.put(entry.getKey(), list);
+				} else {
+					coordInfo.put(entry.getKey(), oldList);
+				}
+			}
+		}
 		return coordInfo;
 	}
 

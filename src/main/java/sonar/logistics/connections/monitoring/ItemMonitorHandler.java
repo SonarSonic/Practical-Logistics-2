@@ -11,6 +11,7 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;

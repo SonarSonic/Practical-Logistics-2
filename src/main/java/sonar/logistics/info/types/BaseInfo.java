@@ -38,7 +38,7 @@ public abstract class BaseInfo<T extends IMonitorInfo> implements IMonitorInfo<T
 	public boolean equals(Object object) {
 		if (object != null && object instanceof IMonitorInfo) {
 			IMonitorInfo info = (IMonitorInfo) object;
-			return (info.isHeader() && isHeader()) || (this.isMatchingType(info) && isIdenticalInfo((T) info));
+			return (info.isHeader() && isHeader()) || (this.isMatchingType(info) && isMatchingInfo((T)info) && isIdenticalInfo((T) info));
 		}
 		return false;
 	}

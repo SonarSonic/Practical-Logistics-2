@@ -7,13 +7,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.common.collect.Lists;
 
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
+import sonar.logistics.LogisticsConfig;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.IRefreshCache;
@@ -31,8 +34,7 @@ public class NetworkManager {
 	public Map<Integer, INetworkCache> cache = new ConcurrentHashMap<Integer, INetworkCache>();
 	public Map<Integer, MonitoredList<MonitoredBlockCoords>> coordMap = new ConcurrentHashMap<Integer, MonitoredList<MonitoredBlockCoords>>();
 	public ChannelMonitorHandler handler = new ChannelMonitorHandler();
-	
-	
+
 	public void removeAll() {
 		cache.clear();
 	}
@@ -55,8 +57,9 @@ public class NetworkManager {
 		for (final Iterator<Entry<Integer, INetworkCache>> iterator = entrySet.iterator(); iterator.hasNext();) {
 			Entry<Integer, INetworkCache> entry = iterator.next();
 			INetworkCache entryValueCache = entry.getValue();
-			if (entryValueCache instanceof IRefreshCache)
+			if (entryValueCache instanceof IRefreshCache) {
 				((IRefreshCache) entryValueCache).updateNetwork(entryValueCache.getNetworkID());
+			}
 
 			if (Logistics.instance.cableManager.getConnections(entryValueCache.getNetworkID()).size() == 0) {
 				iterator.remove();
@@ -72,9 +75,12 @@ public class NetworkManager {
 	public INetworkCache getOrCreateNetwork(int networkID) {
 		INetworkCache networkCache = cache.get(networkID);
 		if (networkCache == null || networkCache.isFakeNetwork()) {
-			cache.put(networkID, new DefaultNetwork(networkID));
+			DefaultNetwork network = new DefaultNetwork(networkID);
+			network.updateTicks = ThreadLocalRandom.current().nextInt(0, LogisticsConfig.updateRate + 1); // to prevents every network ticking at the same time
+			cache.put(networkID, network);
 			networkCache = cache.get(networkID);
 			networkCache.markDirty(RefreshType.FULL);
+
 		}
 		return networkCache;
 	}
@@ -114,6 +120,7 @@ public class NetworkManager {
 			cache.put(newID, network);
 		}
 	}
+
 	public Map<Integer, INetworkCache> getNetworkCache() {
 		return cache;
 	}

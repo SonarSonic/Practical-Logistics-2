@@ -5,12 +5,20 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.SyncMonitoredType;
@@ -48,7 +56,8 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<T> updateInfo, int channelID) {
+	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
+
 		ArrayList<IMonitorInfo> cachedSelected = this.getSelectedInfo();
 		ArrayList<IMonitorInfo> cachedPaired = this.getPairedInfo();
 		for (int i = 0; i < this.getMaxInfo(); i++) {
@@ -57,24 +66,29 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 			IMonitorInfo lastInfo = Logistics.getServerManager().info.get(id);
 			if (selectedInfo != null) {
 				IMonitorInfo latestInfo = selectedInfo;
-				Pair<Boolean, IMonitorInfo> newInfo = updateInfo.getLatestInfo(selectedInfo);
+				Pair<Boolean, IMonitorInfo> newInfo = LogicInfoRegistry.getLatestInfo(updateInfo, connections, latestInfo);
+				if(newInfo.b!=null){
+					this.selected.get(i).info = newInfo.b;
+				}
 				boolean isPair = false;
 				if (cachedPaired != null) {
 					IMonitorInfo paired = cachedPaired.get(i);
 					if (paired != null) {
-						Pair<Boolean, IMonitorInfo> newPaired = updateInfo.getLatestInfo(paired);
-						if (newInfo.b instanceof LogicInfo && newPaired.b instanceof LogicInfo) {
+						Pair<Boolean, IMonitorInfo> newPaired = LogicInfoRegistry.getLatestInfo(updateInfo, connections, paired);
+						if(newPaired.b!=null){
+							this.paired.get(i).info = newPaired.b;
+						}
+						if (newPaired != null && newInfo.b instanceof LogicInfo && newPaired.b instanceof LogicInfo) {
 							latestInfo = new ProgressInfo((LogicInfo) newInfo.b, (LogicInfo) newPaired.b);
 							isPair = true;
 						}
 					}
 				}
-				if (!newInfo.a && lastInfo != null && lastInfo.isMatchingType(newInfo.b) && !lastInfo.isIdenticalInfo(newInfo.b)) {
+				if (!newInfo.a && lastInfo != null && lastInfo.isMatchingType(newInfo.b) && lastInfo.isMatchingInfo(newInfo.b) && !lastInfo.isIdenticalInfo(newInfo.b)) {
 					continue;
 				} else if (!isPair) {
 					latestInfo = newInfo.b; // FIXME: why was this commented out then?
 				}
-
 				Logistics.getServerManager().changeInfo(id, latestInfo);
 			} else if (lastInfo != null) {
 				// set to empty info type

@@ -10,6 +10,7 @@ import mcmultipart.multipart.PartSlot;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
@@ -22,13 +23,116 @@ import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.cabling.INetworkConnectable;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.DataCablePart;
 
 public class CableHelper extends CablingWrapper {
+
+	public static double[] getPos(IInfoDisplay display, RenderInfoProperties renderInfo) {
+		if (display instanceof ConnectedDisplayScreen) {
+			ConnectedDisplayScreen connected = (ConnectedDisplayScreen) display;
+			if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) {
+				BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos();
+				double[] translation = renderInfo.getTranslation();
+				switch (display.getFace()) {
+				case DOWN:
+					break;
+				case EAST:
+					break;
+				case NORTH:
+					return new double[] { leftPos.getX() - translation[0], leftPos.getY() - translation[1], leftPos.getZ() };
+				case SOUTH:
+					break;
+				case UP:
+					break;
+				case WEST:
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() };
+	}
+
+	public static int getSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
+		double[] pos = CableHelper.getPos(display, renderInfo);
+
+		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
+		int minH = 0;
+		int maxY = (int) Math.ceil(renderInfo.getScaling()[1]);
+		int minY = 0;
+		int hSlots = (Math.round(maxH - minH) * xSize);
+		int yPos = (int) ((1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
+
+		switch (display.getFace()) {
+		case DOWN:
+			switch (display.getRotation()) {
+			case EAST:
+				hPos = (int) ((maxH - minH - (hitVec.zCoord - pos[2])) * xSize);
+				yPos = (int) ((maxH - minH - (hitVec.xCoord - pos[0])) * 2);
+				return ((yPos * hSlots) + hPos);
+			case NORTH:
+				hPos = (int) ((maxH - minH - (hitVec.xCoord - pos[0])) * xSize);
+				yPos = (int) ((minH + (hitVec.zCoord - pos[2])) * 2);
+				return ((yPos * hSlots) + hPos);
+			case SOUTH:
+				hPos = (int) ((minH + (hitVec.xCoord - pos[0])) * xSize);
+				yPos = (int) ((maxH - minH - (hitVec.zCoord - pos[2])) * 2);
+				return ((yPos * hSlots) + hPos);
+			case WEST:
+				hPos = (int) ((minH + (hitVec.zCoord - pos[2])) * xSize);
+				yPos = (int) ((minH + (hitVec.xCoord - pos[0])) * 2);
+				return ((yPos * hSlots) + hPos);
+			default:
+				break;
+			}
+			break;
+		case EAST:
+			hPos = (int) ((1 + minH - (hitVec.zCoord - pos[2])) * xSize);
+			return ((yPos * hSlots) + hPos);
+		case NORTH:
+			hPos = (int) ((1 - (hitVec.xCoord - pos[0])) * xSize);
+			return ((yPos * hSlots) + hPos);
+		case SOUTH:
+			hPos = (int) ((maxH - minH + (hitVec.xCoord - pos[0])) * xSize);
+			return ((yPos * hSlots) + hPos) - maxH * 2;
+		case UP:
+			switch (display.getRotation()) {
+			case EAST:
+				hPos = (int) ((maxH - minH - (hitVec.zCoord - pos[2])) * xSize);
+				yPos = (int) ((minH + (hitVec.xCoord - pos[0])) * 2);
+				return ((yPos * hSlots) + hPos);
+			case NORTH:
+				hPos = (int) ((maxH - minH - (hitVec.xCoord - pos[0])) * xSize);
+				yPos = (int) ((maxH - (hitVec.zCoord - pos[2])) * 2);
+				return ((yPos * hSlots) + hPos);
+			case SOUTH:
+				hPos = (int) ((maxH - minH + (hitVec.xCoord - pos[0])) * xSize);
+				yPos = (int) ((minH + (hitVec.zCoord - pos[2])) * 2);
+				return ((yPos * hSlots) + hPos) - maxH * 2;
+			case WEST:
+				hPos = (int) ((maxH - minH + (hitVec.zCoord - pos[2])) * xSize);
+				yPos = (int) ((minH - (hitVec.xCoord - pos[0])) * 2);
+				return ((yPos * hSlots) + hPos);
+			default:
+				break;
+			}
+
+			break;
+		case WEST:
+			hPos = (int) ((maxH - minH + (hitVec.zCoord - pos[2])) * xSize);
+			return ((yPos * hSlots) + hPos) - maxH * 2;
+		default:
+			break;
+		}
+		return -1;
+	}
 
 	public IDataCable getCableFromCoords(BlockCoords coords) {
 		if (coords.getWorld() != null) {

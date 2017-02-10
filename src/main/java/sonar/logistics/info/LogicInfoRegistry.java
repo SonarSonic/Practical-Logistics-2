@@ -25,10 +25,15 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
 import sonar.core.utils.Pair;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IInfoRegistry;
+import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.info.LogicInfoRegistry.LogicPath;
 import sonar.logistics.info.types.LogicInfo;
 
 /** where all the registering for LogicInfo happens */
@@ -241,7 +246,6 @@ public class LogicInfoRegistry {
 
 	public static ArrayList<Method> getAssignableMethods(Class<?> obj, RegistryType type) {
 		ArrayList<Method> methods = cachedMethods.get(obj);
-
 		if (methods == null) {
 			methods = new ArrayList();
 			LinkedHashMap<Class<?>, ArrayList<Method>> map = infoMethods.getOrDefault(type, new LinkedHashMap());
@@ -302,15 +306,17 @@ public class LogicInfoRegistry {
 
 	}
 
-	public static void getClassInfo(List<LogicInfo> infoList, RegistryType type, Object obj, Method method, Object... available) {
+	public static void getClassInfo(List<LogicInfo> infoList, LogicPath currentPath, RegistryType type, Object obj, Method method, Object... available) {
 		Object returned = invokeMethod(obj, method, available);
 		if (returned == null)
 			return;
 		Class<?> returnedClass = returned.getClass();
+		currentPath.addObject(method);
+
 		if (!returnedClass.isPrimitive() && !containsAssignableType(returnedClass, defaultReturnTypes) && containsAssignableType(returnedClass, registeredReturnTypes)) {
-			getAssignableMethods(returnedClass, type).forEach(returnMethod -> getClassInfo(infoList, type, returned, returnMethod, available));
+			getAssignableMethods(returnedClass, type).forEach(returnMethod -> getClassInfo(infoList, currentPath.dupe(), type, returned, returnMethod, available));
 		} else {
-			buildInfo(infoList, method.getDeclaringClass().getSimpleName(), method.getName(), type, returned);
+			buildInfo(infoList, currentPath, method.getDeclaringClass().getSimpleName(), method.getName(), type, returned);
 		}
 	}
 
@@ -319,15 +325,17 @@ public class LogicInfoRegistry {
 	 * @param obj the object to get the field from
 	 * @param field the field itself
 	 * @param available all available info about the tile, typically will include the World, BlockPos, IBlockState, EnumFacing, the Block and the tile entity */
-	public static void getFieldInfo(List<LogicInfo> infoList, RegistryType type, Object obj, Field field, Object... available) {
+	public static void getFieldInfo(List<LogicInfo> infoList, LogicPath currentPath, RegistryType type, Object obj, Field field, Object... available) {
 		Object fieldObj = getField(obj, field);
 		if (fieldObj == null)
 			return;
 		Class<?> returnedClass = fieldObj.getClass();
+		currentPath.addObject(field);
+
 		if (!returnedClass.isPrimitive() && !containsAssignableType(returnedClass, defaultReturnTypes) && containsAssignableType(returnedClass, registeredReturnTypes)) {
-			getAssignableMethods(returnedClass, type).forEach(returnMethod -> getClassInfo(infoList, type, fieldObj, returnMethod, available));
+			getAssignableMethods(returnedClass, type).forEach(returnMethod -> getClassInfo(infoList, currentPath.dupe(), type, fieldObj, returnMethod, available));
 		} else {
-			buildInfo(infoList, field.getDeclaringClass().getSimpleName(), field.getName(), type, fieldObj);
+			buildInfo(infoList, currentPath.dupe(), field.getDeclaringClass().getSimpleName(), field.getName(), type, fieldObj);
 		}
 	}
 
@@ -335,8 +343,9 @@ public class LogicInfoRegistry {
 	 * @param className the name of the class
 	 * @param fieldName the name of the method or field
 	 * @param object the object returned, this will never be null and will be of compatible type */
-	public static void buildInfo(List<LogicInfo> infoList, String className, String fieldName, RegistryType type, Object object) {
-		LogicInfo info = LogicInfo.buildDirectInfo(className + "." + fieldName, type, object);
+	public static void buildInfo(List<LogicInfo> infoList, LogicPath path, String className, String fieldName, RegistryType type, Object object) {
+		path.setRegistryType(type);
+		LogicInfo info = LogicInfo.buildDirectInfo(className + "." + fieldName, type, object, path);
 		if (info != null) {
 			infoList.add(info);
 		}
@@ -357,11 +366,13 @@ public class LogicInfoRegistry {
 	public static List<LogicInfo> getEntityInfo(final List<LogicInfo> infoList, Entity entity) {
 		Class<?> argClass;
 		if (entity != null && containsAssignableType(argClass = entity.getClass(), acceptedTypes)) {
+			LogicPath logicPath = new LogicPath();
+			logicPath.setStart(entity);
 			EnumFacing currentFace = null;
 			RegistryType type = RegistryType.getRegistryType(argClass);
-			getAssignableMethods(argClass, type).forEach(method -> getClassInfo(infoList, type, entity, method));
-			getAccessibleFields(argClass, type).forEach(field -> getFieldInfo(infoList, type, entity, field));
-			addCapabilities(infoList, entity, currentFace);
+			getAssignableMethods(argClass, type).forEach(method -> getClassInfo(infoList, logicPath.dupe(), type, entity, method));
+			getAccessibleFields(argClass, type).forEach(field -> getFieldInfo(infoList, logicPath.dupe(), type, entity, field));
+			addCapabilities(infoList, logicPath.dupe(), entity, currentFace);
 		}
 		return infoList;
 	}
@@ -371,24 +382,32 @@ public class LogicInfoRegistry {
 	 * @return all the available info */
 	public static List<LogicInfo> getTileInfo(final List<LogicInfo> infoList, EnumFacing currentFace, Object... available) {
 		for (Object arg : available) {
+
 			Class<?> argClass;
 			if (arg != null && containsAssignableType(argClass = arg.getClass(), acceptedTypes)) {
+				LogicPath currentPath = new LogicPath();
+				currentPath.setStart(arg);
 				RegistryType type = RegistryType.getRegistryType(argClass);
-				getAssignableMethods(argClass, type).forEach(method -> getClassInfo(infoList, type, arg, method, available));
-				getAccessibleFields(argClass, type).forEach(field -> getFieldInfo(infoList, type, arg, field));
+				getAssignableMethods(argClass, type).forEach(method -> getClassInfo(infoList, currentPath.dupe(), type, arg, method, available));
+				getAccessibleFields(argClass, type).forEach(field -> getFieldInfo(infoList, currentPath.dupe(), type, arg, field));
 				if (arg instanceof IInventory) {
 					Map<String, Integer> fields = invFields.get(argClass);
 					if (fields != null && !fields.isEmpty()) {
-						fields.entrySet().forEach(field -> infoList.add(LogicInfo.buildDirectInfo(argClass.getSimpleName() + "." + field.getKey(), type, ((IInventory) arg).getField(field.getValue()))));
+						fields.entrySet().forEach(field -> {
+							LogicPath invPath = currentPath.dupe();
+							invPath.addObject(new InvField(field.getKey(), field.getValue(), type));
+							invPath.setRegistryType(type);
+							infoList.add(LogicInfo.buildDirectInfo(argClass.getSimpleName() + "." + field.getKey(), type, ((IInventory) arg).getField(field.getValue()), invPath));
+						});
 					}
 				}
-				addCapabilities(infoList, arg, currentFace, available);
+				addCapabilities(infoList, currentPath.dupe(), arg, currentFace, available);
 			}
 		}
 		return infoList;
 	}
 
-	public static void addCapabilities(final List<LogicInfo> infoList, Object obj, EnumFacing currentFace, Object... available) {
+	public static void addCapabilities(final List<LogicInfo> infoList, LogicPath path, Object obj, EnumFacing currentFace, Object... available) {
 		if (obj instanceof ICapabilityProvider && !registeredCapabilities.isEmpty()) {
 			ICapabilityProvider provider = (ICapabilityProvider) obj;
 			ArrayList<Capability> capabilities = new ArrayList();
@@ -401,9 +420,163 @@ public class LogicInfoRegistry {
 				}
 			}
 			for (Capability cap : capabilities) {
-				getAssignableMethods(cap.getClass(), RegistryType.CAPABILITY).forEach(method -> getClassInfo(infoList, RegistryType.CAPABILITY, cap, method, available));
-				getAccessibleFields(cap.getClass(), RegistryType.CAPABILITY).forEach(field -> getFieldInfo(infoList, RegistryType.CAPABILITY, cap, field));
+				LogicPath logicPath = path.dupe();
+				logicPath.addObject(new CapabilityMethod(cap));
+				getAssignableMethods(cap.getClass(), RegistryType.CAPABILITY).forEach(method -> getClassInfo(infoList, logicPath.dupe(), RegistryType.CAPABILITY, cap, method, available));
+				getAccessibleFields(cap.getClass(), RegistryType.CAPABILITY).forEach(field -> getFieldInfo(infoList, logicPath.dupe(), RegistryType.CAPABILITY, cap, field));
 			}
+		}
+	}
+
+	public static Pair<Boolean, IMonitorInfo> getLatestInfo(MonitoredList updateInfo, ArrayList<NodeConnection> connections, IMonitorInfo paired) {
+		Pair<Boolean, IMonitorInfo> newPaired = null;
+		if (paired instanceof LogicInfo && !connections.isEmpty()) {
+			LogicInfo info = (LogicInfo) paired;
+			if (info.path == null) {
+				Object latest = updateInfo.getLatestInfo(info).b;
+				if (latest != null && latest instanceof LogicInfo) {
+					LogicInfo latestInfo = ((LogicInfo) latest);
+					if (latestInfo.path != null) {
+						info.path = latestInfo.path.dupe();
+					}
+				}
+			}
+			newPaired = LogicInfoRegistry.getLatestInfo(info, connections.get(0));
+		}
+		if (newPaired == null) {
+			newPaired = updateInfo.getLatestInfo(paired);
+		}
+		return newPaired;
+	}
+
+	public static Pair<Boolean, IMonitorInfo> getLatestInfo(LogicInfo info, NodeConnection connection) {
+		if (info.path == null) {
+			return null;
+		}
+		EnumFacing face = connection.face.getOpposite();
+		World world = connection.coords.getWorld();
+		IBlockState state = connection.coords.getBlockState(world);
+		BlockPos pos = connection.coords.getBlockPos();
+		Block block = state.getBlock();
+		TileEntity tile = connection.coords.getTileEntity(world);
+		LogicInfo returned = LogicInfoRegistry.getLogicInfoFromPath(info, info.path, face, world, state, pos, face, block, tile);
+		if (returned != null) {
+			return new Pair(true, returned);
+		}
+		return null;
+	}
+
+	public static LogicInfo getLogicInfoFromPath(LogicInfo info, LogicPath logicPath, EnumFacing currentFace, Object... available) {
+
+		Object returned = logicPath.getStart(available);
+		if (returned instanceof TileHandlerMethod) {
+			TileHandlerMethod method = (TileHandlerMethod) returned;
+			LogicPath path = new LogicPath();
+			path.setStart(method);
+			ArrayList<LogicInfo> infolist = new ArrayList();
+			method.handler.addInfo(infolist, path, (World) available[0], (IBlockState) available[1], (BlockPos) available[2], (EnumFacing) available[3], (TileEntity) available[4], (Block) available[5]);
+			for (LogicInfo logicInfo : infolist) {
+				if (logicInfo.isValid() && logicInfo.isMatchingType(info) && logicInfo.isMatchingInfo(info)) {
+					return logicInfo; // should fix to use paths given in info if possible :P
+				}
+			}
+
+		}
+		for (Object arg : logicPath.path) {
+			if (returned == null) {
+				return null;
+			}
+
+			if (arg instanceof Method) {
+				returned = invokeMethod(returned, (Method) arg, available);
+				continue;
+			}
+			if (arg instanceof Field) {
+				returned = getField(returned, (Field) arg);
+				continue;
+			}
+			if (arg instanceof CapabilityMethod) {
+				if (returned instanceof ICapabilityProvider) {
+					returned = ((ICapabilityProvider) returned).getCapability(((CapabilityMethod) arg).cap, currentFace);
+					continue;
+				} else {
+					return null;
+				}
+			}
+			if (arg instanceof InvField) {
+				InvField field = ((InvField) arg);
+
+				// LogicInfo newInfo = LogicInfo.buildDirectInfo(returned.getClass().getSimpleName() + "." + field.key, field.type, ((IInventory) returned).getField(field.value), logicPath);
+				info.obj.obj = ((IInventory) returned).getField(field.value);
+				return info;
+			}
+		}
+		if (returned != null)
+			info.obj.obj = returned;
+		return info;
+	}
+
+	public static class LogicPath {
+		ArrayList path = new ArrayList();
+		Class<?> start;
+		RegistryType type;
+
+		public void setRegistryType(RegistryType regType) {
+			type = regType;
+		}
+
+		public void setStart(Object obj) {
+			start = obj.getClass();
+		}
+
+		public void addObject(Object obj) {
+			path.add(obj);
+		}
+
+		public Object getStart(Object... available) {
+			for (Object arg : available) {
+				if (start.isInstance(arg)) {
+					return arg;
+				}
+			}
+			return start; // lets hope this doesn't happen to often :P
+		}
+
+		public LogicPath dupe() {
+			LogicPath path = new LogicPath();
+			path.path = (ArrayList) this.path.clone();
+			path.start = start;
+			return path;
+		}
+	}
+
+	public static class CapabilityMethod {
+
+		public Capability cap;
+
+		public CapabilityMethod(Capability cap) {
+			this.cap = cap;
+		}
+	}
+
+	public static class InvField {
+
+		public String key;
+		public Integer value;
+		public RegistryType type;
+
+		public InvField(String key, Integer value, RegistryType type) {
+			this.key = key;
+			this.value = value;
+			this.type = type;
+		}
+	}
+
+	public static class TileHandlerMethod {
+		ICustomTileHandler handler;
+
+		public TileHandlerMethod(ICustomTileHandler handler) {
+			this.handler = handler;
 		}
 	}
 }

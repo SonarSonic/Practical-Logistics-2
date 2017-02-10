@@ -3,6 +3,7 @@ package sonar.logistics.common.multiparts;
 import java.util.ArrayList;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,11 +22,13 @@ import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiFluidReader;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.connections.monitoring.FluidMonitorHandler;
+import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.FluidHelper;
@@ -72,7 +75,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case SELECTED:
@@ -88,7 +91,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 			break;
 		case STORAGE:
 
-			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, updateInfo.sizing.getStored()), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored()));
+			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, updateInfo.sizing.getStored(),null), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored(), null));
 			break;
 		case TANKS:
 			info = new LogicInfoList(getIdentity(), MonitoredFluidStack.id, this.getNetworkID());
@@ -99,7 +102,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
 			IMonitorInfo oldInfo = Logistics.getServerManager().info.get(id);
-			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isIdenticalInfo(info)) {
+			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				Logistics.getServerManager().changeInfo(id, info);
 			}
 		}
@@ -131,5 +134,6 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	public String getDisplayName() {
 		return FontHelper.translate("item.FluidReader.name");
 	}
+
 
 }

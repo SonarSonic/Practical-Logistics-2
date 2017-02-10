@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
+import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
 import sonar.logistics.api.readers.FluidReader.SortingType;
@@ -31,8 +32,8 @@ import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
-	public static final ResourceLocation stackBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_stack.png");
-	public static final ResourceLocation clearBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_clear.png");
+	public static final ResourceLocation stackBGround = new ResourceLocation(Logistics.MODID + ":textures/gui/inventoryReader_stack.png");
+	public static final ResourceLocation clearBGround = new ResourceLocation(Logistics.MODID + ":textures/gui/inventoryReader_clear.png");
 
 	public FluidReaderPart part;
 	private GuiTextField slotField;

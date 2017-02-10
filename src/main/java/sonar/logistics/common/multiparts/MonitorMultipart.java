@@ -12,10 +12,12 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncTagType;
@@ -37,17 +39,17 @@ import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.network.SyncMonitoredType;
 
-public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMultipart implements ILogicMonitor<T>, IByteBufTile {
+public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMultipart implements ILogicMonitor<T>, IByteBufTile, IFlexibleGui {
 
 	public static final PropertyBool hasDisplay = PropertyBool.create("display");
-	protected IdentifiedCoordsList list = new IdentifiedCoordsList(-1);
-	protected SyncUUID uuid = new SyncUUID(-2); // CAN I USE THE MULTIPART UUID INSTEAD?
+	protected IdentifiedCoordsList list = new IdentifiedCoordsList(-2);
+	protected SyncUUID uuid = new SyncUUID(-3); // CAN I USE THE MULTIPART UUID INSTEAD?
+	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-4);
 	protected LogicMonitorHandler handler = null;
 	protected String handlerID;
 	public SyncMonitoredType<T> selectedInfo;
 	public BlockCoords lastSelected = null;
 	public IMonitorInfo lastInfo = null;
-	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-2);
 	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
 	public int lastPos = -1;
 
@@ -78,7 +80,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		if (!this.getWorld().isRemote) {
 			if (changedPart instanceof ScreenMultipart) {
 				ScreenMultipart screen = (ScreenMultipart) changedPart;
-				if (screen.face == this.face) {
+				if (screen.face == getFacing()) {
 					hasMonitor.setObject(!screen.wasRemoved());
 					sendUpdatePacket(true);
 				}
@@ -109,7 +111,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		if (isServer()) {
 			setUUID();
 			Logistics.getServerManager().addMonitor(this);
-			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), face) != null);
+			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getFacing()) != null);
 		} else {
 			this.sendByteBufPacket(-4); // request the monitor UUID
 		}
@@ -232,13 +234,21 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	public IBlockState getActualState(IBlockState state) {
 		World w = getContainer().getWorldIn();
 		BlockPos pos = getContainer().getPosIn();
-		return state.withProperty(ORIENTATION, face).withProperty(hasDisplay, this.hasMonitor.getObject());
+		return state.withProperty(ORIENTATION, getFacing()).withProperty(hasDisplay, this.hasMonitor.getObject());
 	}
 
 	public BlockStateContainer createBlockState() {
 		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, hasDisplay });
 	}
+	
+	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		switch (id) {
+		case 1:
+			viewers.addViewer(player, ViewerType.CHANNEL);
+			break;
+		}
 
+	}
 
 	@Override
 	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {

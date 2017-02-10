@@ -13,7 +13,9 @@ import sonar.logistics.api.asm.CustomTileHandler;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.TileMonitorHandler;
+import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IEntityMonitorHandler;
@@ -26,6 +28,11 @@ public class LogisticsASMLoader {
 	public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap();
 	public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap();
 	public static LinkedHashMap<String, Class<? extends IMonitorInfo>> infoClasses = new LinkedHashMap();
+
+	//public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap();
+	//public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap();
+	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = new LinkedHashMap();
+	
 	public static LinkedHashMap<String, ITileMonitorHandler> tileMonitorHandlers = new LinkedHashMap();
 	public static LinkedHashMap<String, IEntityMonitorHandler> entityMonitorHandlers = new LinkedHashMap();
 
@@ -79,5 +86,14 @@ public class LogisticsASMLoader {
 			infoClasses.put(name, info.b);
 		}
 		Logistics.logger.info("Loaded: " + infoIds.size() + " Info Types");
+	}
+
+	public static void loadNodeFilters(@Nonnull ASMDataTable asmDataTable) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>>> infoTypes = ASMLoader.getClasses(asmDataTable, NodeFilter.class, INodeFilter.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>> info : infoTypes) {
+			String name = (String) info.a.getAnnotationInfo().get("id");
+			filterClasses.put(name, info.b);
+		}
+		Logistics.logger.info("Loaded: " + filterClasses.size() + " Filters");
 	}
 }

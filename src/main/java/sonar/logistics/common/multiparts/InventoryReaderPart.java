@@ -3,6 +3,7 @@ package sonar.logistics.common.multiparts;
 import java.util.ArrayList;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,11 +24,15 @@ import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.client.gui.GuiChannelSelection;
 import sonar.logistics.client.gui.GuiInventoryReader;
+import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.connections.monitoring.ItemMonitorHandler;
+import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
@@ -73,7 +78,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case INVENTORIES:
@@ -99,7 +104,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 			break;
 		case STORAGE:
-			info = new ProgressInfo(LogicInfo.buildDirectInfo("item.storage", RegistryType.TILE, updateInfo.sizing.getStored()), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored()));
+			info = new ProgressInfo(LogicInfo.buildDirectInfo("item.storage", RegistryType.TILE, updateInfo.sizing.getStored(), null), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored(), null));
 			break;
 		default:
 			break;
@@ -107,7 +112,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
 			IMonitorInfo oldInfo = Logistics.getServerManager().info.get(id);
-			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isIdenticalInfo(info)) {
+			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				Logistics.getServerManager().changeInfo(id, info);
 			}
 		}
@@ -115,11 +120,11 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
-		
-		//when the order of the list is changed the viewers need to recieve a full update
+
+		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
 			ArrayList<EntityPlayer> players = viewers.getViewers(true, ViewerType.INFO);
-			for(EntityPlayer player : players){
+			for (EntityPlayer player : players) {
 				viewers.addViewer(player, ViewerType.TEMPORARY);
 			}
 		}
@@ -127,12 +132,24 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new ContainerInventoryReader(this, player) : null;
+		switch(id){
+		case 0:
+			return new ContainerInventoryReader(this, player);
+		case 1:
+			return new ContainerChannelSelection(this);
+		}		
+		return null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new GuiInventoryReader(this, player) : null;
+		switch(id){
+		case 0:
+			return new GuiInventoryReader(this, player);
+		case 1:
+			return new GuiChannelSelection(player, this, 0);
+		}		
+		return null;
 	}
 
 	@Override

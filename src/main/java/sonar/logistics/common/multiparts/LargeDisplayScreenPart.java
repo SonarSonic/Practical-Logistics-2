@@ -190,9 +190,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		if (hit.sideHit != face) {
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
 			if (part != null) {
-				SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-				Logistics.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
-				Logistics.getServerManager().sendLocalMonitorsToClient(part, player);
 				part.openFlexibleGui(player, 0);
 			}
 			return true;
@@ -423,5 +420,17 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			FontHelper.sendMessage("Screen Layout: " + getDisplayScreen().layout.getObject(), getWorld(), player);
 		}
 		return false;
+	}
+
+	@Override
+	public void onGuiOpened(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		switch(id){
+		case 0:
+			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+			Logistics.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
+			Logistics.getServerManager().sendLocalMonitorsToClient(part, player);
+			break;
+		}
 	}
 }

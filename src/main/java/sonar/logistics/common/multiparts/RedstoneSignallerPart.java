@@ -54,7 +54,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	public IBlockState getActualState(IBlockState state) {
 		World w = getContainer().getWorldIn();
 		BlockPos pos = getContainer().getPosIn();
-		return state.withProperty(ORIENTATION, face).withProperty(ACTIVE, isActive());
+		return state.withProperty(ORIENTATION, getFacing()).withProperty(ACTIVE, isActive());
 	}
 
 	public BlockStateContainer createBlockState() {
@@ -63,17 +63,17 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 
 	@Override
 	public boolean canConnectRedstone(EnumFacing side) {
-		return side == face;
+		return side == getFacing();
 	}
 
 	@Override
 	public int getWeakSignal(EnumFacing side) {
-		return side == face ? 15 : 0;
+		return side == getFacing() ? 15 : 0;
 	}
 
 	@Override
 	public int getStrongSignal(EnumFacing side) {
-		return side == face ? 15 : 0;
+		return side == getFacing() ? 15 : 0;
 	}
 
 	@Override

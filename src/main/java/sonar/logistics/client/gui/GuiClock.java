@@ -16,7 +16,7 @@ import sonar.logistics.common.tileentity.TileEntityClock;
 
 public class GuiClock extends GuiSonar {
 
-	public static final ResourceLocation bground = new ResourceLocation("PracticalLogistics:textures/gui/signaller.png");
+	public static final ResourceLocation bground = new ResourceLocation(Logistics.MODID + ":textures/gui/signaller.png");
 
 	public TileEntityClock entity;
 

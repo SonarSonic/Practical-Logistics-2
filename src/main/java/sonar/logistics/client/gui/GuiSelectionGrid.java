@@ -10,13 +10,14 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
+import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
 public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogistics {
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation("PracticalLogistics:textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(Logistics.MODID + ":textures/gui/sorting_icons.png");
 
 	public abstract void onGridClicked(T selection, int pos, int button, boolean empty);
 
@@ -80,8 +81,7 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
-		renderStrings(x, y);
-		   
+		renderStrings(x, y);		   
 
 		preRender();
 		MonitoredList<T> list = getGridList().copyInfo();
@@ -101,8 +101,7 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 				}
 			}
 		}
-		postRender();
-		
+		postRender();		
 		
 		if (x - guiLeft >= 13 && x - guiLeft <= 13 + (12 * 18) && y - guiTop >= 32 && y - guiTop <= 32 + (7 * 18)) {
 			int start = (int) (getGridSize(list) / 12 * scroller.getCurrentScroll());
@@ -131,6 +130,7 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 	}
 
 	public void preRender() {
+
 	}
 
 	public void postRender() {

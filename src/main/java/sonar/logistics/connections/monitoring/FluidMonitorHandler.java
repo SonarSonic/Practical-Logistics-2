@@ -35,7 +35,7 @@ public class FluidMonitorHandler extends LogicMonitorHandler<MonitoredFluidStack
 				StorageSize size = provider.getFluids(info, fluidTile, connection.face);
 				list.sizing.add(size);
 				for (StoredFluidStack fluid : info) {
-					list.addInfoToList(new MonitoredFluidStack(fluid), previousList);
+					list.addInfoToList(new MonitoredFluidStack(fluid, network.getNetworkID()), previousList);
 				}
 				break;
 			}

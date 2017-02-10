@@ -365,4 +365,9 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	@Override
 	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
 	}
+
+	@Override
+	public EnumFacing getRotation() {		
+		return getTopLeftScreen()==null? EnumFacing.NORTH : getTopLeftScreen().getRotation();
+	}
 }

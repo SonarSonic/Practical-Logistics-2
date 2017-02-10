@@ -74,13 +74,13 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			this.buttonList.add(new GuiButton(1, guiLeft + 48, guiTop + 5, 40, 20, "Name"));
 			this.buttonList.add(new GuiButton(2, guiLeft + 88, guiTop + 5, 40, 20, "Prefix"));
 			this.buttonList.add(new GuiButton(3, guiLeft + 128, guiTop + 5, 40, 20, "Suffix"));
-			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130+8, 80, 20, "RESET"));
-			this.buttonList.add(new GuiButton(5, guiLeft + 88, guiTop + 130+8, 80, 20, "SAVE"));
+			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 80, 20, "RESET"));
+			this.buttonList.add(new GuiButton(5, guiLeft + 88, guiTop + 130 + 8, 80, 20, "SAVE"));
 
-			textField = new DisplayTextField(0, this.fontRendererObj, 8, 28+4, 160, 100);
+			textField = new DisplayTextField(0, this.fontRendererObj, 8, 28 + 4, 160, 100);
 			textField.setMaxStringLength(25);
-			textField.setStrings(part.container().getDisplayInfo(infoID).getUnformattedStrings());		
-			
+			textField.setStrings(part.container().getDisplayInfo(infoID).getUnformattedStrings());
+
 			break;
 		case LIST:
 			// int width = 162;
@@ -95,7 +95,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		case SOURCE:
 			scroller = new SonarScroller(this.guiLeft + 164 + 71, this.guiTop + 29, 134, 10);
 			for (int i = 0; i < size; i++) {
-				this.buttonList.add(new SelectionButton(10 + i, guiLeft + 7, guiTop + 29 + (i * 12)));
+				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * 12), listHeight));
 			}
 			break;
 		default:
@@ -142,13 +142,13 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				textField.writeText(DisplayConstants.SUFFIX);
 				break;
 			case 4:
-				textField.setStrings(part.container().getDisplayInfo(infoID).getUnformattedStrings());		
+				textField.setStrings(part.container().getDisplayInfo(infoID).getUnformattedStrings());
 				break;
 			case 5:
 				part.container().getDisplayInfo(infoID).setFormatStrings(textField.textList);
 				part.currentSelected = infoID;
 				part.sendByteBufPacket(1);
-				break;				
+				break;
 			}
 			break;
 		case LIST:
@@ -184,11 +184,12 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		this.enableListRendering = state == GuiState.SOURCE;
 		if (scroller != null)
 			this.scroller.renderScroller = state == GuiState.SOURCE;
-		coolDown = state!=GuiState.LIST ? 25 : 0;
+		coolDown = state != GuiState.LIST ? 25 : 0;
 		this.reset();
-
 	}
 
+	
+	
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
@@ -229,23 +230,23 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		if (state == GuiState.EDIT) {			
+		if (state == GuiState.EDIT) {
 			if (textField.isFocused()) {
 				if (c == 13 || c == 27) {
 					textField.setFocused(false);
 				} else {
 					textField.textboxKeyTyped(c, i);
-					//final String text = textField.getText();
-					//setString((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text);
+					// final String text = textField.getText();
+					// setString((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text);
 				}
 				return;
-			}			
+			}
 		}
 		if (state != GuiState.LIST && (i == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(i))) {
 			changeState(GuiState.LIST, -1);
 			return;
 		}
-		
+
 		super.keyTyped(c, i);
 		/* if (nameField.isFocused()) { if (c == 13 || c == 27) { nameField.setFocused(false); } else { nameField.textboxKeyTyped(c, i); final String text = nameField.getText(); setString((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text); } } else { super.keyTyped(c, i); } */
 	}

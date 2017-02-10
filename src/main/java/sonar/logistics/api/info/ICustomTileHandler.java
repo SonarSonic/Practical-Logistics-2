@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import sonar.logistics.info.LogicInfoRegistry.LogicPath;
 import sonar.logistics.info.types.LogicInfo;
 
 public interface ICustomTileHandler {
@@ -19,11 +20,12 @@ public interface ICustomTileHandler {
 
 	/** allows you to add all types of info for a given position for use in the Info Reader
 	 * @param infoList the current info list
+	 * @param currentPath TODO
 	 * @param world the world
 	 * @param state the current block state
 	 * @param pos the position
 	 * @param dir the direction to obtain info from
 	 * @param tile the TileEntity (can be null)
 	 * @param block the Block (can be null) */
-	public void addInfo(List<LogicInfo> infoList, World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable TileEntity tile, @Nullable Block block);
+	public void addInfo(List<LogicInfo> infoList, LogicPath currentPath, World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable TileEntity tile, @Nullable Block block);
 }

@@ -2,39 +2,51 @@ package sonar.logistics.connections.monitoring;
 
 import org.lwjgl.opengl.GL11;
 
+import mcmultipart.raytrace.PartMOP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
+import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
+import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = Logistics.MODID)
-public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack> {
+public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IBasicClickableInfo {
 
 	public static final String id = "fluid";
 	public static LogicMonitorHandler<MonitoredFluidStack> handler = LogicMonitorHandler.instance(FluidMonitorHandler.id);
 	public SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
+	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 
 	{
-		syncParts.addParts(fluidStack);
+		syncParts.addParts(fluidStack,networkID);
 	}
 
 	public MonitoredFluidStack() {}
 
-	public MonitoredFluidStack(StoredFluidStack stack) {
+	public MonitoredFluidStack(StoredFluidStack stack, int networkID) {
 		this.fluidStack.setObject(stack);
+		this.networkID.setObject(networkID);
 	}
 
 	@Override
@@ -80,7 +92,7 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 
 	@Override
 	public MonitoredFluidStack copy() {
-		return new MonitoredFluidStack(fluidStack.getObject().copy());
+		return new MonitoredFluidStack(fluidStack.getObject().copy(), networkID.getObject());
 	}
 
 	@Override
@@ -115,6 +127,16 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	@Override
 	public String getClientType() {
 		return "fluid";
+	}
+
+	@Override
+	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit, InfoContainer container) {
+		if (InfoHelper.canBeClickedStandard(renderInfo.getRenderProperties(), player, hand, stack, hit)) {
+			if (!player.getEntityWorld().isRemote)
+				InfoHelper.screenFluidStackClicked(fluidStack.getObject(), networkID.getObject(), type, doubleClick, renderInfo.getRenderProperties(), player, hand, stack, hit);
+			return true;
+		}
+		return false;
 	}
 
 }

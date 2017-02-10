@@ -4,12 +4,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
+import sonar.logistics.Logistics;
 import sonar.logistics.common.containers.ContainerHammer;
 import sonar.logistics.common.tileentity.TileEntityHammer;
 
 public class GuiHammer extends GuiSonar {
 	public TileEntityHammer entity;
-	public static final ResourceLocation bground = new ResourceLocation("PracticalLogistics:textures/gui/hammer.png");
+	public static final ResourceLocation bground = new ResourceLocation(Logistics.MODID + ":textures/gui/hammer.png");
 
 	public GuiHammer(EntityPlayer player, TileEntityHammer entity) {
 		super(new ContainerHammer(player, entity), entity);

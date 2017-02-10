@@ -1,6 +1,6 @@
 [
-{"modid": "PracticalLogistics",
-  "name": "Practical Logistics",
+{"modid": "practicallogistics2",
+  "name": "Practical Logistics 2",
   "description": "All things data - Requires SonarCore",
   "version": "${version}",
   "mcversion": "${mcversion}",

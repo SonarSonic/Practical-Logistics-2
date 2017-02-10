@@ -40,8 +40,8 @@ public class Logistics {
 	@SidedProxy(clientSide = "sonar.logistics.LogisticsClient", serverSide = "sonar.logistics.LogisticsCommon")
 	public static LogisticsCommon proxy;
 
-	public static final String MODID = "practicallogistics";
-	public static final String NAME = "Practical Logistics";
+	public static final String MODID = "practicallogistics2";
+	public static final String NAME = "Practical Logistics 2";
 	public static final String VERSION = "2.0.0";
 
 	public static SimpleNetworkWrapper network;
@@ -61,7 +61,7 @@ public class Logistics {
 	// @SideOnly(Side.CLIENT)
 	public ClientInfoManager clientManager = new ClientInfoManager();
 
-	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics") {
+	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics 2") {
 		@Override
 		public Item getTabIconItem() {
 			return LogisticsItems.partCable;
@@ -107,6 +107,7 @@ public class Logistics {
 		LogisticsASMLoader.loadInfoTypes(asmDataTable);
 		LogisticsASMLoader.loadTileMonitorHandlers(asmDataTable);
 		LogisticsASMLoader.loadEntityMonitorHandlers(asmDataTable);
+		LogisticsASMLoader.loadNodeFilters(asmDataTable);
 		LogicInfoRegistry.infoRegistries.addAll(LogisticsASMLoader.getInfoRegistries(asmDataTable));
 		LogicInfoRegistry.customTileHandlers.addAll(LogisticsASMLoader.getCustomTileHandlers(asmDataTable));
 		LogicInfoRegistry.customEntityHandlers.addAll(LogisticsASMLoader.getCustomEntityHandlers(asmDataTable));

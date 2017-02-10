@@ -19,6 +19,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	public GuiInfoReader(EntityPlayer player, InfoReaderPart tile) {
 		super(new ContainerInfoReader(player, tile), tile);
 		this.part = tile;
+		this.xSize = 182 + 66;
 	}
 
 	@Override

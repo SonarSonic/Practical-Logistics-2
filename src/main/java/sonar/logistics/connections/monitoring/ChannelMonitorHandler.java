@@ -18,6 +18,7 @@ public class ChannelMonitorHandler extends LogicMonitorHandler<MonitoredBlockCoo
 
 	@Override
 	public MonitoredList<MonitoredBlockCoords> updateInfo(INetworkCache network, MonitoredList<MonitoredBlockCoords> info, NodeConnection connection) {
+		
 		return info;
 	}
 

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +19,9 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IRemovable;
 import sonar.core.utils.IWorldPosition;
 import sonar.core.utils.Pair;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
+import sonar.logistics.LogisticsConfig;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
@@ -33,9 +36,12 @@ import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.IdentifiedCoordsList;
+import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.common.multiparts.DataCablePart;
+import sonar.logistics.connections.monitoring.InfoMonitorHandler;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -54,6 +60,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	private ArrayList<Integer> connectedNetworks = new ArrayList();
 	private RefreshType lastRefresh = RefreshType.NONE;
 	private RefreshType toRefresh = RefreshType.FULL;
+	public int updateTicks = 0;
 
 	public DefaultNetwork(int networkID) {
 		this.networkID = networkID;
@@ -130,13 +137,13 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 		if (refresh.shouldRefreshConnections()) {
 			refreshConnections();
 		}
-		
+
 		if (Logistics.getNetworkManager().updateEmitters) {
 			for (IDataReceiver receiver : getConnections(IDataReceiver.class, true)) {
 				receiver.refreshConnectedNetworks();
 			}
 		}
-		
+
 		if (refresh.shouldRefreshNetworks()) {
 			refreshNetworks();
 			refreshConnections();
@@ -196,7 +203,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 		ArrayList<IWorldPosition> toRemove = new ArrayList();
 		ArrayList<IConnectionNode> nodes = new ArrayList();
 		ArrayList<IEntityNode> entitynodes = new ArrayList();
-		
+
 		for (IWorldPosition part : connections.get(IDataCable.class)) {
 			if (part == null || !(part instanceof DataCablePart)) {
 				toRemove.add(part);
@@ -205,7 +212,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 			nodes.addAll(CableHelper.getConnectedTiles((DataCablePart) part, IConnectionNode.class));
 			entitynodes.addAll(CableHelper.getConnectedTiles((DataCablePart) part, IEntityNode.class));
 		}
-		
+
 		Collections.sort(nodes, new Comparator<IConnectionNode>() {
 			public int compare(IConnectionNode str1, IConnectionNode str2) {
 				return Integer.compare(str2.getPriority(), str1.getPriority());
@@ -215,13 +222,13 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 			if (!(node instanceof IRemovable) || !((IRemovable) node).wasRemoved()) {
 				((IConnectionNode) node).addConnections(map);
 			}
-		});		
+		});
 		entitynodes.iterator().forEachRemaining(node -> {
 			if (!(node instanceof IRemovable) || !((IRemovable) node).wasRemoved()) {
 				((IEntityNode) node).addEntities(entities);
 			}
 		});
-		
+
 		toRemove.forEach(remove -> connections.get(IDataCable.class).remove(remove));
 		this.blockTileCache = (ArrayList<NodeConnection>) map.clone();
 		this.blockEntityCache = (ArrayList<Entity>) entities.clone();
@@ -248,7 +255,11 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 				}
 			}
 		}
-
+		Collections.sort(map, new Comparator<NodeConnection>() {
+			public int compare(NodeConnection str1, NodeConnection str2) {
+				return Integer.compare(str2.source.getPriority(), str1.source.getPriority());
+			}
+		});
 		this.networkedTileCache = (ArrayList<NodeConnection>) map.clone();
 		this.networkedEntityCache = (ArrayList<Entity>) entities.clone();
 
@@ -304,6 +315,12 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	@Override
 	public void updateNetwork(int networkID) {
+		if (this.updateTicks < LogisticsConfig.updateRate) {
+			updateTicks++;
+			return;
+		}
+		updateTicks = 0;
+
 		resendAllLists = networkID != this.getNetworkID();
 		if (resendAllLists || Logistics.getNetworkManager().updateEmitters) {
 			refreshCache(networkID, RefreshType.FULL);
@@ -315,32 +332,60 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 		toRefresh = RefreshType.NONE;
 		for (Entry<LogicMonitorHandler, Map<ILogicMonitor, MonitoredList<?>>> monitorMap : monitorInfo.entrySet()) {
+			Map<NodeConnection, MonitoredList<?>> newTileConnections;
+			Map<Entity, MonitoredList<?>> newEntityConnections;
 			if (!monitorMap.getValue().isEmpty() && monitorMap.getKey() != null) {
+				if (monitorMap.getKey().id() == InfoMonitorHandler.id) {
 
-				Map<NodeConnection, MonitoredList<?>> newTileConnections = getTileMonitoredList(monitorMap.getKey()); // individual MonitoredLists for every connection
-				Map<Entity, MonitoredList<?>> newEntityConnections = getEntityMonitoredList(monitorMap.getKey());
-				// Map<Entity, MonitoredList<?>> newConnections = getEntityMonitoredList(monitorMap.getKey());
+					ArrayList<BlockCoords> toUpdate = new ArrayList();
+					for (Entry<ILogicMonitor, MonitoredList<?>> monitors : monitorMap.getValue().entrySet()) {
+						ILogicMonitor monitor = monitors.getKey();
+						if (!monitor.getViewersList().getViewers(true, ViewerType.FULL_INFO, ViewerType.TEMPORARY).isEmpty()) {
+							IdentifiedCoordsList list = monitor.getChannels(0);
+							for (BlockCoords coord : list) {
+								if (!toUpdate.contains(coord))
+									toUpdate.add(coord);
+							}
+						}
+					}
+					
+					
+					// TODO VERSION FOR ENTITIES!!
+					newTileConnections = getTileMonitoredList(monitorMap.getKey(), toUpdate);
+					newEntityConnections = entityConnectionInfo.getOrDefault(monitorMap.getKey(), new LinkedHashMap());
+				} else {
+					newTileConnections = getTileMonitoredList(monitorMap.getKey()); // individual MonitoredLists for every connection
+					newEntityConnections = getEntityMonitoredList(monitorMap.getKey());
+				}
 				if (monitorMap.getKey() instanceof ITileMonitorHandler)
 					tileConnectionInfo.replace((ITileMonitorHandler) monitorMap.getKey(), newTileConnections);// the connectionInfo is saved.
 				if (monitorMap.getKey() instanceof IEntityMonitorHandler)
 					entityConnectionInfo.replace((IEntityMonitorHandler) monitorMap.getKey(), newEntityConnections);// the connectionInfo is saved.
 
-				for (Entry<ILogicMonitor, MonitoredList<?>> monitors : monitorMap.getValue().entrySet()) {
-					ILogicMonitor monitor = monitors.getKey();
-					if (monitor != null && monitor.getHandler().id().equals(monitorMap.getKey().id())) {
-						MonitoredList<IMonitorInfo> updateList = updateMonitoredList(monitors.getKey(), 0, newTileConnections, newEntityConnections).updateList(monitors.getValue());
-						monitor.sortMonitoredList(updateList, 0);// TODO
-						monitor.setMonitoredInfo(updateList, 0);// TODO
-						sendPacketsToViewers(monitor, updateList.copyInfo(), monitors.getValue().copyInfo());
-						monitors.setValue(updateList);
-						Logistics.getServerManager().monitoredLists.put(new InfoUUID(monitor.getIdentity().hashCode(), 0), updateList);
-					} else if (!monitor.getHandler().id().equals(monitorMap.getKey().id())) {
-						Logistics.logger.info("WRONG MONITOR HANDLER FOR MONITOR: " + monitorMap.getKey().id());
-					}
-				}
+				updateAndSendLists(monitorMap, newTileConnections, newEntityConnections);
 			}
 		}
 		resendAllLists = false;
+	}
+	
+
+	public void updateAndSendLists(Entry<LogicMonitorHandler, Map<ILogicMonitor, MonitoredList<?>>> monitorMap, Map<NodeConnection, MonitoredList<?>> newTileConnections, Map<Entity, MonitoredList<?>> newEntityConnections) {
+		for (Entry<ILogicMonitor, MonitoredList<?>> monitors : monitorMap.getValue().entrySet()) {
+			ILogicMonitor monitor = monitors.getKey();
+			if (monitor != null && monitor.getHandler().id().equals(monitorMap.getKey().id())) {
+				
+				ArrayList<NodeConnection> nodeConnections = new ArrayList();
+				ArrayList<Entity> entityConnections = new ArrayList();
+				MonitoredList updateList = updateMonitoredList(monitors.getKey(), 0, newTileConnections, newEntityConnections, nodeConnections, entityConnections).updateList(monitors.getValue());		
+				monitor.setMonitoredInfo(updateList, nodeConnections, entityConnections, 0);// TODO only one channel atm!
+				sendPacketsToViewers(monitor, updateList.copyInfo(), monitors.getValue().copyInfo());
+				monitors.setValue(updateList);
+				Logistics.getServerManager().monitoredLists.put(new InfoUUID(monitor.getIdentity().hashCode(), 0), updateList);
+				
+			} else if (!monitor.getHandler().id().equals(monitorMap.getKey().id())) {
+				Logistics.logger.info("WRONG MONITOR HANDLER FOR MONITOR: " + monitorMap.getKey().id());
+			}
+		}
 	}
 
 	public <T extends IMonitorInfo> void compileConnectionList(LogicMonitorHandler<T> type) {

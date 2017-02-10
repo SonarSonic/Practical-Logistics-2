@@ -45,7 +45,6 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
 		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
 			if (!getWorld().isRemote) {
-				SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 				openFlexibleGui(player, 0);
 			}
 			return true;
@@ -55,8 +54,8 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 	
 	@Override
 	public void addConnections(ArrayList<NodeConnection> connections) {
-		BlockCoords tileCoords = new BlockCoords(getPos().offset(face), getWorld().provider.getDimension());		
-		connections.add(new NodeConnection(this, tileCoords, face));
+		BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());		
+		connections.add(new NodeConnection(this, tileCoords, getFacing()));
 	}
 
 	@Override
@@ -97,4 +96,14 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new GuiNode(this) : null;
 	}
+
+	@Override
+	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		switch(id){
+		case 0:
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+			break;
+		}
+	}
+
 }

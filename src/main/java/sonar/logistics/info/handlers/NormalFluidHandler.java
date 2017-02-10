@@ -16,6 +16,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.CustomTileHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.info.LogicInfoRegistry.LogicPath;
 import sonar.logistics.info.LogicInfoRegistry.RegistryType;
 import sonar.logistics.info.types.LogicInfo;
 
@@ -28,10 +29,10 @@ public class NormalFluidHandler implements ICustomTileHandler {
 	}
 
 	@Override
-	public void addInfo(List<LogicInfo> infoList, World world, IBlockState state, BlockPos pos, EnumFacing dir, TileEntity tile, Block block) {
+	public void addInfo(List<LogicInfo> infoList, LogicPath currentPath, World world, IBlockState state, BlockPos pos, EnumFacing dir, TileEntity tile, Block block) {
 		BlockLiquid liquid = (BlockLiquid) block;
 		Fluid fluid = state.getMaterial() == Material.WATER ? FluidRegistry.WATER : FluidRegistry.LAVA;
-		LogicInfoRegistry.getAssignableMethods(fluid.getClass(), RegistryType.BLOCK).forEach(method -> LogicInfoRegistry.getClassInfo(infoList, RegistryType.BLOCK, fluid, method, world, state, pos, dir, tile, block));
+		LogicInfoRegistry.getAssignableMethods(fluid.getClass(), RegistryType.BLOCK).forEach(method -> LogicInfoRegistry.getClassInfo(infoList, currentPath.dupe(), RegistryType.BLOCK, fluid, method, world, state, pos, dir, tile, block));
 	}
 
 }

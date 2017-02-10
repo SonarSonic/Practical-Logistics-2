@@ -30,6 +30,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 
 	public boolean enableListRendering = true; // for when this is overriden and the gui has multiple states.
 	public int size = 11;
+	public int listHeight = 12;
 	public int start, finish;
 	private GuiButton rselectButton;
 	public ArrayList<T> infoList = new ArrayList();
@@ -39,18 +40,29 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		this.buttonList.clear();
 		Keyboard.enableRepeatEvents(true);
 		this.mc.thePlayer.openContainer = this.inventorySlots;
-		if (enableListRendering) {
-			this.xSize = 176 + 72;
-			this.ySize = 166;
-		}
+		this.xSize = xSize();
+		this.ySize = ySize();
+		this.size = listSize();
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		if (enableListRendering) {
-			scroller = new SonarScroller(this.guiLeft + 164 + 71, this.guiTop + 29, 134, 10);
+			scroller = new SonarScroller(this.guiLeft + 235, this.guiTop + 29, size * listHeight + 2, 10);
 			for (int i = 0; i < size; i++) {
-				this.buttonList.add(new SelectionButton(10 + i, guiLeft + 7, guiTop + 29 + (i * 12)));
+				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * listHeight), listHeight));
 			}
 		}
+	}
+
+	public int xSize() {
+		return xSize;
+	}
+
+	public int ySize() {
+		return ySize;
+	}
+
+	public int listSize() {
+		return (int) Math.floor((ySize() - 29) / listHeight);
 	}
 
 	public abstract int getColour(int i, int type);
@@ -86,11 +98,11 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 			start = (int) (infoSize() * scroller.getCurrentScroll());
 			finish = Math.min(start + size, infoSize());
 			GL11.glPushMatrix();
-			GL11.glScaled(0.75, 0.75, 0.75);
+			GL11.glScaled(listScale(), listScale(), listScale());
 			for (int i = start; i < finish; i++) {
 				T info = infoList.get(i);
 				if (info != null) {
-					int yPos = (int) ((1.0 / 0.75) * (32 + (12 * i) - (12 * start)));
+					int yPos = (int) ((1.0 / listScale()) * (32 + (listHeight * i) - (listHeight * start)));
 					renderInfo(info, yPos);
 				}
 			}
@@ -98,6 +110,10 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		}
 		super.drawGuiContainerForegroundLayer(x, y);
 
+	}
+	
+	public double listScale(){
+		return 0.75;
 	}
 
 	public abstract void renderInfo(T info, int yPos);
@@ -178,16 +194,15 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		if (enableListRendering) {
 			int width = 225;
-			int height = 12;
 			int left = guiLeft + 7;
 
 			ArrayList<ArrayList<Integer>> data = getListTypes();
 			for (int i = 0; i < size; i++) {
-				int top = guiTop + 29 + (height * i);
+				int top = guiTop + 29 + (listHeight * i);
 				if (!data.get(2).contains(i)) {
-					drawInfoBackground(data, width, height, left, top, i);
+					drawInfoBackground(data, width, listHeight, left, top, i);
 				} else {
-					drawSelectedInfoBackground(width, height, left, top, i);
+					drawSelectedInfoBackground(width, listHeight, left, top, i);
 				}
 			}
 			RenderHelper.restoreBlendState();
@@ -205,25 +220,48 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		drawRect(left, top, left + width, top + height, LogisticsColours.layers[2].getRGB());
 		drawRect(left + 1, top + 1, left - 1 + width, top - 1 + height, LogisticsColours.grey_base.getRGB());
 		drawHorizontalLine(left + 1, left - 2 + width, top + 1, rgb);
-		drawHorizontalLine(left + 1, left - 2 + width, top + 10, rgb);
-		drawVerticalLine(left + 1, top + 1, top + 10, rgb);
-		drawVerticalLine(left - 2 + width, top + 1, top + 10, rgb);
+		drawHorizontalLine(left + 1, left - 2 + width, top + listHeight-1, rgb);
+		drawVerticalLine(left + 1, top + 1, top + listHeight-1, rgb);
+		drawVerticalLine(left - 2 + width, top + 1, top + listHeight-1, rgb);
 	}
 
 	public boolean needsScrollBars() {
-		if (infoSize() <= 11)
+		if (infoSize() <= size)
 			return false;
 		return true;
-	}
+	}	
 
+	public void onSelectionHovered(T info, int x,int y){
+		
+	}
+	
+	public void onButtonHovered(SelectionButton button, int x, int y){
+		if (button != null && button.id >= 10) {
+			int start = (int) (infoSize() * scroller.getCurrentScroll());
+			int network = start + button.id - 10;
+			if (network < infoSize()) {
+				T info = infoList.get(network);
+				if (info != null) {
+					onSelectionHovered(info, x, y);
+				}
+			}
+		}
+	}
+	
 	@SideOnly(Side.CLIENT)
 	public static class SelectionButton extends ImageButton {
 
-		public SelectionButton(int id, int x, int y) {
-			super(id, x, y, null, 0, 224, 154 + 72, 11);
+		GuiSelectionList list;
+		public SelectionButton(GuiSelectionList list, int id, int x, int y, int listHeight) {
+			super(id, x, y, null, 0, 224, 154 + 72, listHeight - 1);
+			this.list=list;
 		}
 
 		public void drawButton(Minecraft mc, int x, int y) {
+			this.hovered = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
+			if(this.hovered){
+				list.onButtonHovered(this, x, y);
+			}
 		}
 	}
 

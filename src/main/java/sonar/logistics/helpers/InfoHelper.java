@@ -14,6 +14,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.api.SonarAPI;
+import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper;
@@ -27,6 +28,7 @@ import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.IScaleableDisplay;
 import sonar.logistics.api.displays.ScreenLayout;
+import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.common.multiparts.LogisticsMultipart;
@@ -55,18 +57,33 @@ public class InfoHelper {
 				}
 				break;
 			case REMOVE:
-				IMultipart part = hit.partHit;
-				if (part != null && part instanceof LogisticsMultipart) {
-					BlockPos pos = part.getPos();
-					StoredItemStack extract = LogisticsAPI.getItemHelper().extractItem(cache, itemstack.copy().setStackSize(toRemove.a));
-					if (extract != null) {
-						pos = pos.offset(hit.sideHit);
-						SonarAPI.getItemHelper().spawnStoredItemStack(extract, part.getWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
+				if (itemstack != null) {
+					IMultipart part = hit.partHit;
+					if (part != null && part instanceof LogisticsMultipart) {
+						BlockPos pos = part.getPos();
+						StoredItemStack extract = LogisticsAPI.getItemHelper().extractItem(cache, itemstack.copy().setStackSize(toRemove.a));
+						if (extract != null) {
+							pos = pos.offset(hit.sideHit);
+							SonarAPI.getItemHelper().spawnStoredItemStack(extract, part.getWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
+						}
 					}
 				}
 				break;
 			default:
 				break;
+			}
+		}
+	}
+
+	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+		if (networkID != -1) {
+			INetworkCache cache = Logistics.instance.networkManager.getNetwork(networkID);
+			if (type == BlockInteractionType.RIGHT) {
+				LogisticsAPI.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
+			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
+				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack.setStackSize(1000));
+			} else if (fluidStack != null && type == BlockInteractionType.SHIFT_LEFT) {
+				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack);
 			}
 		}
 	}
@@ -284,7 +301,7 @@ public class InfoHelper {
 		} else if (info == null && newInfo != null || info != null && newInfo == null) {
 			return true;
 		}
-		return info.isMatchingType(newInfo) && info.isIdenticalInfo(newInfo) && info.isIdenticalInfo(newInfo);
+		return info.isMatchingType(newInfo) && info.isMatchingInfo(newInfo) && info.isIdenticalInfo(newInfo);
 	}
 
 	public static int getName(String name) {
@@ -307,5 +324,15 @@ public class InfoHelper {
 
 	public static IMonitorInfo loadInfo(int id, NBTTagCompound tag) {
 		return NBTHelper.instanceNBTSyncable(getInfoType(id), tag);
+	}
+
+	public static INodeFilter readFilterFromNBT(NBTTagCompound tag) {
+		return NBTHelper.instanceNBTSyncable(LogisticsASMLoader.filterClasses.get(tag.getString("id")), tag);
+	}
+
+	public static NBTTagCompound writeFilterToNBT(NBTTagCompound tag, INodeFilter filter, SyncType type) {
+		tag.setString("id", filter.getNodeID());
+		filter.writeData(tag, type);
+		return tag;
 	}
 }
