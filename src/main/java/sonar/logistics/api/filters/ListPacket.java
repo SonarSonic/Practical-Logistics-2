@@ -1,6 +1,6 @@
 package sonar.logistics.api.filters;
 
-public enum FilterPacket {
+public enum ListPacket {
 	ADD,
 	REMOVE,
 	MOVE_UP,

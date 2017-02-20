@@ -40,7 +40,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.filters.FilterList;
-import sonar.logistics.api.filters.FilterPacket;
+import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.filters.FluidFilter;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.filters.IItemFilter;
@@ -50,6 +50,7 @@ import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.nodes.IFilteredNode;
+import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
@@ -110,14 +111,21 @@ public class GuiFilterList extends GuiSelectionList {
 
 			break;
 		case LIST:
-			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 6, guiTop + 6, 32, 48, "New Item Filter"));
-			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 6 + 20, guiTop + 6, 32, 80, "New Ore Dict Filter"));
-			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 6 + 20 * 2, guiTop + 6, 32, 64, "New Fluid Filter"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 6 + 20 * 3, guiTop + 6, 32, 0, "Move Up"));
-			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 6 + 20 * 4, guiTop + 6, 32, 16, "Move Down"));
-			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + 6 + 20 * 5, guiTop + 6, 32, 32, "Delete"));
-			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + 6 + 20 * 6, guiTop + 6, 32, 96, "Clear All"));
-			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + 6 + 20 * 7, guiTop + 6, 32, 96 + 16, "Channels"));
+			int start = 12;
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 32, 48, "New Item Filter"));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20, guiTop + 6, 32, 80, "New Ore Dict Filter"));
+			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 64, "New Fluid Filter"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 0, "Move Up"));
+			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 16, "Move Down"));
+			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 20 * 5, guiTop + 6, 32, 32, "Delete"));
+			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 20 * 6, guiTop + 6, 32, 96, "Clear All"));
+			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 20 * 7, guiTop + 6, 32, 96 + 16, "Channels"));
+			boolean itemTransfer = tile.isTransferEnabled(TransferType.ITEMS);
+			this.buttonList.add(new LogisticsButton(this, 8, guiLeft + start + 20 * 8, guiTop + 6, itemTransfer ? 16 : 0, 80, "Item Transfer: " + itemTransfer));
+			boolean fluidTransfer = tile.isTransferEnabled(TransferType.FLUID);
+			this.buttonList.add(new LogisticsButton(this, 9, guiLeft + start + 20 * 9, guiTop + 6, fluidTransfer ? 16 : 0, 96, "Fluid Transfer: " + fluidTransfer));
+			boolean energyTransfer = tile.isTransferEnabled(TransferType.ENERGY);
+			this.buttonList.add(new LogisticsButton(this, 10, guiLeft + start + 20 * 10, guiTop + 6, energyTransfer ? 16 : 0, 96+16, "Energy Transfer: " + energyTransfer));
 			break;
 		case ORE_FILTER:
 			this.buttonList.add(new GuiButton(-1, guiLeft + 6, guiTop + 6, 60, 20, currentFilter.getTransferMode().name()));
@@ -141,16 +149,8 @@ public class GuiFilterList extends GuiSelectionList {
 		}
 	}
 
-	public double listScale() {
-		return 1;
-	}
-
 	public int ySize() {
 		return 256;
-	}
-
-	public int listSize() {
-		return (int) Math.floor((166 - 29) / listHeight);
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -221,26 +221,38 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			case 3:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.MOVE_UP, currentFilter));
+					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
 				}
 				break;
 			case 4:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.MOVE_DOWN, currentFilter));
+					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
 				}
 				break;
 			case 5:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.REMOVE, currentFilter));
+					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
 				}
 				break;
 			case 6:
-				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.CLEAR));
+				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			case 7:
 				if (tile instanceof IFlexibleGui) {
-					FlexibleGuiHandler.changeGui((IFlexibleGui) tile, 1, player.getEntityWorld(), player);
+					FlexibleGuiHandler.changeGui((IFlexibleGui) tile, 1, 0, player.getEntityWorld(), player);
 				}
+				break;
+			case 8:
+				tile.setTransferType(TransferType.ITEMS, !tile.isTransferEnabled(TransferType.ITEMS));
+				reset();
+				break;
+			case 9:
+				tile.setTransferType(TransferType.FLUID, !tile.isTransferEnabled(TransferType.FLUID));
+				reset();
+				break;
+			case 10:
+				tile.setTransferType(TransferType.ENERGY, !tile.isTransferEnabled(TransferType.ENERGY));
+				reset();
 				break;
 			}
 
@@ -272,7 +284,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 	public void changeState(GuiState state) {
 		if (state == GuiState.LIST && currentFilter != null) {
-			Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.ADD, currentFilter));
+			Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
 		}
 		this.state = state;
 		this.xSize = 182 + 66;
@@ -285,13 +297,6 @@ public class GuiFilterList extends GuiSelectionList {
 		this.reset();
 	}
 
-	public void preRender() {
-
-	}
-
-	public void postRender() {
-	}
-
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		switch (state) {
@@ -300,8 +305,6 @@ public class GuiFilterList extends GuiSelectionList {
 			// GL11.glEnable(GL11.GL_DEPTH_TEST);
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			renderStrings(x, y);
-
-			preRender();
 			ArrayList list = (ArrayList) getGridList().clone();
 			if (list != null && !list.isEmpty()) {
 				int start = (int) (getGridSize(list) / 12 * scroller.getCurrentScroll());
@@ -319,8 +322,6 @@ public class GuiFilterList extends GuiSelectionList {
 					}
 				}
 			}
-			postRender();
-
 			if (x - guiLeft >= 13 && x - guiLeft <= 13 + (12 * 18) && y - guiTop >= 32 && y - guiTop <= 32 + (7 * 18)) {
 				int start = (int) (getGridSize(list) / 12 * scroller.getCurrentScroll());
 				int X = (x - guiLeft - 13) / 18;
@@ -364,19 +365,18 @@ public class GuiFilterList extends GuiSelectionList {
 		case FLUID_FILTER:
 			break;
 		case ITEM_FILTER:
-
 			break;
 		case LIST:
 			INodeFilter selection = (INodeFilter) info;
 			if (selection instanceof ItemFilter && this.player.inventory.getItemStack() != null) {
 				ItemFilter filter = (ItemFilter) selection;
 				filter.addItem(new StoredItemStack(this.player.inventory.getItemStack(), 1));
-				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.ADD, selection));
+				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
 				return;
 			}
 			if (selection instanceof FluidFilter && this.player.inventory.getItemStack() != null) {
 				addFluidToFilter(selection, this.player.inventory.getItemStack());
-				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), FilterPacket.ADD, selection));
+				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
 				return;
 			}
 
@@ -429,11 +429,15 @@ public class GuiFilterList extends GuiSelectionList {
 	}
 
 	@Override
+	public boolean isPairedInfo(Object info) {
+		return false;
+	}
+
+	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (state == GuiState.LIST) {
 			((INodeFilter) info).renderInfoInList(this, yPos);
 		} else if (state == GuiState.ORE_FILTER) {
-
 			GlStateManager.scale(0.75, 0.75, 0.75);
 			FontHelper.text("Ore Filter", 16, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
 			FontHelper.text("Type: " + info, 88, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
@@ -454,9 +458,6 @@ public class GuiFilterList extends GuiSelectionList {
 			}
 			GlStateManager.translate(0, -12, 0);
 		}
-		// FontHelper.text(info.getNodeID(), InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
-		/// FontHelper.text(directInfo.getClientObject(), InfoRenderer.objectLeft, yPos, colour);
-		// FontHelper.text(directInfo.getClientType(), InfoRenderer.kindLeft, yPos, colour);
 	}
 
 	@Override
@@ -528,8 +529,6 @@ public class GuiFilterList extends GuiSelectionList {
 		} else {
 			super.keyTyped(c, i);
 		}
-
-		/* if (nameField.isFocused()) { if (c == 13 || c == 27) { nameField.setFocused(false); } else { nameField.textboxKeyTyped(c, i); final String text = nameField.getText(); setString((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text); } } else { super.keyTyped(c, i); } */
 	}
 
 	public void setString(String string) {
@@ -558,11 +557,6 @@ public class GuiFilterList extends GuiSelectionList {
 	@Override
 	public int getColour(int i, int type) {
 		return LogisticsColours.getDefaultSelection().getRGB();
-	}
-
-	@Override
-	public boolean isPairedInfo(Object info) {
-		return false;
 	}
 
 	// grid
@@ -604,7 +598,6 @@ public class GuiFilterList extends GuiSelectionList {
 			StoredItemStack stored = (StoredItemStack) selection;
 			RenderHelper.saveBlendState();
 			ItemStack stack = stored.item;
-			// GlStateManager.disableDepth();
 			RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
 			RenderHelper.renderStoredItemStackOverlay(stack, 0, 13 + (x * 18), 32 + (y * 18), null, true);
 			RenderHelper.restoreBlendState();
@@ -619,10 +612,6 @@ public class GuiFilterList extends GuiSelectionList {
 				GL11.glPopMatrix();
 			}
 		}
-	}
-
-	public void onSelectionHovered(INodeFilter info, int x, int y) {
-		/* //GlStateManager.disableDepth(); List list = new ArrayList(); list.add((TextFormatting.GRAY) + "List Type: " + info.getListType()); if(info instanceof ItemFilter){ ItemFilter filter = (ItemFilter) info; list.add((TextFormatting.GRAY) + "Use NBT: " + (filter.matchNBT.getObject() ? TextFormatting.WHITE : "") + filter.matchNBT); list.add((TextFormatting.GRAY) + "Use OreDict: " + (filter.matchOreDict.getObject() ? TextFormatting.WHITE : "") + filter.matchOreDict); list.add((TextFormatting.GRAY) + "Ignore Damage: " + (filter.ignoreDamage.getObject() ? TextFormatting.WHITE : "") + filter.ignoreDamage); list.add((TextFormatting.GRAY) + "Use Modid: " + (filter.matchModid.getObject() ? TextFormatting.WHITE : "") + filter.matchModid); list.add((TextFormatting.GRAY) + "Items: " + filter.list.objs.size()); //FontRenderer font = stackFilter.getFilters().get(0).getItem().getFontRenderer(stackFilter.getFilters().get(0)); } drawSpecialToolTip(list, x, y, this.fontRendererObj); */
 	}
 
 	public void renderStrings(int x, int y) {
@@ -641,6 +630,15 @@ public class GuiFilterList extends GuiSelectionList {
 		return null;
 	}
 
+	public double listScale() {
+		return 1;
+	}
+
+	public int listSize() {
+		return (int) Math.floor((166 - 29) / listHeight);
+	}
+
+	// grid
 	public int getGridSize(ArrayList list) {
 		return getGridList() == null ? 0 : list.size();
 	}
@@ -656,6 +654,10 @@ public class GuiFilterList extends GuiSelectionList {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		this.renderPlayerInventory(40, 173);
 
+		if (state == GuiState.FLUID_FILTER || state == GuiState.ITEM_FILTER) {
+			drawRect(guiLeft + 12, guiTop + 31, guiLeft + 228, guiTop + 157, LogisticsColours.grey_base.getRGB());
+			drawRect(guiLeft + 13, guiTop + 32, guiLeft + 227, guiTop + 156, LogisticsColours.blue_overlay.getRGB());
+		}
 		drawTransparentRect(guiLeft + 12, guiTop + 170, guiLeft + xSize - 12, guiTop + 252, LogisticsColours.grey_base.getRGB());
 		drawTransparentRect(guiLeft + 13, guiTop + 171, guiLeft + xSize - 13, guiTop + 251, LogisticsColours.blue_overlay.getRGB());
 		RenderHelper.restoreBlendState();
@@ -685,7 +687,6 @@ public class GuiFilterList extends GuiSelectionList {
 			case 2:
 				text = (filter.ignoreDamage.getObject() ? TextFormatting.WHITE : TextFormatting.GRAY) + "Ignore Damage: " + filter.ignoreDamage;
 				break;
-
 			case 3:
 				text = (filter.matchModid.getObject() ? TextFormatting.WHITE : TextFormatting.GRAY) + "Use MODID: " + filter.matchModid;
 				break;
@@ -777,6 +778,5 @@ public class GuiFilterList extends GuiSelectionList {
 		}
 
 	}
-
 
 }

@@ -30,6 +30,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.network.PacketClickEventClient;
 
@@ -101,7 +102,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	@Override
 	public void setUUID(InfoUUID id, int pos) {
 		storedInfo.get(pos).setUUID(id);
-		markDirty();
+		markChanged();
 	}
 
 	@Override
@@ -113,12 +114,18 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		DisplayType type = display.getDisplayType();
 		for (int pos = 0; pos < layout.maxInfo; pos++) {
 			IDisplayInfo info = storedInfo.get(pos);
-			IMonitorInfo toDisplay = info.getSidedCachedInfo(true) == null ? InfoError.noData : info.getSidedCachedInfo(true);
+
 			GL11.glPushMatrix();
 			double[] translation = info.getRenderProperties().translation;
 			double[] scaling = info.getRenderProperties().scaling;
 			GL11.glTranslated(translation[0], translation[1], translation[2]);
-			toDisplay.renderInfo(this, info, scaling[0], scaling[1], scaling[2], pos);
+
+			if (info.getSidedCachedInfo(true) == null && !info.getUnformattedStrings().isEmpty()) {
+				InfoRenderer.renderNormalInfo(type, scaling[0], scaling[1], scaling[2], info.getFormattedStrings());
+			} else {
+				IMonitorInfo toDisplay = info.getSidedCachedInfo(true) == null ? InfoError.noData : info.getSidedCachedInfo(true);
+				toDisplay.renderInfo(this, info, scaling[0], scaling[1], scaling[2], pos);
+			}
 			GL11.glPopMatrix();
 		}
 	}

@@ -122,7 +122,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		super.onSyncPacketRequested(player);
 		if (isServer()) {
 			this.getViewersList().addViewer(player, ViewerType.FULL_INFO);
-			Logistics.getServerManager().sendLocalMonitorsToClient(this, player);
+			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(this, player);
 		}
 	}
 
@@ -284,7 +284,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	public void onGuiOpened(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch(id){
 		case 0:
-			Logistics.getServerManager().sendLocalMonitorsToClient(this, player);
+			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(this, player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}

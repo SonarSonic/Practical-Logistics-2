@@ -20,11 +20,11 @@ import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.helpers.InfoHelper;
 
-public class SyncFilterList extends SyncPart {
+public class SyncStatementList extends SyncPart {
 
 	public ArrayList<INodeFilter> objs = new ArrayList();
 
-	public SyncFilterList(int id) {
+	public SyncStatementList(int id) {
 		super(id);
 	}
 
@@ -35,45 +35,6 @@ public class SyncFilterList extends SyncPart {
 	public void setObjects(ArrayList<INodeFilter> list) {
 		objs = list;
 		markChanged();
-	}
-
-	public boolean matches(StoredItemStack stack, NodeTransferMode mode) {
-		boolean hasWhiteLists = false;
-		boolean whitelisted = objs.isEmpty();
-		for (INodeFilter filter : objs) {
-			if (filter.getTransferMode().matches(mode) && filter instanceof IItemFilter) {
-				IItemFilter itemFilter = (IItemFilter) filter;
-				if (filter.getListType() == FilterList.BLACKLIST) {
-					if (itemFilter.canTransferItem(stack)) {
-						return false;
-					}
-				}
-				if (filter.getListType() == FilterList.WHITELIST && !whitelisted) {
-					hasWhiteLists=true;
-					whitelisted = itemFilter.canTransferItem(stack);
-				}
-			}
-		}
-		return !hasWhiteLists || whitelisted;
-	}
-
-	public boolean matches(StoredFluidStack stack, NodeTransferMode mode) {
-		boolean whitelisted = false;
-		for (INodeFilter filter : objs) {
-			if (filter.getTransferMode().matches(mode) && filter instanceof IFluidFilter) {
-				IFluidFilter fluidFilter = (IFluidFilter) filter;
-				if (filter.getListType() == FilterList.BLACKLIST) {
-					if (!fluidFilter.canTransferFluid(stack)) {
-						return false;
-					}
-
-				}
-				if (filter.getListType() == FilterList.WHITELIST && !whitelisted) {
-					whitelisted = fluidFilter.canTransferFluid(stack);
-				}
-			}
-		}
-		return whitelisted;
 	}
 
 	public void addObject(INodeFilter object) {
@@ -130,8 +91,8 @@ public class SyncFilterList extends SyncPart {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof SyncFilterList) {
-			return ((SyncFilterList) obj).getObjects().equals(this.objs);
+		if (obj != null && obj instanceof SyncStatementList) {
+			return ((SyncStatementList) obj).getObjects().equals(this.objs);
 		}
 		return false;
 	}

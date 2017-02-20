@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.widgets.SonarScroller;
@@ -129,12 +130,9 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 		//GlStateManager.disableCull();
 	}
 
-	public void preRender() {
+	public void preRender() {}
 
-	}
-
-	public void postRender() {
-	}
+	public void postRender() {}
 
 	public void handleMouseInput() throws IOException {
 		super.handleMouseInput();
@@ -152,8 +150,6 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		this.renderPlayerInventory(40, 173);
-
-		drawTexturedModalRect(this.guiLeft+102, this.guiTop+8, 0, 0, 18, 18);
 
 		drawRect(guiLeft+12, guiTop+ 31, guiLeft+228, guiTop+ 157, LogisticsColours.grey_base.getRGB());
 		drawRect(guiLeft+13, guiTop+ 32, guiLeft+227, guiTop+ 156, LogisticsColours.blue_overlay.getRGB());

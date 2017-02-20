@@ -300,7 +300,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 
 	@Override
 	public double[] getScaling() {
-		double max = Math.min(this.height.getObject().intValue() + 1, this.width.getObject().intValue() + 1);
+		double max = Math.min(this.height.getObject().intValue() + 1.2, this.width.getObject().intValue() + 1);
 		return new double[] { this.getDisplayType().width + this.width.getObject().intValue(), this.getDisplayType().height + this.height.getObject().intValue(), max / 100 };
 	}
 

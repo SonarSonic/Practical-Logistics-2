@@ -1,5 +1,6 @@
 package sonar.logistics.logic.comparators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import sonar.logistics.api.asm.LogicComparator;
@@ -15,8 +16,23 @@ public class NumberComparator implements ILogicComparator<Number> {
 	}
 
 	@Override
-	public List<LogicOperator> getValidOperators() {
+	public ArrayList<LogicOperator> getValidOperators() {
 		return LogicOperator.numOperators;
+	}
+
+	@Override
+	public boolean isValidObject(Object obj) {
+		return obj instanceof Number;
+	}
+
+	@Override
+	public boolean isLoadable() {
+		return true;
+	}
+
+	@Override
+	public String getName() {
+		return "num";
 	}
 
 }

@@ -8,18 +8,19 @@ import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.common.containers.ContainerArray.ArraySlot;
 import sonar.logistics.common.multiparts.ArrayPart;
 
-public class ContainerFilterList extends ContainerMultipartSync {
+public class ContainerStatementList extends ContainerMultipartSync {
 
-	public IFilteredTile tile;
+	public ILogisticsTile tile;
 
-	public ContainerFilterList(EntityPlayer player, IFilteredTile tile) {
+	public ContainerStatementList(EntityPlayer player, ILogisticsTile tile) {
 		super((SonarMultipart) tile);
 		this.tile = tile;
-
+		/*
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
 				this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 41 + j * 18, 174 + i * 18));
@@ -30,6 +31,7 @@ public class ContainerFilterList extends ContainerMultipartSync {
 		for (int i = 0; i < 9; ++i) {
 			this.addSlotToContainer(new Slot(player.inventory, i, 41 + i * 18, 232));
 		}
+		*/
 	}
 		
 	public boolean syncInventory() {
@@ -51,6 +53,5 @@ public class ContainerFilterList extends ContainerMultipartSync {
 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		tile.getViewersList().removeViewer(player, ViewerType.CHANNEL);
 	}
 }

@@ -1,5 +1,6 @@
 package sonar.logistics.logic.comparators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import sonar.logistics.api.asm.LogicComparator;
@@ -16,8 +17,23 @@ public class BooleanComparator implements ILogicComparator<Boolean> {
 	}
 
 	@Override
-	public List<LogicOperator> getValidOperators() {
+	public ArrayList<LogicOperator> getValidOperators() {
 		return LogicOperator.switchOperators;
+	}
+
+	@Override
+	public boolean isValidObject(Object obj) {
+		return obj instanceof Boolean;
+	}
+
+	@Override
+	public boolean isLoadable() {
+		return true;
+	}
+
+	@Override
+	public String getName() {
+		return "bool";
 	}
 
 }

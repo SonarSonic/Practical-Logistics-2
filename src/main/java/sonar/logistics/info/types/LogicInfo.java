@@ -1,6 +1,6 @@
 package sonar.logistics.info.types;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.ObjectType;
@@ -17,6 +17,7 @@ import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.connections.monitoring.InfoMonitorHandler;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoRenderer;
@@ -38,7 +39,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	public LogicPath path;
 
 	{
-		syncParts.addParts(identifier, registryType, obj, isCategory);
+		syncList.addParts(identifier, registryType, obj, isCategory);
 	}
 
 	public LogicInfo() {
@@ -182,10 +183,15 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	}
 
 	@Override
-	public void getComparableObjects(Map<String, Object> objects) {
-		objects.put("raw info", obj.get());
-		objects.put("object type", obj.objectType);
-		objects.put("identifier", identifier.getObject());
+	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+		objects.add(new ComparableObject(this, "raw info", obj.get()));
+		objects.add(new ComparableObject(this, "object type", obj.objectType));
+		objects.add(new ComparableObject(this, "identifier", identifier.getObject()));
+		return objects;
+	}
+	
+	public String toString(){
+		return this.getClientIdentifier() + ": " + this.getClientObject();
 	}
 
 }

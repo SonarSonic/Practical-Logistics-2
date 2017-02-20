@@ -41,6 +41,7 @@ import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.viewers.IViewersList;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
+import sonar.logistics.common.multiparts.LogisticsMultipart;
 import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.CableHelper;
@@ -364,7 +365,7 @@ public class ServerInfoManager implements IInfoManager {
 		return monitors;
 	}
 
-	public void sendLocalMonitorsToClient(ScreenMultipart part, EntityPlayer player) {
+	public void sendLocalMonitorsToClientFromScreen(ScreenMultipart part, EntityPlayer player) {
 		ArrayList<ILogicMonitor> monitors = new ArrayList<ILogicMonitor>();
 		UUID identity = part.getIdentity();
 		if (part instanceof ILargeDisplay) {
@@ -377,6 +378,16 @@ public class ServerInfoManager implements IInfoManager {
 			monitors = getLocalMonitors(monitors, part);
 		}
 
+		ArrayList<ClientLogicReader> clientMonitors = new ArrayList();
+		monitors.forEach(monitor -> {
+			monitor.getViewersList().addViewer(player, ViewerType.TEMPORARY);
+			clientMonitors.add(new ClientLogicReader(monitor));
+		});
+		Logistics.network.sendTo(new PacketLogicMonitors(clientMonitors, identity), (EntityPlayerMP) player);
+	}
+
+	public void sendLocalMonitorsToClient(LogisticsMultipart part, UUID identity, EntityPlayer player) {
+		ArrayList<ILogicMonitor> monitors = part.getNetwork().getLocalMonitors();
 		ArrayList<ClientLogicReader> clientMonitors = new ArrayList();
 		monitors.forEach(monitor -> {
 			monitor.getViewersList().addViewer(player, ViewerType.TEMPORARY);

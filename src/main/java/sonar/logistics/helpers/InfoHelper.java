@@ -34,6 +34,7 @@ import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.common.multiparts.LogisticsMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.logic.comparators.ILogicComparator;
 
 public class InfoHelper {
 
@@ -81,7 +82,7 @@ public class InfoHelper {
 			if (type == BlockInteractionType.RIGHT) {
 				LogisticsAPI.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
 			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
-				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack.setStackSize(1000));
+				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack.copy().setStackSize(Math.min(fluidStack.stored, 1000)));
 			} else if (fluidStack != null && type == BlockInteractionType.SHIFT_LEFT) {
 				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack);
 			}
@@ -335,4 +336,5 @@ public class InfoHelper {
 		filter.writeData(tag, type);
 		return tag;
 	}
+
 }

@@ -57,14 +57,14 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		super(width, heightMin, heightMax);
 		this.handlerID = handlerID;
 		this.syncList.addParts(list, uuid, hasMonitor);
-		selectedInfo = new SyncMonitoredType<T>(-4);
+		selectedInfo = new SyncMonitoredType<T>(-5);
 	}
 
 	public MonitorMultipart(String handlerID, EnumFacing face, double width, double heightMin, double heightMax) {
 		super(face, width, heightMin, heightMax);
 		this.handlerID = handlerID;
 		this.syncList.addParts(list, uuid, hasMonitor);
-		selectedInfo = new SyncMonitoredType<T>(-4);
+		selectedInfo = new SyncMonitoredType<T>(-5);
 	}
 
 	public void updateAllInfo() {

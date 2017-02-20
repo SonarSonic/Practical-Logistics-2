@@ -18,13 +18,17 @@ import sonar.core.SonarCore;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
+import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.core.network.PacketStackUpdate;
+import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.filters.ListPacket;
+import sonar.logistics.api.logistics.EmitterStatement;
+import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.nodes.NodeTransferMode;
@@ -32,22 +36,22 @@ import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.helpers.InfoHelper;
 
 /** called when the player clicks an item in the inventory reader */
-public class PacketNodeFilter extends PacketMultipart {
+public class PacketEmitterStatement extends PacketMultipart {
 
-	public INodeFilter filter;
+	public EmitterStatement statement;
 	public ListPacket packetType;
 
-	public PacketNodeFilter() {
+	public PacketEmitterStatement() {
 	}
 
-	public PacketNodeFilter(UUID partUUID, BlockPos pos, ListPacket packetType) {
+	public PacketEmitterStatement(UUID partUUID, BlockPos pos, ListPacket packetType) {
 		super(partUUID, pos);
 		this.packetType = packetType;
 	}
 
-	public PacketNodeFilter(UUID partUUID, BlockPos pos, ListPacket packetType, INodeFilter filter) {
+	public PacketEmitterStatement(UUID partUUID, BlockPos pos, ListPacket packetType, EmitterStatement filter) {
 		super(partUUID, pos);
-		this.filter = filter;
+		this.statement = filter;
 		this.packetType = packetType;
 	}
 
@@ -55,7 +59,7 @@ public class PacketNodeFilter extends PacketMultipart {
 	public void fromBytes(ByteBuf buf) {
 		super.fromBytes(buf);
 		if (buf.readBoolean()) {
-			filter = InfoHelper.readFilterFromNBT(ByteBufUtils.readTag(buf));
+			statement = NBTHelper.instanceNBTSyncable(EmitterStatement.class, ByteBufUtils.readTag(buf));
 		}
 		packetType = ListPacket.values()[buf.readInt()];
 	}
@@ -63,43 +67,43 @@ public class PacketNodeFilter extends PacketMultipart {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		super.toBytes(buf);
-		buf.writeBoolean(filter != null);
-		if (filter != null){
-			ByteBufUtils.writeTag(buf, InfoHelper.writeFilterToNBT(new NBTTagCompound(), filter, SyncType.SAVE));
+		buf.writeBoolean(statement != null);
+		if (statement != null) {
+			ByteBufUtils.writeTag(buf, statement.writeData(new NBTTagCompound(), SyncType.SAVE));
 		}
 		buf.writeInt(packetType.ordinal());
 	}
 
-	public static class Handler extends PacketMultipartHandler<PacketNodeFilter> {
+	public static class Handler extends PacketMultipartHandler<PacketEmitterStatement> {
 		@Override
-		public IMessage processMessage(PacketNodeFilter message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
+		public IMessage processMessage(PacketEmitterStatement message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
 			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 
 				@Override
 				public void run() {
 					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-					if (player == null || player.getEntityWorld().isRemote || !(part instanceof IFilteredTile)) {
+					if (player == null || player.getEntityWorld().isRemote || !(part instanceof ILogisticsTile)) {
 						return;
 					}
-					IFilteredTile tile = (IFilteredTile) part;
-					SyncFilterList filters = tile.getFilters();
+					ILogisticsTile tile = (ILogisticsTile) part;
+					SyncNBTAbstractList<EmitterStatement> filters = tile.getStatements();
 					switch (message.packetType) {
 					case ADD:
-						for (INodeFilter filter : filters.getObjects()) {
-							if (filter.equals(message.filter)) {
-								filter.readData(message.filter.writeData(new NBTTagCompound(), SyncType.SAVE), SyncType.SAVE);
+						for (EmitterStatement filter : filters.getObjects()) {
+							if (filter.equals(message.statement)) {
+								filter.readData(message.statement.writeData(new NBTTagCompound(), SyncType.SAVE), SyncType.SAVE);
 								filters.markChanged();
 								return;
 							}
 						}
-						filters.addObject(message.filter);
+						filters.addObject(message.statement);
 						break;
 					case MOVE_DOWN:
 
 						int listPos = -1;
 						for (int i = 0; i < filters.objs.size(); i++) {
-							INodeFilter filter = filters.getObjects().get(i);
-							if (filter.equals(message.filter)) {
+							EmitterStatement filter = filters.getObjects().get(i);
+							if (filter.equals(message.statement)) {
 								listPos = i;
 							}
 						}
@@ -113,8 +117,8 @@ public class PacketNodeFilter extends PacketMultipart {
 					case MOVE_UP:
 						listPos = -1;
 						for (int i = 0; i < filters.objs.size(); i++) {
-							INodeFilter filter = filters.getObjects().get(i);
-							if (filter.equals(message.filter)) {
+							EmitterStatement filter = filters.getObjects().get(i);
+							if (filter.equals(message.statement)) {
 								listPos = i;
 							}
 						}
@@ -126,7 +130,7 @@ public class PacketNodeFilter extends PacketMultipart {
 						}
 						break;
 					case REMOVE:
-						filters.removeObject(message.filter);
+						filters.removeObject(message.statement);
 						break;
 					case CLEAR:
 						filters.objs.clear();

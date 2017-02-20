@@ -271,7 +271,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			INameableInfo directInfo = (INameableInfo) monitorInfo;
 			FontHelper.text(directInfo.getClientIdentifier(), 11, top + 6, LogisticsColours.white_text.getRGB());
 		} else {
-			FontHelper.text("NO DATA", 11, top + 6, LogisticsColours.white_text.getRGB());
+			FontHelper.text(!info.getUnformattedStrings().isEmpty() ?"CUSTOM DATA" :"NO DATA", 11, top + 6, LogisticsColours.white_text.getRGB());
 		}
 	}
 

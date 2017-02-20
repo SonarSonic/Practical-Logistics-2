@@ -5,21 +5,40 @@ import java.util.ArrayList;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.helpers.FontHelper;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.GuiInventoryReader.FilterButton;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
+import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfo;
 
 public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 
 	public InfoReaderPart part;
-	
+	public EntityPlayer player;
+
 	public GuiInfoReader(EntityPlayer player, InfoReaderPart tile) {
 		super(new ContainerInfoReader(player, tile), tile);
+		this.player = player;
 		this.part = tile;
 		this.xSize = 182 + 66;
+	}
+
+	public void initGui() {
+		super.initGui();
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 9, guiTop + 7, 32, 96 + 16, "Channels"));
+	}
+
+	public void actionPerformed(GuiButton button) {
+		super.actionPerformed(button);
+		if (button != null) {
+			if (button.id == 1) {
+				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
+			}
+		}
 	}
 
 	@Override
@@ -30,7 +49,11 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	public void setInfo() {
-		infoList = part.getMonitoredList().cloneInfo();
+		if (part.getChannels(0).isEmpty()) {
+			infoList = MonitoredList.newMonitoredList(part.getNetworkID());
+		} else {
+			infoList = part.getMonitoredList().cloneInfo();
+		}
 	}
 
 	@Override
@@ -48,7 +71,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 
 	@Override
 	public boolean isSelectedInfo(LogicInfo info) {
-		if(!info.isValid() || info.isHeader()){
+		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
 		ArrayList<IMonitorInfo> selectedInfo = part.getSelectedInfo();
@@ -62,7 +85,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 
 	@Override
 	public boolean isPairedInfo(LogicInfo info) {
-		if(!info.isValid() || info.isHeader()){
+		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
 		ArrayList<IMonitorInfo> pairedInfo = part.getPairedInfo();
@@ -95,4 +118,5 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 		}
 		return LogisticsColours.layers[1].getRGB();
 	}
+
 }

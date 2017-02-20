@@ -21,8 +21,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.FluidReader;
+import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
 import sonar.logistics.api.readers.FluidReader.SortingType;
 import sonar.logistics.common.containers.ContainerFluidReader;
@@ -54,7 +56,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 	public void initGui() {
 		super.initGui();
-		this.buttonList.add(new GuiButton(-1, guiLeft + 120 - (18 * 6), guiTop + 7, 65 + 3, 20, getSetting().getClientName()) {
+		this.buttonList.add(new GuiButton(-1, guiLeft  + 120 - (18 * 6), guiTop + 7, 65 + 3, 20, getSetting().getClientName()) {
 			public void drawButtonForegroundLayer(int x, int y) {
 				drawCreativeTabHoveringText(getSetting().getDescription(), x, y);
 			}
@@ -62,6 +64,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 		this.buttonList.add(new FilterButton(0, guiLeft + 193, guiTop + 9));
 		this.buttonList.add(new FilterButton(1, guiLeft + 193 + 18, guiTop + 9));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 193 + 18 * 2, guiTop + 9, 32, 96 + 16, "Channels"));
 		switch (getSetting()) {
 		case POS:
 			slotField = new GuiTextField(2, this.fontRendererObj, 195 - (18 * 6), 8, 34 + 14, 18);
@@ -80,7 +83,6 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			if (button.id == -1) {
 				part.setting.incrementEnum();
 				part.sendByteBufPacket(2);
-				switchState();
 				reset();
 			}
 			if (button.id == 0) {
@@ -91,11 +93,10 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 				part.sortingType.incrementEnum();
 				part.sendByteBufPacket(6);
 			}
+			if (button.id == 2) {
+				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
+			}
 		}
-	}
-
-	public void switchState() {
-		/* Logistics.network.sendToServer(new PacketGuiChange(part.getPos(), getSetting() == STACK, LogisticsGui.fluidReader)); if (this.mc.thePlayer.openContainer instanceof ContainerFluidReader) { ((ContainerFluidReader) this.mc.thePlayer.openContainer).addSlots(part, player, getSetting() == STACK); } this.inventorySlots = this.mc.thePlayer.openContainer; */
 	}
 
 	@Override
@@ -207,25 +208,26 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {
-		// FontHelper.textOffsetCentre(FontHelper.translate("tile.InventoryReader.name").split("
-		// ")[0],
-		// 197, 8, 1);
-		// FontHelper.textOffsetCentre(FontHelper.translate("tile.InventoryReader.name").split("
-		// ")[1],
-		// 197, 18, 1);
+	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+		if (this.getSetting() == FluidReader.Modes.SELECTED) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(playerInv);
+			drawTexturedModalRect(guiLeft+102, guiTop+8, 0, 0, 18, 18);
+		}
+		super.drawGuiContainerBackgroundLayer(var1, var2, var3);		
 	}
-
-	public void preRender() {
+	
+	public void preRender() {		
+		final int br = 16 << 20 | 16 << 4;
+		final int var11 = br % 65536;
+		final int var12 = br / 65536;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var11 * 0.8F, var12 * 0.8F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.disableBlend();
 		if (getGridList() != null) {
-			final int br = 16 << 20 | 16 << 4;
-			final int var11 = br % 65536;
-			final int var12 = br / 65536;
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var11 * 0.8F, var12 * 0.8F);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		}
+		
 	}
 
 	public void postRender() {
@@ -323,5 +325,11 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			return 0;
 		}
 
+	}
+
+	@Override
+	public void renderStrings(int x, int y) {
+		// TODO Auto-generated method stub
+		
 	}
 }

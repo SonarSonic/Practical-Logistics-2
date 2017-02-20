@@ -116,8 +116,10 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 				for (ViewerTally tally : (ArrayList<ViewerTally>) entry.getValue().clone()) {
 					switch (tally.type) {
 					case CHANNEL:
-						if (!coordTag.hasNoTags())
+						if (!coordTag.hasNoTags()){
 							Logistics.network.sendTo(new PacketMonitoredCoords(getNetworkID(), coordTag), (EntityPlayerMP) entry.getKey());
+							tally.origin.removeViewer(entry.getKey(), ViewerType.CHANNEL);
+						}
 						break;
 					case INFO:
 						if (!tag.hasNoTags() && (!saveList.changed.isEmpty() || !saveList.removed.isEmpty()))
@@ -128,7 +130,6 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 						Logistics.network.sendTo(new PacketMonitoredList(monitor, new InfoUUID(monitor.getIdentity().hashCode(), 0), saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), (EntityPlayerMP) entry.getKey());
 						tally.origin.removeViewer(entry.getKey(), ViewerType.FULL_INFO);
 						tally.origin.addViewer(entry.getKey(), ViewerType.INFO);
-
 						//// THIS IS ADDED TO THE WRONG LIST. NOT THE CONNECTED DISPLAY
 						break;
 					case TEMPORARY:
@@ -208,7 +209,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 			Map<Entity, MonitoredList<?>> infoList = entityConnectionInfo.getOrDefault(type, new LinkedHashMap());
 			for (Entry<Entity, MonitoredList<?>> entry : infoList.entrySet()) {
 				MonitoredList<T> oldList = entry.getValue() == null ? MonitoredList.<T>newMonitoredList(getNetworkID()) : (MonitoredList<T>) entry.getValue();
-				if (coords.contains(entry.getKey())) {
+				if (coords.isEmpty() || coords.contains(entry.getKey())) {
 					MonitoredList<T> list = ((IEntityMonitorHandler) type).updateInfo(this, oldList, entry.getKey());
 					coordInfo.put(entry.getKey(), list);
 				} else {

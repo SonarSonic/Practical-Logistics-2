@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import sonar.core.helpers.ASMLoader;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.asm.CustomEntityHandler;
@@ -22,6 +23,8 @@ import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.ITileMonitorHandler;
+import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.logic.comparators.ILogicComparator;
 
 public class LogisticsASMLoader {
 
@@ -32,11 +35,23 @@ public class LogisticsASMLoader {
 	//public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap();
 	//public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap();
 	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = new LinkedHashMap();
+	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = new LinkedHashMap();
 	
 	public static LinkedHashMap<String, ITileMonitorHandler> tileMonitorHandlers = new LinkedHashMap();
 	public static LinkedHashMap<String, IEntityMonitorHandler> entityMonitorHandlers = new LinkedHashMap();
 
 	private LogisticsASMLoader() {}
+	
+	public static void init(FMLPreInitializationEvent event){
+		ASMDataTable asmDataTable = event.getAsmData();
+		LogisticsASMLoader.loadInfoTypes(asmDataTable);
+		LogisticsASMLoader.loadTileMonitorHandlers(asmDataTable);
+		LogisticsASMLoader.loadEntityMonitorHandlers(asmDataTable);
+		LogisticsASMLoader.loadNodeFilters(asmDataTable);
+		LogicInfoRegistry.infoRegistries.addAll(LogisticsASMLoader.getInfoRegistries(asmDataTable));
+		LogicInfoRegistry.customTileHandlers.addAll(LogisticsASMLoader.getCustomTileHandlers(asmDataTable));
+		LogicInfoRegistry.customEntityHandlers.addAll(LogisticsASMLoader.getCustomEntityHandlers(asmDataTable));
+	}
 
 	public static List<IInfoRegistry> getInfoRegistries(@Nonnull ASMDataTable asmDataTable) {
 		return ASMLoader.getInstances(asmDataTable, InfoRegistry.class, IInfoRegistry.class, true, false);
@@ -95,5 +110,6 @@ public class LogisticsASMLoader {
 			filterClasses.put(name, info.b);
 		}
 		Logistics.logger.info("Loaded: " + filterClasses.size() + " Filters");
-	}
+	}	
+	
 }

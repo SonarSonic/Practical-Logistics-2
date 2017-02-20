@@ -46,7 +46,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(2).setDefault(-1);
 
 	{
-		syncParts.addParts(monitorUUID, infoID, networkID);
+		syncList.addParts(monitorUUID, infoID, networkID);
 	}
 
 	public LogicInfoList() {

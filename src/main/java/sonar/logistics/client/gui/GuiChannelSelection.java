@@ -87,7 +87,7 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 	}
 
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && tile instanceof IFlexibleGui && SonarCore.instance.guiHandler.lastContainer != null) {
+		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && tile instanceof IFlexibleGui && SonarCore.instance.guiHandler.lastScreen != null) {
 			SonarCore.network.sendToServer(new PacketFlexibleCloseGui(tile.getCoords().getBlockPos()));
 		} else {
 			super.keyTyped(typedChar, keyCode);

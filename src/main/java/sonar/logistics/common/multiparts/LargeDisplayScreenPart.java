@@ -429,7 +429,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			Logistics.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
-			Logistics.getServerManager().sendLocalMonitorsToClient(part, player);
+			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(part, player);
 			break;
 		}
 	}

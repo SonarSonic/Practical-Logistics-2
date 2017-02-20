@@ -18,6 +18,7 @@ public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {
 	public GuiDataReceiver(DataReceiverPart tile) {
 		super(new ContainerDataReceiver(tile), tile);
 		this.tile = tile;
+		this.xSize = 182 + 66;
 	}
 
 	@Override

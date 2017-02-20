@@ -37,6 +37,8 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstractList;
+import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
@@ -50,6 +52,7 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.readers.ILogicMonitor;
@@ -79,11 +82,16 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public SyncEnum<NodeTransferMode> transferMode = new SyncEnum(NodeTransferMode.values(), 1).setDefault(NodeTransferMode.ADD);
 	public SyncFilterList filters = new SyncFilterList(2);
 	public IdentifiedCoordsList list = new IdentifiedCoordsList(3);
+	public SyncTagType.BOOLEAN connection = new SyncTagType.BOOLEAN(4);
+	public SyncTagType.BOOLEAN items = (BOOLEAN) new SyncTagType.BOOLEAN(5).setDefault(true);
+	public SyncTagType.BOOLEAN fluids = (BOOLEAN) new SyncTagType.BOOLEAN(6).setDefault(true);
+	public SyncTagType.BOOLEAN energy = (BOOLEAN) new SyncTagType.BOOLEAN(7).setDefault(true);
+	public SyncTagType.BOOLEAN gases = (BOOLEAN) new SyncTagType.BOOLEAN(8).setDefault(true);
 	public BlockCoords lastSelected = null;
 
 	public int ticks = 20;
 	{
-		syncList.addParts(transferMode, filters, list);
+		syncList.addParts(transferMode, filters, list, connection, items, fluids, energy);
 	}
 
 	public TransferNodePart() {
@@ -107,13 +115,15 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 					ArrayList<NodeConnection> tiles = network.getExternalBlocks(true);
 					for (NodeConnection entry : tiles) {
-						TileEntity netTile = entry.coords.getTileEntity();
-						if (netTile != null) {
-							EnumFacing dirFrom = transferMode.getObject().shouldRemove() ? getFacing() : entry.face;
-							EnumFacing dirTo = !transferMode.getObject().shouldRemove() ? getFacing() : entry.face;
-							TileEntity from = transferMode.getObject().shouldRemove() ? localTile : netTile;
-							TileEntity to = !transferMode.getObject().shouldRemove() ? localTile : netTile;
-							SonarAPI.getItemHelper().transferItems(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), this);
+						if (this.list.contains(entry.coords)) {
+							TileEntity netTile = entry.coords.getTileEntity();
+							if (netTile != null) {
+								EnumFacing dirFrom = transferMode.getObject().shouldRemove() ? getFacing() : entry.face;
+								EnumFacing dirTo = !transferMode.getObject().shouldRemove() ? getFacing() : entry.face;
+								TileEntity from = transferMode.getObject().shouldRemove() ? localTile : netTile;
+								TileEntity to = !transferMode.getObject().shouldRemove() ? localTile : netTile;
+								SonarAPI.getItemHelper().transferItems(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), this);
+							}
 						}
 					}
 
@@ -126,6 +136,10 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	@Override
 	public void addConnections(ArrayList<NodeConnection> connections) {
+		if (connection.getObject()) {
+			BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());
+			connections.add(new NodeConnection(this, tileCoords, getFacing()));
+		}
 	}
 
 	@Override
@@ -192,6 +206,15 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		case -3:
 			BlockCoords.writeToBuf(buf, lastSelected);
 			break;
+		case 1:
+			list.writeToBuf(buf);
+			break;
+		case 2:
+			items.writeToBuf(buf);
+			fluids.writeToBuf(buf);
+			energy.writeToBuf(buf);
+			gases.writeToBuf(buf);
+			break;
 		}
 	}
 
@@ -201,7 +224,16 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		case -3:
 			BlockCoords coords = BlockCoords.readFromBuf(buf);
 			list.modifyCoords(ChannelType.UNLIMITED, coords);
-			sendByteBufPacket(list.tagID);
+			sendByteBufPacket(1);
+			break;
+		case 1:
+			list.readFromBuf(buf);
+			break;
+		case 2:
+			items.readFromBuf(buf);
+			fluids.readFromBuf(buf);
+			energy.readFromBuf(buf);
+			gases.readFromBuf(buf);
 			break;
 		}
 	}
@@ -269,6 +301,48 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
+	}
+
+	@Override
+	public boolean isTransferEnabled(TransferType type) {
+		switch (type) {
+		case ENERGY:
+			return energy.getObject();
+		case FLUID:
+			return fluids.getObject();
+		case GAS:
+			return gases.getObject();
+		case INFO:
+			break;
+		case ITEMS:
+			return items.getObject();
+		default:
+			break;
+
+		}
+		return false;
+	}
+
+	@Override
+	public void setTransferType(TransferType type, boolean enable) {
+		switch (type) {
+		case ENERGY:
+			energy.setObject(enable);
+			break;
+		case FLUID:
+			fluids.setObject(enable);
+			break;
+		case GAS:
+			gases.setObject(enable);
+		case INFO:
+			break;
+		case ITEMS:
+			items.setObject(enable);
+			break;
+		default:
+			break;
+		}
+		this.sendByteBufPacket(2);
 	}
 
 }

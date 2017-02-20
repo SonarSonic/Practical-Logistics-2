@@ -34,9 +34,7 @@ public class CableManager extends AbstractConnectionManager<IDataCable> {
 	}
 
 	@Override
-	public void onConnectionRemoved(int registryID, IDataCable added) {
-		
-	}
+	public void onConnectionRemoved(int registryID, IDataCable added) {}
 	
 
 }

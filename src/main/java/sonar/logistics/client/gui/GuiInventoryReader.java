@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -24,6 +25,8 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
+import sonar.logistics.api.readers.FluidReader;
+import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
@@ -58,7 +61,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		this.buttonList.add(new GuiButton(-1, guiLeft + 120 - (18 * 6), guiTop + 7, 65 + 3, 20, getSettingsString()));
 		this.buttonList.add(new FilterButton(0, guiLeft + 193, guiTop + 9));
 		this.buttonList.add(new FilterButton(1, guiLeft + 193 + 18, guiTop + 9));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 193 + 18*2, guiTop + 9, 32, 96 + 16, "Channels"));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 193 + 18 * 2, guiTop + 9, 32, 96 + 16, "Channels"));
 		switch (getSetting()) {
 		case SLOT:
 		case POS:
@@ -95,7 +98,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 				part.sendByteBufPacket(6);
 			}
 			if (button.id == 2) {
-				FlexibleGuiHandler.changeGui(part, 1, player.getEntityWorld(), player);
+				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
 			}
 		}
 	}
@@ -213,8 +216,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {
-	}
+	public void renderStrings(int x, int y) {}
 
 	@Override
 	public void renderSelection(MonitoredItemStack selection, int x, int y) {
@@ -225,7 +227,6 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			return;
 		}
 		ItemStack stack = storedStack.item;
-		GlStateManager.disableDepth();
 		RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
 		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
 		RenderHelper.restoreBlendState();
@@ -254,11 +255,11 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		// RenderHelper.saveBlendState();
-		// StorageSize size = getGridList().sizing;
-
-		// RenderHelper.restoreBlendState();
+		if (this.getSetting() == InventoryReader.Modes.STACK) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(playerInv);
+			drawTexturedModalRect(guiLeft+102, guiTop+8, 0, 0, 18, 18);
+		}
+		super.drawGuiContainerBackgroundLayer(var1, var2, var3);		
 	}
 
 	public class FilterButton extends AnimatedButton {

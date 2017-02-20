@@ -18,7 +18,7 @@ public class SyncMonitoredType<T extends IMonitorInfo> extends SyncPart {
 
 	public void setInfo(IMonitorInfo<T> info) {
 		this.info = info;
-		markDirty();
+		markChanged();
 	}
 
 	public T getMonitoredInfo() {

@@ -1,5 +1,7 @@
 package sonar.logistics.connections.monitoring;
 
+import java.util.ArrayList;
+
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
@@ -7,20 +9,22 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 
 @LogicInfoType(id = MonitoredBlockCoords.id, modid = Logistics.MODID)
-public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> implements INameableInfo<MonitoredBlockCoords> {
+public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> implements INameableInfo<MonitoredBlockCoords>, IComparableInfo<MonitoredBlockCoords> {
 
 	public static final String id = "coords";
 	public static LogicMonitorHandler<MonitoredBlockCoords> handler = LogicMonitorHandler.instance(ChannelMonitorHandler.id);
 	public SyncCoords syncCoords = new SyncCoords(1);
 	public SyncTagType.STRING unlocalizedName = new SyncTagType.STRING(2);
 	{
-		syncParts.addParts(syncCoords, unlocalizedName);
+		syncList.addParts(syncCoords, unlocalizedName);
 	}
 
 	public MonitoredBlockCoords() {}
@@ -92,5 +96,14 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, getClientIdentifier(), getClientObject());
+	}
+
+	@Override
+	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+		BlockCoords coords = syncCoords.getCoords();
+		objects.add(new ComparableObject(this, "x", coords.getX()));
+		objects.add(new ComparableObject(this, "y", coords.getY()));
+		objects.add(new ComparableObject(this, "z", coords.getZ()));
+		return objects;
 	}
 }

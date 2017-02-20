@@ -25,8 +25,12 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.client.gui.GuiChannelSelection;
 import sonar.logistics.client.gui.GuiFluidReader;
+import sonar.logistics.client.gui.GuiInventoryReader;
+import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFluidReader;
+import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.connections.monitoring.FluidMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
@@ -122,13 +126,26 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new ContainerFluidReader(this, player) : null;
+		switch(id){
+		case 0:
+			return new ContainerFluidReader(this, player);
+		case 1:
+			return new ContainerChannelSelection(this);
+		}		
+		return null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new GuiFluidReader(this, player) : null;
+		switch(id){
+		case 0:
+			return new GuiFluidReader(this, player);
+		case 1:
+			return new GuiChannelSelection(player, this, 0);
+		}		
+		return null;
 	}
+	
 
 	@Override
 	public String getDisplayName() {

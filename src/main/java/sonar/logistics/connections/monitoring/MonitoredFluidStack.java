@@ -1,5 +1,7 @@
 package sonar.logistics.connections.monitoring;
 
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
 
 import mcmultipart.raytrace.PartMOP;
@@ -9,6 +11,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
@@ -23,15 +26,17 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IBasicClickableInfo;
+import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = Logistics.MODID)
-public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IBasicClickableInfo {
+public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IBasicClickableInfo, IComparableInfo<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
 	public static LogicMonitorHandler<MonitoredFluidStack> handler = LogicMonitorHandler.instance(FluidMonitorHandler.id);
@@ -39,7 +44,7 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 
 	{
-		syncParts.addParts(fluidStack,networkID);
+		syncList.addParts(fluidStack,networkID);
 	}
 
 	public MonitoredFluidStack() {}
@@ -137,6 +142,18 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+		StoredFluidStack stack = fluidStack.getObject();		
+		objects.add(new ComparableObject(this, "Stored", stack.stored));	
+		objects.add(new ComparableObject(this, "Capacity", stack.capacity));	
+		return objects;
+	}
+	
+	public String toString(){
+		return fluidStack.getObject().toString();
 	}
 
 }

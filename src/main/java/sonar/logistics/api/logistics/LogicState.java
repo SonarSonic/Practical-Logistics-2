@@ -2,7 +2,7 @@ package sonar.logistics.api.logistics;
 
 //this may need expanding at some point
 public enum LogicState {
-	TRUE, FALSE;
+	TRUE, FALSE, INVALID_KEY, INVALID_OBJECT;
 
 	public boolean getBool() {
 		return this == TRUE ? true : false;

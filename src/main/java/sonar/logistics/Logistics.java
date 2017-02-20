@@ -32,6 +32,7 @@ import sonar.logistics.connections.managers.NetworkManager;
 import sonar.logistics.connections.managers.ServerInfoManager;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
+import sonar.logistics.logic.comparators.ComparatorRegistry;
 import sonar.logistics.utils.SapphireOreGen;
 
 @Mod(modid = Logistics.MODID, name = Logistics.NAME, version = Logistics.VERSION, dependencies = "required-after:sonarcore")
@@ -50,16 +51,13 @@ public class Logistics {
 	@Instance(MODID)
 	public static Logistics instance;
 
-	// @SideOnly(Side.SERVER)
 	public NetworkManager networkManager = new NetworkManager();
-	// @SideOnly(Side.SERVER)
 	public CableManager cableManager = new CableManager();
-	// @SideOnly(Side.SERVER)
 	public DisplayManager displayManager = new DisplayManager();
-	// @SideOnly(Side.SERVER)
 	public ServerInfoManager serverManager = new ServerInfoManager();
-	// @SideOnly(Side.CLIENT)
 	public ClientInfoManager clientManager = new ClientInfoManager();
+	
+	public static ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
 	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics 2") {
 		@Override
@@ -103,15 +101,9 @@ public class Logistics {
 		} else
 			logger.info("Sapphire Ore Generation is disabled in the config");
 
-		ASMDataTable asmDataTable = event.getAsmData();
-		LogisticsASMLoader.loadInfoTypes(asmDataTable);
-		LogisticsASMLoader.loadTileMonitorHandlers(asmDataTable);
-		LogisticsASMLoader.loadEntityMonitorHandlers(asmDataTable);
-		LogisticsASMLoader.loadNodeFilters(asmDataTable);
-		LogicInfoRegistry.infoRegistries.addAll(LogisticsASMLoader.getInfoRegistries(asmDataTable));
-		LogicInfoRegistry.customTileHandlers.addAll(LogisticsASMLoader.getCustomTileHandlers(asmDataTable));
-		LogicInfoRegistry.customEntityHandlers.addAll(LogisticsASMLoader.getCustomEntityHandlers(asmDataTable));
+		LogisticsASMLoader.init(event);
 		LogicInfoRegistry.init();
+		comparatorRegistry.register();
 	}
 
 	@EventHandler

@@ -17,9 +17,8 @@ import sonar.logistics.api.cabling.ChannelType;
 public class IdentifiedCoordsList extends ArrayList<BlockCoords> implements ISyncPart {
 
 	public UUID identity;
-	public boolean hasChanged = true;
 	public final int tagID;
-	private ISyncableListener listener;
+	public ISyncableListener listener;
 
 	public IdentifiedCoordsList(int tagID) {
 		super();
