@@ -2,7 +2,7 @@ package sonar.logistics.api.readers;
 
 /**all the modes used by the Fluid Reader*/
 public class EnergyReader {
-
+	/*
 	public static enum Modes {
 		FLUID, POS, TANKS, STORAGE;
 
@@ -36,7 +36,7 @@ public class EnergyReader {
 			}
 		}
 	}
-
+	*/
 	public static enum SortingType {
 		STORED, CAPACITY, INPUT, TYPE, NAME;
 		

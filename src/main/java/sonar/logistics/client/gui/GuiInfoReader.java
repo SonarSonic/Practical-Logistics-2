@@ -49,7 +49,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	public void setInfo() {
-		if (part.getChannels(0).isEmpty()) {
+		if (part.getChannels().isEmpty()) {
 			infoList = MonitoredList.newMonitoredList(part.getNetworkID());
 		} else {
 			infoList = part.getMonitoredList().cloneInfo();

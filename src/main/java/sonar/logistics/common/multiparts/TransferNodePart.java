@@ -86,7 +86,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public SyncTagType.BOOLEAN items = (BOOLEAN) new SyncTagType.BOOLEAN(5).setDefault(true);
 	public SyncTagType.BOOLEAN fluids = (BOOLEAN) new SyncTagType.BOOLEAN(6).setDefault(true);
 	public SyncTagType.BOOLEAN energy = (BOOLEAN) new SyncTagType.BOOLEAN(7).setDefault(true);
-	public SyncTagType.BOOLEAN gases = (BOOLEAN) new SyncTagType.BOOLEAN(8).setDefault(true);
+	// public SyncTagType.BOOLEAN gases = (BOOLEAN) new SyncTagType.BOOLEAN(8).setDefault(true);
 	public BlockCoords lastSelected = null;
 
 	public int ticks = 20;
@@ -107,12 +107,12 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		if (this.isClient()) {
 			return;
 		}
+		/*
 		if (!transferMode.getObject().isPassive()) {
 			if (ticks >= 20) {
 				ticks = 0;
 				TileEntity localTile = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension()).getTileEntity(getWorld());
 				if (localTile != null) {
-
 					ArrayList<NodeConnection> tiles = network.getExternalBlocks(true);
 					for (NodeConnection entry : tiles) {
 						if (this.list.contains(entry.coords)) {
@@ -126,20 +126,19 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 							}
 						}
 					}
-
 				}
 			} else {
 				ticks++;
 			}
 		}
+		*/
 	}
 
 	@Override
 	public void addConnections(ArrayList<NodeConnection> connections) {
-		if (connection.getObject()) {
-			BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());
-			connections.add(new NodeConnection(this, tileCoords, getFacing()));
-		}
+		//if (canConnectToNodeConnection()) {
+			connections.add(getConnected());
+		//}
 	}
 
 	@Override
@@ -190,7 +189,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	}
 
 	@Override
-	public IdentifiedCoordsList getChannels(int channelID) {
+	public IdentifiedCoordsList getChannels() {
 		return list;
 	}
 
@@ -213,7 +212,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			items.writeToBuf(buf);
 			fluids.writeToBuf(buf);
 			energy.writeToBuf(buf);
-			gases.writeToBuf(buf);
+			// gases.writeToBuf(buf);
 			break;
 		}
 	}
@@ -233,18 +232,16 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			items.readFromBuf(buf);
 			fluids.readFromBuf(buf);
 			energy.readFromBuf(buf);
-			gases.readFromBuf(buf);
+			// gases.readFromBuf(buf);
 			break;
 		}
 	}
 
 	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> arrayList) {
-	}
+	public void onViewerAdded(EntityPlayer player, List<ViewerTally> arrayList) {}
 
 	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> arrayList) {
-	}
+	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> arrayList) {}
 
 	@Override
 	public UUID getIdentity() {
@@ -311,7 +308,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		case FLUID:
 			return fluids.getObject();
 		case GAS:
-			return gases.getObject();
+			// return gases.getObject();
 		case INFO:
 			break;
 		case ITEMS:
@@ -333,7 +330,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			fluids.setObject(enable);
 			break;
 		case GAS:
-			gases.setObject(enable);
+			// gases.setObject(enable);
 		case INFO:
 			break;
 		case ITEMS:
@@ -343,6 +340,21 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			break;
 		}
 		this.sendByteBufPacket(2);
+	}
+
+	@Override
+	public NodeTransferMode getTransferMode() {
+		return transferMode.getObject();
+	}
+
+	@Override
+	public NodeConnection getConnected() {
+		return this.wasRemoved ? null : new NodeConnection(this, new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension()), getFacing());
+	}
+
+	@Override
+	public boolean canConnectToNodeConnection() {
+		return connection.getObject();
 	}
 
 }

@@ -11,8 +11,6 @@ import sonar.logistics.api.info.IMonitorInfo;
 
 public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 
-	// public MonitoredList<T> EMPTY = newMonitoredList();
-	// public ArrayList<T> info = new ArrayList<T>();
 	public ArrayList<T> changed = new ArrayList<T>();
 	public ArrayList<T> removed = new ArrayList<T>();
 	public StorageSize sizing;

@@ -30,6 +30,7 @@ import sonar.logistics.connections.managers.DisplayManager;
 import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.connections.managers.NetworkManager;
 import sonar.logistics.connections.managers.ServerInfoManager;
+import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.logic.comparators.ComparatorRegistry;
@@ -56,7 +57,7 @@ public class Logistics {
 	public DisplayManager displayManager = new DisplayManager();
 	public ServerInfoManager serverManager = new ServerInfoManager();
 	public ClientInfoManager clientManager = new ClientInfoManager();
-	
+
 	public static ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
 	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics 2") {
@@ -104,6 +105,9 @@ public class Logistics {
 		LogisticsASMLoader.init(event);
 		LogicInfoRegistry.init();
 		comparatorRegistry.register();
+		
+		if (event.getSide().isClient())
+			GuidePageRegistry.init();
 	}
 
 	@EventHandler

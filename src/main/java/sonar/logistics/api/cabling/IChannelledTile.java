@@ -8,7 +8,7 @@ import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 public interface IChannelledTile extends ILogicViewable {
 
 	/**the currently selected channels*/
-	public IdentifiedCoordsList getChannels(int channelID);
+	public IdentifiedCoordsList getChannels();
 	
 	/**call this client side only, sends the selected coords to the server
 	 * @param channelID the id to modify the coords on*/

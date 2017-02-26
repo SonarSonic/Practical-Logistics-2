@@ -8,9 +8,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import sonar.core.api.energy.EnergyType;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncEnum;
+import sonar.core.network.sync.SyncGeneric;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
@@ -18,22 +20,23 @@ import sonar.core.utils.SortingDirection;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.readers.EnergyReader;
 import sonar.logistics.api.readers.FluidReader;
+import sonar.logistics.client.gui.GuiEnergyReader;
+import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.connections.monitoring.EnergyMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.helpers.EnergyHelper;
 import sonar.logistics.network.SyncMonitoredType;
 
 public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> implements IByteBufTile {
 
 	public SyncMonitoredType<MonitoredEnergyStack> selected = new SyncMonitoredType<MonitoredEnergyStack>(1);
-	public SyncEnum<FluidReader.Modes> setting = (SyncEnum) new SyncEnum(FluidReader.Modes.values(), 2).addSyncType(SyncType.SPECIAL);
-	public SyncTagType.INT targetSlot = (INT) new SyncTagType.INT(3).addSyncType(SyncType.SPECIAL);
-	public SyncTagType.INT posSlot = (INT) new SyncTagType.INT(4).addSyncType(SyncType.SPECIAL);
-	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 5).addSyncType(SyncType.SPECIAL);
-	public SyncEnum<FluidReader.SortingType> sortingType = (SyncEnum) new SyncEnum(FluidReader.SortingType.values(), 6).addSyncType(SyncType.SPECIAL);
+	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 2).addSyncType(SyncType.SPECIAL);
+	public SyncEnum<EnergyReader.SortingType> sortingType = (SyncEnum) new SyncEnum(EnergyReader.SortingType.values(), 3).addSyncType(SyncType.SPECIAL);
 	{
-		syncList.addParts(setting, targetSlot, posSlot, sortingOrder, sortingType, selected);
+		syncList.addParts(selected, sortingOrder, sortingType);
 	}
 	public EnergyReaderPart() {
 		super(EnergyMonitorHandler.id);
@@ -50,7 +53,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	
 	@Override
 	public MonitoredList<MonitoredEnergyStack> sortMonitoredList(MonitoredList<MonitoredEnergyStack> updateInfo, int channelID) {
-		//FluidHelper.sortFluidList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
+		EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
 		return updateInfo;
 	}
 
@@ -94,7 +97,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			//return new ContainerEnergyReader(this, player);
+			return new ContainerEnergyReader(player, this);
 		}
 		return null;
 	}
@@ -103,7 +106,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			//return new GuiEnergyReader(this, player);
+			return new GuiEnergyReader(player, this);
 		}
 		return null;
 	}

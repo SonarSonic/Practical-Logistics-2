@@ -83,6 +83,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 			break;
 		case LIST:
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft +  137, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout()));
 			// int width = 162;
 			int height = 20;
 			int left = 7;
@@ -91,6 +92,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				this.buttonList.add(new DisplayButton(i, ButtonType.EDIT, guiLeft + 130 - 3, guiTop + top));
 				this.buttonList.add(new DisplayButton(i, ButtonType.SOURCE, guiLeft + 130 - 3 + 20, guiTop + top));
 			}
+
 			break;
 		case SOURCE:
 			scroller = new SonarScroller(this.guiLeft + 164 + 71, this.guiTop + 29, 134, 10);
@@ -121,7 +123,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	}
 
 	public void actionPerformed(GuiButton button) {
-		if (coolDown != 0) {
+		if (coolDown != 0 || button == null) {
 			return;
 		}
 		switch (state) {
@@ -152,7 +154,12 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			}
 			break;
 		case LIST:
-			if (button != null && button instanceof DisplayButton) {
+			if (button.id == -1) {
+				part.incrementLayout();
+				reset();
+				part.sendByteBufPacket(2);
+			}
+			if (button instanceof DisplayButton) {
 				DisplayButton btn = (DisplayButton) button;
 				switch (btn.type) {
 				case EDIT:
@@ -188,8 +195,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		this.reset();
 	}
 
-	
-	
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
@@ -271,7 +276,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			INameableInfo directInfo = (INameableInfo) monitorInfo;
 			FontHelper.text(directInfo.getClientIdentifier(), 11, top + 6, LogisticsColours.white_text.getRGB());
 		} else {
-			FontHelper.text(!info.getUnformattedStrings().isEmpty() ?"CUSTOM DATA" :"NO DATA", 11, top + 6, LogisticsColours.white_text.getRGB());
+			FontHelper.text(!info.getUnformattedStrings().isEmpty() ? "CUSTOM DATA" : "NO DATA", 11, top + 6, LogisticsColours.white_text.getRGB());
 		}
 	}
 

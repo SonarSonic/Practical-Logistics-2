@@ -42,6 +42,7 @@ item.EntityTransceiver.name=Entity Transceiver
 item.Operator.name=Operator Tool
 item.DisplayScreen.name=Display Screen
 item.LargeDisplayScreen.name=Large Display Screen
+item.Guide.name=Guide
 
 //messages
 dataBlock.denied=Access Denied
@@ -130,7 +131,7 @@ pl.Entity.getName=Name
 pl.EntityLivingBase.getHealth=Health
 pl.EntityLivingBase.getMaxHealth=Max Health
 pl.EntityLivingBase.getAge=Age
-pl.EntityLivingBase.getTotalArmorValue=Total Armor Value
+pl.EntityLivingBase.getTotalArmorValue=Total Armour Value
 pl.EntityAgeable.getGrowingAge=Growing Age
 pl.EntityPlayer.isCreative=Creative Mode
 pl.EntityPlayer.isSpectator=Spectator Mode
@@ -158,6 +159,7 @@ pl.IProcessMachine.getCurrentProcessTime=Current Process Time
 pl.IProcessMachine.getProcessTime=Process Time
 pl.IProcessMachine.getBaseProcessTime=Base Process Time
 pl.IProcessMachine.getEnergyUsage=Energy Usage
+pl.IProcessMachine.getBaseEnergyUsage=Base Energy Usage
 pl.ITeleport.name=Name
 pl.ITeleport.teleporterID=Teleporter ID
 pl.IFlawlessGreenhouse.getPlantsHarvested=Plants Harvested

@@ -13,6 +13,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextFormatting;
 import sonar.core.SonarCore;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.StorageSize;
@@ -21,6 +22,8 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.handlers.inventories.IInventoryHandler;
+import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.network.PacketInvUpdate;
@@ -28,6 +31,7 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
@@ -46,7 +50,7 @@ public class ItemHelper extends ItemWrapper {
 
 	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, NodeConnection entry) {
 		TileEntity tile = entry.coords.getTileEntity();
-		if (tile == null) {			
+		if (tile == null) {
 			return storage;
 		}
 		boolean specialProvider = false;
@@ -82,9 +86,10 @@ public class ItemHelper extends ItemWrapper {
 	public StoredItemStack addItems(StoredItemStack add, INetworkCache network, ActionType action) {
 		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
 		for (NodeConnection entry : connections) {
-			if (!entry.canTransferItem(add, NodeTransferMode.ADD)) {
+			if (!entry.canTransferItem(entry.coords, add, NodeTransferMode.ADD)) {
 				continue;
 			}
+
 			TileEntity tile = entry.coords.getTileEntity();
 			if (tile == null) {
 				continue;
@@ -120,7 +125,7 @@ public class ItemHelper extends ItemWrapper {
 	public StoredItemStack removeItems(StoredItemStack remove, INetworkCache network, ActionType action) {
 		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
 		for (NodeConnection entry : connections) {
-			if (!entry.canTransferItem(remove, NodeTransferMode.REMOVE)) {
+			if (!entry.canTransferItem(entry.coords, remove, NodeTransferMode.REMOVE)) {
 				continue;
 			}
 			TileEntity tile = entry.coords.getTileEntity();
@@ -128,7 +133,7 @@ public class ItemHelper extends ItemWrapper {
 				continue;
 			}
 			for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
-				if(provider instanceof IInventoryHandler){
+				if (provider instanceof IInventoryHandler) {
 					continue;
 				}
 				if (provider.canHandleItems(tile, entry.face)) {
@@ -150,11 +155,7 @@ public class ItemHelper extends ItemWrapper {
 			// network.getFirstConnection(CacheTypes.EMITTER);
 		}
 		return stack;
-		/* if (block != null) { return getTileStack(network, slot); } else {
-		 * 
-		 * } for (BlockCoords connect : connections) { Object tile = connect.getTileEntity(); if (tile != null) { if (tile instanceof IConnectionNode) { return getTileStack((IConnectionNode) tile, slot); } if (tile instanceof IEntityNode) { return getEntityStack((IEntityNode) tile, slot); } } }
-		 * 
-		 * return null; */
+		/* if (block != null) { return getTileStack(network, slot); } else { } for (BlockCoords connect : connections) { Object tile = connect.getTileEntity(); if (tile != null) { if (tile instanceof IConnectionNode) { return getTileStack((IConnectionNode) tile, slot); } if (tile instanceof IEntityNode) { return getEntityStack((IEntityNode) tile, slot); } } } return null; */
 	}
 
 	public StoredItemStack getEntityStack(IEntityNode node, int slot) {
@@ -180,7 +181,7 @@ public class ItemHelper extends ItemWrapper {
 
 	public StoredItemStack getTileStack(INetworkCache network, int slot) {
 		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
-		for (NodeConnection entry : connections) {			
+		for (NodeConnection entry : connections) {
 			for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
 				TileEntity tile = entry.coords.getTileEntity();
 				if (tile != null && provider.canHandleItems(tile, entry.face)) {
@@ -348,7 +349,46 @@ public class ItemHelper extends ItemWrapper {
 		}
 		if (!ItemStack.areItemStacksEqual(add, player.inventory.getStackInSlot(slot))) {
 			player.inventory.setInventorySlotContents(slot, add);
+		}else{
+			FontHelper.sendMessage( TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "The item cannot be inserted", player.getEntityWorld(), player);
 		}
+	}
+
+	public static void transferItems(NodeTransferMode mode, NodeConnection filter, NodeConnection connection) {
+		TileEntity filterTile = filter.coords.getTileEntity();
+		TileEntity netTile = connection.coords.getTileEntity();
+		if (filterTile != null && netTile != null) {
+			EnumFacing dirFrom = mode.shouldRemove() ? filter.face : connection.face;
+			EnumFacing dirTo = !mode.shouldRemove() ? filter.face : connection.face;
+			TileEntity from = mode.shouldRemove() ? filterTile : netTile;
+			TileEntity to = !mode.shouldRemove() ? filterTile : netTile;
+			ConnectionFilters filters = new ConnectionFilters(filter, connection);
+
+			SonarAPI.getItemHelper().transferItems(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), filters);
+		}
+	}
+
+	public static class ConnectionFilters implements IInventoryFilter {
+
+		NodeConnection[] connections;
+
+		public ConnectionFilters(NodeConnection... connections) {
+			this.connections = connections;
+		}
+
+		@Override
+		public boolean allowed(ItemStack stack) {
+			for (NodeConnection connection : connections) {
+				if (connection.isFiltered) {
+					IFilteredTile tile = (IFilteredTile) connection.source;
+					if (!tile.allowed(stack)) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
 	}
 
 	public static void sortItemList(ArrayList<MonitoredItemStack> info, final SortingDirection dir, SortingType type) {

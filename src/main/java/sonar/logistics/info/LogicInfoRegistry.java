@@ -57,6 +57,7 @@ public class LogicInfoRegistry {
 	public static LinkedHashMap<RegistryType, LinkedHashMap<Class<?>, ArrayList<Field>>> infoFields = new LinkedHashMap();
 	public static LinkedHashMap<Class<?>, Map<String, Integer>> invFields = new LinkedHashMap();
 	public static LinkedHashMap<String, Pair<String, String>> infoAdjustments = new LinkedHashMap();
+	public static LinkedHashMap<String, String> clientNameAdjustments = new LinkedHashMap(); // to give other methods the lang id of others
 
 	/** the default accepted returns */
 	public static ArrayList<Class<?>> acceptedTypes = RegistryType.buildArrayList();
@@ -135,6 +136,7 @@ public class LogicInfoRegistry {
 		infoFields.clear();
 		invFields.clear();
 		infoAdjustments.clear();
+		clientNameAdjustments.clear();
 
 		init();
 
@@ -179,6 +181,12 @@ public class LogicInfoRegistry {
 					Logistics.logger.error(String.format("Failed to load method: %s, Valid Parameters: %s, Valid Returns %s,", method.toString(), validParams, validReturns));
 				}
 			}
+		}
+	}
+
+	public static void registerClientNames(String fieldName, ArrayList<String> fieldNames) {
+		for (String name : fieldNames) {
+			clientNameAdjustments.put(name, fieldName);
 		}
 	}
 

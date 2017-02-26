@@ -45,6 +45,9 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			Vec3d start = RayTraceUtils.getStart(player);
 			Vec3d end = RayTraceUtils.getEnd(player);
 			AdvancedRayTraceResultPart result = SonarMultipartHelper.collisionRayTrace(container, start, end);
+			if(result==null){
+				return EnumActionResult.PASS;
+			}
 			IMultipart part = result.hit.partHit;
 			OperatorMode mode = getOperatorMode(stack);
 			switch (mode) {

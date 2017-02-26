@@ -49,7 +49,6 @@ import sonar.logistics.api.filters.ItemFilter;
 import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.nodes.IFilteredNode;
 import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;

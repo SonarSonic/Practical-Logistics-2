@@ -411,12 +411,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	@Override
 	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (getDisplayScreen() != null && !getWorld().isRemote) {
-			getDisplayScreen().layout.incrementEnum();
-			while (!(getDisplayScreen().layout.getObject().maxInfo <= this.maxInfo())) {
-				getDisplayScreen().layout.incrementEnum();
-			}
-			sendSyncPacket();
-			getDisplayScreen().sendViewers();
+			incrementLayout();
 			FontHelper.sendMessage("Screen Layout: " + getDisplayScreen().layout.getObject(), getWorld(), player);
 		}
 		return false;
@@ -432,5 +427,15 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(part, player);
 			break;
 		}
+	}
+
+	@Override
+	public void incrementLayout() {
+		getDisplayScreen().layout.incrementEnum();
+		while (!(getDisplayScreen().layout.getObject().maxInfo <= this.maxInfo())) {
+			getDisplayScreen().layout.incrementEnum();
+		}
+		sendSyncPacket();
+		getDisplayScreen().sendViewers();		
 	}
 }

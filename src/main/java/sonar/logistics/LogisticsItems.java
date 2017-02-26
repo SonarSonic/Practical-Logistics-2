@@ -8,6 +8,7 @@ import sonar.core.SonarCore;
 import sonar.core.registries.ISonarRegistryItem;
 import sonar.core.registries.SonarRegistryItem;
 import sonar.logistics.common.items.ItemDefaultMultipart;
+import sonar.logistics.common.items.ItemGuide;
 import sonar.logistics.common.items.ItemOperator;
 import sonar.logistics.common.items.ItemScreenMultipart;
 import sonar.logistics.common.items.ItemSidedMultipart;
@@ -43,13 +44,14 @@ public class LogisticsItems extends Logistics {
 		return register.getItem();
 	}
 
-	public static Item energyScreen, displayScreen, largeDisplayScreen, digitalSign, sapphire, sapphire_dust, stone_plate, transceiver, entityTransceiver, operator;
+	public static Item energyScreen, displayScreen, largeDisplayScreen, digitalSign, sapphire, sapphire_dust, stone_plate, transceiver, entityTransceiver, operator, guide;
 
 	public static Item partCable, partNode, partTransferNode, partEntityNode, partArray, partRedstoneSignaller, partEmitter, partReceiver, infoReaderPart, inventoryReaderPart, fluidReaderPart, energyReaderPart;
 
 	public static void registerItems() {
 		// displayScreen = registerItem("DisplayScreenItem", new DisplayScreen());//.setTextureName(MODID + ":" + "display_screen");
 		// digitalSign = registerItem("DisplayScreenItem", new DigitalSign());//.setTextureName(MODID + ":" + "digital_sign");
+		guide = register(new SonarRegistryItem(new ItemGuide(), "Guide"));
 		sapphire = register(new SonarRegistryItem("Sapphire"));
 		sapphire_dust = register(new SonarRegistryItem("SapphireDust"));
 		stone_plate = register(new SonarRegistryItem("StonePlate"));

@@ -36,7 +36,7 @@ public class FluidHelper extends FluidWrapper {
 		}
 		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
 		connections: for (NodeConnection entry : connections) {
-			if (!entry.canTransferFluid(add, NodeTransferMode.ADD)) {
+			if (!entry.canTransferFluid(entry.coords, add, NodeTransferMode.ADD)) {
 				continue;
 			}
 			TileEntity tile = entry.coords.getTileEntity();
@@ -60,20 +60,47 @@ public class FluidHelper extends FluidWrapper {
 			return remove;
 		}
 		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
-		connections: for (NodeConnection entry : connections) {
-			if (!entry.canTransferFluid(remove, NodeTransferMode.REMOVE)) {
-				continue;
+		for (NodeConnection entry : connections) {
+			remove = removeFluids(remove, entry, action);
+			if (remove == null) {
+				return null;
 			}
-			TileEntity tile = entry.coords.getTileEntity();
-			if (tile != null) {
-				for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
-					if (provider.canHandleFluids(tile, entry.face)) {
-						remove = provider.removeStack(remove, tile, entry.face, action);
-						if (remove == null) {
-							return null;
-						}
-						continue connections;
+		}
+		return remove;
+	}
+
+	public StoredFluidStack removeFluids(StoredFluidStack remove, NodeConnection connection, ActionType type) {
+		if (!connection.canTransferFluid(connection.coords, remove, NodeTransferMode.REMOVE)) {
+			return remove;
+		}
+		TileEntity tile = connection.coords.getTileEntity();
+		if (tile != null) {
+			for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
+				if (provider.canHandleFluids(tile, connection.face)) {
+					remove = provider.removeStack(remove, tile, connection.face, type);
+					if (remove == null) {
+						return null;
 					}
+					break;
+				}
+			}
+		}
+		return remove;
+	}
+
+	public StoredFluidStack addFluids(StoredFluidStack remove, NodeConnection connection, ActionType type) {
+		if (!connection.canTransferFluid(connection.coords, remove, NodeTransferMode.ADD)) {
+			return remove;
+		}
+		TileEntity tile = connection.coords.getTileEntity();
+		if (tile != null) {
+			for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
+				if (provider.canHandleFluids(tile, connection.face)) {
+					remove = provider.addStack(remove, tile, connection.face, type);
+					if (remove == null) {
+						return null;
+					}
+					break;
 				}
 			}
 		}

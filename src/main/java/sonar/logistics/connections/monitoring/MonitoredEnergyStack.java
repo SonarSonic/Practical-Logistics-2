@@ -44,7 +44,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 
 	@Override
 	public boolean isMatchingInfo(MonitoredEnergyStack info) {
-		return energyStack.getObject().energyType.equals(info.energyStack.getObject().energyType) && coords.getMonitoredInfo().isMatchingInfo(info.coords.getMonitoredInfo());
+		return (energyStack.getObject().energyType==null || energyStack.getObject().energyType.equals(info.energyStack.getObject().energyType)) && coords.getMonitoredInfo().isMatchingInfo(info.coords.getMonitoredInfo());
 	}
 
 	@Override

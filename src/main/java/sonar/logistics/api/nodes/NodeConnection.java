@@ -5,6 +5,7 @@ import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
+import sonar.logistics.api.filters.IFilteredTile;
 
 public class NodeConnection {
 	public BlockCoords coords;
@@ -16,7 +17,7 @@ public class NodeConnection {
 		this.source = source;
 		this.coords = coords;
 		this.face = face;
-		this.isFiltered = source instanceof IFilteredNode;
+		this.isFiltered = source instanceof IFilteredTile;
 	}
 
 	public int hashCode() {
@@ -30,30 +31,31 @@ public class NodeConnection {
 		return false;
 	}
 	
-	public boolean canTransferFluid(StoredFluidStack stack, NodeTransferMode mode){
+	public boolean canTransferFluid(BlockCoords source, StoredFluidStack stack, NodeTransferMode mode){
 		if (isFiltered) {
-			IFilteredNode node = (IFilteredNode) source;
-			if (!node.getSetting(TransferType.FLUID).canTransfer(mode) || !node.canTransferFluid(stack, mode)) {
+			IFilteredTile node = (IFilteredTile) source;
+			if ((node.getChannels().isEmpty() || node.getChannels().contains(source)) && (!node.getTransferMode().matches(mode) || !node.getFilters().matches(stack, mode))) {
 				return false;
 			}
 		}		
 		return true;		
 	}
 	
-	public boolean canTransferItem(StoredItemStack stack, NodeTransferMode mode){
+	public boolean canTransferItem(BlockCoords source, StoredItemStack stack, NodeTransferMode mode){
 		if (isFiltered) {
-			IFilteredNode node = (IFilteredNode) source;
-			if (!node.getSetting(TransferType.ITEMS).canTransfer(mode) || !node.canTransferItem(stack, mode)) {
+			IFilteredTile node = (IFilteredTile) source;
+			if ((node.getChannels().isEmpty() || node.getChannels().contains(source)) && (!node.getTransferMode().matches(mode) || !node.getFilters().matches(stack, mode))) {
 				return false;
 			}
 		}		
 		return true;		
 	}
 	
-	public boolean canTransferEnergy(StoredEnergyStack stack, NodeTransferMode mode){
+	public boolean canTransferEnergy(BlockCoords source, StoredEnergyStack stack, NodeTransferMode mode){
 		if (isFiltered) {
-			IFilteredNode node = (IFilteredNode) source;
-			if (!node.getSetting(TransferType.ENERGY).canTransfer(mode) || !node.canTransferEnergy(stack, mode)) {
+			IFilteredTile node = (IFilteredTile) source;
+			if((node.getChannels().isEmpty() || node.getChannels().contains(source)) && (node.isTransferEnabled(TransferType.ENERGY))){
+			//if (!node.getSetting(TransferType.ENERGY).canTransfer(mode) || !node.canTransferEnergy(stack, mode)) {
 				return false;
 			}
 		}		

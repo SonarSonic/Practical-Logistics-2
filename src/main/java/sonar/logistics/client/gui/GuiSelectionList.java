@@ -205,8 +205,8 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 					drawSelectedInfoBackground(width, listHeight, left, top, i);
 				}
 			}
-			RenderHelper.restoreBlendState();
 		}
+		RenderHelper.restoreBlendState();
 	}
 
 	public void drawInfoBackground(ArrayList<ArrayList<Integer>> data, int width, int height, int left, int top, int i) {

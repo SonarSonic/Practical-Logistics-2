@@ -58,12 +58,7 @@ public class DisplayScreenPart extends ScreenMultipart {
 	@Override
 	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (!getWorld().isRemote) {
-			layout.incrementEnum();
-			while (!(layout.getObject().maxInfo <= this.maxInfo())) {
-				layout.incrementEnum();
-			}
-			sendSyncPacket();
-			sendUpdatePacket(true);
+			incrementLayout();
 			FontHelper.sendMessage("Screen Layout: " + layout.getObject(), getWorld(), player);
 		}
 		return true;
@@ -138,6 +133,16 @@ public class DisplayScreenPart extends ScreenMultipart {
 	@Override
 	public ScreenLayout getLayout() {
 		return layout.getObject();
+	}
+
+	@Override
+	public void incrementLayout() {
+		layout.incrementEnum();
+		while (!(layout.getObject().maxInfo <= this.maxInfo())) {
+			layout.incrementEnum();
+		}
+		sendSyncPacket();
+		sendUpdatePacket(true);
 	}
 
 }

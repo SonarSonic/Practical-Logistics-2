@@ -125,6 +125,8 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(this, player);
 		}
 	}
+	
+	public abstract void incrementLayout();
 
 	public void onFirstTick() {
 		super.onFirstTick();
@@ -187,6 +189,9 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 			currentSelected = buf.readInt();
 			container().getDisplayInfo(currentSelected).formatList.readFromBuf(buf);
 			this.sendSyncPacket();
+			break;
+		case 2:
+			incrementLayout();
 			break;
 		}
 	}

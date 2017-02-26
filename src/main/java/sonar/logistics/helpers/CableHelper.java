@@ -1,6 +1,8 @@
 package sonar.logistics.helpers;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.UUID;
 
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.IMultipartContainer;
@@ -262,7 +264,7 @@ public class CableHelper extends CablingWrapper {
 	}
 
 	public static ILogicMonitor getMonitorFromHashCode(int hashCode, boolean isRemote) {
-		for (ILogicMonitor monitor : Logistics.getInfoManager(isRemote).getMonitors().values()) {
+		for (ILogicMonitor monitor : ((LinkedHashMap<UUID, ILogicMonitor>) Logistics.getInfoManager(isRemote).getMonitors().clone()).values()) {
 			if (monitor.getIdentity().hashCode() == hashCode) {
 				return monitor;
 			}

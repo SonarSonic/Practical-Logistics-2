@@ -18,7 +18,6 @@ public enum NodeTransferMode implements IStringSerializable {
 	}
 
 	public boolean matches(NodeTransferMode type) {
-
 		return type.shouldRemove() == shouldRemove() || type.shouldAdd() == shouldAdd();
 	}
 

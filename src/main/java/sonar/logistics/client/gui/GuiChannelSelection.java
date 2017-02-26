@@ -65,7 +65,7 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 
 	@Override
 	public boolean isSelectedInfo(MonitoredBlockCoords info) {
-		if (info.isValid() && !info.isHeader() && tile.getChannels(channelID).contains(info.syncCoords.getCoords())) {
+		if (info.isValid() && !info.isHeader() && tile.getChannels().contains(info.syncCoords.getCoords())) {
 			return true;
 		}
 		return false;

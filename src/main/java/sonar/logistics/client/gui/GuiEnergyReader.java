@@ -1,19 +1,17 @@
 package sonar.logistics.client.gui;
-/*
+
 import java.util.ArrayList;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.api.info.monitor.IMonitorInfo;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerEnergyReader;
-import sonar.logistics.common.containers.ContainerInfoReader;
+import sonar.logistics.common.multiparts.EnergyReaderPart;
+import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.monitoring.MonitoredEnergyStack;
-import sonar.logistics.parts.EnergyReaderPart;
-import sonar.logistics.parts.InfoReaderPart;
+import sonar.logistics.info.types.LogicInfo;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
@@ -22,13 +20,14 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	public GuiEnergyReader(EntityPlayer player, EnergyReaderPart tile) {
 		super(new ContainerEnergyReader(player, tile), tile);
 		this.part = tile;
+		this.xSize = 182 + 66;
 	}
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(FontHelper.translate("item.InfoReader.name"), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(String.format("Select the data you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(FontHelper.translate("item.EnergyReader.name"), xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre(String.format("Select the energy you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
 	}
 
 	public void setInfo() {
@@ -53,12 +52,14 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if(!info.isValid() || info.isHeader()){
 			return false;
 		}
+		/*
 		ArrayList<IMonitorInfo> selectedInfo = part.getSelectedInfo();
 		for (IMonitorInfo selected : selectedInfo) {
 			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((LogicInfo) selected)) {
 				return true;
 			}
 		}
+		*/
 		return false;
 	}
 
@@ -81,6 +82,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}
+		/*
 		ArrayList<IMonitorInfo> selectedInfo = type == 0 ? part.getSelectedInfo() : part.getPairedInfo();
 		int pos = 0;
 		for (IMonitorInfo selected : selectedInfo) {
@@ -89,7 +91,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 			}
 			pos++;
 		}
+		*/
 		return LogisticsColours.layers[1].getRGB();
 	}
 }
-*/

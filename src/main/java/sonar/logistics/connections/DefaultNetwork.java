@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import sonar.core.api.SonarAPI;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IRemovable;
 import sonar.core.utils.IWorldPosition;
@@ -36,6 +37,8 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.readers.IdentifiedCoordsList;
 import sonar.logistics.api.viewers.ViewerType;
@@ -47,6 +50,7 @@ import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.CableHelper;
+import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.types.LogicInfo;
 
 public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
@@ -316,6 +320,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	@Override
 	public void updateNetwork(int networkID) {
+		updateTransferNetwork();
 		if (this.updateTicks < LogisticsConfig.updateRate) {
 			updateTicks++;
 			return;
@@ -342,7 +347,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 					for (Entry<ILogicMonitor, MonitoredList<?>> monitors : monitorMap.getValue().entrySet()) {
 						ILogicMonitor monitor = monitors.getKey();
 						if (!monitor.getViewersList().getViewers(true, ViewerType.FULL_INFO, ViewerType.TEMPORARY).isEmpty()) {
-							IdentifiedCoordsList list = monitor.getChannels(0);
+							IdentifiedCoordsList list = monitor.getChannels();
 							for (BlockCoords coord : list) {
 								if (!toUpdate.contains(coord))
 									toUpdate.add(coord);
@@ -405,11 +410,25 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 			entityConnectionInfo.put((IEntityMonitorHandler) type, compiledList);
 		}
 	}
-	
-	public void updateTransferNetwork(){
+
+	public void updateTransferNetwork() {
 		ArrayList<IFilteredTile> transferNodes = this.getConnections(IFilteredTile.class, true);
-		for(IFilteredTile tile : transferNodes){
-			//tile.
+		if (transferNodes.isEmpty()) {
+			return;
+		}
+		for (IFilteredTile tile : transferNodes) {
+			NodeConnection connected = tile.getConnected();
+			if (connected != null) {
+				NodeTransferMode mode = tile.getTransferMode();
+				boolean items = tile.isTransferEnabled(TransferType.ITEMS);
+				if (items) {
+					for (NodeConnection connect : networkedTileCache) {
+						if (connect != null && (tile.getChannels().isEmpty() || tile.getChannels().contains(connect.coords))) {
+							ItemHelper.transferItems(mode, connected, connect);
+						}
+					}
+				}
+			}
 		}
 	}
 

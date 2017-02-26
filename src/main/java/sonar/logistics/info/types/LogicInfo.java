@@ -90,6 +90,10 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	}
 
 	public String getClientIdentifier() {
+		String newMethod = LogicInfoRegistry.clientNameAdjustments.get(identifier.getObject());
+		if (newMethod != null) {
+			return FontHelper.translate("pl." + newMethod);
+		}
 		return FontHelper.translate("pl." + identifier);
 	}
 
@@ -98,9 +102,6 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 			prefix = "";
 			suffix = "";
 			Pair<String, String> adjustment = LogicInfoRegistry.infoAdjustments.get(identifier.getObject());
-			/// if (identifier.getObject().equals("Block.getUnlocalizedName")) {
-			// return FontHelper.translate(obj.get().toString() + ".name");
-			// }
 			if (adjustment != null) {
 				if (!adjustment.a.isEmpty())
 					prefix = adjustment.a + " ";
@@ -189,8 +190,8 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 		objects.add(new ComparableObject(this, "identifier", identifier.getObject()));
 		return objects;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return this.getClientIdentifier() + ": " + this.getClientObject();
 	}
 

@@ -129,7 +129,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	}
 
 	@Override
-	public IdentifiedCoordsList getChannels(int channelID) {
+	public IdentifiedCoordsList getChannels() {
 		return list;
 	}
 

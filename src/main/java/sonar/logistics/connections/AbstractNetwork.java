@@ -75,7 +75,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 
 	public <T extends IMonitorInfo> MonitoredList<T> updateMonitoredList(ILogicMonitor<T> monitor, int infoID, Map<NodeConnection, MonitoredList<?>> connections, Map<Entity, MonitoredList<?>> entityConnections, ArrayList<NodeConnection> nodeConnections, ArrayList<Entity> entities) {
 		MonitoredList<T> updateList = MonitoredList.<T>newMonitoredList(getNetworkID());
-		IdentifiedCoordsList channels = monitor.getChannels(infoID); // TODO
+		IdentifiedCoordsList channels = monitor.getChannels(); // TODO
 		for (Entry<NodeConnection, MonitoredList<?>> entry : connections.entrySet()) {
 			if ((entry.getValue() != null && !entry.getValue().isEmpty()) && (channels.isEmpty() || channels.contains(entry.getKey().coords))) {
 				for (T coordInfo : (MonitoredList<T>) entry.getValue()) {

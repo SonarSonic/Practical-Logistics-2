@@ -14,18 +14,8 @@ import sonar.logistics.common.tileentity.TileEntityHammer;
 public class LogisticsBlocks extends Logistics {
 
 	public static ArrayList<ISonarRegistryBlock> registeredBlocks = new ArrayList();
-
-	// displays
-	public static Block displayScreen, largeDisplayScreen, holographicDisplay, digitalSign_wall, digitalSign_standing;
-
-	// readers
-	//public static Block infoReader, inventoryReader, fluidReader, energyReader;
-
-	// connections
-	public static Block /*node, entityNode, dataCable, channelledCable,*/ dataReceiver, dataEmitter, dataModifier, infoCreator, channelSelector, /*transceiverArray, */ expulsion_port, admission_port;
-
-	// misc
-	public static Block redstoneSignaller_on, redstoneSignaller_off, sapphire_ore, hammer, hammer_air, itemRouter, clock;
+	
+	public static Block sapphire_ore, hammer, hammer_air, itemRouter, clock;
 
 	public static Block register(SonarRegistryBlock register) {
 		Block block = register.getBlock();
