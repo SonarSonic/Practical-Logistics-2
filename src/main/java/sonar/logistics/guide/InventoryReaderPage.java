@@ -1,30 +1,24 @@
 package sonar.logistics.guide;
 
+import java.util.ArrayList;
+
 import net.minecraft.item.ItemStack;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.LogisticsItems;
 
-public class InventoryReaderPage implements IGuidePage {
+public class InventoryReaderPage extends BaseItemPage implements IGuidePage {
 
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.inventoryReaderPart);
+	public InventoryReaderPage(int pageID) {
+		super(pageID, new ItemStack(LogisticsItems.inventoryReaderPart));
 	}
-
-	@Override
-	public void drawPage(GuiSonar gui, int x, int y, int page) {
-		switch (page) {
-		case 0:
-			//FontHelper.text(info, x, y, 0);
-			break;
-		}
-
+	
+	public ArrayList<GuidePageInfo> getPageInfo(ArrayList<GuidePageInfo> pageInfo) {
+		pageInfo.add(new GuidePageInfo("guide." + unlocalizedName.substring(5) + ".name", new String[0]));
+		pageInfo.add(new GuidePageInfo("guide." + "ChannelsSTART" + ".name", new String[0]));
+		pageInfo.add(new GuidePageInfo("guide." + "ChannelsUNLIMITED" + ".name", new String[0]));
+		pageInfo.add(new GuidePageInfo("guide." + "ChannelsEND" + ".name", new String[0]));		
+		return pageInfo;
 	}
-
-	@Override
-	public int getPageCount() {
-		return 1;
-	}
-
+	
 }

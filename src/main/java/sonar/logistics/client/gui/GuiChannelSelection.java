@@ -41,7 +41,7 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 		FontHelper.textCentre(String.format("Select the channels you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
 	}
 
-	public void selectionPressed(GuiButton button, int buttonID, MonitoredBlockCoords info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, MonitoredBlockCoords info) {
 		if (buttonID == 0) {
 			tile.modifyCoords(info, channelID);
 		} else {

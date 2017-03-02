@@ -1,5 +1,7 @@
 package sonar.logistics.client.gui;
 
+import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
@@ -7,8 +9,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.client.GuiHelpOverlay;
+import sonar.logistics.client.HelpOverlay;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.client.gui.GuiInventoryReader.FilterButton;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -20,6 +23,37 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	public InfoReaderPart part;
 	public EntityPlayer player;
 
+	public GuiHelpOverlay<GuiInfoReader> overlay = new GuiHelpOverlay<GuiInfoReader>() {
+
+		{
+			this.overlays.add(new HelpOverlay<GuiInfoReader>("select channel", 7, 5, 20, 19, Color.RED.getRGB()) {
+				public boolean isCompletedSuccess(GuiInfoReader gui) {
+					if (!gui.part.getChannels().isEmpty()) {
+						return true;
+					}
+					return false;
+				}
+
+				public boolean canBeRendered(GuiInfoReader gui) {
+					return true;
+				}
+			});
+			this.overlays.add(new HelpOverlay<GuiInfoReader>("guide.Hammer.name", 4, 26, 231, 137, Color.RED.getRGB()) {
+				public boolean isCompletedSuccess(GuiInfoReader gui) {
+					if (gui.part.getSelectedInfo().get(0) != null) {
+						return true;
+					}
+					return false;
+				}
+
+				public boolean canBeRendered(GuiInfoReader gui) {
+					return true;
+				}
+			});
+		}
+
+	};
+
 	public GuiInfoReader(EntityPlayer player, InfoReaderPart tile) {
 		super(new ContainerInfoReader(player, tile), tile);
 		this.player = player;
@@ -29,7 +63,9 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 
 	public void initGui() {
 		super.initGui();
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 9, guiTop + 7, 32, 96 + 16, "Channels"));
+		overlay.initGui(this);
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 9, guiTop + 7, 32, 96 + 16, "Channels", "button.Channels"));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + xSize-9-16, guiTop + 7, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -38,7 +74,17 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 			if (button.id == 1) {
 				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
 			}
+			if (button.id == 2) {
+				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
+				reset();
+			}
 		}
+	}
+
+	@Override
+	public void mouseClicked(int x, int y, int button) throws IOException {
+		super.mouseClicked(x, y, button);
+		overlay.mouseClicked(this, x, y, button);
 	}
 
 	@Override
@@ -46,6 +92,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 		super.drawGuiContainerForegroundLayer(x, y);
 		FontHelper.textCentre(FontHelper.translate("item.InfoReader.name"), xSize, 6, LogisticsColours.white_text);
 		FontHelper.textCentre(String.format("Select the data you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
+		overlay.drawOverlay(this, x, y);
 	}
 
 	public void setInfo() {
@@ -57,7 +104,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	@Override
-	public void selectionPressed(GuiButton button, int buttonID, LogicInfo info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, LogicInfo info) {
 		if (info.isValid() && !info.isHeader()) {
 			part.selectedInfo.setInfo(info);
 			part.sendByteBufPacket(buttonID == 0 ? -9 : -10);
@@ -117,6 +164,12 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 			pos++;
 		}
 		return LogisticsColours.layers[1].getRGB();
+	}
+
+	@Override
+	public void keyTyped(char c, int i) throws IOException {
+		super.keyTyped(c, i);
+		overlay.onTileChanged(this);
 	}
 
 }

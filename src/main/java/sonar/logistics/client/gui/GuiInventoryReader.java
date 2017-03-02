@@ -21,6 +21,7 @@ import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
+import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
@@ -28,6 +29,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
+import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
@@ -42,8 +44,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	public static final ResourceLocation sorting_icons = new ResourceLocation(Logistics.MODID + ":textures/gui/sorting_icons.png");
 
 	private InventoryReaderPart part;
-	private GuiTextField slotField;
-	private GuiTextField searchField;
+	private SonarTextField slotField;
+	private SonarTextField searchField;
 	public EntityPlayer player;
 
 	public GuiInventoryReader(InventoryReaderPart part, EntityPlayer player) {
@@ -58,47 +60,71 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	public void initGui() {
 		super.initGui();
-		this.buttonList.add(new GuiButton(-1, guiLeft + 120 - (18 * 6), guiTop + 7, 65 + 3, 20, getSettingsString()));
-		this.buttonList.add(new FilterButton(0, guiLeft + 193, guiTop + 9));
-		this.buttonList.add(new FilterButton(1, guiLeft + 193 + 18, guiTop + 9));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 193 + 18 * 2, guiTop + 9, 32, 96 + 16, "Channels"));
+		initButtons();
 		switch (getSetting()) {
 		case SLOT:
 		case POS:
-			slotField = new GuiTextField(0, this.fontRendererObj, 195 - (18 * 6), 8, 34 + 14, 18);
+			slotField = new SonarTextField(0, this.fontRendererObj, 63, 10, 32, 14);
 			slotField.setMaxStringLength(7);
+			slotField.setDigitsOnly(true);
 			if (getSetting() == Modes.SLOT)
 				slotField.setText("" + part.targetSlot.getObject());
 			else if (getSetting() == Modes.POS)
 				slotField.setText("" + part.posSlot.getObject());
+			fieldList.add(slotField);
 			break;
 		default:
 			break;
 		}
-		searchField = new GuiTextField(1, this.fontRendererObj, 195 - (18 * 3), 9, 13 + 18 * 2, 16);
-		// searchField = new GuiTextField(this.fontRendererObj, 95 - (18 * 3), 160, 16 + 18 * 8, 10);
+		searchField = new SonarTextField(1, this.fontRendererObj, 135, 10, 104, 14);
 		searchField.setMaxStringLength(20);
-		// searchField.setText("");
+		fieldList.add(searchField);
+	}
+
+	public void initButtons() {
+		super.initButtons();
+		int start = 8;
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start, guiTop + 9, 32, 96 + 16, "Channels", "button.Channels"));
+		this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 64 + 32, 16 * part.setting.getObject().ordinal(), getSettingsString(), ""));
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), "Sorting Order", ""));
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
+		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, "Dump Player Inventory", ""));
+		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, "Dump Network", ""));
 	}
 
 	public void actionPerformed(GuiButton button) {
 		if (button != null) {
-			if (button.id == -1) {
+			switch (button.id) {
+			case -1:
 				part.setting.incrementEnum();
 				part.sendByteBufPacket(2);
 				switchState();
 				reset();
-			}
-			if (button.id == 0) {
+				break;
+			case 0:
 				part.sortingOrder.incrementEnum();
 				part.sendByteBufPacket(5);
-			}
-			if (button.id == 1) {
+				initButtons();
+				break;
+			case 1:
 				part.sortingType.incrementEnum();
 				part.sendByteBufPacket(6);
-			}
-			if (button.id == 2) {
+				initButtons();
+				break;
+			case 2:
 				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
+				break;
+			case 3:
+				Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 3));
+				break;
+			case 4:
+				Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 4));
+				break;
+			case 5:
+				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
+				reset();
+				break;
 			}
 		}
 	}
@@ -108,77 +134,26 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void drawGuiContainerForegroundLayer(int x, int y) {
-		RenderHelper.restoreBlendState();
-		super.drawGuiContainerForegroundLayer(x, y);
-		switch (getSetting()) {
-		case SLOT:
-		case POS:
-			slotField.drawTextBox();
-			break;
-		default:
-			break;
-		}
-		searchField.drawTextBox();
-	}
-
-	@Override
 	public void mouseClicked(int i, int j, int k) throws IOException {
 		super.mouseClicked(i, j, k);
-		switch (getSetting()) {
-		case SLOT:
-		case POS:
-			slotField.mouseClicked(i - guiLeft, j - guiTop, k);
-			break;
-		default:
-			break;
-		}
 		if (k == 1) {
 			searchField.setText("");
 		}
-		searchField.mouseClicked(i - guiLeft, j - guiTop, k);
 	}
 
-	@Override
-	public void keyTyped(char c, int i) throws IOException {
-		if ((getSetting() == Modes.SLOT || getSetting() == Modes.POS) && slotField.isFocused()) {
-			if (c == 13 || c == 27) {
-				slotField.setFocused(false);
-			} else {
-				FontHelper.addDigitsToString(slotField, c, i);
-				final String text = slotField.getText();
-				if (text.isEmpty() || text == "" || text == null) {
-					if (getSetting() == Modes.SLOT)
-						setTargetSlot("0");
-					else if (getSetting() == Modes.POS)
-						setPosSlot("0");
-				} else {
-					if (getSetting() == Modes.SLOT)
-						setTargetSlot(text);
-					else if (getSetting() == Modes.POS)
-						setPosSlot(text);
-				}
-
+	public void onTextFieldChanged(SonarTextField field) {
+		if (field == slotField) {
+			final String text = slotField.getText();
+			int num = field.getIntegerFromText();
+			if (getSetting() == Modes.SLOT) {
+				part.targetSlot.setObject(num);
+				part.sendByteBufPacket(part.targetSlot.id);
 			}
-		} else if (searchField.isFocused()) {
-			if (c == 13 || c == 27) {
-				searchField.setFocused(false);
-			} else {
-				searchField.textboxKeyTyped(c, i);
+			if (getSetting() == Modes.POS) {
+				part.posSlot.setObject(num);
+				part.sendByteBufPacket(part.posSlot.id);
 			}
-		} else {
-			super.keyTyped(c, i);
 		}
-	}
-
-	public void setTargetSlot(String string) {
-		part.targetSlot.setObject(Integer.parseInt(string));
-		part.sendByteBufPacket(part.targetSlot.id);
-	}
-
-	public void setPosSlot(String string) {
-		part.posSlot.setObject(Integer.parseInt(string));
-		part.sendByteBufPacket(part.posSlot.id);
 	}
 
 	public String getSettingsString() {
@@ -216,7 +191,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {}
+	public void renderStrings(int x, int y) {
+	}
 
 	@Override
 	public void renderSelection(MonitoredItemStack selection, int x, int y) {
@@ -257,52 +233,13 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		if (this.getSetting() == InventoryReader.Modes.STACK) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(playerInv);
-			drawTexturedModalRect(guiLeft+102, guiTop+8, 0, 0, 18, 18);
+			drawTexturedModalRect(guiLeft + 62, guiTop + 8, 0, 0, 18, 18);
 		}
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);		
+		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 	}
 
-	public class FilterButton extends AnimatedButton {
-		public int id;
-
-		public FilterButton(int id, int x, int y) {
-			super(id, x, y, sorting_icons, 15, 15);
-			this.id = id;
-		}
-
-		public void func_146111_b(int x, int y) {
-			String text = "BUTTON TEXT";
-			switch (id) {
-			case 0:
-				text = ("Sorting Direction");
-				break;
-			case 1:
-				text = part.sortingType.getObject().getClientName();
-			}
-
-			drawCreativeTabHoveringText(text, x, y);
-		}
-
-		@Override
-		public void onClicked() {
-		}
-
-		@Override
-		public int getTextureX() {
-			switch (id) {
-			case 0:
-				return 0 + part.sortingOrder.getObject().ordinal() * 16;
-			case 1:
-				return 32 + (part.sortingType.getObject().ordinal() * 16);
-			}
-			return 0;
-		}
-
-		@Override
-		public int getTextureY() {
-			return 0;
-		}
-
-	}
-
+	/* public class FilterButton extends AnimatedButton { public int id; public FilterButton(int id, int x, int y) { super(id, x, y, sorting_icons, 15, 15); this.id = id; } public void func_146111_b(int x, int y) { String text = "BUTTON TEXT"; switch (id) { case 0: text = ("Sorting Direction"); break; case 1: text = part.sortingType.getObject().getClientName(); } drawCreativeTabHoveringText(text, x, y); }
+	 * @Override public void onClicked() { }
+	 * @Override public int getTextureX() { switch (id) { case 0: return 0 + part.sortingOrder.getObject().ordinal() * 16; case 1: return 32 + (part.sortingType.getObject().ordinal() * 16); } return 0; }
+	 * @Override public int getTextureY() { return 0; } } */
 }

@@ -28,7 +28,7 @@ public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {
 		FontHelper.textCentre(String.format("Select the emitters you wish to connect to"), xSize, 18, LogisticsColours.grey_text);
 	}
 
-	public void selectionPressed(GuiButton button, int buttonID, ClientDataEmitter info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, ClientDataEmitter info) {
 		if (buttonID == 0) {
 			tile.selectedEmitter.setObject(info);
 			tile.sendByteBufPacket(0);

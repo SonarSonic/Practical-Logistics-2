@@ -225,15 +225,13 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		case -2:
 			uuid.readFromBuf(buf);
 			list.setIdentity(uuid.getUUID());
-			Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+			Logistics.getInfoManager(true).addMonitor(this);
 			break;
 		}
 	}
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		World w = getContainer().getWorldIn();
-		BlockPos pos = getContainer().getPosIn();
 		return state.withProperty(ORIENTATION, getFacing()).withProperty(hasDisplay, this.hasMonitor.getObject());
 	}
 

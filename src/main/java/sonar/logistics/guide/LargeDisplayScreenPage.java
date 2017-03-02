@@ -5,21 +5,10 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.LogisticsItems;
 
-public class LargeDisplayScreenPage implements IGuidePage {
+public class LargeDisplayScreenPage extends BaseItemPage implements IGuidePage {
 
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.largeDisplayScreen);
-	}
-
-	@Override
-	public void drawPage(GuiSonar gui, int x, int y, int page) {
-		switch (page) {
-		case 0:
-			//FontHelper.text(info, x, y, 0);
-			break;
-		}
-
+	public LargeDisplayScreenPage(int pageID) {
+		super(pageID, new ItemStack(LogisticsItems.largeDisplayScreen));
 	}
 
 	@Override

@@ -105,9 +105,6 @@ public class Logistics {
 		LogisticsASMLoader.init(event);
 		LogicInfoRegistry.init();
 		comparatorRegistry.register();
-		
-		if (event.getSide().isClient())
-			GuidePageRegistry.init();
 	}
 
 	@EventHandler
@@ -135,6 +132,9 @@ public class Logistics {
 			MineTweakerIntegration.init();
 			logger.info("'Mine Tweaker' integration was loaded");
 		}
+		
+		if (evt.getSide().isClient())
+			GuidePageRegistry.init();
 	}
 
 	@EventHandler

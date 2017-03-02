@@ -117,6 +117,11 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 		}
 	}
+	public void writePacket(ByteBuf buf, int id) {
+		super.writePacket(buf, id);
+		
+		
+	}
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);

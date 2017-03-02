@@ -25,4 +25,6 @@ public interface IFilteredTile extends ILogicViewable, IConnectionNode, IChannel
 	public NodeConnection getConnected();
 	
 	public boolean canConnectToNodeConnection();
+	
+	public void incrementTransferMode();
 }

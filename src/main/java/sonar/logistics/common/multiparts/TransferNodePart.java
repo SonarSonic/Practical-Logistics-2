@@ -214,6 +214,9 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			energy.writeToBuf(buf);
 			// gases.writeToBuf(buf);
 			break;
+		case 3:
+			transferMode.writeToBuf(buf);
+			break;
 		}
 	}
 
@@ -233,6 +236,11 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			fluids.readFromBuf(buf);
 			energy.readFromBuf(buf);
 			// gases.readFromBuf(buf);
+			break;
+		case 3:
+			transferMode.readFromBuf(buf);
+			sendSyncPacket();
+			sendUpdatePacket(true);
 			break;
 		}
 	}
@@ -255,8 +263,6 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		World w = getContainer().getWorldIn();
-		BlockPos pos = getContainer().getPosIn();
 		return state.withProperty(ORIENTATION, getFacing()).withProperty(TRANSFER, transferMode.getObject());
 	}
 
@@ -355,6 +361,12 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	@Override
 	public boolean canConnectToNodeConnection() {
 		return connection.getObject();
+	}
+
+	@Override
+	public void incrementTransferMode() {
+		transferMode.incrementEnum();
+		sendByteBufPacket(3);		
 	}
 
 }

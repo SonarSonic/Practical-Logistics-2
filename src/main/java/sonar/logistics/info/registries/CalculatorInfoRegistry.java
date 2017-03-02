@@ -10,27 +10,27 @@ import sonar.calculator.mod.api.nutrition.IHungerProcessor;
 import sonar.core.api.machines.IProcessMachine;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
-import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
+import static sonar.logistics.info.LogicInfoRegistry.*;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.*;
 
 @InfoRegistry(modid = "calculator")
 public class CalculatorInfoRegistry extends IInfoRegistry {
 
 	@Override
 	public void registerBaseMethods() {
-		LogicInfoRegistry.registerMethods(IHealthProcessor.class, RegistryType.TILE);
-		LogicInfoRegistry.registerMethods(IHungerProcessor.class, RegistryType.TILE);
-		LogicInfoRegistry.registerMethods(IProcessMachine.class, RegistryType.TILE);
-		LogicInfoRegistry.registerMethods(IGreenhouse.class, RegistryType.TILE, Lists.newArrayList("getState"), true);
-		LogicInfoRegistry.registerMethods(ITeleport.class, RegistryType.TILE, Lists.newArrayList("getCoords"), true);
-		LogicInfoRegistry.registerMethods(IFlawlessGreenhouse.class, RegistryType.TILE, Lists.newArrayList("getPlantsHarvested", "getPlantsGrown"));
+		registerMethods(IHealthProcessor.class, TILE);
+		registerMethods(IHungerProcessor.class, TILE);
+		registerMethods(IProcessMachine.class, TILE);
+		registerMethods(IGreenhouse.class, TILE, Lists.newArrayList("getState"), true);
+		registerMethods(ITeleport.class, TILE, Lists.newArrayList("getCoords"), true);
+		registerMethods(IFlawlessGreenhouse.class,TILE, Lists.newArrayList("getPlantsHarvested", "getPlantsGrown"));
 		//LogicInfoRegistry.registerMethods(ICalculatorGenerator.class, RegistryType.TILE, Lists.newArrayList("getItemLevel", "getMaxItemLevel"));
 	}
 
 	@Override
 	public void registerAdjustments() {
-		LogicInfoRegistry.registerInfoAdjustments(Lists.newArrayList("IHealthProcessor.getHealthPoints", "IHungerProcessor.getHungerPoints"), "", "points");
-		LogicInfoRegistry.registerInfoAdjustments(Lists.newArrayList("IProcessMachine.getCurrentProcessTime", "IProcessMachine.getProcessTime", "IProcessMachine.getBaseProcessTime"), "", "ticks");
+		registerInfoAdjustments(Lists.newArrayList("IHealthProcessor.getHealthPoints", "IHungerProcessor.getHungerPoints"), "", "points");
+		registerInfoAdjustments(Lists.newArrayList("IProcessMachine.getCurrentProcessTime", "IProcessMachine.getProcessTime", "IProcessMachine.getBaseProcessTime"), "", "ticks");
 	}
 
 }

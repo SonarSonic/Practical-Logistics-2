@@ -2,20 +2,9 @@ itemGroup.Practical Logistics 2=Practical Logistics 2
 
 //blocks
 tile.SapphireOre.name=Sapphire Ore
-tile.EnergyScreenItem.name=Energy Screen
 tile.DisplayScreenItem.name=Display Screen
-tile.DataEmitter.name=Data Emitter
-tile.DataReceiver.name=Data Receiver
-tile.HolographicDisplay.name=Holographic Display
-tile.DataModifier.name=Data Modifier
-tile.InfoCreator.name=Info Creator
 tile.Hammer.name=Forging Hammer
 tile.Hammer_Air.name=Forging Hammer
-tile.LargeDisplayScreen.name=Large Display Screen
-tile.ItemRouter.name=Item Router
-tile.ChannelledCable.name=Channelled Cable
-tile.ChannelSelector.name=Channel Selector
-tile.Clock.name=Clock
 
 //multiparts
 item.Node.name=Node
@@ -32,7 +21,6 @@ item.DataEmitter.name=Data Emitter
 item.TransferNode.name=Transfer Node
 
 //items
-item.EnergyScreenItem.name=Energy Screen
 item.DisplayScreenItem.name=Display Screen
 item.Sapphire.name=Sapphire
 item.SapphireDust.name=Sapphire Dust
@@ -46,6 +34,73 @@ item.Guide.name=Guide
 
 //messages
 dataBlock.denied=Access Denied
+
+//general guide pages
+guide.Welcome.title=Welcome to Practical Logistics 2!
+guide.Welcome.name=Practical Logistics 2 gives you the ability to create automated systems for reading, displaying and acting upon data. You can monitor items, energy, fluids, entities, machines, tanks, light, weather, direction, movement and much more.- -You can create Item, Fluid and Energy networks and transfer them anywhere in the world instantly; you can even transfer across dimensions. This mod also gives you more interactive control, via the use of Large Display Screens.- -This gives you infinite control and management of your base. You can also monitor and control blocks wirelessly.- -This mod is a continuation of the mod Practical Logistics 1.7.10.-This mod was created by Ollie Lansdell.
+
+//item guide pages
+guide.SapphireOre.name=Sapphire Ore spawns in the overworld and is relatively common.- -It spawns between Y Level && and && - -Used for obtaining #Sapphire#-It requires an Iron Pickaxe to mine.
+guide.Hammer.name=A mechanical hammer which doesn't require power. It is used for forging essential items to get you started on your Logistics Network...- -#Sapphire# from #SapphireOre#.-#SapphireDust# from #Sapphire#.-#StonePlate# from Stone.
+guide.Node.name=The node is used to connect blocks to the network.
+guide.FluidReader.name=The Fluid Reader lists all fluids in the connected blocks.-It can display the entire network, a single 
+guide.InfoReader.name=Lists all available pieces of info from the Block/Entity it is connected to. It can also be used to create progress bars- -You can select up to 4 pieces of Info at once.-You may only select info from one block at a time.
+guide.EnergyReader.name=(UNFINISHED)The Energy Reader lists the energy values of the connected blocks, it can read Forge Energy, RF, EU, AE.
+guide.InventoryReader.name=The Inventory Reader lists all items in the connected blocks.
+guide.Array.name=The Array is used to wirelessly connect blocks to the network preventing the need for a #Node#.-To connect a block to the network with the Array you must place a #Transceiver# inside it's inventory which has already been connected to a block, via shift clicking.
+guide.DataCable.name=You will be needing a plentiful supply of Data Cables as they are essential for all basic setups in the mod- -They can transfer Items, Fluids, Energy, Gases and Info
+guide.EntityNode.name=The Entity Node is used to connect entities to the network.
+guide.RedstoneSignaller.name=The Redstone Signaller is used to monitor info and emit a redstone signal based on various statements which can be configured by the user.
+guide.DataReceiver.name=The Data Receiver is used to connect multiple networks wirelessly. To join networks you must connect a #DataEmitter# to the network you want to connect to and then select it in the GUI of the Data Receiver, you can select as many emitters as you want.
+guide.DataEmitter.name=The Data Emitter is used to connect multiple networks wirelessly. To join networks you must place an Emitter on the network you want to join to your main network and then connect to it using a #DataReceiver#.-The connected networks can both access each other.
+guide.TransferNode.name=The Transfer Node is used to transfer items, fluids and energy into a connection-You can create Item Filters, Ore Dictionary filters and Fluid filters to make sure only the items you want are transfered.- -The Transfer Node has four modes ADD, REMOVE, ADD/REMOVE & PASSIVE.
+guide.Sapphire.name=Sapphire's have a mystic quality which allows them to transfer Practical Logistics Info quickly. It is therefore a key crafting ingredient in the mod, make sure you have plenty!-It is obtained by placing #SapphireOre# in the #Hammer#
+guide.SapphireDust.name=Obtained by placing #Sapphire# in the #Hammer#- -It shares the qualities of #Sapphire# and is a key crafting ingredient in the mod.
+guide.StonePlate.name=Stone Plate are rigid and durable making them ideal for creating Logistics Blocks and is therefore a key crafting ingredient in the mod
+guide.Transceiver.name=The Transceiver is used to wirelessly connect blocks to the network preventing the need for a #Node#.-To do this you must first shift_right click the block you wish to connect. Once the Transceiver has been connected place it inside a #Array# on the network you wish to connect it to.
+guide.EntityTransceiver.name=The Entity Transceiver operates in exactly the same way as the #Transceiver# except it works for Entities rather than blocks.
+guide.Operator.name=It has 6 modes for configuring blocks-You can change modes by shift right clicking.- -<blue>DEFAULT:<reset> click to connect/disconnect cables as well as general functions on some blocks- -<blue>ROTATE:<reset> Right click a block to rotate it- -<blue>INFO:<reset> Right clicking once will enable Info about Practical Logistics blocks to display when you hover over them while the operator is in your hand- -<blue>CHANNELS:<reset> Allows quick access to the configured channels for a given block- -<blue>ANALYSE:<reset> (UNFINISHED) When a block is right clicked the Operator will diagnose it to see if it can be fixed.
+guide.DisplayScreen.name=The Display Screen is used for Display Info provided by Readers. To configure the Display Screen you must open the GUI which can only be opened by right clicking the back of the display.-The Display Screen can show four types of data simultaneously.-You can change the layout of this info inside the GUI.
+guide.LargeDisplayScreen.name=The Large Display Screen works in exactly the same way as the #DisplayScreen# except it can be connected to other Large Display Screens making one gigantic screen! 
+guide.Guide.name=The Guide is what you're using right now!
+
+//generic Guide Pages
+guide.ChannelsSTART.name=<blue>Channels<reset>-The #CURRENT# can also be configured by channels. The 'channels' are the blocks/entites connected to the network meaning this will alter what the #CURRENT# can access.
+guide.ChannelsSINGLE.name=Due to it's type of opperation the #CURRENT# can only have one channel, therefore you must select the first channel manually.
+guide.ChannelsUNLIMITED.name=The #CURRENT# can have an unlimited number of connected channels.
+guide.ChannelsEND.name=You can edit the channels by pressing the channel button in it's GUI or by right clicking it with an #Operator# in Channels mode.
+
+guide.ExampleConfig.name=Example Configurations
+guide.FurnaceProgress.name=Blocks Required: #Node#, #DataCable#, #InfoReader# and #DisplayScreen#.-Step 1: Place the blocks in the configuration as seen. -Step 2: Ensure the Info Reader is connected to the node by selecting the furnace in the channels menu -Step 3: In the Info Reader's GUI left click "Cook Time" and right click "Total Cook Time" this will create a progress bar from the info!--And you're done!
+
+//HELPOVERLAYS//
+
+//BUTTON HELPS//
+button.ScreenLayout=The layout of how data is displayed on the Display Screen.
+button.TransferMode=The transfer mode of this Node-ADD: Allows adding-REMOVE: Allows removing-ADD/REMOVE: Allows adding/removing, however a filter is required-PASSIVE: No adding/removing can occur 
+button.ItemFilter=Creates a New Item Filter
+button.OreFilter=Creates a New Ore Dictionary Filter
+button.FluidFilter=Creates a New Fluid Filter
+button.MoveUpFilter=Moves the selected filter up by one place.
+button.MoveDownFilter=Moves the selected filter down by one place.
+button.DeleteFilter=Deletes the selected filter down by one place.
+button.ClearAllFilter=Clears ALL configured filters
+button.Channels=Configure the blocks this block is affected on
+button.ItemTransfer=Allows this filter to Transfer items
+button.FluidTransfer=Allows this filter to Transfer fluids
+button.EnergyTransfer=Allows this filter to Transfer energy
+button.HelpButton=Enables help overlays-like this one :)
+button.EmitterMode=Dictates when a signal is emittered.-ONE TRUE: Emits a signal if one statement is true-ONE FALSE: Emits a signal if one statement is false-ALL TRUE: Emits a signal if all statements are true-ALL FALSE: Emits a signal if all statements are false
+button.NewStatement=Creates a new Redstone Signaller Statement
+button.MoveUpStatement=Moves the selected statement up by one place.
+button.MoveDownStatement=Moves the selected statement down by one place.
+button.DeleteStatement=Deletes the selected statement.
+button.ClearAllStatements=Clears ALL configured statements
+button.RedstoneSignallerRefresh=Refreshes the configured statements-Updating the data and if they were true last tick
+button.InfoSignallerSource=Used to select the source of the info used in the statement.
+button.ObjectSelectionSource=Used to select the object used in the statement.
+
+/////INFO/////
 
 //data emitter
 pl.emitter.public=Public

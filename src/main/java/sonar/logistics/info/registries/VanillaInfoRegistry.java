@@ -28,44 +28,44 @@ import net.minecraftforge.fluids.Fluid;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
-import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
+import static sonar.logistics.info.LogicInfoRegistry.*;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.*;
 
 @InfoRegistry(modid = Logistics.MODID)
 public class VanillaInfoRegistry extends IInfoRegistry {
 
 	@Override
 	public void registerBaseReturns() {
-		LogicInfoRegistry.registerReturn(WorldInfo.class);
-		LogicInfoRegistry.registerReturn(WorldProvider.class);
-		LogicInfoRegistry.registerReturn(DimensionType.class);
-		LogicInfoRegistry.registerReturn(Fluid.class);
-		LogicInfoRegistry.registerReturn(FoodStats.class);
-		LogicInfoRegistry.registerReturn(Team.class);
-		LogicInfoRegistry.registerReturn(NBTTagCompound.class);
-		LogicInfoRegistry.registerReturn(BlockPos.class);
+		registerReturn(WorldInfo.class);
+		registerReturn(WorldProvider.class);
+		registerReturn(DimensionType.class);
+		registerReturn(Fluid.class);
+		registerReturn(FoodStats.class);
+		registerReturn(Team.class);
+		registerReturn(NBTTagCompound.class);
+		registerReturn(BlockPos.class);
 	}
 
 	@Override
 	public void registerBaseMethods() {
-		LogicInfoRegistry.registerMethods(Block.class, RegistryType.BLOCK, Lists.newArrayList("getUnlocalizedName", "getMetaFromState", "getHarvestLevel", "isFoliage", "isWood", "canSustainLeaves"));
-		LogicInfoRegistry.registerMethods(Block.class, RegistryType.BLOCK, Lists.newArrayList("getWeakPower", "getStrongPower", "isSideSolid", "getBlockHardness"));
-		LogicInfoRegistry.registerMethods(BlockFluidBase.class, RegistryType.BLOCK, Lists.newArrayList("getFluid"));
-		LogicInfoRegistry.registerMethods(BlockCrops.class, RegistryType.BLOCK, Lists.newArrayList("isMaxAge"));
-		LogicInfoRegistry.registerMethods(Fluid.class, RegistryType.BLOCK, Lists.newArrayList("getLuminosity", "getDensity", "getTemperature", "getViscosity"));
-		LogicInfoRegistry.registerMethods(BlockPos.class, RegistryType.POS, Lists.newArrayList("getX", "getY", "getZ"));
-		LogicInfoRegistry.registerMethods(EnumFacing.class, RegistryType.FACE, Lists.newArrayList("toString"));
-		LogicInfoRegistry.registerMethods(World.class, RegistryType.WORLD, Lists.newArrayList("isBlockIndirectlyGettingPowered", "getWorldInfo"));
-		LogicInfoRegistry.registerMethods(WorldInfo.class, RegistryType.WORLD, Lists.newArrayList("isRaining", "isThundering", "getWorldName"));
-		LogicInfoRegistry.registerMethods(WorldProvider.class, RegistryType.WORLD, Lists.newArrayList("getDimension", "getDimensionType"));
-		LogicInfoRegistry.registerMethods(DimensionType.class, RegistryType.WORLD, Lists.newArrayList("getName"));
-		LogicInfoRegistry.registerMethods(Entity.class, RegistryType.ENTITY, Lists.newArrayList("getPosition", "getName"));
-		LogicInfoRegistry.registerMethods(EntityLivingBase.class, RegistryType.ENTITY, Lists.newArrayList("getHealth", "getMaxHealth", "getAge", "getTotalArmorValue"));
-		LogicInfoRegistry.registerMethods(EntityAgeable.class, RegistryType.ENTITY, Lists.newArrayList("getGrowingAge"));
-		LogicInfoRegistry.registerMethods(EntityPlayer.class, RegistryType.ENTITY, Lists.newArrayList("isCreative", "isSpectator", "getFoodStats", "getAbsorptionAmount", "getTeam", "getExperiencePoints"));
-		LogicInfoRegistry.registerMethods(FoodStats.class, RegistryType.ENTITY, Lists.newArrayList("getFoodLevel", "needFood", "getSaturationLevel"));
-		LogicInfoRegistry.registerMethods(Team.class, RegistryType.ENTITY, Lists.newArrayList("getRegisteredName"));
-		LogicInfoRegistry.registerMethods(ItemStack.class, RegistryType.ITEMSTACK, Lists.newArrayList("getItem", "getMaxStackSize", "getTagCompound"));		
+		registerMethods(Block.class, BLOCK, Lists.newArrayList("getUnlocalizedName", "getMetaFromState", "getHarvestLevel", "isFoliage", "isWood", "canSustainLeaves"));
+		registerMethods(Block.class, BLOCK, Lists.newArrayList("getWeakPower", "getStrongPower", "isSideSolid", "getBlockHardness"));
+		registerMethods(BlockFluidBase.class, BLOCK, Lists.newArrayList("getFluid"));
+		registerMethods(BlockCrops.class, BLOCK, Lists.newArrayList("isMaxAge"));
+		registerMethods(Fluid.class, BLOCK, Lists.newArrayList("getLuminosity", "getDensity", "getTemperature", "getViscosity"));
+		registerMethods(BlockPos.class, POS, Lists.newArrayList("getX", "getY", "getZ"));
+		registerMethods(EnumFacing.class, FACE, Lists.newArrayList("toString"));
+		registerMethods(World.class, WORLD, Lists.newArrayList("isBlockIndirectlyGettingPowered", "getWorldInfo"));
+		registerMethods(WorldInfo.class, WORLD, Lists.newArrayList("isRaining", "isThundering", "getWorldName"));
+		registerMethods(WorldProvider.class, WORLD, Lists.newArrayList("getDimension", "getDimensionType"));
+		registerMethods(DimensionType.class, WORLD, Lists.newArrayList("getName"));
+		registerMethods(Entity.class, ENTITY, Lists.newArrayList("getPosition", "getName"));
+		registerMethods(EntityLivingBase.class, ENTITY, Lists.newArrayList("getHealth", "getMaxHealth", "getAge", "getTotalArmorValue"));
+		registerMethods(EntityAgeable.class, ENTITY, Lists.newArrayList("getGrowingAge"));
+		registerMethods(EntityPlayer.class, ENTITY, Lists.newArrayList("isCreative", "isSpectator", "getFoodStats", "getAbsorptionAmount", "getTeam", "getExperiencePoints"));
+		registerMethods(FoodStats.class, ENTITY, Lists.newArrayList("getFoodLevel", "needFood", "getSaturationLevel"));
+		registerMethods(Team.class, ENTITY, Lists.newArrayList("getRegisteredName"));
+		registerMethods(ItemStack.class, ITEMSTACK, Lists.newArrayList("getItem", "getMaxStackSize", "getTagCompound"));
 	}
 
 	@Override
@@ -75,15 +75,15 @@ public class VanillaInfoRegistry extends IInfoRegistry {
 		furnaceFields.put("currentItemBurnTime", 1);
 		furnaceFields.put("cookTime", 2);
 		furnaceFields.put("totalCookTime", 3);
-		LogicInfoRegistry.registerInvFields(TileEntityFurnace.class, furnaceFields);
-		LogicInfoRegistry.registerFields(TileEntityNote.class, RegistryType.TILE, Lists.newArrayList("note"));
-		LogicInfoRegistry.registerFields(ItemStack.class, RegistryType.ITEMSTACK, Lists.newArrayList("stackSize"));
+		registerInvFields(TileEntityFurnace.class, furnaceFields);
+		registerFields(TileEntityNote.class, TILE, Lists.newArrayList("note"));
+		registerFields(ItemStack.class, ITEMSTACK, Lists.newArrayList("stackSize"));
 	}
 
 	@Override
 	public void registerAdjustments() {
-		LogicInfoRegistry.registerInfoAdjustments(Lists.newArrayList("EntityLivingBase.getHealth", "EntityLivingBase.getMaxHealth"), "", "HP");
-		LogicInfoRegistry.registerInfoAdjustments(Lists.newArrayList("TileEntityFurnace.furnaceBurnTime", "TileEntityFurnace.currentItemBurnTime", "TileEntityFurnace.cookTime", "TileEntityFurnace.totalCookTime"), "", "ticks");
+		registerInfoAdjustments(Lists.newArrayList("EntityLivingBase.getHealth", "EntityLivingBase.getMaxHealth"), "", "HP");
+		registerInfoAdjustments(Lists.newArrayList("TileEntityFurnace.furnaceBurnTime", "TileEntityFurnace.currentItemBurnTime", "TileEntityFurnace.cookTime", "TileEntityFurnace.totalCookTime"), "", "ticks");
 		// LogicRegistry.registerInfoAdjustments(Lists.newArrayList("Block.getUnlocalizedName"), "", ".name");
 	}
 

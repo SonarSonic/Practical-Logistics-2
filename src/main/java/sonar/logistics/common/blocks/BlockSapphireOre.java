@@ -26,6 +26,6 @@ public class BlockSapphireOre extends BlockOre {
 
 	@Override
 	public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune) {
-		return MathHelper.getRandomIntegerInRange(SonarCore.rand, 1, 3);
+		return MathHelper.getRandomIntegerInRange(SonarCore.rand, 0, 1);
 	}
 }

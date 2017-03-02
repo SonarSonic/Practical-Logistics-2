@@ -174,14 +174,14 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 				if (network < infoSize()) {
 					T info = infoList.get(network);
 					if (info != null) {
-						selectionPressed(button, buttonID, info);
+						selectionPressed(button, network, buttonID, info);
 					}
 				}
 			}
 		}
 	}
 
-	public abstract void selectionPressed(GuiButton button, int buttonID, T info);
+	public abstract void selectionPressed(GuiButton button, int infoPos, int buttonID, T info);
 
 	public void actionPerformed(GuiButton button) {
 		if (enableListRendering) {

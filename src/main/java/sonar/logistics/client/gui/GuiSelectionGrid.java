@@ -154,8 +154,8 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 		drawRect(guiLeft+12, guiTop+ 31, guiLeft+228, guiTop+ 157, LogisticsColours.grey_base.getRGB());
 		drawRect(guiLeft+13, guiTop+ 32, guiLeft+227, guiTop+ 156, LogisticsColours.blue_overlay.getRGB());
 		
-		drawRect(guiLeft+12, guiTop+ 170, guiLeft+xSize-12, guiTop+ 252, LogisticsColours.grey_base.getRGB());
-		drawRect(guiLeft+13, guiTop+ 171, guiLeft+xSize-13, guiTop+ 251, LogisticsColours.blue_overlay.getRGB());
+		drawRect(guiLeft+12, guiTop+ 170, guiLeft+xSize-9, guiTop+ 252, LogisticsColours.grey_base.getRGB());
+		drawRect(guiLeft+13, guiTop+ 171, guiLeft+xSize-10, guiTop+ 251, LogisticsColours.blue_overlay.getRGB());
 		RenderHelper.restoreBlendState();
 	}
 

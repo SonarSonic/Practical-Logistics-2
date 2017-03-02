@@ -236,8 +236,6 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		World w = getContainer().getWorldIn();
-		BlockPos pos = getContainer().getPosIn();
 		return state.withProperty(ORIENTATION, face).withProperty(ROTATION, rotation);
 	}
 

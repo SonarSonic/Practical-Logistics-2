@@ -47,7 +47,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 			this.addSlotToContainer(new Slot(player.inventory, i, 41 + i * 18, 232));
 		}
 		if (stackMode)
-			addSlotToContainer(new SlotList(part.inventory, 0, 103, 9));
+			addSlotToContainer(new SlotList(part.inventory, 0, 63, 9));
 	}
 
 	@Override

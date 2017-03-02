@@ -83,14 +83,14 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 			break;
 		case LIST:
-			this.buttonList.add(new LogisticsButton(this, -1, guiLeft +  137, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout()));
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 137, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout(), "button.ScreenLayout"));
 			// int width = 162;
 			int height = 20;
 			int left = 7;
 			for (int i = 0; i < part.maxInfo(); i++) {
 				int top = 22 + ((height + 6) * i);
-				this.buttonList.add(new DisplayButton(i, ButtonType.EDIT, guiLeft + 130 - 3, guiTop + top));
-				this.buttonList.add(new DisplayButton(i, ButtonType.SOURCE, guiLeft + 130 - 3 + 20, guiTop + top));
+				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 130 - 3, guiTop + top, 32, 256 - 32, "Edit", ""));
+				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 130 - 3 + 20, guiTop + top, height, height, "Source", ""));
 			}
 
 			break;
@@ -158,20 +158,12 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				part.incrementLayout();
 				reset();
 				part.sendByteBufPacket(2);
+				break;
 			}
-			if (button instanceof DisplayButton) {
-				DisplayButton btn = (DisplayButton) button;
-				switch (btn.type) {
-				case EDIT:
-					changeState(GuiState.EDIT, btn.id);
-					break;
-				case SOURCE:
-					changeState(GuiState.SOURCE, btn.id);
-					break;
-				default:
-					break;
-				}
-				return;
+			if (button.id >= 100) {
+				changeState(GuiState.SOURCE, button.id - 100);
+			} else {
+				changeState(GuiState.EDIT, button.id);
 			}
 			break;
 		case SOURCE:
@@ -285,46 +277,10 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		RenderHelper.restoreBlendState();
 	}
-
-	@SideOnly(Side.CLIENT)
-	public class DisplayButton extends AnimatedButton {
-		public int id;
-		public ButtonType type;
-
-		public DisplayButton(int id, ButtonType type, int x, int y) {
-			super(id, x, y, GuiInventoryReader.sorting_icons, 15, 15);
-			this.id = id;
-			this.type = type;
-		}
-
-		public void drawButtonForegroundLayer(int x, int y) {
-			drawCreativeTabHoveringText(type.getText(), x, y);
-		}
-
-		@Override
-		public void onClicked() {
-		}
-
-		@Override
-		public int getTextureX() {
-			switch (type) {
-			case EDIT:
-				return 0;
-			case SOURCE:
-				return 16;
-			default:
-				break;
-			}
-
-			return 0;
-		}
-
-		@Override
-		public int getTextureY() {
-			return 16;
-		}
-
-	}
+	/* @SideOnly(Side.CLIENT) public class DisplayButton extends AnimatedButton { public int id; public ButtonType type; public DisplayButton(int id, ButtonType type, int x, int y) { super(id, x, y, GuiInventoryReader.sorting_icons, 15, 15); this.id = id; this.type = type; } public void drawButtonForegroundLayer(int x, int y) { drawCreativeTabHoveringText(type.getText(), x, y); }
+	 * @Override public void onClicked() { }
+	 * @Override public int getTextureX() { switch (type) { case EDIT: return 0; case SOURCE: return 16; default: break; } return 0; }
+	 * @Override public int getTextureY() { return 16; } } */
 
 	@Override
 	public int getColour(int i, int type) {
@@ -375,7 +331,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	}
 
 	@Override
-	public void selectionPressed(GuiButton button, int buttonID, Object info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, Object info) {
 		if (buttonID == 0 && info instanceof InfoUUID) {
 			part.container().setUUID((InfoUUID) info, infoID);
 			part.currentSelected = infoID;

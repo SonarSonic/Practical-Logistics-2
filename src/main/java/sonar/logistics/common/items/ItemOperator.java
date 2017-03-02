@@ -52,6 +52,8 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			OperatorMode mode = getOperatorMode(stack);
 			switch (mode) {
 			case ANALYSE:
+				
+				//DO ERROR CHECKING.
 				break;
 			case DEFAULT:
 				if (!player.isSneaking()) {

@@ -37,7 +37,10 @@ import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.InventoryReader.SortingType;
 import sonar.logistics.api.wrappers.ItemWrapper;
+import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.common.multiparts.ReaderMultipart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
+import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class ItemHelper extends ItemWrapper {
 
@@ -334,7 +337,6 @@ public class ItemHelper extends ItemWrapper {
 		StoredItemStack remainder = LogisticsAPI.getItemHelper().addItems(stack.copy(), cache, ActionType.PERFORM);
 		StoredItemStack toAdd = SonarAPI.getItemHelper().getStackToAdd(stack.getStackSize(), stack, remainder);
 		LogisticsAPI.getItemHelper().removeStackFromPlayer(toAdd, player, false, ActionType.PERFORM);
-
 	}
 
 	public void insertItemFromPlayer(EntityPlayer player, INetworkCache cache, int slot) {
@@ -349,8 +351,34 @@ public class ItemHelper extends ItemWrapper {
 		}
 		if (!ItemStack.areItemStacksEqual(add, player.inventory.getStackInSlot(slot))) {
 			player.inventory.setInventorySlotContents(slot, add);
-		}else{
-			FontHelper.sendMessage( TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "The item cannot be inserted", player.getEntityWorld(), player);
+		} else {
+			FontHelper.sendMessage(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "The item cannot be inserted", player.getEntityWorld(), player);
+		}
+	}
+
+	public void dumpInventoryFromPlayer(EntityPlayer player, INetworkCache cache) {
+		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+			ItemStack add = player.inventory.getStackInSlot(i);
+			if (add == null)
+				continue;
+			StoredItemStack stack = LogisticsAPI.getItemHelper().addItems(new StoredItemStack(add), cache, ActionType.PERFORM);
+			if (stack == null || stack.stored == 0) {
+				add = null;
+			} else {
+				add.stackSize = (int) stack.stored;
+			}
+			if (!ItemStack.areItemStacksEqual(add, player.inventory.getStackInSlot(i))) {
+				player.inventory.setInventorySlotContents(i, add);
+			}
+		}
+	}
+	public void dumpNetworkToPlayer(ReaderMultipart<MonitoredItemStack> part, EntityPlayer player, INetworkCache cache) {
+		MonitoredList<MonitoredItemStack> items = part.getMonitoredList();
+		for(MonitoredItemStack stack : items){
+			StoredItemStack returned = removeToPlayerInventory(stack.itemStack.getObject(), stack.itemStack.getObject().stored, cache, player, ActionType.SIMULATE);
+			if(returned!=null){
+				removeToPlayerInventory(stack.itemStack.getObject(), returned.stored, cache, player, ActionType.PERFORM);				
+			}
 		}
 	}
 

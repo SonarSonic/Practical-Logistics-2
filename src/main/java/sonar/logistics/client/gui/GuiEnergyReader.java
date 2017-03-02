@@ -35,7 +35,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	}
 
 	@Override
-	public void selectionPressed(GuiButton button, int buttonID, MonitoredEnergyStack info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, MonitoredEnergyStack info) {
 		if (info.isValid() && !info.isHeader()) {
 			part.selectedInfo.setInfo(info);
 			part.sendByteBufPacket(buttonID == 0 ? -9 : -10);

@@ -31,6 +31,7 @@ import sonar.logistics.api.logistics.EmitterStatement;
 import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.logistics.InputTypes;
 import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.GuiFilterList.GuiState;
@@ -77,22 +78,23 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		super.initGui();
 		switch (state) {
 		case LIST:
-			int start = 50;
-			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 48, 0 + 16 * tile.emitterMode().getObject().ordinal(), "Emit If: " + tile.emitterMode().getObject().name()));
-			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20 * 1, guiTop + 6, 32, 128, "New Statement"));
-			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 0, "Move Up"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 16, "Move Down"));
-			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 32, "Delete"));
-			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 20 * 5, guiTop + 6, 32, 96, "Clear All"));
-			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 20 * 6, guiTop + 6, 32, 128 + 16, "Refresh"));
+			int start = 42;
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 48, 0 + 16 * tile.emitterMode().getObject().ordinal(), "Emit If: " + tile.emitterMode().getObject().name(), "button.EmitterMode"));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20 * 1, guiTop + 6, 32, 128, "New Statement", "button.NewStatement"));
+			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 0, "Move Up", "button.MoveUpStatement"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 16, "Move Down", "button.MoveDownStatement"));
+			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 32, "Delete", "button.DeleteStatement"));
+			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 20 * 5, guiTop + 6, 32, 96, "Clear All", "button.ClearAllStatements"));
+			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 20 * 6, guiTop + 6, 32, 128 + 16, "Refresh", "button.RedstoneSignallerRefresh"));
+			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 20 * 7, guiTop + 6, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
 			break;
 		case STATEMENT:
 			this.buttonList.add(new GuiButton(0, guiLeft + xSize / 2 - 60, guiTop + 116, 120, 20, "Input Type: " + currentFilter.getInputType()));
-			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 6, guiTop + 16, 32, 48, "Info Source"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 6, guiTop + 16 + 20 * 1, 32, 80, "Object Selection"));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 6, guiTop + 16, 32, 48, "Info Source", "button.InfoSignallerSource"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 6, guiTop + 16 + 20 * 1, 32, 80, "Object Selection", "button.ObjectSelectionSource"));
 			if (currentFilter.getInputType().usesInfo()) {
-				this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 6, guiTop + 72, 32, 48, "Info Source"));
-				this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 6, guiTop + 92, 32, 80, "Object Selection"));
+				this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 6, guiTop + 72, 32, 48, "Info Source", "button.InfoSignallerSource"));
+				this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 6, guiTop + 92, 32, 80, "Object Selection", "button.ObjectSelectionSource"));
 			} else if (currentFilter.getInputType() == InputTypes.BOOLEAN) {
 				this.buttonList.add(new GuiButton(8, guiLeft + xSize / 2 - 60, guiTop + 80, 120, 20, "" + currentBool));
 			} else {
@@ -150,6 +152,10 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				break;
 			case 6:
 				tile.requestSyncPacket();
+				break;
+			case 7:
+				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
+				reset();
 				break;
 			}
 			break;
@@ -476,7 +482,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	}
 
 	@Override
-	public void selectionPressed(GuiButton button, int buttonID, Object info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, Object info) {
 		switch (state) {
 		case LIST:
 			if (buttonID == 1) {

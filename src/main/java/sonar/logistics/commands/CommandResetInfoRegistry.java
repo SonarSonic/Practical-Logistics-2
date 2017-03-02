@@ -3,6 +3,11 @@ package sonar.logistics.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -30,7 +35,7 @@ public class CommandResetInfoRegistry implements ICommand {
 
 	@Override
 	public String getCommandName() {
-		return "resetRegistry";
+		return "/logistics resetRegistry";
 	}
 
 	@Override
@@ -51,6 +56,7 @@ public class CommandResetInfoRegistry implements ICommand {
 			Logistics.logger.info("Reset Logic Info Registry");
 		}
 		sender.addChatMessage(new TextComponentTranslation("Reset Logic Info Registry"));
+
 
 	}
 

@@ -97,9 +97,6 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 	public boolean rotatePart(EnumFacing axis) {
 		Pair<Boolean, EnumFacing> rotate = rotatePart(face.getObject(), axis);
 		if (rotate.a) {
-			if (getContainer().getPartInSlot(PartSlot.getFaceSlot(rotate.b)) != null) {
-				return false;
-			}
 			if (isServer()) {
 				UUID uuid = getUUID();
 				BlockPos pos = getPos();
@@ -147,8 +144,6 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		World w = getContainer().getWorldIn();
-		BlockPos pos = getContainer().getPosIn();
 		return state.withProperty(ORIENTATION, face.getObject());
 	}
 

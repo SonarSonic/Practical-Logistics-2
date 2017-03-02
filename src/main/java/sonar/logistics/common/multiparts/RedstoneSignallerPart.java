@@ -158,8 +158,6 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		World w = getContainer().getWorldIn();
-		BlockPos pos = getContainer().getPosIn();
 		return state.withProperty(ORIENTATION, getFacing()).withProperty(ACTIVE, isActive());
 	}
 

@@ -15,6 +15,8 @@ import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.common.multiparts.ReaderMultipart;
+import sonar.logistics.connections.monitoring.MonitoredItemStack;
 
 public class ItemWrapper {
 	
@@ -136,13 +138,15 @@ public class ItemWrapper {
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
 	 * @param slot the slot of the item to be added */
-	public void insertInventoryFromPlayer(EntityPlayer player, INetworkCache cache, int slotID) {
-	}
+	public void insertInventoryFromPlayer(EntityPlayer player, INetworkCache cache, int slotID) {}
 
 	/** inserts an item into the given network from the players inventory from the given slot
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
 	 * @param slot the slot to remove from */
-	public void insertItemFromPlayer(EntityPlayer player, INetworkCache cache, int slot) {
-	}
+	public void insertItemFromPlayer(EntityPlayer player, INetworkCache cache, int slot) {}
+
+	public void dumpInventoryFromPlayer(EntityPlayer player, INetworkCache cache) {}
+
+	public void dumpNetworkToPlayer(ReaderMultipart<MonitoredItemStack> part, EntityPlayer player, INetworkCache cache) {}
 }

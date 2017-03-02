@@ -50,6 +50,7 @@ import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
@@ -110,21 +111,25 @@ public class GuiFilterList extends GuiSelectionList {
 
 			break;
 		case LIST:
-			int start = 12;
-			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 32, 48, "New Item Filter"));
-			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20, guiTop + 6, 32, 80, "New Ore Dict Filter"));
-			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 64, "New Fluid Filter"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 0, "Move Up"));
-			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 16, "Move Down"));
-			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 20 * 5, guiTop + 6, 32, 32, "Delete"));
-			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 20 * 6, guiTop + 6, 32, 96, "Clear All"));
-			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 20 * 7, guiTop + 6, 32, 96 + 16, "Channels"));
+			int start = 7;
+			int gap = 18;
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start, guiTop + 6, 64+16, 16*tile.getTransferMode().ordinal(), "TransferMode: " + tile.getTransferMode(), "button.TransferMode"));
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start + gap, guiTop + 6, 32, 48, "New Item Filter", "button.ItemFilter"));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + gap * 2, guiTop + 6, 32, 80, "New Ore Dict Filter", "button.OreFilter"));
+			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + gap * 3, guiTop + 6, 32, 64, "New Fluid Filter", "button.FluidFilter"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + gap * 4, guiTop + 6, 32, 0, "Move Up", "button.MoveUpFilter"));
+			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + gap * 5, guiTop + 6, 32, 16, "Move Down", "button.MoveDownFilter"));
+			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + gap * 6, guiTop + 6, 32, 32, "Delete", "button.DeleteFilter"));
+			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + gap * 7, guiTop + 6, 32, 96, "Clear All", "button.ClearAllFilter"));
+			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + gap * 8, guiTop + 6, 32, 96 + 16, "Channels", "button.Channels"));
 			boolean itemTransfer = tile.isTransferEnabled(TransferType.ITEMS);
-			this.buttonList.add(new LogisticsButton(this, 8, guiLeft + start + 20 * 8, guiTop + 6, itemTransfer ? 16 : 0, 80, "Item Transfer: " + itemTransfer));
+			this.buttonList.add(new LogisticsButton(this, 8, guiLeft + start + gap * 9, guiTop + 6, itemTransfer ? 16 : 0, 80, "Item Transfer: " + itemTransfer, "button.ItemTransfer"));
 			boolean fluidTransfer = tile.isTransferEnabled(TransferType.FLUID);
-			this.buttonList.add(new LogisticsButton(this, 9, guiLeft + start + 20 * 9, guiTop + 6, fluidTransfer ? 16 : 0, 96, "Fluid Transfer: " + fluidTransfer));
+			this.buttonList.add(new LogisticsButton(this, 9, guiLeft + start + gap * 10, guiTop + 6, fluidTransfer ? 16 : 0, 96, "Fluid Transfer: " + fluidTransfer, "button.FluidTransfer"));
 			boolean energyTransfer = tile.isTransferEnabled(TransferType.ENERGY);
-			this.buttonList.add(new LogisticsButton(this, 10, guiLeft + start + 20 * 10, guiTop + 6, energyTransfer ? 16 : 0, 96+16, "Energy Transfer: " + energyTransfer));
+			this.buttonList.add(new LogisticsButton(this, 10, guiLeft + start + gap * 11, guiTop + 6, energyTransfer ? 16 : 0, 96 + 16, "Energy Transfer: " + energyTransfer, "button.EnergyTransfer"));
+			this.buttonList.add(new LogisticsButton(this, 11, guiLeft + start + gap * 12, guiTop + 6, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+
 			break;
 		case ORE_FILTER:
 			this.buttonList.add(new GuiButton(-1, guiLeft + 6, guiTop + 6, 60, 20, currentFilter.getTransferMode().name()));
@@ -195,6 +200,10 @@ public class GuiFilterList extends GuiSelectionList {
 			break;
 		case LIST:
 			switch (button.id) {
+			case -1:
+				tile.incrementTransferMode();
+				reset();
+				break;
 			case 0:
 				filter = new ItemFilter();
 				tile.getFilters().addObject(filter);
@@ -251,6 +260,10 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			case 10:
 				tile.setTransferType(TransferType.ENERGY, !tile.isTransferEnabled(TransferType.ENERGY));
+				reset();
+				break;
+			case 11:
+				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
 				reset();
 				break;
 			}
@@ -359,7 +372,7 @@ public class GuiFilterList extends GuiSelectionList {
 	}
 
 	// list
-	public void selectionPressed(GuiButton button, int buttonID, Object info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, Object info) {
 		switch (state) {
 		case FLUID_FILTER:
 			break;

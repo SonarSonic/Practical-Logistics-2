@@ -46,16 +46,12 @@ public class InfoRenderer {
 		double yCentre = 0;
 		double centre =  (double)toDisplay.size() / 2  -0.5;
 		int fontHeight = RenderHelper.fontRenderer.FONT_HEIGHT;
-		//GlStateManager.translate(0, height/2 - scale/1, 0);
 		for (int i = 0; i < toDisplay.size(); i++) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, (-1 + height / 2 + 0.26) + (i == centre ? 0 : i < centre ? yCentre - offset * -(i - centre) : yCentre + offset * (i - centre)), 0);
 			GlStateManager.scale(scale, scale, 1.0f);
 			String string = toDisplay.get(i);
 			int length = RenderHelper.fontRenderer.getStringWidth(string);
-			
-			//renderCenteredString(toDisplay.get(i), -1, (float) (i == centre ? yCentre : i < centre ? yCentre - offset * -(i - centre) : yCentre + offset * (i - centre)), (float) (width + 0.0625 * 2), (float) scale, -1);
-
 			RenderHelper.fontRenderer.drawString(string, (float) ((-1+0.0625 + width / 2) / scale - length / 2), (float) 0.625, -1, false);
 			GlStateManager.popMatrix();
 		}

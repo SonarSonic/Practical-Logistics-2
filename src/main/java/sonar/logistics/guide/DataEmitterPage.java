@@ -5,21 +5,10 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.LogisticsItems;
 
-public class DataEmitterPage implements IGuidePage {
+public class DataEmitterPage extends BaseItemPage implements IGuidePage {
 
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partEmitter);
-	}
-
-	@Override
-	public void drawPage(GuiSonar gui, int x, int y, int page) {
-		switch (page) {
-		case 0:
-			//FontHelper.text(info, x, y, 0);
-			break;
-		}
-
+	public DataEmitterPage(int pageID) {
+		super(pageID, new ItemStack(LogisticsItems.partEmitter));
 	}
 
 	@Override

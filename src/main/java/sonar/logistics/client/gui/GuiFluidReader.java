@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
+import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
@@ -27,6 +28,7 @@ import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
 import sonar.logistics.api.readers.FluidReader.SortingType;
+import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.common.multiparts.FluidReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
@@ -38,8 +40,8 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	public static final ResourceLocation clearBGround = new ResourceLocation(Logistics.MODID + ":textures/gui/inventoryReader_clear.png");
 
 	public FluidReaderPart part;
-	private GuiTextField slotField;
-	private GuiTextField searchField;
+	private SonarTextField slotField;
+	private SonarTextField searchField;
 	public static final int STACK = 0, POS = 1, INV = 2, STORAGE = 3;
 
 	public EntityPlayer player;
@@ -56,107 +58,72 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 	public void initGui() {
 		super.initGui();
-		this.buttonList.add(new GuiButton(-1, guiLeft  + 120 - (18 * 6), guiTop + 7, 65 + 3, 20, getSetting().getClientName()) {
-			public void drawButtonForegroundLayer(int x, int y) {
-				drawCreativeTabHoveringText(getSetting().getDescription(), x, y);
-			}
-		});
-
-		this.buttonList.add(new FilterButton(0, guiLeft + 193, guiTop + 9));
-		this.buttonList.add(new FilterButton(1, guiLeft + 193 + 18, guiTop + 9));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 193 + 18 * 2, guiTop + 9, 32, 96 + 16, "Channels"));
+		initButtons();
 		switch (getSetting()) {
 		case POS:
-			slotField = new GuiTextField(2, this.fontRendererObj, 195 - (18 * 6), 8, 34 + 14, 18);
+			slotField = new SonarTextField(2, this.fontRendererObj, 63, 10, 32, 14);
 			slotField.setMaxStringLength(7);
 			slotField.setText("" + part.posSlot.getObject());
+			slotField.setDigitsOnly(true);
+			fieldList.add(slotField);
 			break;
 		default:
 			break;
 		}
-		searchField = new GuiTextField(3, this.fontRendererObj, 195 - (18 * 3), 9, 13 + 18 * 2, 16);
+		searchField = new SonarTextField(3, this.fontRendererObj, 135, 10, 104, 14);
 		searchField.setMaxStringLength(20);
+		fieldList.add(searchField);
+	}
+
+	public void initButtons() {
+		super.initButtons();
+
+		int start = 8;
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 8, guiTop + 9, 32, 96 + 16, "Channels", "button.Channels"));
+		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 128, 16 * part.setting.getObject().ordinal(), getSetting().getClientName(), getSetting().getDescription()));
+
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), "Sorting Order", ""));
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18*2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
 	}
 
 	public void actionPerformed(GuiButton button) {
 		if (button != null) {
-			if (button.id == -1) {
+			switch (button.id) {
+			case -1:
 				part.setting.incrementEnum();
 				part.sendByteBufPacket(2);
 				reset();
-			}
-			if (button.id == 0) {
+				break;
+			case 0:
 				part.sortingOrder.incrementEnum();
 				part.sendByteBufPacket(5);
-			}
-			if (button.id == 1) {
+				initButtons();
+				break;
+			case 1:
 				part.sortingType.incrementEnum();
 				part.sendByteBufPacket(6);
-			}
-			if (button.id == 2) {
+				initButtons();
+				break;
+			case 2:
 				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
+				break;
+			case 3:
+				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
+				reset();
+				break;
 			}
 		}
 	}
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
-		searchField.drawTextBox();
-		if (getSetting() == Modes.POS) {
-			slotField.drawTextBox();
-		}
 		super.drawGuiContainerForegroundLayer(x, y);
-		if (getSetting() == Modes.SELECTED) {
-			if (x - guiLeft >= 103 && x - guiLeft <= 103 + 16 && y - guiTop >= 9 && y - guiTop <= 9 + 16) {
-				/* if (!part.getSelectedInfo().isEmpty()) { MonitoredFluidStack stack = ((MonitoredFluidStack) part.getSelectedInfo().get(0)); if (stack != null) { GL11.glDisable(GL11.GL_DEPTH_TEST); GL11.glDisable(GL11.GL_LIGHTING); List list = new ArrayList(); list.add(stack.fluidStack.getObject().fluid.getLocalizedName()); drawHoveringText(list, x - guiLeft, y - guiTop, fontRendererObj); GL11.glEnable(GL11.GL_LIGHTING); GL11.glEnable(GL11.GL_DEPTH_TEST); net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting(); } } */
-			}
-		}
 	}
 
 	@Override
 	public void mouseClicked(int i, int j, int k) throws IOException {
 		super.mouseClicked(i, j, k);
-		switch (getSetting()) {
-		case POS:
-			slotField.mouseClicked(i - guiLeft, j - guiTop, k);
-			break;
-		default:
-			break;
-		}
-		if (k == 1) {
-			searchField.setText("");
-		}
-		searchField.mouseClicked(i - guiLeft, j - guiTop, k);
-	}
-
-	@Override
-	public void keyTyped(char c, int i) {
-		if ((getSetting() == Modes.POS) && slotField.isFocused()) {
-			if (c == 13 || c == 27) {
-				slotField.setFocused(false);
-			} else {
-				FontHelper.addDigitsToString(slotField, c, i);
-				final String text = slotField.getText();
-				if (text.isEmpty() || text == "" || text == null) {
-					setPosSlot("0");
-				} else {
-					setPosSlot(text);
-				}
-
-			}
-		} else if (searchField.isFocused()) {
-			if (c == 13 || c == 27) {
-				searchField.setFocused(false);
-			} else {
-				searchField.textboxKeyTyped(c, i);
-			}
-		} else {
-			try {
-				super.keyTyped(c, i);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public void setPosSlot(String string) {
@@ -211,12 +178,12 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		if (this.getSetting() == FluidReader.Modes.SELECTED) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(playerInv);
-			drawTexturedModalRect(guiLeft+102, guiTop+8, 0, 0, 18, 18);
+			drawTexturedModalRect(guiLeft + 62, guiTop + 8, 0, 0, 18, 18);
 		}
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);		
+		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 	}
-	
-	public void preRender() {		
+
+	public void preRender() {
 		final int br = 16 << 20 | 16 << 4;
 		final int var11 = br % 65536;
 		final int var12 = br / 65536;
@@ -227,7 +194,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			GlStateManager.disableLighting();
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		}
-		
+
 	}
 
 	public void postRender() {
@@ -242,7 +209,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(fluidStack.fluid.getFluid().getStill().toString());
 				Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-				this.drawTexturedModalRect(103, 9, sprite, 16, 16);
+				this.drawTexturedModalRect(63, 9, sprite, 16, 16);
 				GL11.glPopMatrix();
 			}
 		}
@@ -280,56 +247,9 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		return clearBGround;
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class FilterButton extends AnimatedButton {
-		public int id;
-
-		public FilterButton(int id, int x, int y) {
-			super(id, x, y, sorting_icons, 15, 15);
-			this.id = id;
-		}
-
-		public void func_146111_b(int x, int y) {
-			String text = "BUTTON TEXT";
-			switch (id) {
-			case 0:
-				text = ("Sorting Direction");
-				break;
-			case 1:
-				text = (part.sortingType.getObject().getClientName());
-			}
-
-			drawCreativeTabHoveringText(text, x, y);
-		}
-
-		@Override
-		public void onClicked() {
-		}
-
-		@Override
-		public int getTextureX() {
-			switch (id) {
-			case 0:
-				return 0 + part.sortingOrder.getObject().ordinal() * 16;
-			case 1:
-				if (part.sortingType.getObject() == SortingType.TEMPERATURE) {
-					return 32 + 3 * 16;
-				}
-				return 32 + (part.sortingType.getObject().ordinal() * 16);
-			}
-			return 0;
-		}
-
-		@Override
-		public int getTextureY() {
-			return 0;
-		}
-
-	}
-
 	@Override
 	public void renderStrings(int x, int y) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
