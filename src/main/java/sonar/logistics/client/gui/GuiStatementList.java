@@ -482,7 +482,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	}
 
 	@Override
-	public void selectionPressed(GuiButton button, int infoPos, int buttonID, Object info) {
+	public void selectionPressed(GuiButton button, int pos, int buttonID, Object info) {
 		switch (state) {
 		case LIST:
 			if (buttonID == 1) {
@@ -509,7 +509,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			break;
 		case STRING:
 			ComparableObject obj = (ComparableObject) info;
-			((infoPos == 0) ? currentFilter.key1 : currentFilter.key1).setObject(obj.string);
+			((infoPos == 0) ? currentFilter.key1 : currentFilter.key2).setObject(obj.string);
 			break;
 		default:
 			break;

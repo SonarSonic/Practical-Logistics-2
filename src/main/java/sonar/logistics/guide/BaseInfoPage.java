@@ -18,15 +18,18 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
+import sonar.logistics.guide.elements.ElementInfo;
+import sonar.logistics.guide.elements.ElementInfoFormatted;
+import sonar.logistics.guide.elements.ElementLink;
 
 public abstract class BaseInfoPage implements IGuidePage {
 
 	public int pageID;
 	public int pageCount = 1;
 	public int currentSubPage = 0;
-	public HashMap<String, GuidePageInfoFormatted> pageInfo = new HashMap();
-	public List<GuidePageLink> currentLinks = new ArrayList();
-	public List<GuidePageInfoFormatted> currentData = new ArrayList();
+	public HashMap<String, ElementInfoFormatted> pageInfo = new HashMap();
+	public List<ElementLink> currentLinks = new ArrayList();
+	public List<ElementInfoFormatted> currentData = new ArrayList();
 	public ArrayList<IGuidePageElement> elements = new ArrayList();
 	private GuiButton selectedButton;
 	public List<GuiButton> guideButtons = new ArrayList();
@@ -40,33 +43,44 @@ public abstract class BaseInfoPage implements IGuidePage {
 		currentSubPage = subPage;
 		pageInfo.clear();
 		guideButtons.clear();
-		elements = getElements(new ArrayList());
-		List<GuidePageLink> newLinks = new ArrayList();
-		List<GuidePageInfoFormatted> newData = new ArrayList();
+		elements = getElements(gui, new ArrayList());
+		List<ElementLink> newLinks = new ArrayList();
+		List<ElementInfoFormatted> newData = new ArrayList();
+		boolean newPage = false;
 		int ordinal = 0;
 		int lineTally = 0;
-		ArrayList<GuidePageInfo> pgInfo = getPageInfo(new ArrayList());
-		for (GuidePageInfo info : pgInfo) {
+		ArrayList<ElementInfo> pgInfo = getPageInfo(gui, new ArrayList());
+		int currentInfoPos = 0;
+
+		for (ElementInfo info : pgInfo) {
+
 			int to = 0;
 			int from = 0;
-			if (info.newPage && lineTally != 0) {
+			if (!newPage && info.newPage && lineTally != 0) {
 				ordinal++; // gives the info a new sub page
+				lineTally = 0;
+				newPage = false;
+			} else if (newPage) {
+				lineTally = 0;
+				newPage = false;
 			}
-			ArrayList<GuidePageLink> links = new ArrayList();
-			// Iterator<GuidePageLink> iterator = links.iterator();
-			ArrayList<String> lines = GuidePageHelper.getList(this, lineTally, info, links);
+
+			ArrayList<ElementLink> links = new ArrayList();
+			ArrayList<String> lines = GuidePageHelper.getList(this, ordinal, lineTally, info, links);
 
 			int numPagesNeeded = ((lines.size() + lineTally) / GuidePageHelper.maxLinesPerPage) + 1;
 			int currentPages = numPagesNeeded;
 			while (currentPages > 0) {
+				// newPage=false;
 				boolean firstPage = numPagesNeeded == currentPages;
 				from = Math.min(GuidePageHelper.maxLinesPerPage * (numPagesNeeded - currentPages), to);
 				to = Math.min((GuidePageHelper.maxLinesPerPage * ((numPagesNeeded + 1) - currentPages)) - lineTally, lines.size());
 
-				ArrayList<GuidePageLink> pageLinks = new ArrayList();
-				for (GuidePageLink link : links) {
+				ArrayList<ElementLink> pageLinks = new ArrayList();
+				for (ElementLink link : links) {
 					if (link.lineNum >= from && link.lineNum <= to) {
-						link.setDisplayPosition(ordinal, link.index + (int) (((firstPage && this instanceof BaseItemPage && ordinal == 0) ? 96 : 0) * 0.75), (int) (25 + ((lineTally + link.lineNum - 1) * 12) * 0.75));
+						int linePos = lineTally + link.lineNum - 1;
+						link.setDisplayPosition(ordinal, (int) (this.getLineOffset(linePos, ordinal) * 0.75 + link.index), (int) (25 + ((linePos) * 12) * 0.75));
 						pageLinks.add(link);
 					} else {
 						break;
@@ -75,24 +89,32 @@ public abstract class BaseInfoPage implements IGuidePage {
 				links.removeAll(pageLinks);
 
 				List<String> wrapLines = lines.subList(from, to);
-				GuidePageInfo infoSource = new GuidePageInfo(info.key, info.additionals);
-				GuidePageInfoFormatted infoFormatted = new GuidePageInfoFormatted(ordinal, infoSource, wrapLines, pageLinks);
-				infoFormatted.setDisplayPosition(0, lineTally == 0 ? 0 : (int) ((lineTally) * 12));
-				if (ordinal == subPage) {
-					newData.add(infoFormatted);
-					newLinks.addAll(infoFormatted.links);
-				}
-				pageInfo.put(info.key, infoFormatted);
-				lineTally += wrapLines.size();
-				if (lineTally >= GuidePageHelper.maxLinesPerPage) {
-					ordinal++;
-					lineTally = 0;
-				} else {
-					lineTally++;
-				}
+				if (!wrapLines.isEmpty()) {
+					ElementInfo infoSource = new ElementInfo(info.key, info.additionals);
+					ElementInfoFormatted infoFormatted = new ElementInfoFormatted(ordinal, infoSource, wrapLines, pageLinks);
+					infoFormatted.setDisplayPosition(8, lineTally == 0 ? 0 : (int) ((lineTally) * 12));
 
+					if (ordinal == subPage) {
+						newData.add(infoFormatted);
+						newLinks.addAll(infoFormatted.links);
+					}
+
+					pageInfo.put(info.key, infoFormatted);
+					lineTally += wrapLines.size();
+					// if (to != lines.size()-1 || currentInfoPos != pgInfo.size()-1) {
+					if (to != lines.size()-1 || !(currentInfoPos + 1 >= pgInfo.size())) {
+						if (lineTally + 1 >= GuidePageHelper.maxLinesPerPage) {
+							ordinal++;
+							lineTally = 0;
+							newPage = true;
+						} else {
+							lineTally++;
+						}
+					}
+				}
 				currentPages--;
 			}
+			currentInfoPos++;
 		}
 		pageCount = Math.max(1 + ordinal, !elements.isEmpty() ? (elements.get(elements.size() - 1).getDisplayPage() + 1) : 0);
 		currentLinks = newLinks;
@@ -103,42 +125,64 @@ public abstract class BaseInfoPage implements IGuidePage {
 		FontHelper.text(getDisplayName(), 28, yPos + 3, -1);
 	}
 
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+	public void drawPage(GuiGuide gui, int x, int y, int page) {
 
+		for (ElementLink pageLink : currentLinks) {
+			if (pageLink != null && pageLink.isMouseOver(gui, x - gui.getGuiLeft(), y - gui.getGuiTop())) {
+				GlStateManager.disableDepth();
+				gui.drawSonarCreativeTabHoveringText(TextFormatting.BLUE + "Open: " + TextFormatting.RESET + pageLink.getGuidePage() == null ? "ERROR" : pageLink.getGuidePage().getDisplayName(), x, y);
+
+				// GlStateManager.disableLighting();
+				break;
+			}
+		}
+		for (IGuidePageElement element : elements) {
+			if (element.getDisplayPage() == page) {
+				RenderHelper.saveBlendState();
+				element.drawElement(gui, gui.getGuiLeft() + element.getSizing()[0], gui.getGuiTop() + element.getSizing()[1], page, x, y);
+				RenderHelper.restoreBlendState();
+			}
+		}
 	}
 
-	public void drawPage(GuiGuide gui, int x, int y, int page) {
+	public void drawBackgroundPage(GuiGuide gui, int x, int y, int page) {
+		for (IGuidePageElement element : elements) {
+			if (element.getDisplayPage() == page) {
+				RenderHelper.saveBlendState();
+				element.drawBackgroundElement(gui, gui.getGuiLeft() + element.getSizing()[0], gui.getGuiTop() + element.getSizing()[1], page, x, y);
+				RenderHelper.restoreBlendState();
+			}
+		}
+	}
+
+	public void drawForegroundPage(GuiGuide gui, int x, int y, int page) {
+		for (int i = 0; i < this.guideButtons.size(); ++i) {
+			GuiButton button = ((GuiButton) this.guideButtons.get(i));
+			button.drawButtonForegroundLayer(x, y);
+		}
 		GL11.glScaled(0.75, 0.75, 0.75);
 		int listTally = 0;
-		for (GuidePageInfoFormatted guidePage : currentData) {
-			// int wrapPosition = Math.max(7 - listTally, 0);
-			/* if (wrapPosition != 0 && currentSubPage == 0) { FontHelper.text(guidePage.formattedList, 0, wrapPosition, 12, 96, 25 + guidePage.displayY, LogisticsColours.white_text.getRGB()); FontHelper.text(guidePage.formattedList, wrapPosition, 16, 12, 5, 25 + guidePage.displayY, LogisticsColours.white_text.getRGB()); } else { } */
+		for (ElementInfoFormatted guidePage : currentData) {
 			List<String> info = guidePage.formattedList;
 			for (int i = 0; i < Math.min(16, info.size()); i++) {
 				String s = info.get(i);
-				FontHelper.text(s, 8 + getLineOffset(i + listTally), 25 + (i + listTally) * 12, LogisticsColours.white_text.getRGB());
+				FontHelper.text(s, guidePage.displayX + getLineOffset(i + listTally, currentSubPage), 25 + (i + listTally) * 12, LogisticsColours.white_text.getRGB());
 			}
-
-			listTally += guidePage.formattedList.size() + 1;
+			listTally += (listTally == 0 ? 1 : 1) + guidePage.formattedList.size();
 		}
 		GL11.glScaled(1 / 0.75, 1 / 0.75, 1 / 0.75);
-
-		GlStateManager.pushMatrix();
-		GlStateManager.pushAttrib();
-		for (GuidePageLink pageLink : currentLinks) {
-			if (pageLink!=null && pageLink.isMouseOver(gui, x - gui.getGuiLeft(), y - gui.getGuiTop())) {
-				gui.drawSonarCreativeTabHoveringText(TextFormatting.BLUE + "Open: " + TextFormatting.RESET + pageLink.getGuidePage() == null ? "ERROR" : pageLink.getGuidePage().getDisplayName(), x - gui.getGuiLeft(), y - gui.getGuiTop());
-			}
-		}
-		GlStateManager.popAttrib();
-		GlStateManager.popMatrix();
 		for (IGuidePageElement element : elements) {
 			if (element.getDisplayPage() == currentSubPage) {
-				element.drawElement(gui, this, element.getSizing()[0], element.getSizing()[1], page);
+				RenderHelper.saveBlendState();
+				element.drawForegroundElement(gui, element.getSizing()[0], element.getSizing()[1], page, x, y);
+				RenderHelper.restoreBlendState();
 			}
 		}
+
 		for (int i = 0; i < this.guideButtons.size(); ++i) {
-			((GuiButton) this.guideButtons.get(i)).drawButton(gui.mc, x, y);
+			GuiButton button = ((GuiButton) this.guideButtons.get(i));
+			int left = x + gui.getGuiLeft(), top = y + gui.getGuiTop();
+			button.drawButton(gui.mc, left, top);
 		}
 	}
 
@@ -160,9 +204,14 @@ public abstract class BaseInfoPage implements IGuidePage {
 				}
 			}
 		}
-		for (GuidePageLink pageLink : currentLinks) {
+		for (ElementLink pageLink : currentLinks) {
 			if (pageLink.isMouseOver(gui, x - gui.getGuiLeft(), y - gui.getGuiTop())) {
 				gui.setCurrentPage(pageLink.guidePageLink, 0);
+			}
+		}
+		for (IGuidePageElement element : elements) {
+			if (element.getDisplayPage() == currentSubPage && element.mouseClicked(gui, this, x, y, button)) {
+				return;
 			}
 		}
 	}
@@ -171,36 +220,36 @@ public abstract class BaseInfoPage implements IGuidePage {
 
 	}
 
-	public ArrayList<IGuidePageElement> getElements(ArrayList<IGuidePageElement> elements) {
+	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements) {
 		return elements;
 	}
 
-	public int getLineWidth(int linePos) {
+	public int getLineWidth(int linePos, int page) {
 		int wrapWidth = 242;
-		int pos = 10 + (int) ((linePos * 12) * 1 / 0.75);
+		int pos = (int) (25 + (linePos * 12) * 1 / 0.75);
 
 		for (IGuidePageElement e : elements) {
-			if (e.getDisplayPage() == currentSubPage) {
+			if (e.getDisplayPage() == page) {
 				int[] position = e.getSizing();
 				if ((position[1] + position[3]) * 1 / 0.75 > pos) {
 					wrapWidth -= ((position[2] + position[0]) * 0.75);
+					break;
 				}
 			}
 		}
 		return (int) ((wrapWidth) * (1 / 0.75));
 	}
 
-	public int getLineOffset(int linePos) {
-		int pos = (int) (15 + linePos * 12);
+	public int getLineOffset(int linePos, int page) {
+		int pos = (int) (25 + linePos * 12);
 		int offset = 0;
 		for (IGuidePageElement e : elements) {
-			if (e.getDisplayPage() == currentSubPage) {
+			if (e.getDisplayPage() == page) {
 				int[] position = e.getSizing();
-				if (position[1] <= pos && position[1] + position[3] >= pos) {
-					if (position[2] > offset) {
-						offset = position[2];
+				if (/* position[1] <= pos && */position[1] + position[3] >= pos) {
+					if ((position[0] + position[2]) > offset) {
+						offset = position[0] + position[2];
 					}
-
 				}
 			}
 		}

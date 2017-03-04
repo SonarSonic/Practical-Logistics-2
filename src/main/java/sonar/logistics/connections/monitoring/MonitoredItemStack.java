@@ -111,8 +111,9 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 			DisplayType type = container.display.getDisplayType();
 			StoredItemStack stack = itemStack.getObject();
 			ItemStack item = stack.item;
+			GlStateManager.pushAttrib();
 			GL11.glPushMatrix();
-			//GlStateManager.enableDepth();
+			GlStateManager.enableDepth();
 			
 			GL11.glTranslated(-(1 - width / 2 - 0.0625), -0.68 + height / 2, 0.00);
 			GL11.glRotated(180, 0, 1, 0);
@@ -135,6 +136,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 			
 			GlStateManager.disableDepth();
 			GL11.glPopMatrix();
+			GlStateManager.popAttrib();
 		}
 	}
 

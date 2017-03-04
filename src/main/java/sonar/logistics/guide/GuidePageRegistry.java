@@ -5,6 +5,28 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import net.minecraft.item.ItemStack;
+import sonar.logistics.guide.general.ExamplesPages;
+import sonar.logistics.guide.pages.ArrayPage;
+import sonar.logistics.guide.pages.CablePage;
+import sonar.logistics.guide.pages.DataEmitterPage;
+import sonar.logistics.guide.pages.DataReceiverPage;
+import sonar.logistics.guide.pages.DisplayScreenPage;
+import sonar.logistics.guide.pages.EnergyReaderPage;
+import sonar.logistics.guide.pages.EntityTransceiverPage;
+import sonar.logistics.guide.pages.FluidReaderPage;
+import sonar.logistics.guide.pages.ForgingHammerPage;
+import sonar.logistics.guide.pages.InfoReaderPage;
+import sonar.logistics.guide.pages.InventoryReaderPage;
+import sonar.logistics.guide.pages.LargeDisplayScreenPage;
+import sonar.logistics.guide.pages.NodePage;
+import sonar.logistics.guide.pages.OperatorPage;
+import sonar.logistics.guide.pages.RedstoneSignallerPage;
+import sonar.logistics.guide.pages.SapphireDustPage;
+import sonar.logistics.guide.pages.SapphireOrePage;
+import sonar.logistics.guide.pages.SapphirePage;
+import sonar.logistics.guide.pages.StonePlatePage;
+import sonar.logistics.guide.pages.TransceiverPage;
+import sonar.logistics.guide.pages.TransferNodePage;
 
 public class GuidePageRegistry {
 

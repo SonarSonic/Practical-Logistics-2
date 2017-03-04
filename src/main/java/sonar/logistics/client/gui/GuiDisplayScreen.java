@@ -90,7 +90,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			for (int i = 0; i < part.maxInfo(); i++) {
 				int top = 22 + ((height + 6) * i);
 				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 130 - 3, guiTop + top, 32, 256 - 32, "Edit", ""));
-				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 130 - 3 + 20, guiTop + top, height, height, "Source", ""));
+				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 130 - 3 + 20, guiTop + top, 32, 256 - 16, "Source", ""));
 			}
 
 			break;

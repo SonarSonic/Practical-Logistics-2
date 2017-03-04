@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.wireless.IEntityTransceiver;
+import sonar.logistics.common.multiparts.ArrayPart;
 import sonar.logistics.connections.managers.EmitterManager;
 
 public class LogisticsEvents {
@@ -32,6 +34,7 @@ public class LogisticsEvents {
 			EmitterManager.tick(); // this must happen at the end, since the dirty boolean will be changed and will upset tiles
 			Logistics.getDisplayManager().tick();
 			//System.out.println("nets: " + SimpleProfiler.finish("nets")/1000.0);
+			ArrayPart.entityChanged=false;
 		}
 	}
 
@@ -57,7 +60,12 @@ public class LogisticsEvents {
 	@SubscribeEvent
 	public void onEntityTransceiverClicked(PlayerInteractEvent.EntityInteract event) {
 		if (event.getSide().isServer() && event.getItemStack() != null && event.getItemStack().getItem() instanceof IEntityTransceiver) {
-			((IEntityTransceiver) event.getItemStack().getItem()).onRightClickEntity(event.getEntityPlayer(), event.getItemStack(), event.getEntity());
+			//((IEntityTransceiver) event.getItemStack().getItem()).onRightClickEntity(event.getEntityPlayer(), event.getItemStack(), event.getEntity());
 		}
+	}
+
+	@SubscribeEvent
+	public void onEntityTransceiverClicked(EntityJoinWorldEvent event) {
+		ArrayPart.entityChanged=true;
 	}
 }

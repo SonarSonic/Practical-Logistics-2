@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -206,6 +207,18 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 		}
 	}
 
+	@Override
+	public void writeUpdatePacket(PacketBuffer buf) {
+		super.writeUpdatePacket(buf);
+		isActive.writeToBuf(buf);
+	}
+
+	@Override
+	public void readUpdatePacket(PacketBuffer buf) {
+		super.readUpdatePacket(buf);
+		isActive.readFromBuf(buf);
+	}
+	
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
 		Logistics.getServerManager().sendLocalMonitorsToClient(this, getIdentity(), player);

@@ -25,6 +25,8 @@ import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.guide.elements.ElementInfo;
+import sonar.logistics.guide.elements.ElementLink;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 
@@ -40,7 +42,7 @@ public class GuidePageHelper {
 
 	public static int maxLinesPerPage = 13;
 
-	public static ArrayList<String> getList(IGuidePage current, int lineTally, GuidePageInfo info, ArrayList<GuidePageLink> links) {
+	public static ArrayList<String> getList(IGuidePage current, int ordinal, int lineTally, ElementInfo info, ArrayList<ElementLink> links) {
 		String value = FontHelper.translate(info.key);
 		for (String add : info.additionals) {
 			value = value.replaceFirst(OBJ, add);
@@ -69,22 +71,23 @@ public class GuidePageHelper {
 					pageIDs.add(linkedPage != null ? linkedPage.pageID() : -1);
 				} else {
 					pageString = PAGE_LINK + pageString + PAGE_LINK;
-					value = value.replaceAll(pageString,  current.getDisplayName());
+					value = value.replaceAll(pageString, current.getDisplayName());
 				}
 			} else {
 				break;
 			}
 		}
 
-		return GuidePageHelper.breakLinesWithItem(current, lineTally, info, new ArrayList(), ((ArrayList<Integer>) pageIDs.clone()).iterator(), links, value);
+		return GuidePageHelper.breakLinesWithItem(current, ordinal, lineTally, info, new ArrayList(), ((ArrayList<Integer>) pageIDs.clone()).iterator(), links, value);
 	}
 
-	public static ArrayList<String> breakLinesWithItem(IGuidePage current, int lineTally, GuidePageInfo info, ArrayList<String> lines, Iterator<Integer> pageNums, ArrayList<GuidePageLink> pageLinks, String str) throws StackOverflowError {
+	public static ArrayList<String> breakLinesWithItem(IGuidePage current, int ordinal, int lineTally, ElementInfo info, ArrayList<String> lines, Iterator<Integer> pageNums, ArrayList<ElementLink> pageLinks, String str) throws StackOverflowError {
 		FontRenderer render = Minecraft.getMinecraft().fontRendererObj;
 		String[] split = str.split("-");
 
 		for (String sp : split) {
-			int i = FontHelper.sizeStringToWidth(render, sp, current.getLineWidth(lines.size()+lineTally));
+			int pg = ordinal + ((lines.size() + lineTally) / maxLinesPerPage);
+			int i = FontHelper.sizeStringToWidth(render, sp, current.getLineWidth(lines.size() + lineTally - (pg * maxLinesPerPage), pg));
 			if (sp.length() <= i) {
 				addNewLine(sp, lines, pageNums, pageLinks);
 			} else {
@@ -93,19 +96,19 @@ public class GuidePageHelper {
 				boolean flag = c0 == 32 || c0 == 10;
 				String s1 = render.getFormatFromString(s) + sp.substring(i + (flag ? 1 : 0));
 				addNewLine(s, lines, pageNums, pageLinks);
-				breakLinesWithItem(current, lineTally, info, lines, pageNums, pageLinks, s1);
+				breakLinesWithItem(current, ordinal, lineTally, info, lines, pageNums, pageLinks, s1);
 			}
 		}
 		return lines;
 	}
 
-	public static void addNewLine(String line, ArrayList<String> lines, Iterator<Integer> iterator, ArrayList<GuidePageLink> pageLinks) {
+	public static void addNewLine(String line, ArrayList<String> lines, Iterator<Integer> iterator, ArrayList<ElementLink> pageLinks) {
 		int index = 0;
 		while ((index = line.indexOf(PAGE_LINK_PLACEHOLDER)) != -1 && iterator.hasNext()) {
 			int link = iterator.next();
 			IGuidePage linked = GuidePageRegistry.getGuidePage(link);
 			String before = line.substring(0, index);
-			pageLinks.add(new GuidePageLink(link, (int) ((RenderHelper.fontRenderer.getStringWidth(linked != null ? linked.getDisplayName() : PAGE_LINK_ERROR)) * 0.75), lines.size(), (int) (RenderHelper.fontRenderer.getStringWidth(before) * 0.75)));
+			pageLinks.add(new ElementLink(link, (int) ((RenderHelper.fontRenderer.getStringWidth(linked != null ? linked.getDisplayName() : PAGE_LINK_ERROR)) * 0.75), lines.size(), (int) (RenderHelper.fontRenderer.getStringWidth(before) * 0.75)));
 
 			line = before + line.substring(index + 1);
 		}

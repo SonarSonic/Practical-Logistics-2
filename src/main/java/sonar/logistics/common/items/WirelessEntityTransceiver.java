@@ -38,7 +38,7 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 			if (tag == null)
 				tag = new NBTTagCompound();
 			tag.setUniqueId("uuid", entity.getPersistentID());
-			tag.setString("targetName", entity.getDisplayName().getFormattedText());
+			tag.setString("targetName", entity.getDisplayName().getUnformattedText());
 			FontHelper.sendMessage(stack.hasTagCompound() ? "Overwritten Entity" : "Saved Entity", player.getEntityWorld(), player);
 			stack.setTagCompound(tag);
 		}
@@ -52,7 +52,10 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 		return null;
 	}
 
-	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
+	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
+		if (!player.isSneaking() &&!player.getEntityWorld().isRemote){
+			onRightClickEntity(player, stack, target);
+		}
 		return true;
 	}
 
@@ -61,7 +64,7 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par) {
 		super.addInformation(stack, player, list, par);
 		if (stack.hasTagCompound()) {
-			list.add("Entity: " + TextFormatting.ITALIC + FontHelper.translate(stack.getTagCompound().getString("targetName") + ".name"));
+			list.add("Entity: " + TextFormatting.ITALIC + FontHelper.translate(stack.getTagCompound().getString("targetName")));
 			list.add("UUID: " + TextFormatting.ITALIC + getEntityUUID(stack).toString());
 		}
 	}

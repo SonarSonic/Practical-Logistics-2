@@ -38,6 +38,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 
 	public ArrayList<NodeConnection> coordList = Lists.newArrayList();
 	public ArrayList<Entity> entityList = Lists.newArrayList();
+	public static boolean entityChanged=true;
 
 	public SonarMultipartInventory inventory = new SonarMultipartInventory(this, 8) {
 		@Override
@@ -59,6 +60,13 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	public ArrayPart(EnumFacing face) {
 		super(face, 0.625, 0.0625 * 1, 0.0625 * 4);
 		syncList.addPart(inventory);
+	}
+	
+	public void update(){
+		super.update();
+		if(isServer() && entityChanged){
+			this.updateConnectionLists();
+		}
 	}
 
 	/* @Override public <T> T getCapability(Capability<T> capability, EnumFacing facing) { if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) { return (T) inventory; } return super.getCapability(capability, facing); } */

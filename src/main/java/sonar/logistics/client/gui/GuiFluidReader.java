@@ -84,7 +84,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 128, 16 * part.setting.getObject().ordinal(), getSetting().getClientName(), getSetting().getDescription()));
 
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), "Sorting Order", ""));
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18*2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -198,7 +198,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	public void postRender() {
-		if (part.selected.getMonitoredInfo() != null) {
+		if (this.getSetting() == FluidReader.Modes.SELECTED && part.selected.getMonitoredInfo() != null) {
 			MonitoredFluidStack stack = part.selected.getMonitoredInfo();
 			if (stack != null) {
 				StoredFluidStack fluidStack = stack.fluidStack.getObject();

@@ -1,19 +1,20 @@
-package sonar.logistics.guide;
+package sonar.logistics.guide.general;
 
 import java.util.ArrayList;
 
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.gui.GuiGuide;
+import sonar.logistics.guide.BaseInfoPage;
+import sonar.logistics.guide.GeneralPage;
 import sonar.logistics.guide.elements.ElementInfo;
 
-public class GeneralPage extends BaseInfoPage {
+//W.I.P
+public class InfoTypesPages extends BaseInfoPage {
 	public String displayKey;
-	public String[] descKey;
 
-	public GeneralPage(int pageID, String displayKey, String... descKey) {
+	public InfoTypesPages(int pageID, String displayKey) {
 		super(pageID);
 		this.displayKey = displayKey;
-		this.descKey = descKey;
 	}
 
 	@Override
@@ -23,8 +24,8 @@ public class GeneralPage extends BaseInfoPage {
 
 	@Override
 	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo) {
-		for (String desc : descKey)
-			pageInfo.add(new ElementInfo(desc, new String[0]));
+		
 		return pageInfo;
 	}
+
 }

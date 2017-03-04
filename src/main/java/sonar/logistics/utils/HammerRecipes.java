@@ -2,9 +2,10 @@ package sonar.logistics.utils;
 
 import net.minecraft.item.ItemStack;
 import sonar.core.recipes.DefinedRecipeHelper;
+import sonar.core.recipes.ISonarRecipe;
 import sonar.logistics.LogisticsItems;
 
-public class HammerRecipes extends DefinedRecipeHelper {
+public class HammerRecipes extends DefinedRecipeHelper<ISonarRecipe> {
 
 	private static final HammerRecipes instance = new HammerRecipes();
 

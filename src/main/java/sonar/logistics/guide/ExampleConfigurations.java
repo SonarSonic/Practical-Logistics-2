@@ -103,8 +103,12 @@ public class ExampleConfigurations {
 			};
 			
 			addMultiparts(Lists.newArrayList(reader, cable2, receiver), new BlockPos(-1, 0, 1));	
-
-			RedstoneSignallerPart signaller = new RedstoneSignallerPart(EnumFacing.NORTH);
+			MultipartStateOverride signaller = new MultipartStateOverride(new RedstoneSignallerPart(EnumFacing.NORTH)) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(RedstoneSignallerPart.ACTIVE, true);
+				}
+			};
+			
 			MultipartStateOverride cable3 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 					return super.getActualState(state, world, pos).withProperty(DataCablePart.NORTH, CableConnection.HALF).withProperty(DataCablePart.SOUTH, CableConnection.INTERNAL);

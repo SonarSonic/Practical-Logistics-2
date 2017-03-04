@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.utils.Pair;
 import sonar.logistics.client.gui.GuiGuide;
+import sonar.logistics.guide.elements.ElementInfo;
 
 public interface IGuidePage {
 	
@@ -17,7 +18,11 @@ public interface IGuidePage {
 	
 	public void drawPage(GuiGuide gui, int x, int y, int page);
 	
-	public int getLineWidth(int linePos);
+	public void drawForegroundPage(GuiGuide gui, int x, int y, int page);
+	
+	public void drawBackgroundPage(GuiGuide gui, int x, int y, int page);
+
+	public int getLineWidth(int linePos, int page);
 
 	public int getPageCount();
 	
@@ -25,8 +30,8 @@ public interface IGuidePage {
 	
 	public String getDisplayName();
 	
-	public ArrayList<GuidePageInfo> getPageInfo(ArrayList<GuidePageInfo> pageInfo);
+	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo);
 
-	public ArrayList<IGuidePageElement> getElements(ArrayList<IGuidePageElement> elements);	
+	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements);	
 	
 }
