@@ -42,14 +42,7 @@ public abstract class LogisticsMultipart extends SonarMultipart implements ILogi
 	public LogisticsMultipart(AxisAlignedBB collisionBox) {
 		super(collisionBox);
 	}
-
-	public void setLocalNetworkCache(INetworkCache network) {
-		if (!this.wasRemoved) {
-			this.network = network;
-			this.networkID.setObject(network.getNetworkID());
-		}
-	}
-
+	
 	public void sendNetworkCoordMap(EntityPlayer player) {
 		if (isClient() || network.isFakeNetwork() || getNetworkID() == -1) {
 			return;
@@ -60,11 +53,30 @@ public abstract class LogisticsMultipart extends SonarMultipart implements ILogi
 			Logistics.network.sendTo(new PacketMonitoredCoords(getNetworkID(), coordTag), (EntityPlayerMP) player);
 		}
 	}
+	
+	//// ILogicTile \\\\
 
 	public INetworkCache getNetwork() {
 		return network;
 	}
 
+	public int getNetworkID() {
+		return networkID.getObject();
+	}
+
+	public void setLocalNetworkCache(INetworkCache network) {
+		if (!this.wasRemoved) {
+			this.network = network;
+			this.networkID.setObject(network.getNetworkID());
+		}
+	}
+	
+	//// IOperatorProvider \\\\
+	
+	public void updateOperatorInfo() {
+		this.requestSyncPacket();
+	}
+	
 	public void addInfo(List<String> info) {
 		ItemStack dropStack = getItemStack();
 		if (dropStack != null)
@@ -72,15 +84,7 @@ public abstract class LogisticsMultipart extends SonarMultipart implements ILogi
 		info.add("Network ID: " + networkID.getObject());
 		info.add("Has channels: " + (this instanceof InfoReaderPart));
 	}
-
-	public int getNetworkID() {
-		return networkID.getObject();
-	}
-
-	public void updateOperatorInfo() {
-		this.requestSyncPacket();
-	}
-
+	
 	@Override
 	public List<ItemStack> getDrops() {
 		return Lists.newArrayList(this.getItemStack());

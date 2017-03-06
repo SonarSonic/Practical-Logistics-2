@@ -13,9 +13,7 @@ public interface IDataCable extends ICableRenderer, IWorldPosition, INetworkConn
 	/**ensures all connections are connected to the same network*/
 	public void configureConnections(INetworkCache network);	
 	
+	/**if the IDataCable has any connections*/
 	public boolean hasConnections();
-
-	/** the {@link BlockCoords} this Block/FMP Part should be registered as on the Network
-	 * @return the {@link BlockCoords} */
 	
 }

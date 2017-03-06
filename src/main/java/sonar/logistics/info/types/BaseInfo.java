@@ -11,16 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import sonar.core.client.gui.GuiSonar;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.ICheckableSyncPart;
-import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
-import sonar.core.network.sync.SyncableList;
 import sonar.logistics.api.displays.DisplayButton;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
@@ -31,8 +26,7 @@ import sonar.logistics.client.gui.GuiInventoryReader;
 /** typical implementation of IMonitorInfo which has a sync parts list for all the Info things it also has the required constructor which required empty constructor */
 public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart implements IMonitorInfo<T>, ISyncableListener {
 
-	public BaseInfo() {
-	}
+	public BaseInfo() {}
 
 	@Override
 	public boolean isHeader() {
@@ -81,33 +75,25 @@ public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart 
 			GlStateManager.translate(20, 0, 0);
 			RenderHelper.drawTexturedModalRect(0, 0, button.texX, button.texY, 16, 16);
 		}
-		// RenderHelper.drawTexturedModalRect(0, 0, 0, 0, 15 + 1, 15 + 1);
-		// GlStateManager.scale(1/0.00625, 1/0.00625, 1/0.00625);
 		GL11.glPopMatrix();
 	}
-
-	public NBTTagCompound onButtonClickedClient(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
-		NBTTagCompound clickTag = new NBTTagCompound();
-		
-		return clickTag;
-
-	}
-
-	public void onButtonEvent(InfoContainer container, IDisplayInfo displayInfo, ScreenInteractionEvent event, NBTTagCompound clickTag) {
-	}
-
+	
 	public void resetButtons() {
 		buttons = new ArrayList();
 		this.getButtons(buttons);
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void getButtons(ArrayList<DisplayButton> buttons) {
+	public NBTTagCompound onButtonClickedClient(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
+		NBTTagCompound clickTag = new NBTTagCompound();		
+		return clickTag;
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void onButtonClicked(String buttonID) {
+	public void onButtonEvent(InfoContainer container, IDisplayInfo displayInfo, ScreenInteractionEvent event, NBTTagCompound clickTag) {}
 
-	}
+	@SideOnly(Side.CLIENT)
+	public void getButtons(ArrayList<DisplayButton> buttons) {}
+	
+	@SideOnly(Side.CLIENT)
+	public void onButtonClicked(String buttonID) {}
 
 }

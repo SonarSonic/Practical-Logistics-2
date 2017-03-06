@@ -1,21 +1,16 @@
 package sonar.logistics.api.logistics;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstract;
-import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncTagTypeList;
 import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;

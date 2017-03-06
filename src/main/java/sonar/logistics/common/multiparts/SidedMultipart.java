@@ -22,14 +22,16 @@ import net.minecraft.world.World;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.utils.Pair;
+import sonar.logistics.api.cabling.NetworkConnectionType;
 
 public abstract class SidedMultipart extends LogisticsMultipart implements ISlottedPart {
 	public double width, heightMin, heightMax;
-	
+
 	public SyncEnum<EnumFacing> face = new SyncEnum(EnumFacing.values(), -1);
 	{
 		syncList.addPart(face);
 	}
+
 	public SidedMultipart(double width, double heightMin, double heightMax) {
 		super();
 		this.width = width;
@@ -43,15 +45,37 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 		this(width, heightMin, heightMax);
 		this.face.setObject(face);
 	}
-	
-	public EnumFacing getFacing(){
+
+	public EnumFacing getFacing() {
 		return face.getObject();
+	}
+
+	@Override
+	public NetworkConnectionType canConnect(EnumFacing dir) {
+		return dir != face.getObject() ? NetworkConnectionType.NETWORK : NetworkConnectionType.NONE;
+	}
+	
+	//// MULTIPART \\\\
+
+	@Override
+	public EnumSet<PartSlot> getSlotMask() {
+		return EnumSet.of(PartSlot.getFaceSlot(face.getObject()));
+	}
+
+	@Override
+	public void addCollisionBoxes(AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
+		ArrayList<AxisAlignedBB> boxes = new ArrayList();
+		addSelectionBoxes(boxes);
+		boxes.forEach(box -> {
+			if (box.intersectsWith(mask)) {
+				list.add(box);
+			}
+		});
 	}
 
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
 		double p = 0.0625;
 		double w = (1 - width) / 2;
-		// double h = (1 - width) / 2;
 		switch (face.getObject()) {
 		case DOWN:
 			list.add(new AxisAlignedBB(w, heightMin, w, 1 - w, heightMax, 1 - w));
@@ -78,19 +102,8 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 	}
 
 	@Override
-	public void addCollisionBoxes(AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
-		ArrayList<AxisAlignedBB> boxes = new ArrayList();
-		addSelectionBoxes(boxes);
-		boxes.forEach(box -> {
-			if (box.intersectsWith(mask)) {
-				list.add(box);
-			}
-		});
-	}
-
-	@Override
-	public EnumSet<PartSlot> getSlotMask() {
-		return EnumSet.of(PartSlot.getFaceSlot(face.getObject()));
+	public EnumFacing[] getValidRotations() {
+		return EnumFacing.VALUES;
 	}
 
 	@Override
@@ -103,32 +116,27 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 				World world = getWorld();
 				getContainer().removePart(this);
 				face.setObject(rotate.b);
-				firstTick=false;
+				firstTick = false;
 				MultipartHelper.addPart(world, pos, this, uuid);
-				//getWorld().notifyNeighborsOfStateChange(pos, getWorld().getBlockState(pos).getBlock());
+				// getWorld().notifyNeighborsOfStateChange(pos, getWorld().getBlockState(pos).getBlock());
 				sendUpdatePacket(true);
 			}
 		}
 		return rotate.a;
 	}
+	
+	//// STATE \\\\
 
 	@Override
-	public EnumFacing[] getValidRotations() {
-		return EnumFacing.VALUES;
+	public IBlockState getActualState(IBlockState state) {
+		return state.withProperty(ORIENTATION, face.getObject());
 	}
 
-	@Override
-	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
-		super.writeData(tag, type);
-		//tag.setByte("face", (byte) face.ordinal());
-		return tag;
+	public BlockStateContainer createBlockState() {
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION });
 	}
 
-	@Override
-	public void readData(NBTTagCompound tag, SyncType type) {
-		super.readData(tag, type);
-		//face = EnumFacing.VALUES[tag.getByte("face")];
-	}
+	//// PACKETS \\\\
 
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
@@ -140,19 +148,5 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 	public void readUpdatePacket(PacketBuffer buf) {
 		super.readUpdatePacket(buf);
 		face.readFromBuf(buf);
-	}
-
-	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, face.getObject());
-	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION });
-	}
-
-	@Override
-	public ConnectionType canConnect(EnumFacing dir) {
-		return dir != face.getObject() ? ConnectionType.NETWORK : ConnectionType.NONE;
 	}
 }

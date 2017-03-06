@@ -24,7 +24,7 @@ import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiChannelSelection;
@@ -32,7 +32,6 @@ import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.connections.monitoring.ItemMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
@@ -60,11 +59,8 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	public InventoryReaderPart(EnumFacing face) {
 		super(ItemMonitorHandler.id, face);
 	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.inventoryReaderPart);
-	}
+	
+	//// ILogicReader \\\\
 
 	@Override
 	public MonitoredList<MonitoredItemStack> sortMonitoredList(MonitoredList<MonitoredItemStack> updateInfo, int channelID) {
@@ -73,12 +69,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	}
 
 	@Override
-	public ChannelType channelType() {
-		return ChannelType.UNLIMITED;
-	}
-
-	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case INVENTORIES:
@@ -117,10 +108,18 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 		}
 	}
+	
+	//// IChannelledTile \\\\
+
+	@Override
+	public ChannelType channelType() {
+		return ChannelType.UNLIMITED;
+	}
+	
+	//// PACKETS \\\\
+	
 	public void writePacket(ByteBuf buf, int id) {
-		super.writePacket(buf, id);
-		
-		
+		super.writePacket(buf, id);		
 	}
 
 	public void readPacket(ByteBuf buf, int id) {
@@ -134,6 +133,8 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 		}
 	}
+	
+	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
@@ -160,6 +161,11 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	@Override
 	public String getDisplayName() {
 		return FontHelper.translate("item.InventoryReader.name");
+	}
+
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.inventoryReaderPart);
 	}
 
 }

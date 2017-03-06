@@ -30,7 +30,7 @@ public class ClientLogicReader implements IUUIDIdentity, INBTSyncable {
 
 	public ClientLogicReader() {}
 
-	public ClientLogicReader(ILogicMonitor emitter) {
+	public ClientLogicReader(IInfoProvider emitter) {
 		this.uuid.setObject(emitter.getIdentity());
 		this.coords.setCoords(emitter.getCoords());
 		this.maxInfo.setObject(emitter.getMaxInfo());

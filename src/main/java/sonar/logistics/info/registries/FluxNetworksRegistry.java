@@ -2,13 +2,11 @@ package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
 
-import sonar.calculator.mod.api.machines.IGreenhouse;
 import sonar.flux.api.EnergyStats;
 import sonar.flux.api.IFlux;
 import sonar.flux.api.IFlux.ConnectionType;
 import sonar.flux.api.IFluxCommon;
 import sonar.flux.api.IFluxCommon.AccessType;
-import sonar.flux.api.IFluxNetwork;
 import sonar.flux.api.INetworkStatistics;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;

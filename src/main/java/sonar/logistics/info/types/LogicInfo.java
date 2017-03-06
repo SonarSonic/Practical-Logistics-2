@@ -6,9 +6,9 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.core.utils.Pair;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -32,14 +32,15 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	public static final String id = "logic";
 	public static final LogicMonitorHandler<LogicInfo> handler = LogicMonitorHandler.instance(InfoMonitorHandler.id);
 	private String suffix, prefix;
-	public SyncTagType.STRING identifier = new SyncTagType.STRING(1);
-	public SyncEnum<RegistryType> registryType = new SyncEnum(RegistryType.values(), 2);
-	public SyncUnidentifiedObject obj = new SyncUnidentifiedObject(3);
-	public SyncTagType.BOOLEAN isCategory = new SyncTagType.BOOLEAN(4);
+	public SyncTagType.STRING iden = new SyncTagType.STRING(1);
+	public SyncTagType.INT idenNum = (INT) new SyncTagType.INT(2).setDefault(-1);
+	public SyncEnum<RegistryType> regType = new SyncEnum(RegistryType.values(), 3);
+	public SyncUnidentifiedObject obj = new SyncUnidentifiedObject(4);
+	public SyncTagType.BOOLEAN isCategory = new SyncTagType.BOOLEAN(5);
 	public LogicPath path;
 
 	{
-		syncList.addParts(identifier, registryType, obj, isCategory);
+		syncList.addParts(iden, idenNum, regType, obj, isCategory);
 	}
 
 	public LogicInfo() {
@@ -48,17 +49,22 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 
 	public static LogicInfo buildCategoryInfo(RegistryType type) {
 		LogicInfo info = new LogicInfo();
-		info.registryType.setObject(type);
+		info.regType.setObject(type);
 		info.isCategory.setObject(true);
 		return info;
 	}
 
 	public static LogicInfo buildDirectInfo(String identifier, RegistryType type, Object obj, LogicPath path) {
+		return buildDirectInfo(identifier, -1, type, obj, path);
+	}
+
+	public static LogicInfo buildDirectInfo(String identifier, int identifierNum, RegistryType type, Object obj, LogicPath path) {
 		LogicInfo info = new LogicInfo();
 		info.obj.set(obj, ObjectType.getInfoType(obj));
-		info.registryType.setObject(type);
-		info.identifier.setObject(identifier);
-		if (info.obj.objectType == ObjectType.NONE) {
+		info.regType.setObject(type);
+		info.iden.setObject(identifier);
+		info.idenNum.setObject(identifierNum);
+		if (info.obj.objType == ObjectType.NONE) {
 			Logistics.logger.error(String.format("Invalid Info: %s with object %s", identifier, obj));
 			return null;
 		}
@@ -80,28 +86,28 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	@Override
 	public boolean isMatchingInfo(LogicInfo info) {
 		if (this.isCategory.getObject()) {
-			return info.isCategory.getObject() && registryType.getObject().equals(info.registryType.getObject());
+			return info.isCategory.getObject() && regType.getObject().equals(info.regType.getObject());
 		}
-		return obj.objectType != null && obj.objectType.equals(info.obj.objectType) && identifier.getObject().equals(info.identifier.getObject()) && registryType.getObject().equals(info.registryType.getObject());
+		return obj.objType != null && obj.objType.equals(info.obj.objType) && iden.getObject().equals(info.iden.getObject()) && regType.getObject().equals(info.regType.getObject()) && idenNum.getObject().equals(info.idenNum.getObject());
 	}
 
 	public RegistryType getRegistryType() {
-		return registryType.getObject();
+		return regType.getObject();
 	}
 
 	public String getClientIdentifier() {
-		String newMethod = LogicInfoRegistry.clientNameAdjustments.get(identifier.getObject());
+		String newMethod = LogicInfoRegistry.clientNameAdjustments.get(iden.getObject());
 		if (newMethod != null) {
 			return FontHelper.translate("pl." + newMethod);
 		}
-		return FontHelper.translate("pl." + identifier);
+		return FontHelper.translate("pl." + iden) + (idenNum.getObject() != -1 ? " " + idenNum.getObject() : "");
 	}
 
 	public Pair<String, String> updateAdjustments(boolean forceUpdate) {
 		if (forceUpdate || (prefix == null || suffix == null)) {
 			prefix = "";
 			suffix = "";
-			Pair<String, String> adjustment = LogicInfoRegistry.infoAdjustments.get(identifier.getObject());
+			Pair<String, String> adjustment = LogicInfoRegistry.infoAdjustments.get(iden.getObject());
 			if (adjustment != null) {
 				if (!adjustment.a.isEmpty())
 					prefix = adjustment.a + " ";
@@ -113,7 +119,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	}
 
 	public String getClientObject() {
-		if (identifier.getObject().equals("Block.getUnlocalizedName")) {
+		if (iden.getObject().equals("Block.getUnlocalizedName")) {
 			return FontHelper.translate(obj.get().toString() + ".name");
 		}
 		updateAdjustments(false);
@@ -121,7 +127,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	}
 
 	public String getClientType() {
-		return obj.objectType.toString().toLowerCase();
+		return obj.objType.toString().toLowerCase();
 	}
 
 	public Object getInfo() {
@@ -129,7 +135,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	}
 
 	public ObjectType getInfoType() {
-		return obj.objectType;
+		return obj.objType;
 	}
 
 	@Override
@@ -144,7 +150,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 
 	@Override
 	public boolean isValid() {
-		return this.isCategory.getObject() ? registryType != null : obj.get() != null && obj.objectType != null;
+		return this.isCategory.getObject() ? regType != null : obj.get() != null && obj.objType != null;
 	}
 
 	@Override
@@ -154,12 +160,11 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 
 	@Override
 	public LogicInfo copy() {
-		return buildDirectInfo(identifier.getObject(), registryType.getObject(), obj.get(), path);
+		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get(), path);
 	}
 
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		// InfoRenderer.renderNormalInfo(displayType, width, height, scale, getClientIdentifier(), getClientObject());
 		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
 	}
 
@@ -177,7 +182,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 
 	@Override
 	public String getRawData() {
-		if (identifier.getObject().equals("Block.getUnlocalizedName")) {
+		if (iden.getObject().equals("Block.getUnlocalizedName")) {
 			return FontHelper.translate(obj.get().toString() + ".name");
 		}
 		return obj.get().toString();
@@ -186,8 +191,8 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements INameableInfo<Logi
 	@Override
 	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
 		objects.add(new ComparableObject(this, "raw info", obj.get()));
-		objects.add(new ComparableObject(this, "object type", obj.objectType));
-		objects.add(new ComparableObject(this, "identifier", identifier.getObject()));
+		objects.add(new ComparableObject(this, "object type", obj.objType));
+		objects.add(new ComparableObject(this, "identifier", iden.getObject()));
 		return objects;
 	}
 

@@ -14,7 +14,6 @@ import sonar.core.recipes.ISonarRecipe;
 import sonar.logistics.Logistics;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
-import sonar.logistics.guide.IGuidePage;
 import sonar.logistics.guide.IGuidePageElement;
 import sonar.logistics.utils.HammerRecipes;
 

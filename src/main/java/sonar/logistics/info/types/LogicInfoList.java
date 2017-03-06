@@ -6,9 +6,7 @@ import java.util.UUID;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,8 +19,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.client.gui.GuiSonar;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -38,8 +34,8 @@ import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
-import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
@@ -115,7 +111,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		}
 
 		MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), displayInfo.getInfoUUID());
-		ILogicMonitor monitor = Logistics.getClientManager().monitors.get(monitorUUID.getUUID());
+		IInfoProvider monitor = Logistics.getClientManager().monitors.get(monitorUUID.getUUID());
 
 		if (monitor == null || list == null)
 			return;

@@ -24,6 +24,26 @@ import sonar.logistics.api.wireless.ITileTransceiver;
 
 public class WirelessItemTransceiver extends SonarItem implements ITileTransceiver {
 
+	//// ITileTransceiver \\\\
+
+	@Override
+	public BlockCoords getCoords(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			return BlockCoords.readFromNBT(stack.getTagCompound().getCompoundTag("coord"));
+		}
+		return null;
+	}
+
+	@Override
+	public EnumFacing getDirection(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			return EnumFacing.values()[stack.getTagCompound().getInteger("dir")];
+		}
+		return null;
+	}
+	
+	//// INTERACTION \\\\
+	
 	@Override
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		IBlockState state = world.getBlockState(pos);
@@ -45,22 +65,6 @@ public class WirelessItemTransceiver extends SonarItem implements ITileTransceiv
 	}
 
 	@Override
-	public BlockCoords getCoords(ItemStack stack) {
-		if (stack.hasTagCompound()) {
-			return BlockCoords.readFromNBT(stack.getTagCompound().getCompoundTag("coord"));
-		}
-		return null;
-	}
-
-	@Override
-	public EnumFacing getDirection(ItemStack stack) {
-		if (stack.hasTagCompound()) {
-			return EnumFacing.values()[stack.getTagCompound().getInteger("dir")];
-		}
-		return null;
-	}
-
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par) {
 		super.addInformation(stack, player, list, par);
@@ -70,5 +74,4 @@ public class WirelessItemTransceiver extends SonarItem implements ITileTransceiv
 			list.add("Side: " + TextFormatting.ITALIC + getDirection(stack).name());
 		}
 	}
-
 }

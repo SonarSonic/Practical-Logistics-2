@@ -1,7 +1,6 @@
 package sonar.logistics.api;
 
 import net.minecraftforge.fml.common.Loader;
-import sonar.core.integration.SonarLoader;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.api.wrappers.EnergyWrapper;
 import sonar.logistics.api.wrappers.FluidWrapper;

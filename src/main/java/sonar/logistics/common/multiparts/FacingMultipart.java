@@ -7,7 +7,6 @@ import java.util.UUID;
 import mcmultipart.MCMultiPartMod;
 import mcmultipart.multipart.INormallyOccludingPart;
 import mcmultipart.multipart.MultipartHelper;
-import mcmultipart.multipart.PartSlot;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -22,6 +21,7 @@ import net.minecraft.world.World;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.utils.Pair;
+import sonar.logistics.api.cabling.NetworkConnectionType;
 
 public abstract class FacingMultipart extends LogisticsMultipart implements INormallyOccludingPart {
 
@@ -42,6 +42,13 @@ public abstract class FacingMultipart extends LogisticsMultipart implements INor
 	public EnumFacing getFacing() {
 		return face.getObject();
 	}
+
+	@Override
+	public NetworkConnectionType canConnect(EnumFacing dir) {
+		return NetworkConnectionType.NETWORK;
+	}
+	
+	//// MULTIPART \\\\
 
 	@Override
 	public void addOcclusionBoxes(List<AxisAlignedBB> list) {
@@ -81,19 +88,19 @@ public abstract class FacingMultipart extends LogisticsMultipart implements INor
 	public EnumFacing[] getValidRotations() {
 		return EnumFacing.HORIZONTALS;
 	}
+	
+	//// STATE \\\\
 
 	@Override
-	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
-		super.writeData(tag, type);
-		// tag.setByte("face", (byte) face.ordinal());
-		return tag;
+	public IBlockState getActualState(IBlockState state) {
+		return state.withProperty(ORIENTATION, getFacing());
 	}
 
-	@Override
-	public void readData(NBTTagCompound tag, SyncType type) {
-		super.readData(tag, type);
-		// face = EnumFacing.VALUES[tag.getByte("face")];
+	public BlockStateContainer createBlockState() {
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION });
 	}
+	
+	//// PACKETS \\\\
 
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
@@ -105,25 +112,6 @@ public abstract class FacingMultipart extends LogisticsMultipart implements INor
 	public void readUpdatePacket(PacketBuffer buf) {
 		super.readUpdatePacket(buf);
 		face.readFromBuf(buf);
-	}
-
-	@Override
-	public ConnectionType canConnect(EnumFacing dir) {
-		return ConnectionType.NETWORK;
-	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return null;
-	}
-
-	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing());
-	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION });
 	}
 
 }

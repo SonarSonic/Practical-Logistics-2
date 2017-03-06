@@ -7,6 +7,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.logistics.client.BlockRenderRegister;
+import sonar.logistics.client.ClockRenderer;
 import sonar.logistics.client.DisplayRenderer;
 import sonar.logistics.client.ItemRenderRegister;
 import sonar.logistics.client.RenderArray;
@@ -14,18 +15,22 @@ import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.RenderHammer;
 import sonar.logistics.client.RenderOperatorOverlay;
 import sonar.logistics.common.multiparts.ArrayPart;
+import sonar.logistics.common.multiparts.ClockPart;
 import sonar.logistics.common.multiparts.DisplayScreenPart;
+import sonar.logistics.common.multiparts.HolographicDisplayPart;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
 import sonar.logistics.common.tileentity.TileEntityHammer;
 
 public class LogisticsClient extends LogisticsCommon {
-	
+
 	public void registerRenderThings() {
 		ItemRenderRegister.register();
 		BlockRenderRegister.register();
 
 		MultipartRegistryClient.bindMultipartSpecialRenderer(DisplayScreenPart.class, new DisplayRenderer());
+		MultipartRegistryClient.bindMultipartSpecialRenderer(HolographicDisplayPart.class, new DisplayRenderer());
 		MultipartRegistryClient.bindMultipartSpecialRenderer(LargeDisplayScreenPart.class, new DisplayRenderer());
+		MultipartRegistryClient.bindMultipartSpecialRenderer(ClockPart.class, new ClockRenderer());
 		MultipartRegistryClient.bindMultipartSpecialRenderer(ArrayPart.class, new RenderArray());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHammer.class, new RenderHammer());
 		MinecraftForge.EVENT_BUS.register(this);

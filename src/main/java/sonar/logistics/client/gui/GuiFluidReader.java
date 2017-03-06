@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -16,19 +15,13 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.client.gui.SonarButtons.AnimatedButton;
+import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
-import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.FluidReader;
-import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
-import sonar.logistics.api.readers.FluidReader.SortingType;
-import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.common.multiparts.FluidReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
@@ -248,8 +241,5 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {
-		// TODO Auto-generated method stub
-
-	}
+	public void renderStrings(int x, int y) {}
 }

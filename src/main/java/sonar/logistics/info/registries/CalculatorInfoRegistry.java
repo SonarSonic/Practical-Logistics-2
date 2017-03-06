@@ -1,5 +1,9 @@
 package sonar.logistics.info.registries;
 
+import static sonar.logistics.info.LogicInfoRegistry.registerInfoAdjustments;
+import static sonar.logistics.info.LogicInfoRegistry.registerMethods;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.TILE;
+
 import com.google.common.collect.Lists;
 
 import sonar.calculator.mod.api.machines.IFlawlessGreenhouse;
@@ -10,8 +14,6 @@ import sonar.calculator.mod.api.nutrition.IHungerProcessor;
 import sonar.core.api.machines.IProcessMachine;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
-import static sonar.logistics.info.LogicInfoRegistry.*;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.*;
 
 @InfoRegistry(modid = "calculator")
 public class CalculatorInfoRegistry extends IInfoRegistry {

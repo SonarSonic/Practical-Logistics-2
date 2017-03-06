@@ -7,7 +7,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
@@ -16,6 +15,7 @@ import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry.LogicPath;
@@ -34,7 +34,7 @@ public class InfoMonitorHandler extends LogicMonitorHandler<LogicInfo> implement
 	}
 
 	@Override
-	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, NodeConnection connection) {
+	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, BlockConnection connection) {
 		MonitoredList<LogicInfo> list = MonitoredList.<LogicInfo>newMonitoredList(network.getNetworkID());
 		EnumFacing face = connection.face.getOpposite();
 		World world = connection.coords.getWorld();

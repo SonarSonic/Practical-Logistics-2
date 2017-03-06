@@ -21,12 +21,12 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -34,11 +34,14 @@ import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.Logistics;
+import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiDisplayScreen;
@@ -64,6 +67,20 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		this.face = face;
 	}
 
+	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
+			if (isServer()) {
+				if (hit.sideHit != face) {
+					openFlexibleGui(player, 0);
+				} else {
+					return container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, getWorld(), player, hand, stack, hit);
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public void update() {
 		super.update();
 		updateDefaultInfo();
@@ -71,9 +88,9 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 
 	public void updateDefaultInfo() {
 		if (isServer() && !defaultData.getObject()) {
-			ArrayList<ILogicMonitor> monitors = Logistics.getServerManager().getLocalMonitors(new ArrayList(), this);
+			ArrayList<IInfoProvider> monitors = Logistics.getServerManager().getLocalMonitors(new ArrayList(), this);
 			if (!monitors.isEmpty()) {
-				ILogicMonitor monitor = monitors.get(0);
+				IInfoProvider monitor = monitors.get(0);
 				if (container() != null && monitor != null && monitor.getIdentity() != null) {
 					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
 						container().setUUID(new InfoUUID(monitor.getIdentity().hashCode(), i), i);
@@ -85,48 +102,39 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		}
 	}
 
-	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
-		if (stack != null && stack.getItem() instanceof IOperatorTool) {
-			return false;
-		}
-		if(isClient()){
-			return true;
-		}
-		if (hit.sideHit != face) {
-			if (isServer()) {
-				openFlexibleGui(player, 0);
-			}
-			return true;
-		}
-		return container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, getWorld(), player, hand, stack, hit);
+	//// ILogicViewable \\\\
+
+	@Override
+	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
 	}
 
 	@Override
-	public void harvest(EntityPlayer player, PartMOP hit) {
-		if (hit.sideHit == face) {
-			container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, getWorld(), player, player.getActiveHand(), player.getActiveItemStack(), hit);
-			return;
-		}
-		super.harvest(player, hit);
+	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
 	}
 
-	public void markChanged(IDirtyPart part) {
-		super.markChanged(part);
-		ArrayList<EntityPlayer> viewers = getViewersList().getViewers(false, ViewerType.INFO);
-		for (EntityPlayer player : viewers) {
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-		}
+	public UUID getIdentity() {
+		return getUUID();
 	}
 
-	public void onSyncPacketRequested(EntityPlayer player) {
-		super.onSyncPacketRequested(player);
-		if (isServer()) {
-			this.getViewersList().addViewer(player, ViewerType.FULL_INFO);
-			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(this, player);
-		}
-	}
-	
+	//// IInfoDisplay \\\\
+
 	public abstract void incrementLayout();
+
+	@Override
+	public NetworkConnectionType canConnect(EnumFacing dir) {
+		return dir != face ? NetworkConnectionType.NETWORK : NetworkConnectionType.NONE;
+	}
+
+	@Override
+	public EnumFacing getFace() {
+		return face;
+	}
+
+	public EnumFacing getRotation() {
+		return rotation;
+	}
+
+	//// EVENTS \\\\
 
 	public void onFirstTick() {
 		super.onFirstTick();
@@ -154,9 +162,71 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 			Logistics.getServerManager().removeDisplay(this);
 	}
 
+	//// STATE \\\\
+
 	@Override
 	public void addOcclusionBoxes(List<AxisAlignedBB> list) {
 		this.addSelectionBoxes(list);
+	}
+
+	@Override
+	public void harvest(EntityPlayer player, PartMOP hit) {
+		if (hit.sideHit == face) {
+			container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, getWorld(), player, player.getActiveHand(), player.getActiveItemStack(), hit);
+			return;
+		}
+		super.harvest(player, hit);
+	}
+
+	@Override
+	public IBlockState getActualState(IBlockState state) {
+		return state.withProperty(ORIENTATION, face).withProperty(ROTATION, rotation);
+	}
+
+	public BlockStateContainer createBlockState() {
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, ROTATION });
+	}
+
+	//// SAVE \\\\
+
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
+		super.writeData(tag, type);
+		tag.setByte("rotation", (byte) rotation.ordinal());
+		tag.setByte("face", (byte) face.ordinal());
+		return tag;
+	}
+
+	@Override
+	public void readData(NBTTagCompound tag, SyncType type) {
+		super.readData(tag, type);
+		rotation = EnumFacing.VALUES[tag.getByte("rotation")];
+		face = EnumFacing.VALUES[tag.getByte("face")];
+	}
+
+	//// PACKETS \\\\
+
+	public void markChanged(IDirtyPart part) {
+		super.markChanged(part);
+		ArrayList<EntityPlayer> viewers = getViewersList().getViewers(false, ViewerType.INFO);
+		for (EntityPlayer player : viewers) {
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+		}
+	}
+
+	public void onSyncPacketRequested(EntityPlayer player) {
+		super.onSyncPacketRequested(player);
+		if (isServer()) {
+			this.getViewersList().addViewer(player, ViewerType.FULL_INFO);
+			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(this, player);
+		}
+	}
+
+	@Override
+	public void writeUpdatePacket(PacketBuffer buf) {
+		super.writeUpdatePacket(buf);
+		buf.writeByte((byte) rotation.ordinal());
+		buf.writeByte((byte) face.ordinal());
 	}
 
 	@Override
@@ -197,79 +267,20 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	}
 
 	@Override
-	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
-		super.writeData(tag, type);
-		tag.setByte("rotation", (byte) rotation.ordinal());
-		tag.setByte("face", (byte) face.ordinal());
-		// container().writeData(tag, type);
-		return tag;
-	}
-
-	@Override
-	public void readData(NBTTagCompound tag, SyncType type) {
-		super.readData(tag, type);
-		rotation = EnumFacing.VALUES[tag.getByte("rotation")];
-		face = EnumFacing.VALUES[tag.getByte("face")];
-		// container().readData(tag, type);
-	}
-
-	@Override
-	public void writeUpdatePacket(PacketBuffer buf) {
-		super.writeUpdatePacket(buf);
-		buf.writeByte((byte) rotation.ordinal());
-		buf.writeByte((byte) face.ordinal());
-		// ByteBufUtils.writeTag(buf, container().writeData(new NBTTagCompound(), SyncType.SAVE));
-	}
-
-	@Override
 	public void readUpdatePacket(PacketBuffer buf) {
 		super.readUpdatePacket(buf);
 		rotation = EnumFacing.VALUES[buf.readByte()];
 		face = EnumFacing.VALUES[buf.readByte()];
-		// container().readData(ByteBufUtils.readTag(buf), SyncType.SAVE);
 	}
 
-	@Override
-	public ConnectionType canConnect(EnumFacing dir) {
-		return dir != face ? ConnectionType.NETWORK : ConnectionType.NONE;
+	public PartMOP getPartHit(EntityPlayer player) {
+		Vec3d start = RayTraceUtils.getStart(player);
+		Vec3d end = RayTraceUtils.getEnd(player);
+		AdvancedRayTraceResultPart result = collisionRayTrace(start, end);
+		return result == null ? null : result.hit;
 	}
 
-	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, face).withProperty(ROTATION, rotation);
-	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, ROTATION });
-	}
-
-	@Override
-	public EnumFacing getFace() {
-		return face;
-	}
-	
-	public EnumFacing getRotation(){
-		return rotation;
-	}
-	
-	public PartMOP getPartHit(EntityPlayer player){
-        Vec3d start = RayTraceUtils.getStart(player);
-        Vec3d end = RayTraceUtils.getEnd(player);
-        AdvancedRayTraceResultPart result = collisionRayTrace(start, end);
-        return result == null ? null : result.hit;
-	}
-
-	public void addInfo(List<String> info) {
-		super.addInfo(info);
-	}
-
-	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
-	}
-
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
-	}
+	//// GUI \\\\
 
 	public Object getServerElement(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new ContainerMultipartSync(obj) : null;
@@ -279,17 +290,17 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		return id == 0 ? new GuiDisplayScreen(obj) : null;
 	}
 
-	public UUID getIdentity() {
-		return getUUID();
-	}
-	
 	@Override
 	public void onGuiOpened(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(this, player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
+	}
+
+	public String getDisplayName() {
+		return FontHelper.translate("item.DisplayScreen.name");
 	}
 }

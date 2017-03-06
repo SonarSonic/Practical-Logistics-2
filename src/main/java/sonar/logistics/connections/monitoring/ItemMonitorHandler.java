@@ -11,14 +11,13 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.BlockConnection;
 
 @EntityMonitorHandler(handlerID = ItemMonitorHandler.id, modid = Logistics.MODID)
 @TileMonitorHandler(handlerID = ItemMonitorHandler.id, modid = Logistics.MODID)
@@ -32,7 +31,7 @@ public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> 
 	}
 
 	@Override
-	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, NodeConnection connection) {
+	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, BlockConnection connection) {
 		MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(network.getNetworkID());
 		List<ISonarInventoryHandler> providers = SonarCore.inventoryHandlers;
 		TileEntity tile = connection.coords.getTileEntity();

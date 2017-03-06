@@ -20,7 +20,7 @@ public interface ICustomTileHandler {
 
 	/** allows you to add all types of info for a given position for use in the Info Reader
 	 * @param infoList the current info list
-	 * @param currentPath TODO
+	 * @param currentPath the current path of the provided info. You should use LogicPath.dupe() when you create new LogicInfo with this ICustomTileHandler
 	 * @param world the world
 	 * @param state the current block state
 	 * @param pos the position

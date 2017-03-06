@@ -28,6 +28,7 @@ import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
+import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
@@ -37,10 +38,6 @@ import sonar.logistics.network.PacketClickEventClient;
 /** used to store {@link IMonitorInfo} along with their respective {@link DisplayInfo} for rendering on a {@link IInfoDisplay} */
 public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
 
-	public static final ResourceLocation colour1 = new ResourceLocation(Logistics.MODID + ":textures/model/" + "progress1.png");
-	public static final ResourceLocation colour2 = new ResourceLocation(Logistics.MODID + ":textures/model/" + "progress2.png");
-	public static final ResourceLocation colour3 = new ResourceLocation(Logistics.MODID + ":textures/model/" + "progress3.png");
-	public static final ResourceLocation colour4 = new ResourceLocation(Logistics.MODID + ":textures/model/" + "progress4.png");
 	public final ArrayList<DisplayInfo> storedInfo = new ArrayList();
 	public final IInfoDisplay display;
 	public SyncableList syncParts = new SyncableList(this);
@@ -56,7 +53,6 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 			storedInfo.add(syncPart);
 		}
 		syncParts.addParts(storedInfo);
-		// if (display.getCoords()!=null && display.getCoords().getWorld().isRemote)
 		resetRenderProperties();
 	}
 
@@ -72,15 +68,15 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	public static ResourceLocation getColour(int infoPos) {
 		switch (infoPos) {
 		case 0:
-			return colour1;
+			return LogisticsColours.colourTex1;
 		case 1:
-			return colour2;
+			return LogisticsColours.colourTex2;
 		case 2:
-			return colour3;
+			return LogisticsColours.colourTex3;
 		case 3:
-			return colour4;
+			return LogisticsColours.colourTex4;
 		default:
-			return colour1;
+			return LogisticsColours.colourTex1;
 		}
 	}
 
@@ -109,6 +105,9 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	public void renderContainer() {
 		if (display.getDisplayType() == DisplayType.LARGE) {
 			GL11.glTranslated(0, -0.0625 * 4, 0);
+		}
+		if (display.getDisplayType() == DisplayType.HOLOGRAPHIC) {
+			GL11.glTranslated(0.0625, -0.0625 * 7, 0);
 		}
 		ScreenLayout layout = display.getLayout();
 		DisplayType type = display.getDisplayType();
@@ -174,7 +173,6 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 			nbt.setTag(this.getTagName(), tag);
 		}
 		return nbt;
-
 	}
 
 	@Override

@@ -2,11 +2,8 @@ package sonar.logistics.guide.elements;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
-import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
-import sonar.logistics.client.gui.LogisticsButton;
 import sonar.logistics.guide.IGuidePage;
 import sonar.logistics.guide.IGuidePageElement;
 import sonar.logistics.guide.Logistics3DRenderer;
@@ -49,10 +46,7 @@ public class Element3DRenderer implements IGuidePageElement {
 	}
 
 	@Override
-	public void drawElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void drawElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {}
 
 	@Override
 	public void drawForegroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {

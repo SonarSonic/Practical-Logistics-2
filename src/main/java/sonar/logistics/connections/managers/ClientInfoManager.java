@@ -19,6 +19,7 @@ import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
@@ -36,7 +37,7 @@ public class ClientInfoManager implements IInfoManager {
 	public Map<UUID, ArrayList<ClientLogicReader>> clientLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<ClientLogicReader>>();
 	
 	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();	
-	public LinkedHashMap<UUID, ILogicMonitor> monitors = new LinkedHashMap();
+	public LinkedHashMap<UUID, IInfoProvider> monitors = new LinkedHashMap();
 	public Map<Integer, MonitoredList<MonitoredBlockCoords>> coordMap = new ConcurrentHashMap<Integer, MonitoredList<MonitoredBlockCoords>>();
 	
 	//emitters
@@ -74,19 +75,19 @@ public class ClientInfoManager implements IInfoManager {
 		}
 	}
 
-	public void addMonitor(ILogicMonitor monitor) {
+	public void addMonitor(IInfoProvider monitor) {
 		if (monitors.containsValue(monitor)) {
 			return;
 		}
 		monitors.put(monitor.getIdentity(), monitor);
 	}
 	
-	public void removeMonitor(ILogicMonitor monitor) {
+	public void removeMonitor(IInfoProvider monitor) {
 		monitors.remove(monitor.getIdentity());
 	}
 	
 	@Override
-	public LinkedHashMap<UUID, ILogicMonitor> getMonitors() {
+	public LinkedHashMap<UUID, IInfoProvider> getMonitors() {
 		return monitors;
 	}
 

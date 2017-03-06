@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.BaseInfoPage;
-import sonar.logistics.guide.GeneralPage;
 import sonar.logistics.guide.elements.ElementInfo;
 
 //W.I.P

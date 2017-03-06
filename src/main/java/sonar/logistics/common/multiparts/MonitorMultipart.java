@@ -15,7 +15,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
@@ -41,6 +40,8 @@ import sonar.logistics.network.SyncMonitoredType;
 
 public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMultipart implements ILogicMonitor<T>, IByteBufTile, IFlexibleGui {
 
+	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
+	
 	public static final PropertyBool hasDisplay = PropertyBool.create("display");
 	protected IdentifiedCoordsList list = new IdentifiedCoordsList(-2);
 	protected SyncUUID uuid = new SyncUUID(-3); // CAN I USE THE MULTIPART UUID INSTEAD?
@@ -50,7 +51,6 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	public SyncMonitoredType<T> selectedInfo;
 	public BlockCoords lastSelected = null;
 	public IMonitorInfo lastInfo = null;
-	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
 	public int lastPos = -1;
 
 	public MonitorMultipart(String handlerID, double width, double heightMin, double heightMax) {
@@ -75,18 +75,89 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		}
 	}
 
-	@Override
-	public void onPartChanged(IMultipart changedPart) {
-		if (!this.getWorld().isRemote) {
-			if (changedPart instanceof ScreenMultipart) {
-				ScreenMultipart screen = (ScreenMultipart) changedPart;
-				if (screen.face == getFacing()) {
-					hasMonitor.setObject(!screen.wasRemoved());
-					sendUpdatePacket(true);
-				}
-			}
+	public void setLocalNetworkCache(INetworkCache network) {
+		if (!this.network.isFakeNetwork() && this.network.getNetworkID() != network.getNetworkID()) {
+			((ILogisticsNetwork) this.network).removeMonitor(this);
+		}
+		super.setLocalNetworkCache(network);
+		if (network instanceof ILogisticsNetwork) {
+			ILogisticsNetwork storageCache = (ILogisticsNetwork) network;
+			storageCache.<T>addMonitor(this);
 		}
 	}
+	
+	//// ILogicMonitor \\\\
+	
+	@Override
+	public LogicMonitorHandler getHandler() {
+		return handler == null ? handler = LogicMonitorHandler.instance(handlerID) : handler;
+	}
+	
+	public MonitoredList<T> getMonitoredList() {
+		// TODO only using one INFO UUID
+		InfoUUID id = new InfoUUID(this.getIdentity().hashCode(), 0);
+		return getNetworkID() == -1 ? MonitoredList.newMonitoredList(getNetworkID()) : Logistics.getClientManager().getMonitoredList(getNetworkID(), id);
+	}
+
+	public int getMaxInfo() {
+		return 4;
+	}
+	
+	//// IChannelledTile \\\\
+	
+	@Override
+	public IdentifiedCoordsList getChannels() {
+		return list;
+	}
+	
+	public UUID getIdentity() {
+		if (uuid.getUUID() == null) {
+			setUUID();
+		}
+		return uuid.getUUID();
+	}
+	
+	public void setUUID() {
+		if (this.getWorld() != null && !this.getWorld().isRemote) {
+			if (uuid.getUUID() == null) {
+				uuid.setObject(UUID.randomUUID());
+				list.setIdentity(uuid.getUUID());
+				Logistics.getServerManager().addMonitor(this);
+			}
+			sendByteBufPacket(-2);
+		}
+	}	
+
+	public void modifyCoords(MonitoredBlockCoords coords, int channelID) {
+		lastSelected = coords.syncCoords.getCoords();
+		sendByteBufPacket(-3);
+	}
+	
+	//// ILogicViewable \\\\
+	
+	public ViewersList getViewersList() {
+		return viewers;
+	}
+
+	@Override
+	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
+		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+	}
+
+	@Override
+	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {}
+	
+	//// IOperatorProvider \\\\	
+	
+	public void addInfo(List<String> info) {
+		super.addInfo(info);
+		info.add("Channels Configured: " + !list.isEmpty());
+		if (getIdentity() != null)
+			info.add("Monitor UUID: " + this.getIdentity());
+		info.add("Max Info: " + getMaxInfo());
+	}
+	
+	//// EVENTS \\\\
 
 	public void onLoaded() {
 		super.onLoaded();
@@ -116,75 +187,35 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 			this.sendByteBufPacket(-4); // request the monitor UUID
 		}
 	}
+	
+	//// STATE \\\\
+	
+	@Override
+	public IBlockState getActualState(IBlockState state) {
+		return state.withProperty(ORIENTATION, getFacing()).withProperty(hasDisplay, this.hasMonitor.getObject());
+	}
 
-	public void setUUID() {
-		if (this.getWorld() != null && !this.getWorld().isRemote) {
-			if (uuid.getUUID() == null) {
-				uuid.setObject(UUID.randomUUID());
-				list.setIdentity(uuid.getUUID());
-				Logistics.getServerManager().addMonitor(this);
+	public BlockStateContainer createBlockState() {
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, hasDisplay });
+	}
+	
+	//// PACKETS \\\\
+
+	public final static int ADD = -9, PAIRED = -10, ALL = 100;
+
+	@Override
+	public void onPartChanged(IMultipart changedPart) {
+		if (!this.getWorld().isRemote) {
+			if (changedPart instanceof ScreenMultipart) {
+				ScreenMultipart screen = (ScreenMultipart) changedPart;
+				if (screen.face == getFacing()) {
+					hasMonitor.setObject(!screen.wasRemoved());
+					sendUpdatePacket(true);
+				}
 			}
-			sendByteBufPacket(-2);
 		}
 	}
-
-	@Override
-	public IdentifiedCoordsList getChannels() {
-		return list;
-	}
-
-	@Override
-	public LogicMonitorHandler getHandler() {
-		return handler == null ? handler = LogicMonitorHandler.instance(handlerID) : handler;
-	}
-
-	public ViewersList getViewersList() {
-		return viewers;
-	}
-
-	public UUID getIdentity() {
-		if (uuid.getUUID() == null) {
-			setUUID();
-		}
-		return uuid.getUUID();
-	}
-
-	public void setLocalNetworkCache(INetworkCache network) {
-		if (!this.network.isFakeNetwork() && this.network.getNetworkID() != network.getNetworkID()) {
-			((ILogisticsNetwork) this.network).removeMonitor(this);
-		}
-		super.setLocalNetworkCache(network);
-		if (network instanceof ILogisticsNetwork) {
-			ILogisticsNetwork storageCache = (ILogisticsNetwork) network;
-			storageCache.<T>addMonitor(this);
-		}
-	}
-
-	public MonitoredList<T> getMonitoredList() {
-		// TODO only using one INFO UUID
-		InfoUUID id = new InfoUUID(this.getIdentity().hashCode(), 0);
-		return getNetworkID() == -1 ? MonitoredList.newMonitoredList(getNetworkID()) : Logistics.getClientManager().getMonitoredList(getNetworkID(), id);
-	}
-
-	public int getMaxInfo() {
-		return 4;
-	}
-
-	public void addInfo(List<String> info) {
-		super.addInfo(info);
-		info.add("Channels Configured: " + !list.isEmpty());
-		if (getIdentity() != null)
-			info.add("Monitor UUID: " + this.getIdentity());
-		info.add("Max Info: " + getMaxInfo());
-	}
-
-	public final int ADD = -9, PAIRED = -10, ALL = 100;
-
-	public void modifyCoords(MonitoredBlockCoords coords, int channelID) {
-		lastSelected = coords.syncCoords.getCoords();
-		sendByteBufPacket(-3);
-	}
-
+	
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
 		super.writeUpdatePacket(buf);
@@ -230,14 +261,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		}
 	}
 
-	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing()).withProperty(hasDisplay, this.hasMonitor.getObject());
-	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, hasDisplay });
-	}
+	//// GUI \\\\
 	
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
@@ -245,14 +269,5 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 			viewers.addViewer(player, ViewerType.CHANNEL);
 			break;
 		}
-
 	}
-
-	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
-		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-	}
-
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {}
 }

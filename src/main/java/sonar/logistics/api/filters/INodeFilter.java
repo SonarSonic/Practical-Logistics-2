@@ -18,4 +18,6 @@ public interface INodeFilter extends ISyncableListener, INBTSyncable {
 	
 	public FilterList getListType();
 	
+	public boolean isValidFilter();
+	
 }

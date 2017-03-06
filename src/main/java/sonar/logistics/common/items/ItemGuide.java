@@ -1,6 +1,5 @@
 package sonar.logistics.common.items;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,7 +11,6 @@ import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.Logistics;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.common.containers.ContainerGuide;
 
@@ -27,22 +25,20 @@ public class ItemGuide extends SonarItem implements IFlexibleGui<ItemStack> {
 		return new ActionResult(EnumActionResult.SUCCESS, stack);
 
 	}
-
-	@Override
-	public void onGuiOpened(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-
-	}
+	
+	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-
 		return id == 0 ? new ContainerGuide(player) : null;
 	}
 
 	@Override
 	public Object getClientElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-
 		return id == 0 ? new GuiGuide(player) : null;
 	}
+
+	@Override
+	public void onGuiOpened(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {}
 
 }

@@ -2,17 +2,11 @@ package sonar.logistics.api.filters;
 
 import java.util.UUID;
 
-import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.helpers.NBTHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.BaseSyncListPart;
-import sonar.core.network.sync.DirtyPart;
-import sonar.core.network.sync.IDirtyPart;
+import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncableList;
 import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.nodes.TransferType;
 
 public abstract class BaseFilter extends BaseSyncListPart implements INodeFilter {
 
@@ -46,6 +40,10 @@ public abstract class BaseFilter extends BaseSyncListPart implements INodeFilter
 		if (obj != null && obj instanceof BaseFilter) {
 			return obj.hashCode() == hashCode();
 		}
+		return false;
+	}
+
+	public boolean shouldEmbed() {
 		return false;
 	}
 }

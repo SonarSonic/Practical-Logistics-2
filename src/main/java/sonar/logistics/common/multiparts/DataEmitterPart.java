@@ -26,12 +26,12 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.api.wireless.DataEmitterSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataEmitter;
 import sonar.logistics.connections.managers.EmitterManager;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFlexibleGui, IByteBufTile {
 
@@ -41,6 +41,7 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 	public SyncUUID playerUUID = new SyncUUID(3);
 	public SyncUUID emitterUUID = new SyncUUID(4);
 	public SyncEnum<DataEmitterSecurity> security = new SyncEnum(DataEmitterSecurity.values(), 5);
+
 	{
 		syncList.addParts(emitterName, playerUUID, emitterUUID, security);
 	}
@@ -54,10 +55,62 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 		playerUUID.setObject(player.getGameProfile().getId());
 	}
 
-	public void onLoaded() {
-		super.onLoaded();
-		// EmitterRegistry.addEmitter(this);
+	@Override
+	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
+		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
+			if (isServer()) {
+				openFlexibleGui(player, 0);
+			}
+			return true;
+		}
+		return false;
 	}
+
+	@Override
+	public ArrayList<Integer> getNetworks() {
+		ArrayList<Integer> networks = new ArrayList();
+		for (IDataReceiver receiver : receivers) {
+			int id = receiver.getNetworkID();
+			if (!networks.contains(id)) {
+				networks.add(id);
+			}
+		}
+		return networks;
+	}
+
+	@Override
+	public UUID getIdentity() {
+		return emitterUUID.getUUID();
+	}
+
+	//// IDataEmitter \\\\
+
+	@Override
+	public boolean canPlayerConnect(UUID uuid) {
+		return playerUUID.getUUID().equals(uuid);
+	}
+	
+	@Override
+	public String getEmitterName() {
+		return emitterName.getObject();
+	}
+
+	@Override
+	public DataEmitterSecurity getSecurity() {
+		return security.getObject();
+	}
+
+	@Override
+	public void connect(IDataReceiver receiver) {
+		receivers.add(receiver);
+	}
+
+	@Override
+	public void disconnect(IDataReceiver receiver) {
+		receivers.remove(receiver);
+	}
+	
+	//// EVENTS \\\\
 
 	public void onRemoved() {
 		super.onRemoved();
@@ -83,30 +136,8 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 			EmitterManager.addEmitter(this);
 		}
 	}
-
-	/* @Override public EnumSet<PartSlot> getSlotMask() { return getOccludedSlots(); }
-	 * @Override public EnumSet<PartSlot> getOccludedSlots() { return EnumSet.of(PartSlot.getFaceSlot(face.getOpposite()), PartSlot.CENTER); } */
-
-	@Override
-	public boolean canPlayerConnect(UUID uuid) {
-		return playerUUID.getUUID().equals(uuid);
-	}
-
-	@Override
-	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
-		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
-			if (!getWorld().isRemote) {
-				openFlexibleGui(player, 0);
-			}
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public UUID getIdentity() {
-		return emitterUUID.getUUID();
-	}
+	
+	//// PACKETS \\\\
 
 	public void setLocalNetworkCache(INetworkCache network) {
 		super.setLocalNetworkCache(network);
@@ -126,54 +157,14 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
 		if (part != null)
 			part.readFromBuf(buf);
-		
-		if(id==5){
+
+		if (id == 5) {
 			EmitterManager.emitterChanged(this);
 		}
 	}
 
-	@Override
-	public String getEmitterName() {
-		return emitterName.getObject();
-	}
-
-	@Override
-	public DataEmitterSecurity getSecurity() {
-		return security.getObject();
-	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partEmitter);
-	}
-
-	public void addSelectionBoxes(List<AxisAlignedBB> list) {
-		super.addSelectionBoxes(list);
-		/* double p = 0.0625; double height = p * 12, width = p * 8, length = p * 14; switch (face) { case EAST: list.add(new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2)); break; case NORTH: list.add(new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length)); break; case SOUTH: list.add(new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0)); break; case WEST: list.add(new AxisAlignedBB(1, 0, (width) / 2, 1 - length, height, 1 - width / 2)); break; default: break; } */
-	}
-
-	@Override
-	public void connect(IDataReceiver receiver) {
-		receivers.add(receiver);
-	}
-
-	@Override
-	public void disconnect(IDataReceiver receiver) {
-		receivers.remove(receiver);
-	}
-
-	@Override
-	public ArrayList<Integer> getNetworks() {
-		ArrayList<Integer> networks = new ArrayList();
-		for (IDataReceiver receiver : receivers) {
-			int id = receiver.getNetworkID();
-			if (!networks.contains(id)) {
-				networks.add(id);
-			}
-		}
-		return networks;
-	}
-
+	//// GUI \\\\
+	
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new ContainerMultipartSync(this) : null;
@@ -186,10 +177,15 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	@Override
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
-		}		
+		}
+	}
+
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.partEmitter);
 	}
 }

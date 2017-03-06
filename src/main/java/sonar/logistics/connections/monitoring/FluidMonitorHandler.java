@@ -12,7 +12,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ITileMonitorHandler;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.BlockConnection;
 
 @TileMonitorHandler(handlerID = FluidMonitorHandler.id, modid = Logistics.MODID)
 public class FluidMonitorHandler extends LogicMonitorHandler<MonitoredFluidStack> implements ITileMonitorHandler<MonitoredFluidStack> {
@@ -25,7 +25,7 @@ public class FluidMonitorHandler extends LogicMonitorHandler<MonitoredFluidStack
 	}
 
 	@Override
-	public MonitoredList<MonitoredFluidStack> updateInfo(INetworkCache network, MonitoredList<MonitoredFluidStack> previousList, NodeConnection connection) {
+	public MonitoredList<MonitoredFluidStack> updateInfo(INetworkCache network, MonitoredList<MonitoredFluidStack> previousList, BlockConnection connection) {
 		MonitoredList<MonitoredFluidStack> list = MonitoredList.<MonitoredFluidStack>newMonitoredList(network.getNetworkID());
 		List<ISonarFluidHandler> providers = SonarCore.fluidHandlers;
 		for (ISonarFluidHandler provider : providers) {

@@ -13,12 +13,10 @@ public enum ConnectableType {
 	/** @param type given CableType
 	 * @return if the given CableType can connect to the current one. */
 	public boolean canConnect(ConnectableType type) {
-		if(type==NONE){
+		if(type==NONE || this == null){
 			return false;
 		}		
 		switch (this) {
-		case NONE:
-			return false;
 		case BLOCK_CONNECTION:
 			return true;
 		default:

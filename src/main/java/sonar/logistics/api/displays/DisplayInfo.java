@@ -124,7 +124,8 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 			}
 			if (info != null && info instanceof INameableInfo) {
 				INameableInfo cachedInfo = (INameableInfo) info;
-				format.add(cachedInfo.getClientIdentifier());
+				if (!cachedInfo.getClientIdentifier().isEmpty())
+					format.add(cachedInfo.getClientIdentifier());
 				format.add(cachedInfo.getClientObject());
 			}
 		}

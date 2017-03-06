@@ -10,15 +10,16 @@ import sonar.logistics.api.displays.ScreenInteractionEvent;
 /** implemented on info which can be clicked by the player */
 public interface IAdvancedClickableInfo{
 
-	/** @param event TODO
+	/** @param event the screen interaction event
 	 * @param renderInfo the infos current render properties
 	 * @param player the player who clicked the info
 	 * @param hand players hand
 	 * @param stack players held item
-	 * @param container TODO
+	 * @param container the displays container
 	 * @return if the screen was clicked */
 	public NBTTagCompound onClientClick(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container);
 		
+	/**called on server side after the screen has been clicked client side*/
 	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, ScreenInteractionEvent event, NBTTagCompound tag);
 		
 }

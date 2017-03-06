@@ -22,6 +22,7 @@ import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.FluidReader.SortingType;
@@ -34,8 +35,8 @@ public class FluidHelper extends FluidWrapper {
 		if (add.stored == 0) {
 			return add;
 		}
-		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
-		connections: for (NodeConnection entry : connections) {
+		ArrayList<BlockConnection> connections = network.getExternalBlocks(true);
+		connections: for (BlockConnection entry : connections) {
 			if (!entry.canTransferFluid(entry.coords, add, NodeTransferMode.ADD)) {
 				continue;
 			}
@@ -59,8 +60,8 @@ public class FluidHelper extends FluidWrapper {
 		if (remove.stored == 0) {
 			return remove;
 		}
-		ArrayList<NodeConnection> connections = network.getExternalBlocks(true);
-		for (NodeConnection entry : connections) {
+		ArrayList<BlockConnection> connections = network.getExternalBlocks(true);
+		for (BlockConnection entry : connections) {
 			remove = removeFluids(remove, entry, action);
 			if (remove == null) {
 				return null;
@@ -69,7 +70,7 @@ public class FluidHelper extends FluidWrapper {
 		return remove;
 	}
 
-	public StoredFluidStack removeFluids(StoredFluidStack remove, NodeConnection connection, ActionType type) {
+	public StoredFluidStack removeFluids(StoredFluidStack remove, BlockConnection connection, ActionType type) {
 		if (!connection.canTransferFluid(connection.coords, remove, NodeTransferMode.REMOVE)) {
 			return remove;
 		}
@@ -88,7 +89,7 @@ public class FluidHelper extends FluidWrapper {
 		return remove;
 	}
 
-	public StoredFluidStack addFluids(StoredFluidStack remove, NodeConnection connection, ActionType type) {
+	public StoredFluidStack addFluids(StoredFluidStack remove, BlockConnection connection, ActionType type) {
 		if (!connection.canTransferFluid(connection.coords, remove, NodeTransferMode.ADD)) {
 			return remove;
 		}
@@ -106,119 +107,7 @@ public class FluidHelper extends FluidWrapper {
 		}
 		return remove;
 	}
-
-	/** if simulating your expected to pass copies of both the container and stack to fill with */
-	public ItemStack fillFluidItemStack(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
-		if (container.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-			container.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).fill(fill.getFullStack(), !action.shouldSimulate());
-		} else if (FluidContainerRegistry.isContainer(container)) {
-			return fillFluidContainer(container, fill, network, action);
-		} else if ((container.getItem() instanceof IFluidContainerItem)) {
-			return fillFluidHandler(container, fill, network, action);
-		}
-		return container;
-	}
-
-	/** if simulating your expected to pass copies of both the container and stack to fill with */
-	public ItemStack drainFluidItemStack(ItemStack container, int toDrain, INetworkCache network, ActionType action) {
-		if (container.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-			container.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).drain(toDrain, !action.shouldSimulate());
-		}
-		if (FluidContainerRegistry.isContainer(container)) {
-			return drainFluidContainer(container, network, action);
-		} else if ((container.getItem() instanceof IFluidContainerItem)) {
-			return drainFluidHandler(container, network, action);
-		}
-		return container;
-	}
-
-	@Deprecated
-	public ItemStack fillFluidContainer(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
-		FluidStack stack = FluidContainerRegistry.getFluidForFilledItem(container);
-		int extractSize = 0;
-		if (stack != null && stack.isFluidEqual(fill.fluid)) {
-			extractSize = FluidContainerRegistry.getContainerCapacity(container) - stack.amount;
-		} else if (stack == null) {
-			if (container.getItem() == Items.BUCKET) {
-				extractSize = FluidContainerRegistry.BUCKET_VOLUME;
-			} else {
-				extractSize = FluidContainerRegistry.getContainerCapacity(container);
-			}
-		}
-		if (extractSize == 0) {
-			return container;
-		}
-		StoredFluidStack remainder = removeFluids(fill.setStackSize(extractSize), network, action);
-		FluidStack fillStack = fill.fluid.copy();
-		if (remainder == null || remainder.stored == 0) {
-			fillStack.amount = extractSize;
-		} else {
-			fillStack.amount = (int) (extractSize - remainder.stored);
-		}
-
-		ItemStack filledStack = FluidContainerRegistry.fillFluidContainer(fillStack, container);
-
-		if (filledStack != null) {
-			container = filledStack;
-		}
-		return container;
-	}
-
-	@Deprecated
-	public ItemStack drainFluidContainer(ItemStack container, INetworkCache network, ActionType action) {
-		FluidStack stack = FluidContainerRegistry.getFluidForFilledItem(container);
-		if (stack != null) {
-			StoredFluidStack remainder = addFluids(new StoredFluidStack(stack), network, action);
-			if (remainder == null || remainder.stored == 0) {
-				container = FluidContainerRegistry.drainFluidContainer(container);
-			}
-		}
-		return container;
-	}
-
-	@Deprecated
-	public ItemStack fillFluidHandler(ItemStack handler, StoredFluidStack fill, INetworkCache network, ActionType action) {
-		IFluidContainerItem container = (IFluidContainerItem) handler.getItem();
-		FluidStack stack = container.getFluid(handler);
-		int extractSize = 0;
-		if (stack != null && stack.isFluidEqual(fill.fluid)) {
-			extractSize = (int) Math.min(fill.stored, container.getCapacity(handler) - stack.amount);
-		} else if (stack == null) {
-			extractSize = container.fill(handler, fill.getFullStack(), false);
-		}
-		if (extractSize == 0) {
-			return handler;
-		}
-		StoredFluidStack remainder = removeFluids(fill.setStackSize(extractSize), network, action);
-		FluidStack fillStack = fill.fluid.copy();
-		if (remainder == null || remainder.stored == 0) {
-			fillStack.amount = extractSize;
-		} else {
-			fillStack.amount = (int) (extractSize - remainder.stored);
-		}
-		container.fill(handler, fillStack, true);
-		return handler;
-
-	}
-
-	@Deprecated
-	public ItemStack drainFluidHandler(ItemStack handler, INetworkCache network, ActionType action) {
-		IFluidContainerItem container = (IFluidContainerItem) handler.getItem();
-		FluidStack stack = container.getFluid(handler);
-		if (stack != null) {
-			FluidStack insertSize = container.drain(handler, Integer.MAX_VALUE, false);
-			StoredFluidStack remainder = addFluids(new StoredFluidStack(insertSize), network, action);
-			int drainSize = 0;
-			if (remainder == null || remainder.stored == 0) {
-				drainSize = insertSize.amount;
-			} else {
-				drainSize = (int) (insertSize.amount - remainder.stored);
-			}
-			container.drain(handler, drainSize, true);
-		}
-		return handler;
-	}
-
+	
 	public int fillCapabilityStack(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
 		if (container.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
 			return container.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).fill(fill.getFullStack(), !action.shouldSimulate());
@@ -289,7 +178,6 @@ public class FluidHelper extends FluidWrapper {
 		}
 	}
 
-	/* public void drainHeldItem(EntityPlayer player, INetworkCache cache, int toDrain) { ItemStack heldItem = player.getHeldItemMainhand(); if (heldItem == null) { return; } ItemStack insert = heldItem.copy(); insert.stackSize = 1; ItemStack empty = drainFluidItemStack(insert.copy(), toDrain, cache, ActionType.PERFORM); if (!player.capabilities.isCreativeMode) { if (insert.stackSize == heldItem.stackSize) { player.inventory.setInventorySlotContents(player.inventory.currentItem, empty); } else { player.inventory.decrStackSize(player.inventory.currentItem, 1); if (empty != null) { LogisticsAPI.getItemHelper().addStackToPlayer(new StoredItemStack(empty), player, false, ActionType.PERFORM); } } } } */
 	public static void sortFluidList(ArrayList<MonitoredFluidStack> current, final SortingDirection dir, SortingType type) {
 		current.sort(new Comparator<MonitoredFluidStack>() {
 			public int compare(MonitoredFluidStack str1, MonitoredFluidStack str2) {

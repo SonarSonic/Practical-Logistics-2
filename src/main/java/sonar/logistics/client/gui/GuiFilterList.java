@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -29,35 +28,26 @@ import net.minecraftforge.oredict.OreDictionary;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
-import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.core.utils.CustomColour;
-import sonar.core.utils.IWorldPosition;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.filters.FilterList;
-import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.filters.FluidFilter;
 import sonar.logistics.api.filters.IFilteredTile;
-import sonar.logistics.api.filters.IItemFilter;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.filters.ItemFilter;
+import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.nodes.TransferType;
-import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
-import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
-import sonar.logistics.connections.monitoring.MonitoredList;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.network.PacketNodeFilter;
 
 public class GuiFilterList extends GuiSelectionList {
@@ -113,7 +103,7 @@ public class GuiFilterList extends GuiSelectionList {
 		case LIST:
 			int start = 7;
 			int gap = 18;
-			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start, guiTop + 6, 64+16, 16*tile.getTransferMode().ordinal(), "TransferMode: " + tile.getTransferMode(), "button.TransferMode"));
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start, guiTop + 6, 64 + 16, 16 * tile.getTransferMode().ordinal(), "TransferMode: " + tile.getTransferMode(), "button.TransferMode"));
 			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start + gap, guiTop + 6, 32, 48, "New Item Filter", "button.ItemFilter"));
 			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + gap * 2, guiTop + 6, 32, 80, "New Ore Dict Filter", "button.OreFilter"));
 			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + gap * 3, guiTop + 6, 32, 64, "New Fluid Filter", "button.FluidFilter"));
@@ -144,6 +134,27 @@ public class GuiFilterList extends GuiSelectionList {
 		default:
 			break;
 		}
+	}
+
+	protected void renderToolTip(ItemStack stack, int x, int y) {
+		List<String> list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+		List<String> newList = new ArrayList();
+		boolean matches = tile.allowed(stack);
+		for (int i = 0; i < list.size(); ++i) {
+
+			if (i == 0) {
+				newList.add(stack.getRarity().rarityColor + (String) list.get(i));
+				newList.add(TextFormatting.GRAY + "Matches Filter: " + (matches ? TextFormatting.GREEN + "TRUE" : TextFormatting.RED + "FALSE"));
+			} else {
+				newList.add(TextFormatting.GRAY + (String) list.get(i));
+			}
+
+		}
+
+		FontRenderer font = stack.getItem().getFontRenderer(stack);
+		net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
+		this.drawHoveringText(newList, x, y, (font == null ? fontRendererObj : font));
+		net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
 	}
 
 	public void drawScreen(int x, int y, float var) {
@@ -199,6 +210,9 @@ public class GuiFilterList extends GuiSelectionList {
 			}
 			break;
 		case LIST:
+			if (button instanceof SelectionButton) {
+				return;
+			}
 			switch (button.id) {
 			case -1:
 				tile.incrementTransferMode();
@@ -206,7 +220,7 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			case 0:
 				filter = new ItemFilter();
-				tile.getFilters().addObject(filter);
+				// tile.getFilters().addObject(filter);
 				lastFilter = filter;
 				currentFilter = filter;
 				this.changeState(GuiState.ITEM_FILTER);
@@ -214,7 +228,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 			case 1:
 				OreDictFilter orefilter = new OreDictFilter();
-				tile.getFilters().addObject(orefilter);
+				// tile.getFilters().addObject(orefilter);
 				lastFilter = orefilter;
 				currentFilter = orefilter;
 				this.changeState(GuiState.ORE_FILTER);
@@ -222,7 +236,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 			case 2:
 				fluidFilter = new FluidFilter();
-				tile.getFilters().addObject(fluidFilter);
+				// tile.getFilters().addObject(fluidFilter);
 				lastFilter = fluidFilter;
 				currentFilter = fluidFilter;
 				this.changeState(GuiState.FLUID_FILTER);
@@ -296,7 +310,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 	public void changeState(GuiState state) {
 		if (state == GuiState.LIST && currentFilter != null) {
-			Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
+			Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), currentFilter.isValidFilter() ? ListPacket.ADD : ListPacket.REMOVE, currentFilter));
 		}
 		this.state = state;
 		this.xSize = 182 + 66;
@@ -667,8 +681,8 @@ public class GuiFilterList extends GuiSelectionList {
 		this.renderPlayerInventory(40, 173);
 
 		if (state == GuiState.FLUID_FILTER || state == GuiState.ITEM_FILTER) {
-			drawRect(guiLeft + 12, guiTop + 31, guiLeft + 228, guiTop + 157, LogisticsColours.grey_base.getRGB());
-			drawRect(guiLeft + 13, guiTop + 32, guiLeft + 227, guiTop + 156, LogisticsColours.blue_overlay.getRGB());
+			drawTransparentRect(guiLeft + 12, guiTop + 31, guiLeft + 228, guiTop + 157, LogisticsColours.grey_base.getRGB());
+			drawTransparentRect(guiLeft + 13, guiTop + 32, guiLeft + 227, guiTop + 156, LogisticsColours.blue_overlay.getRGB());
 		}
 		drawTransparentRect(guiLeft + 12, guiTop + 170, guiLeft + xSize - 12, guiTop + 252, LogisticsColours.grey_base.getRGB());
 		drawTransparentRect(guiLeft + 13, guiTop + 171, guiLeft + xSize - 13, guiTop + 251, LogisticsColours.blue_overlay.getRGB());

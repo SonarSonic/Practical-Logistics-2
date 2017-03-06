@@ -2,7 +2,6 @@ package sonar.logistics.guide;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -12,10 +11,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
-import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.utils.Pair;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementInfo;
@@ -39,6 +36,22 @@ public abstract class BaseInfoPage implements IGuidePage {
 		this.pageID = pageID;
 	}
 
+	@Override
+	public int pageID() {
+		return pageID;
+	}
+
+	@Override
+	public int getPageCount() {
+		return pageCount;
+	}
+	
+	//// CREATE \\\\
+
+	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements) {
+		return elements;
+	}
+	
 	public void initGui(GuiGuide gui, int subPage) {
 		currentSubPage = subPage;
 		pageInfo.clear();
@@ -66,7 +79,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 			}
 
 			ArrayList<ElementLink> links = new ArrayList();
-			ArrayList<String> lines = GuidePageHelper.getList(this, ordinal, lineTally, info, links);
+			ArrayList<String> lines = GuidePageHelper.getLines(this, ordinal, lineTally, info, links);
 
 			int numPagesNeeded = ((lines.size() + lineTally) / GuidePageHelper.maxLinesPerPage) + 1;
 			int currentPages = numPagesNeeded;
@@ -120,7 +133,41 @@ public abstract class BaseInfoPage implements IGuidePage {
 		currentLinks = newLinks;
 		currentData = newData;
 	}
+	
+	//// DRAWING \\\\
 
+	public int getLineWidth(int linePos, int page) {
+		int wrapWidth = 242;
+		int pos = (int) (25 + (linePos * 12) * 1 / 0.75);
+
+		for (IGuidePageElement e : elements) {
+			if (e.getDisplayPage() == page) {
+				int[] position = e.getSizing();
+				if ((position[1] + position[3]) * 1 / 0.75 > pos) {
+					wrapWidth -= ((position[2] + position[0]) * 0.75);
+					break;
+				}
+			}
+		}
+		return (int) ((wrapWidth) * (1 / 0.75));
+	}
+
+	public int getLineOffset(int linePos, int page) {
+		int pos = (int) (25 + linePos * 12);
+		int offset = 0;
+		for (IGuidePageElement e : elements) {
+			if (e.getDisplayPage() == page) {
+				int[] position = e.getSizing();
+				if (/* position[1] <= pos && */position[1] + position[3] >= pos) {
+					if ((position[0] + position[2]) > offset) {
+						offset = position[0] + position[2];
+					}
+				}
+			}
+		}
+		return (int) (offset);
+	}
+	
 	public void drawPageInGui(GuiGuide gui, int yPos) {
 		FontHelper.text(getDisplayName(), 28, yPos + 3, -1);
 	}
@@ -185,6 +232,8 @@ public abstract class BaseInfoPage implements IGuidePage {
 			button.drawButton(gui.mc, left, top);
 		}
 	}
+	
+	//// INTERACTION \\\\
 
 	public void mouseClicked(GuiGuide gui, int x, int y, int button) {
 		if (button == 0) {
@@ -216,54 +265,5 @@ public abstract class BaseInfoPage implements IGuidePage {
 		}
 	}
 
-	public void actionPerformed(GuiButton button) {
-
-	}
-
-	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements) {
-		return elements;
-	}
-
-	public int getLineWidth(int linePos, int page) {
-		int wrapWidth = 242;
-		int pos = (int) (25 + (linePos * 12) * 1 / 0.75);
-
-		for (IGuidePageElement e : elements) {
-			if (e.getDisplayPage() == page) {
-				int[] position = e.getSizing();
-				if ((position[1] + position[3]) * 1 / 0.75 > pos) {
-					wrapWidth -= ((position[2] + position[0]) * 0.75);
-					break;
-				}
-			}
-		}
-		return (int) ((wrapWidth) * (1 / 0.75));
-	}
-
-	public int getLineOffset(int linePos, int page) {
-		int pos = (int) (25 + linePos * 12);
-		int offset = 0;
-		for (IGuidePageElement e : elements) {
-			if (e.getDisplayPage() == page) {
-				int[] position = e.getSizing();
-				if (/* position[1] <= pos && */position[1] + position[3] >= pos) {
-					if ((position[0] + position[2]) > offset) {
-						offset = position[0] + position[2];
-					}
-				}
-			}
-		}
-		return (int) (offset);
-	}
-
-	@Override
-	public int pageID() {
-		return pageID;
-	}
-
-	@Override
-	public int getPageCount() {
-		return pageCount;
-	}
-
+	public void actionPerformed(GuiButton button) {}
 }

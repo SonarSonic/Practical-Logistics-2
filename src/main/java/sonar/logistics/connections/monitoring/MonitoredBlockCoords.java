@@ -36,12 +36,12 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 
 	@Override
 	public boolean isIdenticalInfo(MonitoredBlockCoords info) {
-		return info.syncCoords.equals(syncCoords);
+		return true;
 	}
 
 	@Override
 	public boolean isMatchingInfo(MonitoredBlockCoords info) {
-		return true;
+		return info.syncCoords.equals(syncCoords);
 	}
 
 	@Override

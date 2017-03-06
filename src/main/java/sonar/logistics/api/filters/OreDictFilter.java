@@ -4,14 +4,12 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.oredict.OreDictionary;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncTagTypeList;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.nodes.TransferType;
@@ -101,6 +99,11 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 		FontHelper.text("Keys: " + FontHelper.getStringListToText(oreDict.objs), 16, (int) ((yPos + 14) * 1 / 0.75), Color.white.getRGB());
 		GlStateManager.scale(1 / 0.75, 1 / 0.75, 1 / 0.75);
 
+	}
+
+	@Override
+	public boolean isValidFilter() {
+		return !oreDict.getObjects().isEmpty();
 	}
 
 }

@@ -22,17 +22,14 @@ import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiChannelSelection;
 import sonar.logistics.client.gui.GuiFluidReader;
-import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.connections.monitoring.FluidMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.FluidHelper;
@@ -61,11 +58,8 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	public FluidReaderPart(EnumFacing face) {
 		super(FluidMonitorHandler.id, face);
 	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.fluidReaderPart);
-	}
+	
+	//// ILogicReader \\\\
 
 	@Override
 	public MonitoredList<MonitoredFluidStack> sortMonitoredList(MonitoredList<MonitoredFluidStack> updateInfo, int channelID) {
@@ -74,12 +68,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	}
 
 	@Override
-	public ChannelType channelType() {
-		return ChannelType.UNLIMITED;
-	}
-
-	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case SELECTED:
@@ -111,6 +100,15 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 			}
 		}
 	}
+	
+	//// IChannelledTile \\\\
+
+	@Override
+	public ChannelType channelType() {
+		return ChannelType.UNLIMITED;
+	}
+	
+	//// PACKETS \\\\
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
@@ -123,6 +121,8 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 			}
 		}
 	}
+	
+	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
@@ -144,13 +144,16 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 			return new GuiChannelSelection(player, this, 0);
 		}		
 		return null;
-	}
-	
+	}	
 
 	@Override
 	public String getDisplayName() {
 		return FontHelper.translate("item.FluidReader.name");
 	}
 
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.fluidReaderPart);
+	}
 
 }

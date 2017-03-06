@@ -3,7 +3,7 @@ package sonar.logistics.api.cabling;
 import net.minecraft.util.IStringSerializable;
 
 /**the different types of Data Cable connection, used for rendering, used on client side*/
-public enum CableConnection implements IStringSerializable {
+public enum CableRenderType implements IStringSerializable {
 	CABLE, INTERNAL, HALF, /* BLOCK, */ NONE;
 
 	/**if the Data Cable can connect in this connections direction*/

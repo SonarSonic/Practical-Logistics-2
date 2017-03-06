@@ -18,6 +18,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.helpers.CableHelper;
 
@@ -76,7 +77,7 @@ public class PacketLogicMonitors implements IMessage {
 				}
 				ArrayList<Object> cache = new ArrayList();
 				for (ClientLogicReader clientMonitor : message.monitors) {
-					ILogicMonitor monitor = CableHelper.getMonitorFromHashCode(clientMonitor.uuid.getUUID().hashCode(), true);
+					IInfoProvider monitor = CableHelper.getMonitorFromHashCode(clientMonitor.uuid.getUUID().hashCode(), true);
 					if (monitor != null) {
 						int hashCode = monitor.getIdentity().hashCode();
 						cache.add(monitor);

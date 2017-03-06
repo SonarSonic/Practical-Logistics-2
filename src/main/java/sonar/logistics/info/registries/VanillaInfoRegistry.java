@@ -1,5 +1,18 @@
 package sonar.logistics.info.registries;
 
+import static sonar.logistics.info.LogicInfoRegistry.registerFields;
+import static sonar.logistics.info.LogicInfoRegistry.registerInfoAdjustments;
+import static sonar.logistics.info.LogicInfoRegistry.registerInvFields;
+import static sonar.logistics.info.LogicInfoRegistry.registerMethods;
+import static sonar.logistics.info.LogicInfoRegistry.registerReturn;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.BLOCK;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.ENTITY;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.FACE;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.ITEMSTACK;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.POS;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.TILE;
+import static sonar.logistics.info.LogicInfoRegistry.RegistryType.WORLD;
+
 import java.util.HashMap;
 
 import com.google.common.collect.Lists;
@@ -28,8 +41,6 @@ import net.minecraftforge.fluids.Fluid;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
-import static sonar.logistics.info.LogicInfoRegistry.*;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.*;
 
 @InfoRegistry(modid = Logistics.MODID)
 public class VanillaInfoRegistry extends IInfoRegistry {

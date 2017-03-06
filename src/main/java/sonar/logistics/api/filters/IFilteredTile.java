@@ -1,9 +1,8 @@
 package sonar.logistics.api.filters;
 
-import java.util.ArrayList;
-
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.logistics.api.cabling.IChannelledTile;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
@@ -22,7 +21,7 @@ public interface IFilteredTile extends ILogicViewable, IConnectionNode, IChannel
 	
 	public void setTransferType(TransferType type, boolean enable);
 	
-	public NodeConnection getConnected();
+	public BlockConnection getConnected();
 	
 	public boolean canConnectToNodeConnection();
 	

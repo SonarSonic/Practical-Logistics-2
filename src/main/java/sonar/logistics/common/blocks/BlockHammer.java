@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteraction;
 import sonar.core.common.block.SonarMachineBlock;
 import sonar.core.common.block.SonarMaterials;
+import sonar.core.helpers.FontHelper;
 import sonar.core.utils.IGuiTile;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsBlocks;
@@ -24,12 +25,7 @@ public class BlockHammer extends SonarMachineBlock {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
-		return new TileEntityHammer();
-	}
-
-	@Override
-	public boolean operateBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, BlockInteraction interact){
+	public boolean operateBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, BlockInteraction interact) {
 		if (!world.isRemote && player != null) {
 			player.openGui(Logistics.instance, IGuiTile.ID, world, pos.getX(), pos.getY(), pos.getZ());
 			return true;
@@ -37,23 +33,31 @@ public class BlockHammer extends SonarMachineBlock {
 		return false;
 	}
 
-	public boolean hasSpecialRenderer() {
-		return true;
-	}
-	
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.INVISIBLE;
+	//// CREATE \\\\
+
+	@Override
+	public TileEntity createNewTileEntity(World world, int i) {
+		return new TileEntityHammer();
 	}
 
 	@Override
-	public boolean dropStandard(IBlockAccess world, BlockPos pos) {
+	public boolean canPlaceBlockAt(World world, BlockPos pos) {
+		if (!world.isAirBlock(pos.offset(EnumFacing.UP, 1)) || !world.isAirBlock(pos.offset(EnumFacing.UP, 2))) {
+			return false;
+		}
 		return true;
+	}
+
+	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 3.0F, 1.0F);
 	}
 
 	private void setBlocks(World world, BlockPos pos) {
 		world.setBlockState(pos.offset(EnumFacing.UP), LogisticsBlocks.hammer_air.getDefaultState(), 2);
 		world.setBlockState(pos.offset(EnumFacing.UP, 2), LogisticsBlocks.hammer_air.getDefaultState(), 2);
 	}
+
+	//// EVENTS \\\\
 
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
@@ -68,16 +72,20 @@ public class BlockHammer extends SonarMachineBlock {
 		setBlocks(world, pos);
 	}
 
-	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 3.0F, 1.0F);
+	//// RENDERING \\\\
+
+	public boolean hasSpecialRenderer() {
+		return true;
 	}
 
-	@Override
-	public boolean canPlaceBlockAt(World world, BlockPos pos) {
-		if (!world.isAirBlock(pos.offset(EnumFacing.UP, 1)) || !world.isAirBlock(pos.offset(EnumFacing.UP, 2))) {
-			return false;
-		}
-		return true;
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.INVISIBLE;
+	}
 
+	//// DROPS \\\\
+
+	@Override
+	public boolean dropStandard(IBlockAccess world, BlockPos pos) {
+		return true;
 	}
 }

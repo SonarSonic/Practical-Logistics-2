@@ -16,12 +16,14 @@ import sonar.logistics.common.items.ItemWirelessMultipart;
 import sonar.logistics.common.items.WirelessEntityTransceiver;
 import sonar.logistics.common.items.WirelessItemTransceiver;
 import sonar.logistics.common.multiparts.ArrayPart;
+import sonar.logistics.common.multiparts.ClockPart;
 import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.common.multiparts.DataEmitterPart;
 import sonar.logistics.common.multiparts.DataReceiverPart;
 import sonar.logistics.common.multiparts.DisplayScreenPart;
 import sonar.logistics.common.multiparts.EnergyReaderPart;
 import sonar.logistics.common.multiparts.FluidReaderPart;
+import sonar.logistics.common.multiparts.HolographicDisplayPart;
 import sonar.logistics.common.multiparts.InfoReaderPart;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
@@ -44,9 +46,9 @@ public class LogisticsItems extends Logistics {
 		return register.getItem();
 	}
 
-	public static Item energyScreen, displayScreen, largeDisplayScreen, digitalSign, sapphire, sapphire_dust, stone_plate, transceiver, entityTransceiver, operator, guide;
+	public static Item energyScreen, displayScreen, holographicDisplay, largeDisplayScreen, digitalSign, sapphire, sapphire_dust, stone_plate, transceiver, entityTransceiver, operator, guide;
 
-	public static Item partCable, partNode, partTransferNode, partEntityNode, partArray, partRedstoneSignaller, partEmitter, partReceiver, infoReaderPart, inventoryReaderPart, fluidReaderPart, energyReaderPart;
+	public static Item partClock, partCable, partNode, partTransferNode, partEntityNode, partArray, partRedstoneSignaller, partEmitter, partReceiver, infoReaderPart, inventoryReaderPart, fluidReaderPart, energyReaderPart;
 
 	public static void registerItems() {
 		// displayScreen = registerItem("DisplayScreenItem", new DisplayScreen());//.setTextureName(MODID + ":" + "display_screen");
@@ -60,6 +62,7 @@ public class LogisticsItems extends Logistics {
 		partCable = register(new SonarRegistryItem(new ItemDefaultMultipart(DataCablePart.class), "DataCable"));
 		partArray = register(new SonarRegistryItem(new ItemSidedMultipart(ArrayPart.class), "Array"));
 		displayScreen = register(new SonarRegistryItem(new ItemScreenMultipart(DisplayScreenPart.class), "DisplayScreen"));
+		holographicDisplay = register(new SonarRegistryItem(new ItemScreenMultipart(HolographicDisplayPart.class), "HolographicDisplay"));
 		largeDisplayScreen = register(new SonarRegistryItem(new ItemScreenMultipart(LargeDisplayScreenPart.class), "LargeDisplayScreen"));
 
 		inventoryReaderPart = register(new SonarRegistryItem(new ItemSidedMultipart(InventoryReaderPart.class), "InventoryReader"));
@@ -73,6 +76,7 @@ public class LogisticsItems extends Logistics {
 		partEmitter = register(new SonarRegistryItem(new ItemWirelessMultipart(DataEmitterPart.class), "DataEmitter"));
 		partReceiver = register(new SonarRegistryItem(new ItemWirelessMultipart(DataReceiverPart.class), "DataReceiver"));
 		partRedstoneSignaller = register(new SonarRegistryItem(new ItemSidedMultipart(RedstoneSignallerPart.class), "RedstoneSignaller"));
+		partClock = register(new SonarRegistryItem(new ItemSidedMultipart(ClockPart.class), "Clock"));
 
 		MultipartRegistry.registerPart(DataCablePart.class, Logistics.MODID + ":DataCable");
 		MultipartRegistry.registerPart(NodePart.class, Logistics.MODID + ":Node");
@@ -84,9 +88,11 @@ public class LogisticsItems extends Logistics {
 		MultipartRegistry.registerPart(DataEmitterPart.class, Logistics.MODID + ":DataEmitter");
 		MultipartRegistry.registerPart(DataReceiverPart.class, Logistics.MODID + ":DataReceiver");
 		MultipartRegistry.registerPart(DisplayScreenPart.class, Logistics.MODID + ":DisplayScreen");
+		MultipartRegistry.registerPart(HolographicDisplayPart.class, Logistics.MODID + ":HolographicDisplay");
 		MultipartRegistry.registerPart(LargeDisplayScreenPart.class, Logistics.MODID + ":LargeDisplayScreen");
 		MultipartRegistry.registerPart(EnergyReaderPart.class, Logistics.MODID + ":EnergyReader");
 		MultipartRegistry.registerPart(RedstoneSignallerPart.class, Logistics.MODID + ":RedstoneSignaller");
+		MultipartRegistry.registerPart(ClockPart.class, Logistics.MODID + ":Clock");
 
 		SonarCore.registerItems(registeredItems);
 	}

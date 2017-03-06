@@ -129,16 +129,16 @@ public class InfoRenderer {
 		case UP:
 			GL11.glRotated(270, 1, 0, 0);
 			
-			//GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
+			GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
 			translate = getUpMatrix(rotation.ordinal(), width, height);
-			//GL11.glTranslated(-3, 0, 0);
+			GL11.glTranslated(0, 0, 0);
 			break;
 		default:
 			GL11.glRotated(rotate[face.ordinal()], 0, 1, 0);
 			break;
 
 		}
-		GL11.glTranslated(translate[0], translate[1], translate[2] - 0.005);
+		GL11.glTranslated(translate[0] + 0.0625, translate[1], translate[2] - 0.005);
 	}
 	
 	public static double[] getDownMatrix(int i, int width, int height){
@@ -147,7 +147,6 @@ public class InfoRenderer {
 	}
 	
 	public static double[] getUpMatrix(int i, int width, int height){
-	//	double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { -width, -height, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { -(width), 1, -1 } };
 		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
 		return newMatrix[i];			
 	}

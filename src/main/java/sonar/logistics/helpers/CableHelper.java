@@ -19,6 +19,7 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
@@ -28,12 +29,44 @@ import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.DataCablePart;
+import sonar.logistics.common.multiparts.SidedMultipart;
 
 public class CableHelper extends CablingWrapper {
+
+	public static CableRenderType checkBlockInDirection(DataCablePart cable, EnumFacing dir) {
+		IMultipartContainer container = cable.getContainer();
+		if (container != null) {
+			if (cable.isBlocked[dir.ordinal()]) {
+				return CableRenderType.NONE;
+			}
+			IMultipart part = container.getPartInSlot(PartSlot.getFaceSlot(dir));
+			if (part == null)
+				part = (IMultipart) LogisticsAPI.getCableHelper().getDisplayScreen(cable.getCoords(), dir);
+			if (part != null && part instanceof ILogicTile) {
+				if (part instanceof SidedMultipart) {
+					SidedMultipart sided = (SidedMultipart) part;
+					if (sided.heightMax == 0.0625 * 6) {
+						return CableRenderType.NONE;
+					} else if (sided.heightMax == 0.0625 * 4) {
+						return CableRenderType.HALF;
+					}
+				}
+				ILogicTile tile = (ILogicTile) part;
+				if (tile.canConnect(dir.getOpposite()).canShowConnection()) {
+					return CableRenderType.INTERNAL;
+				}
+			}
+
+			Pair<ConnectableType, Integer> connection = CableHelper.getConnectionType(cable, container.getWorldIn(), container.getPosIn(), dir, cable.getCableType());
+			return !cable.canConnectOnSide(dir) || !connection.a.canConnect(cable.getCableType()) ? CableRenderType.NONE : CableRenderType.CABLE;
+		}
+		return CableRenderType.NONE;
+	}
 
 	public static double[] getPos(IInfoDisplay display, RenderInfoProperties renderInfo) {
 		if (display instanceof ConnectedDisplayScreen) {
@@ -61,7 +94,7 @@ public class CableHelper extends CablingWrapper {
 		}
 		return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() };
 	}
-
+	
 	public static int getSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
 		double[] pos = CableHelper.getPos(display, renderInfo);
 
@@ -235,13 +268,13 @@ public class CableHelper extends CablingWrapper {
 		return logicTiles;
 	}
 
-	public static ArrayList<ILogicMonitor> getLocalMonitors(DataCablePart cable) {
-		ArrayList<ILogicMonitor> logicTiles = new ArrayList();
+	public static ArrayList<IInfoProvider> getLocalMonitors(DataCablePart cable) {
+		ArrayList<IInfoProvider> logicTiles = new ArrayList();
 		for (EnumFacing face : EnumFacing.values()) {
 			BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
 			ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
-			if (tile instanceof ILogicMonitor) {
-				logicTiles.add((ILogicMonitor) tile);
+			if (tile instanceof IInfoProvider) {
+				logicTiles.add((IInfoProvider) tile);
 			}
 		}
 		return logicTiles;
@@ -263,8 +296,8 @@ public class CableHelper extends CablingWrapper {
 		return Logistics.instance.networkManager.getNetwork(registryID);
 	}
 
-	public static ILogicMonitor getMonitorFromHashCode(int hashCode, boolean isRemote) {
-		for (ILogicMonitor monitor : ((LinkedHashMap<UUID, ILogicMonitor>) Logistics.getInfoManager(isRemote).getMonitors().clone()).values()) {
+	public static IInfoProvider getMonitorFromHashCode(int hashCode, boolean isRemote) {
+		for (IInfoProvider monitor : ((LinkedHashMap<UUID, IInfoProvider>) Logistics.getInfoManager(isRemote).getMonitors().clone()).values()) {
 			if (monitor.getIdentity().hashCode() == hashCode) {
 				return monitor;
 			}

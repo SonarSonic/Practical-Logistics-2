@@ -6,11 +6,12 @@ import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import sonar.core.client.gui.GuiHelpOverlay;
+import sonar.core.client.gui.HelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.client.GuiHelpOverlay;
-import sonar.logistics.client.HelpOverlay;
+import sonar.logistics.client.HelpOverlays;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
@@ -23,36 +24,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	public InfoReaderPart part;
 	public EntityPlayer player;
 
-	public GuiHelpOverlay<GuiInfoReader> overlay = new GuiHelpOverlay<GuiInfoReader>() {
-
-		{
-			this.overlays.add(new HelpOverlay<GuiInfoReader>("select channel", 7, 5, 20, 19, Color.RED.getRGB()) {
-				public boolean isCompletedSuccess(GuiInfoReader gui) {
-					if (!gui.part.getChannels().isEmpty()) {
-						return true;
-					}
-					return false;
-				}
-
-				public boolean canBeRendered(GuiInfoReader gui) {
-					return true;
-				}
-			});
-			this.overlays.add(new HelpOverlay<GuiInfoReader>("guide.Hammer.name", 4, 26, 231, 137, Color.RED.getRGB()) {
-				public boolean isCompletedSuccess(GuiInfoReader gui) {
-					if (gui.part.getSelectedInfo().get(0) != null) {
-						return true;
-					}
-					return false;
-				}
-
-				public boolean canBeRendered(GuiInfoReader gui) {
-					return true;
-				}
-			});
-		}
-
-	};
+	public GuiHelpOverlay<GuiInfoReader> overlay = HelpOverlays.infoReader;
 
 	public GuiInfoReader(EntityPlayer player, InfoReaderPart tile) {
 		super(new ContainerInfoReader(player, tile), tile);
@@ -65,7 +37,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 		super.initGui();
 		overlay.initGui(this);
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 9, guiTop + 7, 32, 96 + 16, "Channels", "button.Channels"));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + xSize-9-16, guiTop + 7, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + xSize - 9 - 16, guiTop + 7, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
 	}
 
 	public void actionPerformed(GuiButton button) {

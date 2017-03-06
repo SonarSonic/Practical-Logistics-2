@@ -18,13 +18,13 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.core.utils.Pair;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.client.gui.GuiNode;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class NodePart extends SidedMultipart implements IConnectionNode, ISlottedPart, IByteBufTile, IFlexibleGui {
 
@@ -52,10 +52,12 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 		return false;
 	}
 	
+	//// IConnectionNode \\\\
+
 	@Override
-	public void addConnections(ArrayList<NodeConnection> connections) {
-		BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());		
-		connections.add(new NodeConnection(this, tileCoords, getFacing()));
+	public void addConnections(ArrayList<BlockConnection> connections) {
+		BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());
+		connections.add(new BlockConnection(this, tileCoords, getFacing()));
 	}
 
 	@Override
@@ -63,16 +65,13 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 		return priority.getObject();
 	}
 
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partNode);
-	}
+	//// PACKETS \\\\
 
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {
 		case 1:
-			priority.writeToBuf(buf);	
+			priority.writeToBuf(buf);
 			break;
 		}
 	}
@@ -82,10 +81,12 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 		switch (id) {
 		case 1:
 			priority.readFromBuf(buf);
-			this.network.markDirty(RefreshType.CONNECTED_BLOCKS);		
+			this.network.markDirty(RefreshType.CONNECTED_BLOCKS);
 			break;
 		}
 	}
+
+	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
@@ -99,11 +100,15 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 
 	@Override
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
 	}
 
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.partNode);
+	}
 }

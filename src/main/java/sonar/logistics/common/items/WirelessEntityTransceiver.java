@@ -21,6 +21,18 @@ import sonar.logistics.api.wireless.IEntityTransceiver;
 
 public class WirelessEntityTransceiver extends SonarItem implements IEntityTransceiver {
 
+	//// IEntityTransceiver \\\\\
+	
+	@Override
+	public UUID getEntityUUID(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			return stack.getTagCompound().getUniqueId("uuid");
+		}
+		return null;
+	}
+	
+	//// INTERACTIONS \\\\
+	
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
 		if (player.isSneaking()) {
 			if (!world.isRemote) {
@@ -42,14 +54,6 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 			FontHelper.sendMessage(stack.hasTagCompound() ? "Overwritten Entity" : "Saved Entity", player.getEntityWorld(), player);
 			stack.setTagCompound(tag);
 		}
-	}
-
-	@Override
-	public UUID getEntityUUID(ItemStack stack) {
-		if (stack.hasTagCompound()) {
-			return stack.getTagCompound().getUniqueId("uuid");
-		}
-		return null;
 	}
 
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {

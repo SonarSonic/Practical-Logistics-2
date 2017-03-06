@@ -3,7 +3,6 @@ package sonar.logistics.api.filters;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import mekanism.common.ColourRGBA;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -100,6 +99,11 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 		GlStateManager.translate(0, -12, 0);
 		// GlStateManager.scale(0.75, 0.75, 0.75);
 
+	}
+
+	@Override
+	public boolean isValidFilter() {
+		return !list.getObjects().isEmpty();
 	}
 
 }

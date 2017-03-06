@@ -2,9 +2,6 @@ package sonar.logistics.guide;
 
 import java.util.ArrayList;
 
-import net.minecraft.item.ItemStack;
-import sonar.core.client.gui.GuiSonar;
-import sonar.core.utils.Pair;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementInfo;
 

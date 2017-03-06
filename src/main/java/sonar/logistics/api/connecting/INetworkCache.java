@@ -1,7 +1,6 @@
 package sonar.logistics.api.connecting;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -9,8 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IWorldPosition;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.IInfoProvider;
 
 /** implemented on Logistics Network Caches, used for retrieving info about */
 public interface INetworkCache {
@@ -20,11 +20,11 @@ public interface INetworkCache {
 	 * @param includeChannels normally true, false if you are retrieving blocks from multiple connected networks, which have already been logged
 	 * @return a {@link Entry} of {@link BlockCoords} paired with {@link EnumFacing} */
 	@Deprecated
-	public NodeConnection getExternalBlock(boolean includeChannels);
+	public BlockConnection getExternalBlock(boolean includeChannels);
 
 	/** @param includeChannels normally true, false if you are retrieving blocks from multiple connected networks, which have already been logged
 	 * @return the {@link LinkedHashMap} of {@link BlockCoords} paired with {@link EnumFacing} */
-	public ArrayList<NodeConnection> getExternalBlocks(boolean includeChannels);
+	public ArrayList<BlockConnection> getExternalBlocks(boolean includeChannels);
 
 	/** @param includeChannels normally true, false if you are retrieving blocks from multiple connected networks, which have already been logged
 	 * @return the {@link LinkedHashMap} of {@link BlockCoords} paired with {@link EnumFacing} */
@@ -55,11 +55,11 @@ public interface INetworkCache {
 	/** quick method to check this network can be used/edited typically only and EmptyNetworkCache would return true */
 	public boolean isFakeNetwork();
 
-	public void addLocalMonitor(ILogicMonitor monitor);
-	
-	public ILogicMonitor getLocalMonitor();
-	
-	public ArrayList<ILogicMonitor> getLocalMonitors();
-	
+	public void addLocalInfoProvider(IInfoProvider monitor);
+
+	public IInfoProvider getLocalInfoProvider();
+
+	public ArrayList<IInfoProvider> getLocalInfoProviders();
+
 	public void markDirty(RefreshType type);
 }

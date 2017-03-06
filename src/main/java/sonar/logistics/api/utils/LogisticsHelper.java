@@ -1,4 +1,4 @@
-package sonar.logistics.helpers;
+package sonar.logistics.api.utils;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.logistics.api.operator.IOperatorTool;

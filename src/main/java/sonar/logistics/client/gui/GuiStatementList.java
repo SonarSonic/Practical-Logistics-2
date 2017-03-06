@@ -2,22 +2,19 @@ package sonar.logistics.client.gui;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.util.text.TextFormatting;
+import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.ObjectType;
-import sonar.core.utils.IWorldPosition;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.filters.ListPacket;
@@ -25,24 +22,19 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.filters.ItemFilter;
 import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.api.logistics.EmitterStatement;
-import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.logistics.InputTypes;
+import sonar.logistics.api.logistics.LogicOperator;
 import sonar.logistics.api.readers.ILogicMonitor;
-import sonar.logistics.client.GuiHelpOverlay;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.client.gui.GuiFilterList.GuiState;
 import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.common.multiparts.RedstoneSignallerPart;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.network.PacketEmitterStatement;
-import sonar.logistics.network.PacketNodeFilter;
-import sonar.logistics.api.logistics.LogicOperator;
 
 public class GuiStatementList extends GuiSelectionList<Object> {
 

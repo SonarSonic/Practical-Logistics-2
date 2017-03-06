@@ -7,21 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.ItemStackHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncNBTAbstractList;
-import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.Logistics;
-import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.nodes.TransferType;
-import sonar.logistics.info.types.InfoError;
 
 @NodeFilter(id = FluidFilter.id, modid = Logistics.MODID)
 public class FluidFilter extends BaseFilter implements IFluidFilter {
@@ -102,6 +94,11 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 		GlStateManager.translate(0, -12, 0);
 		// GlStateManager.scale(0.75, 0.75, 0.75);
 
+	}
+
+	@Override
+	public boolean isValidFilter() {
+		return !list.getObjects().isEmpty();
 	}
 
 }

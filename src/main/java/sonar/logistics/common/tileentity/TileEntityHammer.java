@@ -46,7 +46,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 				coolDown.setObject(speed * 2);
 				progress.setObject(0);
 				if (!this.worldObj.isRemote) {
-					finishProcess();
+					finishProcess();					
 					markBlockForUpdate();
 				}
 			}
@@ -141,6 +141,24 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		}
 	}
 
+	public int getSpeed() {
+		return speed;
+	}
+
+	public int getProgress() {
+		return progress.getObject();
+	}
+
+	public int getCoolDown() {
+		return coolDown.getObject();
+	}
+
+	public int getCoolDownSpeed() {
+		return speed * 2;
+	}
+
+	//// PACKETS \\\\
+
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {
@@ -165,23 +183,9 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 			break;
 		}
 	}
-
-	public int getSpeed() {
-		return speed;
-	}
-
-	public int getProgress() {
-		return progress.getObject();
-	}
-
-	public int getCoolDown() {
-		return coolDown.getObject();
-	}
-
-	public int getCoolDownSpeed() {
-		return speed * 2;
-	}
-
+	
+	//// GUI \\\\
+	
 	@Override
 	public Object getGuiContainer(EntityPlayer player) {
 		return new ContainerHammer(player, this);

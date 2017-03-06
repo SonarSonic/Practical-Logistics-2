@@ -2,7 +2,6 @@ package sonar.logistics.api.wrappers;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;

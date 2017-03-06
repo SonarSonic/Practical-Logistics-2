@@ -1,17 +1,11 @@
 package sonar.logistics.common.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.api.cabling.IChannelledTile;
-import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.logistics.ILogisticsTile;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.common.containers.ContainerArray.ArraySlot;
-import sonar.logistics.common.multiparts.ArrayPart;
 
 public class ContainerStatementList extends ContainerMultipartSync {
 

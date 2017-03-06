@@ -9,7 +9,7 @@ public interface IConnectionNode extends ILogicTile {
 
 	/** adds any available connections to the current Map
 	 * @param connections the current list of Entries */
-	public void addConnections(ArrayList<NodeConnection> connections);
+	public void addConnections(ArrayList<BlockConnection> connections);
 	
 	public int getPriority();
 }

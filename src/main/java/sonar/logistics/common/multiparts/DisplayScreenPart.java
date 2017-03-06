@@ -12,7 +12,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -41,13 +40,24 @@ public class DisplayScreenPart extends ScreenMultipart {
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.displayScreen);
+	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (!getWorld().isRemote) {
+			incrementLayout();
+			FontHelper.sendMessage("Screen Layout: " + layout.getObject(), getWorld(), player);
+		}
+		return true;
+	}
+	
+	//// IInfoDisplay \\\\
+
+	@Override
+	public IInfoContainer container() {
+		return container;
 	}
 
 	@Override
-	public int maxInfo() {
-		return 2;
+	public ScreenLayout getLayout() {
+		return layout.getObject();
 	}
 
 	@Override
@@ -56,13 +66,26 @@ public class DisplayScreenPart extends ScreenMultipart {
 	}
 
 	@Override
-	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (!getWorld().isRemote) {
-			incrementLayout();
-			FontHelper.sendMessage("Screen Layout: " + layout.getObject(), getWorld(), player);
-		}
-		return true;
+	public int maxInfo() {
+		return 2;
 	}
+
+	@Override
+	public void incrementLayout() {
+		layout.incrementEnum();
+		while (!(layout.getObject().maxInfo <= this.maxInfo())) {
+			layout.incrementEnum();
+		}
+		sendSyncPacket();
+		sendUpdatePacket(true);
+	}
+
+	@Override
+	public ViewersList getViewersList() {
+		return viewers;
+	}
+
+	//// MULTIPART \\\\
 
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
 		double p = 0.0625;
@@ -91,10 +114,7 @@ public class DisplayScreenPart extends ScreenMultipart {
 		}
 	}
 
-	@Override
-	public IInfoContainer container() {
-		return container;
-	}
+	//// SAVING \\\\
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
@@ -111,6 +131,8 @@ public class DisplayScreenPart extends ScreenMultipart {
 		layout.readData(tag, type);
 	}
 
+	//// PACKETS \\\\
+
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
 		super.writeUpdatePacket(buf);
@@ -126,23 +148,8 @@ public class DisplayScreenPart extends ScreenMultipart {
 	}
 
 	@Override
-	public ViewersList getViewersList() {
-		return viewers;
-	}
-
-	@Override
-	public ScreenLayout getLayout() {
-		return layout.getObject();
-	}
-
-	@Override
-	public void incrementLayout() {
-		layout.incrementEnum();
-		while (!(layout.getObject().maxInfo <= this.maxInfo())) {
-			layout.incrementEnum();
-		}
-		sendSyncPacket();
-		sendUpdatePacket(true);
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.displayScreen);
 	}
 
 }

@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
@@ -17,6 +14,7 @@ import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.client.DisplayTextField;
 import sonar.logistics.client.LogisticsColours;
@@ -289,9 +287,9 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	public boolean isPairedInfo(Object info) {
-		if (info instanceof ILogicMonitor) {
+		if (info instanceof IInfoProvider) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((ILogicMonitor) info).getCoords())) {
+				if (RenderBlockSelection.isPositionRenderered(((IInfoProvider) info).getCoords())) {
 					return true;
 				}
 			}
@@ -301,7 +299,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	public boolean isCategoryHeader(Object info) {
-		return info instanceof ILogicMonitor;
+		return info instanceof IInfoProvider;
 	}
 
 	@Override
@@ -322,8 +320,8 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 				FontHelper.text("-", InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
 			}
-		} else if (info instanceof ILogicMonitor) {
-			ILogicMonitor monitor = (ILogicMonitor) info;
+		} else if (info instanceof IInfoProvider) {
+			IInfoProvider monitor = (IInfoProvider) info;
 			InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), monitor.getDisplayName()), yPos + 1, LogisticsColours.white_text.getRGB());
 		}
 		// ILogicMonitor monitor = LogicMonitorManager.getMonitorFromClient(info.uuid.getUUID().hashCode());
@@ -336,8 +334,8 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			part.container().setUUID((InfoUUID) info, infoID);
 			part.currentSelected = infoID;
 			part.sendByteBufPacket(0);
-		} else if (info instanceof ILogicMonitor) {
-			RenderBlockSelection.addPosition(((ILogicMonitor) info).getCoords(), false);
+		} else if (info instanceof IInfoProvider) {
+			RenderBlockSelection.addPosition(((IInfoProvider) info).getCoords(), false);
 		}
 	}
 

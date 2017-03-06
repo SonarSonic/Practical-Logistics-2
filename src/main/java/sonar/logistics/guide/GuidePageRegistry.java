@@ -1,32 +1,12 @@
 package sonar.logistics.guide;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
 import net.minecraft.item.ItemStack;
+import sonar.logistics.LogisticsBlocks;
+import sonar.logistics.LogisticsItems;
 import sonar.logistics.guide.general.ExamplesPages;
-import sonar.logistics.guide.pages.ArrayPage;
-import sonar.logistics.guide.pages.CablePage;
-import sonar.logistics.guide.pages.DataEmitterPage;
-import sonar.logistics.guide.pages.DataReceiverPage;
-import sonar.logistics.guide.pages.DisplayScreenPage;
-import sonar.logistics.guide.pages.EnergyReaderPage;
-import sonar.logistics.guide.pages.EntityTransceiverPage;
-import sonar.logistics.guide.pages.FluidReaderPage;
-import sonar.logistics.guide.pages.ForgingHammerPage;
-import sonar.logistics.guide.pages.InfoReaderPage;
-import sonar.logistics.guide.pages.InventoryReaderPage;
-import sonar.logistics.guide.pages.LargeDisplayScreenPage;
-import sonar.logistics.guide.pages.NodePage;
-import sonar.logistics.guide.pages.OperatorPage;
-import sonar.logistics.guide.pages.RedstoneSignallerPage;
-import sonar.logistics.guide.pages.SapphireDustPage;
-import sonar.logistics.guide.pages.SapphireOrePage;
-import sonar.logistics.guide.pages.SapphirePage;
-import sonar.logistics.guide.pages.StonePlatePage;
-import sonar.logistics.guide.pages.TransceiverPage;
-import sonar.logistics.guide.pages.TransferNodePage;
+import sonar.logistics.guide.pages.*;
 
 public class GuidePageRegistry {
 
@@ -36,27 +16,29 @@ public class GuidePageRegistry {
 		// addGuidePage(new Welcome(0));
 		addGuidePage(new GeneralPage(0, "guide.Welcome.title", "guide.Welcome.name"));
 		addGuidePage(new ExamplesPages(1));
-		addGuidePage(new OperatorPage(6));
-		addGuidePage(new ForgingHammerPage(7));
-		addGuidePage(new SapphireOrePage(8));
-		addGuidePage(new SapphirePage(9));
-		addGuidePage(new SapphireDustPage(10));
-		addGuidePage(new StonePlatePage(11));
-		addGuidePage(new CablePage(12));
-		addGuidePage(new NodePage(13));
-		addGuidePage(new ArrayPage(14));
+		addGuidePage(new BaseItemPage(6, new ItemStack(LogisticsItems.operator)));
+		addGuidePage(new BaseItemPage(7, new ItemStack(LogisticsBlocks.hammer)));
+		addGuidePage(new BaseItemPage(8, new ItemStack(LogisticsBlocks.sapphire_ore)));
+		addGuidePage(new BaseItemPage(9, new ItemStack(LogisticsItems.sapphire)));
+		addGuidePage(new BaseItemPage(10, new ItemStack(LogisticsItems.sapphire_dust)));
+		addGuidePage(new BaseItemPage(11, new ItemStack(LogisticsItems.stone_plate)));
+		addGuidePage(new BaseItemPage(12, new ItemStack(LogisticsItems.partCable)));
+		addGuidePage(new BaseItemPage(13, new ItemStack(LogisticsItems.partNode)));
+		addGuidePage(new BaseItemPage(14, new ItemStack(LogisticsItems.partArray)));
 		addGuidePage(new TransferNodePage(15));
-		addGuidePage(new TransceiverPage(16));
-		addGuidePage(new EntityTransceiverPage(17));
-		addGuidePage(new LargeDisplayScreenPage(18));
-		addGuidePage(new DisplayScreenPage(19));
-		addGuidePage(new DataEmitterPage(20));
-		addGuidePage(new DataReceiverPage(21));
-		addGuidePage(new RedstoneSignallerPage(22));
-		addGuidePage(new InfoReaderPage(23));
-		addGuidePage(new InventoryReaderPage(24));
-		addGuidePage(new FluidReaderPage(25));
-		addGuidePage(new EnergyReaderPage(26));
+		addGuidePage(new BaseItemPage(16, new ItemStack(LogisticsItems.transceiver)));
+		addGuidePage(new BaseItemPage(17, new ItemStack(LogisticsItems.entityTransceiver)));
+		addGuidePage(new BaseItemPage(18, new ItemStack(LogisticsItems.largeDisplayScreen)));
+		addGuidePage(new BaseItemPage(19, new ItemStack(LogisticsItems.holographicDisplay)));
+		addGuidePage(new BaseItemPage(20, new ItemStack(LogisticsItems.displayScreen)));
+		addGuidePage(new BaseItemPage(21, new ItemStack(LogisticsItems.partEmitter)));
+		addGuidePage(new BaseItemPage(22, new ItemStack(LogisticsItems.partReceiver)));
+		addGuidePage(new BaseItemPage(23, new ItemStack(LogisticsItems.partRedstoneSignaller)));
+		addGuidePage(new BaseItemPage(24, new ItemStack(LogisticsItems.partClock)));
+		addGuidePage(new InfoReaderPage(25));
+		addGuidePage(new InventoryReaderPage(26));
+		addGuidePage(new FluidReaderPage(27));
+		addGuidePage(new EnergyReaderPage(28));
 
 	}
 

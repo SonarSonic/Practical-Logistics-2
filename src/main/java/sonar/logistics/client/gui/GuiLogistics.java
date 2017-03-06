@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
+import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
@@ -16,7 +17,7 @@ public class GuiLogistics extends GuiSonar {
 
 	public static final ResourceLocation playerInv = new ResourceLocation(Logistics.MODID + ":textures/gui/player_inventory.png");
 	public SonarScroller scroller;
-
+	
 	public GuiLogistics(Container container, IWorldPosition entity) {
 		super(container, entity);
 	}

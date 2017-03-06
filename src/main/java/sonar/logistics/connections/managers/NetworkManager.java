@@ -1,7 +1,6 @@
 package sonar.logistics.connections.managers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,16 +10,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.util.EnumFacing;
-import sonar.core.api.utils.BlockCoords;
-import sonar.core.utils.Pair;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsConfig;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.IRefreshCache;
 import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.DefaultNetwork;
 import sonar.logistics.connections.monitoring.ChannelMonitorHandler;
@@ -39,12 +35,12 @@ public class NetworkManager {
 		cache.clear();
 	}
 
-	public NodeConnection getFirstConnection(int networkID) {
+	public BlockConnection getFirstConnection(int networkID) {
 		INetworkCache network = getNetwork(networkID);
 		return network != null ? network.getExternalBlock(true) : null;
 	}
 
-	public ArrayList<NodeConnection> getChannelArray(int networkID) {
+	public ArrayList<BlockConnection> getChannelArray(int networkID) {
 		INetworkCache network = getNetwork(networkID);
 		return network != null ? network.getExternalBlocks(true) : Lists.newArrayList();
 	}

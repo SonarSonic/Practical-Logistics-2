@@ -41,7 +41,7 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 	public abstract int[][] setSlots();
 
 	public abstract R getRecipe();
-	
+
 	public abstract int recipeSize();
 
 	@Override
@@ -52,16 +52,14 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 	public int getSlot(int x, int y, int mouseX, int mouseY) {
 		int slotX = (mouseX - x + 1) / 18;
 		int slotY = (mouseY - y + 1) / 18;
-		//if (slotY >= 0 && slotX >= 0 && slotY < 3 && slotX < 3) {
-			int posX = slotX * 18;
-			int posY = slotY * 18;
-			for (int pos = 0; pos < slots.length; pos++) {
-				int[] slot = slots[pos];
-				if (slot[0] == posX && slot[1] == posY) {
-					return pos;
-				}
+		int posX = slotX * 18;
+		int posY = slotY * 18;
+		for (int pos = 0; pos < slots.length; pos++) {
+			int[] slot = slots[pos];
+			if (slot[0] == posX && slot[1] == posY) {
+				return pos;
 			}
-		//}
+		}
 		return -1;
 	}
 
@@ -110,13 +108,14 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 	}
 
 	public void renderItem(GuiGuide gui, ItemStack stack, int xPos, int yPos) {
-		if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-			stack.setItemDamage(0);
+		ItemStack rendStack = stack.copy();
+		if (rendStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+			rendStack.setItemDamage(0);
 		}
 		RenderHelper.saveBlendState();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		RenderHelper.renderItem(gui, xPos, yPos, stack);
-		RenderHelper.renderStoredItemStackOverlay(stack, stack.stackSize==1?0:stack.stackSize, xPos, yPos, null, true);
+		RenderHelper.renderItem(gui, xPos, yPos, rendStack);
+		RenderHelper.renderStoredItemStackOverlay(rendStack, rendStack.stackSize == 1 ? 0 : rendStack.stackSize, xPos, yPos, null, true);
 		RenderHelper.restoreBlendState();
 	}
 }

@@ -2,16 +2,14 @@ package sonar.logistics.api.wrappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
@@ -25,7 +23,7 @@ public class ItemWrapper {
 	 * @param storage currentStorageSize
 	 * @param node {@link IConnectionNode} to check from
 	 * @return list of {@link StoredItemStack} on the network */
-	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, ArrayList<NodeConnection> connections) {
+	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, ArrayList<BlockConnection> connections) {
 		return storage;
 	}
 

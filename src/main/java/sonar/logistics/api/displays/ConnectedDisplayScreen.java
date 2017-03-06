@@ -27,9 +27,11 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.INetworkConnectable;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
@@ -123,7 +125,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 			} else if (coords.getY() < minY) {
 				minY = coords.getY();
 			}
-			if (coords.getZ() > minZ) {
+			if (coords.getZ() > maxZ) {
 				maxZ = coords.getZ();
 			} else if (coords.getZ() < minZ) {
 				minZ = coords.getZ();
@@ -138,6 +140,69 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 		case Y:
 			this.width.setObject(maxX - minX);
 			this.height.setObject(maxZ - minZ);
+			if (meta == EnumFacing.UP) {
+				switch (primary.getRotation()) {
+				case DOWN:
+					break;
+				case EAST:
+					int newX = maxX;
+					maxX = minX;
+					minX = newX;
+					break;
+				case NORTH:
+					break;
+				case SOUTH:
+					newX = maxX;
+					maxX = minX;
+					minX = newX;
+
+					int newZ = maxZ;
+					maxZ = minZ;
+					minZ = newZ;
+					break;
+				case UP:
+					break;
+				case WEST:
+					newZ = maxZ;
+					maxZ = minZ;
+					minZ = newZ;
+					break;
+				default:
+					break;
+
+				}
+			}
+			if (meta == EnumFacing.DOWN) {
+				switch (primary.getRotation()) {
+				case DOWN:
+					break;
+				case EAST:
+					int newX = maxX;
+					maxX = minX;
+					minX = newX;
+					int newZ = maxZ;
+					maxZ = minZ;
+					minZ = newZ;
+					break;
+				case NORTH:
+					newX = maxX;
+					maxX = minX;
+					minX = newX;
+					break;
+				case SOUTH:
+					newZ = maxZ;
+					maxZ = minZ;
+					minZ = newZ;
+					break;
+				case UP:
+					break;
+				case WEST:
+					break;
+				default:
+					break;
+
+				}
+			}
 			break;
 		case Z:
 			this.width.setObject(maxX - minX);
@@ -152,12 +217,12 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 				for (int z = Math.min(minZ, maxZ); z <= Math.max(minZ, maxZ); z++) {
 					BlockCoords coords = new BlockCoords(x, y, z);
 					IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(coords, meta);
-					if (display == null && !(display instanceof ILargeDisplay)) {
+					if (display == null || !(display instanceof ILargeDisplay)) {
 						this.canBeRendered.setObject(false);
 						return;
 					}
 					AxisDirection dir = meta.getAxisDirection();
-					if (meta.getAxis() == Axis.X) {
+					if (meta.getAxis() != Axis.Z) {
 						dir = dir == AxisDirection.POSITIVE ? AxisDirection.NEGATIVE : AxisDirection.POSITIVE;
 					}
 					boolean isTopLeft = (dir == AxisDirection.POSITIVE && x == minX && y == maxY && z == minZ) || (dir == AxisDirection.NEGATIVE && x == maxX && y == maxY && z == maxZ);
@@ -168,7 +233,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 		this.canBeRendered.setObject(true);
 	}
 
-	public ArrayList<ILogicMonitor> getLogicMonitors(ArrayList<ILogicMonitor> monitors) {
+	public ArrayList<IInfoProvider> getLogicMonitors(ArrayList<IInfoProvider> monitors) {
 		displays = Logistics.getDisplayManager().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
 			if (display instanceof ScreenMultipart) {
@@ -225,8 +290,8 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	}
 
 	@Override
-	public ConnectionType canConnect(EnumFacing dir) {
-		return ConnectionType.NETWORK;
+	public NetworkConnectionType canConnect(EnumFacing dir) {
+		return NetworkConnectionType.NETWORK;
 	}
 
 	@Override
@@ -300,8 +365,8 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 
 	@Override
 	public double[] getScaling() {
-		double max = Math.min(this.height.getObject().intValue() + 1.2, this.width.getObject().intValue() + 1);
-		return new double[] { this.getDisplayType().width + this.width.getObject().intValue(), this.getDisplayType().height + this.height.getObject().intValue(), max / 100 };
+		double max = Math.min(this.height.getObject().intValue() + 1.4, this.width.getObject().intValue() + 1);
+		return new double[] { this.getDisplayType().width + this.width.getObject().intValue(), this.getDisplayType().height + this.height.getObject().intValue(), max / 80 };
 	}
 
 	@Override
@@ -367,7 +432,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	}
 
 	@Override
-	public EnumFacing getRotation() {		
-		return getTopLeftScreen()==null? EnumFacing.NORTH : getTopLeftScreen().getRotation();
+	public EnumFacing getRotation() {
+		return getTopLeftScreen() == null ? EnumFacing.NORTH : getTopLeftScreen().getRotation();
 	}
 }

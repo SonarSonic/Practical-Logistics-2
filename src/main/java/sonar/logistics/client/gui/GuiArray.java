@@ -15,6 +15,10 @@ public class GuiArray extends GuiLogistics {
 		this.part = part;
 		this.ySize = 132;
 	}
+	
+	//TODO setting priority
+	
+	//// DRAWING \\\\
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {

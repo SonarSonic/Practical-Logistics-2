@@ -34,7 +34,6 @@ import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.common.multiparts.LogisticsMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.logic.comparators.ILogicComparator;
 
 public class InfoHelper {
 

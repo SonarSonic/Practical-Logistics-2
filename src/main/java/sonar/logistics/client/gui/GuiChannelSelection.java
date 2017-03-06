@@ -1,15 +1,16 @@
 package sonar.logistics.client.gui;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
+import sonar.core.client.gui.GuiHelpOverlay;
+import sonar.core.client.gui.HelpOverlay;
 import sonar.core.helpers.FontHelper;
-import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.cabling.IChannelledTile;
@@ -25,7 +26,38 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 	public EntityPlayer player;
 	public IChannelledTile tile;
 	public int channelID;
+	
+	public GuiHelpOverlay<GuiChannelSelection> overlay = new GuiHelpOverlay<GuiChannelSelection>() {
 
+		{
+			this.overlays.add(new HelpOverlay<GuiChannelSelection>("select channel", 7, 5, 20, 19, Color.RED.getRGB()) {
+				public boolean isCompletedSuccess(GuiChannelSelection gui) {
+					//if (!gui.part.getChannels().isEmpty()) {
+					//	return true;
+					//}
+					return false;
+				}
+
+				public boolean canBeRendered(GuiChannelSelection gui) {
+					return true;
+				}
+			});
+			this.overlays.add(new HelpOverlay<GuiChannelSelection>("guide.Hammer.name", 4, 26, 231, 137, Color.RED.getRGB()) {
+				public boolean isCompletedSuccess(GuiChannelSelection gui) {
+					//if (gui.part.getSelectedInfo().get(0) != null) {
+					//	return true;
+					//}
+					return false;
+				}
+
+				public boolean canBeRendered(GuiChannelSelection gui) {
+					return true;
+				}
+			});
+		}
+
+	};
+	
 	public GuiChannelSelection(EntityPlayer player, IChannelledTile tile, int channelID) {
 		super(new ContainerChannelSelection(tile), tile);
 		this.player = player;
@@ -34,11 +66,23 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 		this.xSize = 182 + 66;
 	}
 
+	public void initGui() {
+		super.initGui();
+		overlay.initGui(this);
+	}
+
+	@Override
+	public void mouseClicked(int x, int y, int button) throws IOException {
+		super.mouseClicked(x, y, button);
+		overlay.mouseClicked(this, x, y, button);
+	}
+
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
 		FontHelper.textCentre(FontHelper.translate("Channel Selection"), xSize, 6, LogisticsColours.white_text);
 		FontHelper.textCentre(String.format("Select the channels you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
+		overlay.drawOverlay(this, x, y);
 	}
 
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, MonitoredBlockCoords info) {
@@ -91,6 +135,7 @@ public class GuiChannelSelection extends GuiSelectionList<MonitoredBlockCoords> 
 			SonarCore.network.sendToServer(new PacketFlexibleCloseGui(tile.getCoords().getBlockPos()));
 		} else {
 			super.keyTyped(typedChar, keyCode);
+			overlay.onTileChanged(this);
 		}
 	}
 }

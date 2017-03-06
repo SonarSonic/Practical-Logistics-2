@@ -1,6 +1,5 @@
 package sonar.logistics.guide.elements;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.IGuidePage;

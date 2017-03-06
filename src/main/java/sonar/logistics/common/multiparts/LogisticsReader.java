@@ -5,18 +5,13 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.LogicInfo;
@@ -55,9 +50,38 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 		return cachedPaired;
 	}
 
+	// this is kind of messy, could be made better for sure
+	public void addInfo(T info, int type, int newPos) {
+		ArrayList<SyncMonitoredType<T>> syncInfo = type == 0 ? selected : paired;
+		if (newPos == -1) {
+			int pos = 0;
+			for (SyncMonitoredType<T> sync : syncInfo) {
+				if (sync.getMonitoredInfo() != null) {
+					if (sync.getMonitoredInfo().isMatchingType(info) && sync.getMonitoredInfo().isMatchingInfo(info)) {
+						sync.setInfo(null);
+						(type != 0 ? selected : paired).get(pos).setInfo(null);
+						sendByteBufPacket(100);
+						lastPos = -1;
+						return;
+					}
+				} else if (newPos == -1) {
+					newPos = pos;
+				}
+				pos++;
+			}
+		}
+		if (newPos != -1) {
+			lastPos = newPos;
+		}
+		syncInfo.get(newPos == -1 ? 0 : newPos).setInfo(info);
+		sendSyncPacket();
+		// sendByteBufPacket(100);
+	}
+	
+	//// ILogicMonitor \\\\
+	
 	@Override
-	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<NodeConnection> connections, ArrayList<Entity> entities, int channelID) {
-
+	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
 		ArrayList<IMonitorInfo> cachedSelected = this.getSelectedInfo();
 		ArrayList<IMonitorInfo> cachedPaired = this.getPairedInfo();
 		for (int i = 0; i < this.getMaxInfo(); i++) {
@@ -97,34 +121,8 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 		}
 	}
 
-	// this is kind of messy, could be made better for sure
-	public void addInfo(T info, int type, int newPos) {
-		ArrayList<SyncMonitoredType<T>> syncInfo = type == 0 ? selected : paired;
-		if (newPos == -1) {
-			int pos = 0;
-			for (SyncMonitoredType<T> sync : syncInfo) {
-				if (sync.getMonitoredInfo() != null) {
-					if (sync.getMonitoredInfo().isMatchingType(info) && sync.getMonitoredInfo().isMatchingInfo(info)) {
-						sync.setInfo(null);
-						(type != 0 ? selected : paired).get(pos).setInfo(null);
-						sendByteBufPacket(100);
-						lastPos = -1;
-						return;
-					}
-				} else if (newPos == -1) {
-					newPos = pos;
-				}
-				pos++;
-			}
-		}
-		if (newPos != -1) {
-			lastPos = newPos;
-		}
-		syncInfo.get(newPos == -1 ? 0 : newPos).setInfo(info);
-		sendSyncPacket();
-		// sendByteBufPacket(100);
-	}
-
+	//// PACKETS \\\\
+	
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		super.writePacket(buf, id);

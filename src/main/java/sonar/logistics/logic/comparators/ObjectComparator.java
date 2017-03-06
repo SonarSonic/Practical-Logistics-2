@@ -1,7 +1,6 @@
 package sonar.logistics.logic.comparators;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import sonar.logistics.api.asm.LogicComparator;
 import sonar.logistics.api.logistics.LogicOperator;

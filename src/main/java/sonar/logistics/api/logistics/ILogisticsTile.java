@@ -1,7 +1,5 @@
 package sonar.logistics.api.logistics;
 
-import java.util.ArrayList;
-
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.utils.IUUIDIdentity;

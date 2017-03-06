@@ -1,7 +1,5 @@
 package sonar.logistics;
 
-import java.util.LinkedHashMap;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -11,8 +9,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.utils.SimpleProfiler;
-import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.common.multiparts.ArrayPart;
 import sonar.logistics.connections.managers.EmitterManager;
@@ -65,7 +61,7 @@ public class LogisticsEvents {
 	}
 
 	@SubscribeEvent
-	public void onEntityTransceiverClicked(EntityJoinWorldEvent event) {
+	public void onEntityJoin(EntityJoinWorldEvent event) {
 		ArrayPart.entityChanged=true;
 	}
 }

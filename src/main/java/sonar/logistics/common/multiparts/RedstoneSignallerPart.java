@@ -19,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -27,9 +26,7 @@ import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -37,11 +34,12 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.logistics.EmitterStatement;
 import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.logistics.SignallerModes;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.client.gui.GuiStatementList;
 import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.helpers.CableHelper;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePart, ILogisticsTile, IByteBufTile, IFlexibleGui {
 
@@ -61,6 +59,17 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 		super(face, 5 * 0.0625, 0.0625 * 1, 0.0625 * 6);
 	}
 
+	@Override
+	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
+		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
+			if (isServer()) {
+				openFlexibleGui(player, 0);
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public void update() {
 		super.update();
 		if (isClient()) {
@@ -77,8 +86,8 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 		HashMap<InfoUUID, IMonitorInfo> infoList = new HashMap();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				ILogicMonitor monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
-				if (monitor != null && this.network.getLocalMonitors().contains(monitor)) {
+				IInfoProvider monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
+				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
 					IMonitorInfo monitorInfo = Logistics.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
 						infoList.put(id, monitorInfo);
@@ -136,36 +145,26 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 		}
 
 	}
+	
+	//// Redstone Signaller \\\\
 
 	@Override
-	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
-		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
-			if (!getWorld().isRemote) {
-				openFlexibleGui(player, 0);
-			}
-			return true;
-		}
-		return false;
+	public SyncNBTAbstractList<EmitterStatement> getStatements() {
+		return statements;
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partRedstoneSignaller);
-	}
-
-	public boolean isActive() {
-		return isActive.getObject();
+	public UUID getIdentity() {
+		return this.getUUID();
 	}
 
 	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing()).withProperty(ACTIVE, isActive());
+	public SyncEnum<SignallerModes> emitterMode() {
+		return mode;
 	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, ACTIVE });
-	}
-
+	
+	//// REDSTONE \\\\
+	
 	@Override
 	public boolean canConnectRedstone(EnumFacing side) {
 		return side == getFacing();
@@ -179,6 +178,49 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	@Override
 	public int getStrongSignal(EnumFacing side) {
 		return (side == getFacing() && isActive()) ? 15 : 0;
+	}
+	
+	//// STATE \\\\
+
+	public boolean isActive() {
+		return isActive.getObject();
+	}
+
+	@Override
+	public IBlockState getActualState(IBlockState state) {
+		return state.withProperty(ORIENTATION, getFacing()).withProperty(ACTIVE, isActive());
+	}
+
+	public BlockStateContainer createBlockState() {
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, ACTIVE });
+	}	
+	
+	//// PACKETS \\\\
+
+	@Override
+	public void markChanged(IDirtyPart part) {
+		super.markChanged(part);
+		if (part == isActive && this.getWorld() != null) {
+			SonarMultipartHelper.sendMultipartPacketAround(this, 0, 128);
+			this.notifyBlockUpdate();
+		}
+	}
+	
+	public void onSyncPacketRequested(EntityPlayer player) {
+		super.onSyncPacketRequested(player);
+		Logistics.getServerManager().sendLocalMonitorsToClient(this, getIdentity(), player);
+	}
+	
+	@Override
+	public void writeUpdatePacket(PacketBuffer buf) {
+		super.writeUpdatePacket(buf);
+		isActive.writeToBuf(buf);
+	}
+
+	@Override
+	public void readUpdatePacket(PacketBuffer buf) {
+		super.readUpdatePacket(buf);
+		isActive.readFromBuf(buf);
 	}
 
 	@Override
@@ -206,23 +248,9 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 			break;
 		}
 	}
-
-	@Override
-	public void writeUpdatePacket(PacketBuffer buf) {
-		super.writeUpdatePacket(buf);
-		isActive.writeToBuf(buf);
-	}
-
-	@Override
-	public void readUpdatePacket(PacketBuffer buf) {
-		super.readUpdatePacket(buf);
-		isActive.readFromBuf(buf);
-	}
 	
-	public void onSyncPacketRequested(EntityPlayer player) {
-		super.onSyncPacketRequested(player);
-		Logistics.getServerManager().sendLocalMonitorsToClient(this, getIdentity(), player);
-	}
+	//// GUI \\\\
+
 	@Override
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
@@ -252,26 +280,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	}
 
 	@Override
-	public SyncNBTAbstractList<EmitterStatement> getStatements() {
-		return statements;
-	}
-
-	@Override
-	public UUID getIdentity() {
-		return this.getUUID();
-	}
-
-	@Override
-	public SyncEnum<SignallerModes> emitterMode() {
-		return mode;
-	}
-
-	@Override
-	public void markChanged(IDirtyPart part) {
-		super.markChanged(part);
-		if (part == isActive && this.getWorld() != null) {
-			SonarMultipartHelper.sendMultipartPacketAround(this, 0, 128);
-			this.notifyBlockUpdate();
-		}
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.partRedstoneSignaller);
 	}
 }

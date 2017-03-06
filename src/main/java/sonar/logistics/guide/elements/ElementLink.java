@@ -2,7 +2,6 @@ package sonar.logistics.guide.elements;
 
 import com.google.common.base.Objects;
 
-import sonar.core.client.gui.GuiSonar;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.guide.IGuidePage;

@@ -1,11 +1,8 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;

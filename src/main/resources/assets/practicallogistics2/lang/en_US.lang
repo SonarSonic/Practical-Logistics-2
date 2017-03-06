@@ -19,6 +19,7 @@ item.RedstoneSignaller.name=Redstone Signaller
 item.DataReceiver.name=Data Receiver
 item.DataEmitter.name=Data Emitter
 item.TransferNode.name=Transfer Node
+item.Clock.name=Clock
 
 //items
 item.DisplayScreenItem.name=Display Screen
@@ -29,6 +30,7 @@ item.Transceiver.name=Transceiver
 item.EntityTransceiver.name=Entity Transceiver
 item.Operator.name=Operator Tool
 item.DisplayScreen.name=Display Screen
+item.HolographicDisplay.name=Holographic Display
 item.LargeDisplayScreen.name=Large Display Screen
 item.Guide.name=Guide
 
@@ -63,6 +65,8 @@ guide.Operator.name=It has 6 modes for configuring blocks-You can change modes b
 guide.DisplayScreen.name=The Display Screen is used for Display Info provided by Readers. To configure the Display Screen you must open the GUI which can only be opened by right clicking the back of the display.-The Display Screen can show four types of data simultaneously.-You can change the layout of this info inside the GUI.
 guide.LargeDisplayScreen.name=The Large Display Screen works in exactly the same way as the #DisplayScreen# except it can be connected to other Large Display Screens making one gigantic screen! 
 guide.Guide.name=The Guide is what you're using right now!
+guide.HolographicDisplay.name=The #CURRENT# works in the same way as the #DisplayScreen# except it is transparent!
+guide.Clock.name=The clock currently has a very simple function, in allows you to set a interval for a redstone signal to be emitted. Connecting a display to the side will display the current time of the clock as a progress bar. You can also see the progress of the clock by the rotating hand at the top. When it passes the small red marker it will emit a signal.- -Inside the GUI you can set the interval, this can be anywhere between 0.100 ms to 24 hours, however if the clock isn't chunk loaded the timer will be reset.
 
 //generic Guide Pages
 guide.ChannelsSTART.name=<blue>Channels<reset>-The #CURRENT# can also be configured by channels. The 'channels' are the blocks/entities connected to the network meaning this will alter what the #CURRENT# can access.
@@ -74,6 +78,8 @@ guide.ExampleConfig.name=Example Configurations
 guide.FurnaceProgress.name=<underline>Furnace Cooking Progress<reset>- -<blue>Step 1:<reset> Place the blocks as seen.-<blue>Step 2:<reset> Ensure the Info Reader is connected to the node by selecting the furnace in the channels menu.-<blue>Step 3:<reset> In the Info Reader's GUI left click "Cook Time" and right click "Total Cook Time" this will create a progress bar from the info!- -Blocks Required: #Node#, #DataCable#, #InfoReader# and #DisplayScreen#.
 guide.ChestMonitoring.name=<underline>Simple Item Monitoring<reset>- -<blue>Step 1:<reset> Place the blocks as seen.-<blue>Step 2:<reset> Change the Inventory Reader to stack mode and then place the item you wish to monitor in the slot.- -Blocks Required: #Node#, #DataCable#, #InventoryReader# and #DisplayScreen#.
 guide.WirelessRedstone.name=<underline>Wireless Redstone<reset>- -<blue>Step 1:<reset>  Place the blocks as seen.-<blue>Step 2:<reset> Ensure the Info Reader is connected to the node by selecting the Redstone Dust in the channels menu.-<blue>Step 3:<reset> In the Info Reader's GUI select "Meta"-<blue>Step 4:<reset> Configure the Redstone Emitter to emit a signal.
+
+
 //HELPOVERLAYS//
 
 //BUTTON HELPS//

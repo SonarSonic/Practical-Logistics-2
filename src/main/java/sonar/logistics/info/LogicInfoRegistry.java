@@ -25,15 +25,14 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
 import sonar.core.utils.Pair;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.monitoring.MonitoredList;
-import sonar.logistics.info.LogicInfoRegistry.LogicPath;
 import sonar.logistics.info.types.LogicInfo;
 
 /** where all the registering for LogicInfo happens */
@@ -436,7 +435,7 @@ public class LogicInfoRegistry {
 		}
 	}
 
-	public static Pair<Boolean, IMonitorInfo> getLatestInfo(MonitoredList updateInfo, ArrayList<NodeConnection> connections, IMonitorInfo paired) {
+	public static Pair<Boolean, IMonitorInfo> getLatestInfo(MonitoredList updateInfo, ArrayList<BlockConnection> connections, IMonitorInfo paired) {
 		Pair<Boolean, IMonitorInfo> newPaired = null;
 		if (paired instanceof LogicInfo && !connections.isEmpty()) {
 			LogicInfo info = (LogicInfo) paired;
@@ -457,7 +456,7 @@ public class LogicInfoRegistry {
 		return newPaired;
 	}
 
-	public static Pair<Boolean, IMonitorInfo> getLatestInfo(LogicInfo info, NodeConnection connection) {
+	public static Pair<Boolean, IMonitorInfo> getLatestInfo(LogicInfo info, BlockConnection connection) {
 		if (info.path == null) {
 			return null;
 		}

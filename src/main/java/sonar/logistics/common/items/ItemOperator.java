@@ -31,14 +31,24 @@ import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
-import sonar.logistics.helpers.CableHelper;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
+	
+	//// IOperatorTool \\\\
 
+	@Override
+	public OperatorMode getOperatorMode(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			return OperatorMode.values()[stack.getTagCompound().getInteger("mode")];
+		}
+		return OperatorMode.DEFAULT;
+	}
+	
+	//// INTERACTIONS \\\\
+	
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IMultipartContainer container = (IMultipartContainer) MultipartHelper.getPartContainer(world, pos);
 		if (container != null) {
@@ -120,18 +130,12 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		return stack;
 	}
 
-	@Override
-	public OperatorMode getOperatorMode(ItemStack stack) {
-		if (stack.hasTagCompound()) {
-			return OperatorMode.values()[stack.getTagCompound().getInteger("mode")];
-		}
-		return OperatorMode.DEFAULT;
-	}
-
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
 		super.addInformation(stack, player, list, par4);
 		list.add("Mode: " + getOperatorMode(stack));
 	}
+	
+	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {

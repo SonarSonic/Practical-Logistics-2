@@ -29,10 +29,7 @@ public class ElementItem implements IGuidePageElement {
 	}
 
 	@Override
-	public void drawElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void drawElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {}
 
 	@Override
 	public void drawForegroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {

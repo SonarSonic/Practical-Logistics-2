@@ -7,17 +7,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.nbt.INBTSyncable;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
-import sonar.logistics.api.filters.FilterList;
-import sonar.logistics.api.filters.IFluidFilter;
-import sonar.logistics.api.filters.IItemFilter;
 import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.helpers.InfoHelper;
 
 public class SyncStatementList extends SyncPart {

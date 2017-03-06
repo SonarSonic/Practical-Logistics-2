@@ -14,13 +14,9 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import sonar.core.api.SonarAPI;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IRemovable;
 import sonar.core.utils.IWorldPosition;
-import sonar.core.utils.Pair;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsConfig;
 import sonar.logistics.api.LogisticsAPI;
@@ -34,11 +30,12 @@ import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
-import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.api.readers.IdentifiedCoordsList;
 import sonar.logistics.api.viewers.ViewerType;
@@ -51,15 +48,14 @@ import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.ItemHelper;
-import sonar.logistics.info.types.LogicInfo;
 
 public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	public int networkID = -1;
 	private ArrayList<Class<?>> cacheTypes = Lists.newArrayList(IDataCable.class, ILogicTile.class, ILogicMonitor.class, IDataReceiver.class, IDataEmitter.class, IFilteredTile.class);
 	private HashMap<Class<?>, ArrayList<IWorldPosition>> connections = getFreshMap();
-	private ArrayList<NodeConnection> blockTileCache = Lists.newArrayList();
-	private ArrayList<NodeConnection> networkedTileCache = Lists.newArrayList();
+	private ArrayList<BlockConnection> blockTileCache = Lists.newArrayList();
+	private ArrayList<BlockConnection> networkedTileCache = Lists.newArrayList();
 	private ArrayList<Entity> blockEntityCache = Lists.newArrayList();
 	private ArrayList<Entity> networkedEntityCache = Lists.newArrayList();
 	private ArrayList<Integer> connectedNetworks = new ArrayList();
@@ -89,13 +85,13 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	@Override
 	@Deprecated
-	public NodeConnection getExternalBlock(boolean includeChannels) {
+	public BlockConnection getExternalBlock(boolean includeChannels) {
 		Iterator<IDataCable> connections = getConnections(IDataCable.class, includeChannels).iterator();
 		while (connections.hasNext()) {
 			IDataCable part = connections.next();
 			if (part instanceof DataCablePart) {
 				DataCablePart cable = (DataCablePart) part;
-				ArrayList<NodeConnection> map = Lists.newArrayList();
+				ArrayList<BlockConnection> map = Lists.newArrayList();
 				cable.getContainer().getParts().forEach(multipart -> {
 					if (multipart instanceof IConnectionNode) {
 						((IConnectionNode) multipart).addConnections(map);
@@ -124,7 +120,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	}
 
 	@Override
-	public ArrayList<NodeConnection> getExternalBlocks(boolean includeChannels) {
+	public ArrayList<BlockConnection> getExternalBlocks(boolean includeChannels) {
 		return includeChannels ? networkedTileCache : blockTileCache;
 	}
 
@@ -202,7 +198,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	/** this doubles checks all cables for connections as well as finding and local monitors */
 	public void refreshConnections() {
-		ArrayList<NodeConnection> map = new ArrayList<NodeConnection>(); // array list of pairs so priority is respected
+		ArrayList<BlockConnection> map = new ArrayList<BlockConnection>(); // array list of pairs so priority is respected
 		ArrayList<Entity> entities = Lists.newArrayList();
 
 		ArrayList<IWorldPosition> toRemove = new ArrayList();
@@ -235,16 +231,16 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 		});
 
 		toRemove.forEach(remove -> connections.get(IDataCable.class).remove(remove));
-		this.blockTileCache = (ArrayList<NodeConnection>) map.clone();
+		this.blockTileCache = (ArrayList<BlockConnection>) map.clone();
 		this.blockEntityCache = (ArrayList<Entity>) entities.clone();
 
 		ArrayList<Integer> networks = getFinalNetworkList();
 
 		for (Integer id : networks) {
 			INetworkCache network = Logistics.getNetworkManager().getNetwork(id);
-			ArrayList<NodeConnection> blocks = (ArrayList<NodeConnection>) network.getExternalBlocks(false).clone();
+			ArrayList<BlockConnection> blocks = (ArrayList<BlockConnection>) network.getExternalBlocks(false).clone();
 			List<Entity> ents = (List<Entity>) network.getExternalEntities(false).clone();
-			for (NodeConnection set : blocks) {
+			for (BlockConnection set : blocks) {
 				if (!map.contains(set.coords)) {
 					map.add(set);
 				}
@@ -254,24 +250,24 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 					entities.add(entity);
 				}
 			}
-			for (ILogicMonitor monitor : network.getLocalMonitors()) {
+			for (IInfoProvider monitor : network.getLocalInfoProviders()) {
 				if (!localMonitors.contains(monitor)) {
 					localMonitors.add(monitor);
 				}
 			}
 		}
-		Collections.sort(map, new Comparator<NodeConnection>() {
-			public int compare(NodeConnection str1, NodeConnection str2) {
+		Collections.sort(map, new Comparator<BlockConnection>() {
+			public int compare(BlockConnection str1, BlockConnection str2) {
 				return Integer.compare(str2.source.getPriority(), str1.source.getPriority());
 			}
 		});
-		this.networkedTileCache = (ArrayList<NodeConnection>) map.clone();
+		this.networkedTileCache = (ArrayList<BlockConnection>) map.clone();
 		this.networkedEntityCache = (ArrayList<Entity>) entities.clone();
 
 		monitorInfo.entrySet().forEach(handlers -> compileConnectionList(handlers.getKey()));
 
 		MonitoredList<MonitoredBlockCoords> list = MonitoredList.<MonitoredBlockCoords>newMonitoredList(getNetworkID());
-		for (NodeConnection entry : networkedTileCache) {
+		for (BlockConnection entry : networkedTileCache) {
 			TileEntity tile = entry.coords.getTileEntity();
 			list.add(new MonitoredBlockCoords(entry.coords, tile != null && tile.getDisplayName() != null ? tile.getDisplayName().getFormattedText() : entry.coords.getBlock().getLocalizedName()));
 		}
@@ -338,7 +334,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 		toRefresh = RefreshType.NONE;
 		for (Entry<LogicMonitorHandler, Map<ILogicMonitor, MonitoredList<?>>> monitorMap : monitorInfo.entrySet()) {
-			Map<NodeConnection, MonitoredList<?>> newTileConnections;
+			Map<BlockConnection, MonitoredList<?>> newTileConnections;
 			Map<Entity, MonitoredList<?>> newEntityConnections;
 			if (!monitorMap.getValue().isEmpty() && monitorMap.getKey() != null) {
 				if (monitorMap.getKey().id() == InfoMonitorHandler.id) {
@@ -373,12 +369,12 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 		resendAllLists = false;
 	}
 
-	public void updateAndSendLists(Entry<LogicMonitorHandler, Map<ILogicMonitor, MonitoredList<?>>> monitorMap, Map<NodeConnection, MonitoredList<?>> newTileConnections, Map<Entity, MonitoredList<?>> newEntityConnections) {
+	public void updateAndSendLists(Entry<LogicMonitorHandler, Map<ILogicMonitor, MonitoredList<?>>> monitorMap, Map<BlockConnection, MonitoredList<?>> newTileConnections, Map<Entity, MonitoredList<?>> newEntityConnections) {
 		for (Entry<ILogicMonitor, MonitoredList<?>> monitors : monitorMap.getValue().entrySet()) {
 			ILogicMonitor monitor = monitors.getKey();
 			if (monitor != null && monitor.getHandler().id().equals(monitorMap.getKey().id())) {
 
-				ArrayList<NodeConnection> nodeConnections = new ArrayList();
+				ArrayList<BlockConnection> nodeConnections = new ArrayList();
 				ArrayList<Entity> entityConnections = new ArrayList();
 				MonitoredList updateList = updateMonitoredList(monitors.getKey(), 0, newTileConnections, newEntityConnections, nodeConnections, entityConnections).updateList(monitors.getValue());
 				monitor.setMonitoredInfo(updateList, nodeConnections, entityConnections, 0);// TODO only one channel atm!
@@ -394,8 +390,8 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	public <T extends IMonitorInfo> void compileConnectionList(LogicMonitorHandler<T> type) {
 		if (type instanceof ITileMonitorHandler) {
-			HashMap<NodeConnection, MonitoredList<?>> compiledList = new HashMap();
-			for (NodeConnection pair : networkedTileCache) {
+			HashMap<BlockConnection, MonitoredList<?>> compiledList = new HashMap();
+			for (BlockConnection pair : networkedTileCache) {
 				if (!compiledList.containsKey(pair))
 					compiledList.put(pair, MonitoredList.<T>newMonitoredList(getNetworkID()));
 			}
@@ -417,12 +413,12 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 			return;
 		}
 		for (IFilteredTile tile : transferNodes) {
-			NodeConnection connected = tile.getConnected();
+			BlockConnection connected = tile.getConnected();
 			if (connected != null) {
 				NodeTransferMode mode = tile.getTransferMode();
 				boolean items = tile.isTransferEnabled(TransferType.ITEMS);
 				if (items) {
-					for (NodeConnection connect : networkedTileCache) {
+					for (BlockConnection connect : networkedTileCache) {
 						if (connect != null && (tile.getChannels().isEmpty() || tile.getChannels().contains(connect.coords))) {
 							ItemHelper.transferItems(mode, connected, connect);
 						}
@@ -438,12 +434,12 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	}
 
 	@Override
-	public void addLocalMonitor(ILogicMonitor monitor) {
+	public void addLocalInfoProvider(IInfoProvider monitor) {
 		localMonitors.add(monitor);
 	}
 
 	@Override
-	public ILogicMonitor getLocalMonitor() {
+	public IInfoProvider getLocalInfoProvider() {
 		if (!localMonitors.isEmpty()) {
 			return localMonitors.get(0);
 		}
@@ -458,7 +454,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	}
 
 	@Override
-	public ArrayList<ILogicMonitor> getLocalMonitors() {
+	public ArrayList<IInfoProvider> getLocalInfoProviders() {
 		return localMonitors;
 	}
 

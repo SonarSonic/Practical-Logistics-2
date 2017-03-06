@@ -32,7 +32,7 @@ import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cabling.CableConnection;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
@@ -42,17 +42,18 @@ import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.ILogicMonitor;
 import sonar.logistics.helpers.CableHelper;
 
 public class DataCablePart extends SonarMultipart implements ISlotOccludingPart, IDataCable, IOperatorTile, IOperatorProvider {
 
-	public static final PropertyEnum<CableConnection> NORTH = PropertyEnum.<CableConnection>create("north", CableConnection.class);
-	public static final PropertyEnum<CableConnection> EAST = PropertyEnum.<CableConnection>create("east", CableConnection.class);
-	public static final PropertyEnum<CableConnection> SOUTH = PropertyEnum.<CableConnection>create("south", CableConnection.class);
-	public static final PropertyEnum<CableConnection> WEST = PropertyEnum.<CableConnection>create("west", CableConnection.class);
-	public static final PropertyEnum<CableConnection> DOWN = PropertyEnum.<CableConnection>create("down", CableConnection.class);
-	public static final PropertyEnum<CableConnection> UP = PropertyEnum.<CableConnection>create("up", CableConnection.class);
+	public static final PropertyEnum<CableRenderType> NORTH = PropertyEnum.<CableRenderType>create("north", CableRenderType.class);
+	public static final PropertyEnum<CableRenderType> EAST = PropertyEnum.<CableRenderType>create("east", CableRenderType.class);
+	public static final PropertyEnum<CableRenderType> SOUTH = PropertyEnum.<CableRenderType>create("south", CableRenderType.class);
+	public static final PropertyEnum<CableRenderType> WEST = PropertyEnum.<CableRenderType>create("west", CableRenderType.class);
+	public static final PropertyEnum<CableRenderType> DOWN = PropertyEnum.<CableRenderType>create("down", CableRenderType.class);
+	public static final PropertyEnum<CableRenderType> UP = PropertyEnum.<CableRenderType>create("up", CableRenderType.class);
 
 	public int registryID = -1;
 	public boolean connection = false;
@@ -63,38 +64,34 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 		super();
 	}
 
+	public INetworkCache getNetwork() {
+		return LogisticsAPI.getCableHelper().getNetwork(registryID);
+	}
+
 	@Override
 	public void onPartChanged(IMultipart changedPart) {
 		if (!this.getWorld().isRemote) {
 			refreshConnections();
 			if (changedPart instanceof LogisticsMultipart) {
-				INetworkCache cache = LogisticsAPI.getCableHelper().getNetwork(registryID);
-				cache.markDirty(RefreshType.FULL);
+				getNetwork().markDirty(RefreshType.FULL);
 			}
 		}
 	}
 
+	//// IDataCable \\\\
+
 	@Override
-	public void onNeighborTileChange(EnumFacing facing) {
-		super.onNeighborTileChange(facing);
-		// INetworkCache cache = LogisticsAPI.getCableHelper().getNetwork(registryID);
-		// cache.markDirty(RefreshType.CONNECTED_BLOCKS);
-		/// refreshConnections(); //should always been done by the cable being added, preventing constant loops
-
-	}
-
-	public void onNeighborBlockChange(Block block) {
-		super.onNeighborBlockChange(block);
-		// INetworkCache cache = LogisticsAPI.getCableHelper().getNetwork(registryID);
-		// cache.markDirty(RefreshType.FULL);
-		// refreshConnections();
+	public void refreshConnections() {
+		if (isServer()) {
+			Logistics.getCableManager().refreshConnections(this);
+		}
 	}
 
 	public void configureConnections(INetworkCache network) {
 		ArrayList<ILogicTile> logicTiles = CableHelper.getConnectedTiles(this);
-		ArrayList<ILogicMonitor> logicMonitors = CableHelper.getLocalMonitors(this);
+		ArrayList<IInfoProvider> logicMonitors = CableHelper.getLocalMonitors(this);
 		logicTiles.forEach(tile -> tile.setLocalNetworkCache(network));
-		logicMonitors.forEach(tile -> network.addLocalMonitor(tile));
+		logicMonitors.forEach(tile -> network.addLocalInfoProvider(tile));
 		connection = !logicTiles.isEmpty();
 		return;
 	}
@@ -102,28 +99,6 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	@Override
 	public boolean hasConnections() {
 		return connection;
-	}
-
-	@Override
-	public void onFirstTick() {
-		if (!this.getWorld().isRemote && !wasAdded) {
-			addToNetwork();
-			wasAdded = true;
-		}
-	}
-
-	@Override
-	public void onRemoved() {
-		super.onRemoved();
-		this.onUnloaded();
-	}
-
-	@Override
-	public void onUnloaded() {
-		if (!this.getWorld().isRemote) {
-			this.removeFromNetwork();
-			wasAdded = false;
-		}
 	}
 
 	@Override
@@ -166,55 +141,19 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 		}
 	}
 
+	//// OPERATOR \\\\
+
 	@Override
-	public void refreshConnections() {
-		if (isServer()) {
-			Logistics.getCableManager().refreshConnections(this);
-		}
-	}
-
-	public CableConnection checkBlockInDirection(EnumFacing dir) {
-		IMultipartContainer container = getContainer();
-		if (container != null) {
-			if (isBlocked[dir.ordinal()]) {
-				return CableConnection.NONE;
-			}
-			IMultipart part = container.getPartInSlot(PartSlot.getFaceSlot(dir));
-			if (part == null)
-				part = (IMultipart) LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), dir);
-			if (part != null && part instanceof ILogicTile) {
-				if (part instanceof SidedMultipart) {
-					SidedMultipart sided = (SidedMultipart) part;
-					if (sided.heightMax == 0.0625 * 6) {
-						return CableConnection.NONE;
-					} else if (sided.heightMax == 0.0625 * 4) {
-						return CableConnection.HALF;
-					}
-				}
-				ILogicTile tile = (ILogicTile) part;
-				if (tile.canConnect(dir.getOpposite()).canShowConnection()) {
-					return CableConnection.INTERNAL;
-				}
-			}
-
-			Pair<ConnectableType, Integer> connection = CableHelper.getConnectionType(this, getContainer().getWorldIn(), getContainer().getPosIn(), dir, getCableType());
-			return !canConnectOnSide(dir) || !connection.a.canConnect(getCableType()) ? CableConnection.NONE : CableConnection.CABLE;
-		}
-		return CableConnection.NONE;
+	public void updateOperatorInfo() {
+		this.requestSyncPacket();
 	}
 
 	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(NORTH, checkBlockInDirection(EnumFacing.NORTH)).withProperty(SOUTH, checkBlockInDirection(EnumFacing.SOUTH)).withProperty(WEST, checkBlockInDirection(EnumFacing.WEST)).withProperty(EAST, checkBlockInDirection(EnumFacing.EAST)).withProperty(UP, checkBlockInDirection(EnumFacing.UP)).withProperty(DOWN, checkBlockInDirection(EnumFacing.DOWN));
-	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { NORTH, EAST, SOUTH, WEST, DOWN, UP });
-	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partCable);
+	public void addInfo(List<String> info) {
+		ItemStack dropStack = getItemStack();
+		if (dropStack != null)
+			info.add(TextFormatting.UNDERLINE + dropStack.getDisplayName());
+		info.add("Network ID: " + registryID);
 	}
 
 	@Override
@@ -253,54 +192,23 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 		return false;
 	}
 
+	//// MULTIPART \\\\
+
 	@Override
-	public void writeUpdatePacket(PacketBuffer buf) {
-		super.writeUpdatePacket(buf);
-		for (int i = 0; i < isBlocked.length; i++) {
-			buf.writeBoolean(isBlocked[i]);
-		}
+	public EnumSet<PartSlot> getSlotMask() {
+		return EnumSet.of(PartSlot.CENTER);
 	}
 
 	@Override
-	public void readUpdatePacket(PacketBuffer buf) {
-		super.readUpdatePacket(buf);
-		for (int i = 0; i < isBlocked.length; i++) {
-			isBlocked[i] = buf.readBoolean();
+	public EnumSet<PartSlot> getOccludedSlots() {
+		EnumSet set = EnumSet.noneOf(PartSlot.class);
+		for (PartSlot slot : PartSlot.FACES) {
+			EnumFacing face = slot.f1;
+			if (CableHelper.checkBlockInDirection(this, face).canConnect()) {
+				set.add(slot);
+			}
 		}
-	}
-
-	@Override
-	public void readData(NBTTagCompound nbt, SyncType type) {
-		super.readData(nbt, type);
-		isBlocked = new boolean[6];
-		NBTTagCompound tag = nbt.getCompoundTag("isBlocked");
-		for (int i = 0; i < isBlocked.length; i++) {
-			isBlocked[i] = tag.getBoolean("" + i);
-		}
-		if (type.isType(SyncType.DEFAULT_SYNC)) {
-			registryID = nbt.getInteger("id");
-		}
-	}
-
-	@Override
-	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		NBTTagCompound tag = new NBTTagCompound();
-		for (int i = 0; i < isBlocked.length; i++) {
-			tag.setBoolean("" + i, isBlocked[i]);
-		}
-		nbt.setTag("isBlocked", tag);
-		if (type.isType(SyncType.DEFAULT_SYNC)) {
-			nbt.setInteger("id", registryID);
-		}
-		return super.writeData(nbt, type);
-	}
-
-	@Override
-	public void addInfo(List<String> info) {
-		ItemStack dropStack = getItemStack();
-		if (dropStack != null)
-			info.add(TextFormatting.UNDERLINE + dropStack.getDisplayName());
-		info.add("Network ID: " + registryID);
+		return set;
 	}
 
 	@Override
@@ -314,27 +222,10 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 		});
 	}
 
-	@Override
-	public EnumSet<PartSlot> getSlotMask() {
-		return EnumSet.of(PartSlot.CENTER);
-	}
-
-	@Override
-	public EnumSet<PartSlot> getOccludedSlots() {
-		EnumSet set = EnumSet.noneOf(PartSlot.class);
-		for (PartSlot slot : PartSlot.FACES) {
-			EnumFacing face = slot.f1;
-			if (checkBlockInDirection(face).canConnect()) {
-				set.add(slot);
-			}
-		}
-		return set;
-	}
-
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
 		list.add(new LabelledAxisAlignedBB(6 * 0.0625, 6 * 0.0625, 6 * 0.0625, 1 - 6 * 0.0625, 1 - 6 * 0.0625, 1 - 6 * 0.0625).labelAxis("c"));
 		for (EnumFacing face : EnumFacing.values()) {
-			CableConnection connect = checkBlockInDirection(face);
+			CableRenderType connect = CableHelper.checkBlockInDirection(this, face);
 			if (connect.canConnect()) {
 				double p = 0.0625;
 				double w = (1 - 2 * 0.0625) / 2;
@@ -367,10 +258,90 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 		}
 
 	}
+	//// STATE \\\\
 
 	@Override
-	public void updateOperatorInfo() {
-		this.requestSyncPacket();
+	public IBlockState getActualState(IBlockState state) {
+		return state.withProperty(NORTH, CableHelper.checkBlockInDirection(this, EnumFacing.NORTH)).withProperty(SOUTH, CableHelper.checkBlockInDirection(this, EnumFacing.SOUTH)).withProperty(WEST, CableHelper.checkBlockInDirection(this, EnumFacing.WEST)).withProperty(EAST, CableHelper.checkBlockInDirection(this, EnumFacing.EAST)).withProperty(UP, CableHelper.checkBlockInDirection(this, EnumFacing.UP)).withProperty(DOWN, CableHelper.checkBlockInDirection(this, EnumFacing.DOWN));
+	}
+
+	public BlockStateContainer createBlockState() {
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { NORTH, EAST, SOUTH, WEST, DOWN, UP });
+	}
+
+	//// EVENTS \\\\
+
+	@Override
+	public void onFirstTick() {
+		if (!this.getWorld().isRemote && !wasAdded) {
+			addToNetwork();
+			wasAdded = true;
+		}
+	}
+
+	@Override
+	public void onRemoved() {
+		super.onRemoved();
+		this.onUnloaded();
+	}
+
+	@Override
+	public void onUnloaded() {
+		if (!this.getWorld().isRemote) {
+			this.removeFromNetwork();
+			wasAdded = false;
+		}
+	}
+
+	//// SAVING \\\\
+
+	@Override
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		super.readData(nbt, type);
+		isBlocked = new boolean[6];
+		NBTTagCompound tag = nbt.getCompoundTag("isBlocked");
+		for (int i = 0; i < isBlocked.length; i++) {
+			isBlocked[i] = tag.getBoolean("" + i);
+		}
+		if (type.isType(SyncType.DEFAULT_SYNC)) {
+			registryID = nbt.getInteger("id");
+		}
+	}
+
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		NBTTagCompound tag = new NBTTagCompound();
+		for (int i = 0; i < isBlocked.length; i++) {
+			tag.setBoolean("" + i, isBlocked[i]);
+		}
+		nbt.setTag("isBlocked", tag);
+		if (type.isType(SyncType.DEFAULT_SYNC)) {
+			nbt.setInteger("id", registryID);
+		}
+		return super.writeData(nbt, type);
+	}
+
+	//// PACKETS \\\\
+
+	@Override
+	public void writeUpdatePacket(PacketBuffer buf) {
+		super.writeUpdatePacket(buf);
+		for (int i = 0; i < isBlocked.length; i++) {
+			buf.writeBoolean(isBlocked[i]);
+		}
+	}
+
+	@Override
+	public void readUpdatePacket(PacketBuffer buf) {
+		super.readUpdatePacket(buf);
+		for (int i = 0; i < isBlocked.length; i++) {
+			isBlocked[i] = buf.readBoolean();
+		}
+	}
+
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemStack(LogisticsItems.partCable);
 	}
 
 	public boolean equals(Object obj) {

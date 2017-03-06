@@ -5,19 +5,16 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.logistics.Logistics;
-import sonar.logistics.client.GuiHelpOverlay;
 
 @SideOnly(Side.CLIENT)
 public class LogisticsButton extends AnimatedButton {

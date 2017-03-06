@@ -2,26 +2,17 @@ package sonar.logistics.client.gui;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import sonar.core.SonarCore;
-import sonar.core.api.IFlexibleGui;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerGuide;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.guide.IGuidePage;
 import sonar.logistics.guide.elements.Element3DRenderer;
