@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client;
 
 import java.util.List;
 
@@ -56,7 +56,6 @@ public class LogisticsButton extends AnimatedButton {
 
 	public void drawButton(Minecraft mc, int x, int y) {
 		super.drawButton(mc, x, y);
-
 	}
 
 	@Override

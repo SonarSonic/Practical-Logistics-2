@@ -1,14 +1,16 @@
 package sonar.logistics.common.multiparts;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import sonar.core.api.energy.StoredEnergyStack;
+import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncCoords;
@@ -20,22 +22,29 @@ import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.EnergyReader;
+import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.client.gui.GuiEnergyReader;
 import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.connections.monitoring.EnergyMonitorHandler;
+import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
+import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.EnergyHelper;
+import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.network.sync.SyncEnergyType;
 
 public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> implements IByteBufTile {
 
 	public SyncCoords selected = new SyncCoords(1);
 	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 2).addSyncType(SyncType.SPECIAL);
-	public SyncEnum<EnergyReader.SortingType> sortingType = (SyncEnum) new SyncEnum(EnergyReader.SortingType.values(), 3).addSyncType(SyncType.SPECIAL);
+	// public SyncEnum<EnergyReader.SortingType> sortingType = (SyncEnum) new SyncEnum(EnergyReader.SortingType.values(), 3).addSyncType(SyncType.SPECIAL);
+	public SyncEnum<EnergyReader.Modes> setting = (SyncEnum) new SyncEnum(EnergyReader.Modes.values(), 3).addSyncType(SyncType.SPECIAL);
+	public SyncEnergyType energyType = new SyncEnergyType(4);
 	{
-		syncList.addParts(selected, sortingOrder, sortingType);
+		syncList.addParts(selected, sortingOrder, setting, energyType);
 	}
 
 	public EnergyReaderPart() {
@@ -45,44 +54,67 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	public EnergyReaderPart(EnumFacing face) {
 		super(EnergyMonitorHandler.id, face);
 	}
-	
+
 	//// ILogicReader \\\\
-	
+
 	@Override
 	public MonitoredList<MonitoredEnergyStack> sortMonitoredList(MonitoredList<MonitoredEnergyStack> updateInfo, int channelID) {
-		EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
+		EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), EnergyReader.SortingType.NAME);
 		return updateInfo;
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredEnergyStack> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredEnergyStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
 		IMonitorInfo info = null;
-		if (selected.getCoords() != null) {
-			for (MonitoredEnergyStack stack : updateInfo) {
-				if(stack.coords.getMonitoredInfo().syncCoords.getCoords().equals(selected.getCoords())){
-					info = stack;
-					break;
+		switch (setting.getObject()) {
+		case STORAGE:
+			if (selected.getCoords() != null) {
+				for (MonitoredEnergyStack stack : updateInfo) {
+					if (stack.coords.getMonitoredInfo().syncCoords.getCoords().equals(selected.getCoords())) {
+						MonitoredEnergyStack convert = stack.copy();
+						convert.energyStack.getObject().convertEnergyType(energyType.getEnergyType());
+						info = convert;
+						break;
+					}
 				}
 			}
+			break;
+		case STORAGES:
+			info = new LogicInfoList(getIdentity(), MonitoredEnergyStack.id, this.getNetworkID());
+			// LogicInfoList list = new LogicInfoList();
+			break;
+		case TOTAL:
+			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(this.getCoords(), this.getDisplayName()), new StoredItemStack(this.getItemStack()));
+			for (MonitoredEnergyStack stack : updateInfo.cloneInfo()) {
+				MonitoredEnergyStack convert = stack.copy();
+				convert.energyStack.getObject().convertEnergyType(energyType.getEnergyType());
+				energy = (MonitoredEnergyStack) energy.joinInfo(convert);
+			}
+			info = energy;
+			break;
+		default:
+			break;
+
 		}
+
 		/* switch (setting.getObject()) { case FLUID: break; case POS: break; case STORAGE: break; case TANKS: break; default: break; } */
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
 			IMonitorInfo oldInfo = Logistics.getServerManager().info.get(id);
-			if (oldInfo == null || !oldInfo.isIdenticalInfo(info)) {
+			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				Logistics.getServerManager().changeInfo(id, info);
 			}
 		}
 
 	}
-	
+
 	//// IChannelledTile \\\\
 
 	@Override
 	public ChannelType channelType() {
 		return ChannelType.UNLIMITED;
 	}
-	
+
 	//// PACKETS \\\\
 
 	@Override
@@ -106,7 +138,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 		super.readPacket(buf, id);
 
 	}
-	
+
 	//// GUI \\\\
 
 	@Override

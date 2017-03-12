@@ -20,7 +20,7 @@ public class ItemGuide extends SonarItem implements IFlexibleGui<ItemStack> {
 		if (!world.isRemote) {
 			SonarCore.instance.guiHandler.openBasicItemStack(false, stack, player, world, player.getPosition(), 0);
 		} else {
-			RenderHelper.resetLanguageRegistry();
+			//RenderHelper.resetLanguageRegistry();
 		}
 		return new ActionResult(EnumActionResult.SUCCESS, stack);
 

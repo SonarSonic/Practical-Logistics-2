@@ -20,6 +20,7 @@ import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.network.sync.SyncFilterList;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketNodeFilter extends PacketMultipart {

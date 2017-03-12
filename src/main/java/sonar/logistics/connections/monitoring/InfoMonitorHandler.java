@@ -16,6 +16,7 @@ import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry.LogicPath;
@@ -56,8 +57,9 @@ public class InfoMonitorHandler extends LogicMonitorHandler<LogicInfo> implement
 	}
 
 	@Override
-	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, Entity entity) {
+	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, EntityConnection connection) {
 		MonitoredList<LogicInfo> list = MonitoredList.<LogicInfo>newMonitoredList(network.getNetworkID());
+		Entity entity = connection.entity;
 		World world = entity.getEntityWorld();
 		LogicInfoRegistry.getEntityInfo(list, entity);
 		for (ICustomEntityHandler handler : LogicInfoRegistry.customEntityHandlers) {

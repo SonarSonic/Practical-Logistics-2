@@ -22,6 +22,8 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
+import sonar.logistics.client.LogisticsButton;
+import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
@@ -155,9 +157,9 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	@Override
 	public MonitoredList<MonitoredItemStack> getGridList() {
 		String search = searchField.getText();
-		if (search == null || search.isEmpty() || search.equals(" "))
+		if (search == null || search.isEmpty() || search.equals(" ")){
 			return part.getMonitoredList();
-		else {
+		}else {
 			MonitoredList<MonitoredItemStack> searchList = MonitoredList.newMonitoredList(part.getNetworkID());
 			for (MonitoredItemStack stack : (ArrayList<MonitoredItemStack>) part.getMonitoredList().clone()) {
 				StoredItemStack item = stack.itemStack.getObject();

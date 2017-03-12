@@ -5,50 +5,53 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
+import mcmultipart.multipart.IMultipart;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.utils.IUUIDIdentity;
+import sonar.logistics.Logistics;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
+import sonar.logistics.helpers.CableHelper;
 
-/**used when syncing Logic Monitors for display in the Display Screen with the client, since some may not be loaded on client side.*/
-public class ClientLogicReader implements IUUIDIdentity, INBTSyncable {
+/** used when syncing Logic Monitors for display in the Display Screen with the client, since some may not be loaded on client side. */
+public class ClientViewable implements IUUIDIdentity, INBTSyncable {
 
 	public ArrayList<ISyncPart> syncParts = new ArrayList<ISyncPart>();
-	public SyncUUID uuid = new SyncUUID(0);
+	public SyncUUID identity = new SyncUUID(0);
 	public SyncCoords coords = new SyncCoords(1);
-	public SyncTagType.INT maxInfo = new SyncTagType.INT(2);
 	{
-		syncParts.addAll(Lists.newArrayList(uuid, coords, maxInfo));
+		syncParts.addAll(Lists.newArrayList(identity, coords));
 	}
 
-	public ClientLogicReader() {}
-
-	public ClientLogicReader(IInfoProvider emitter) {
-		this.uuid.setObject(emitter.getIdentity());
-		this.coords.setCoords(emitter.getCoords());
-		this.maxInfo.setObject(emitter.getMaxInfo());
+	public ClientViewable() {
 	}
 
-	public ClientLogicReader(UUID uuid, BlockCoords coords, int maxInfo) {
-		this.uuid.setObject(uuid);
+	public ClientViewable(ILogicViewable monitor) {
+		this.identity.setObject(monitor.getIdentity());
+		this.coords.setCoords(monitor.getCoords());
+	}
+
+	public ClientViewable(UUID uuid, BlockCoords coords) {
+		this.identity.setObject(uuid);
 		this.coords.setCoords(coords);
-		this.maxInfo.setObject(maxInfo);
 	}
 
-	public ClientLogicReader copy() {
-		return new ClientLogicReader(uuid.getUUID(), coords.getCoords(), maxInfo.getObject());
+	public ClientViewable copy() {
+		return new ClientViewable(identity.getUUID(), coords.getCoords());
 	}
 
 	@Override
 	public UUID getIdentity() {
-		return uuid.getUUID();
+		return identity.getUUID();
 	}
 
 	@Override
@@ -60,6 +63,18 @@ public class ClientLogicReader implements IUUIDIdentity, INBTSyncable {
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		NBTHelper.writeSyncParts(nbt, type, syncParts, type.isType(SyncType.SAVE));
 		return nbt;
+	}
+
+	public ILogicViewable getViewable() {
+		ILogicViewable viewable = CableHelper.getMonitorFromHashCode(identity.getUUID().hashCode(), true);
+		if (viewable == null) {
+			IMultipart part = SonarMultipartHelper.getPartFromHash(identity.getUUID().hashCode(), coords.getCoords().getWorld(), coords.getCoords().getBlockPos());
+			if (part != null && part instanceof ILogicViewable) {
+				ILogicViewable partViewer = (ILogicViewable) part;
+				viewable = (ILogicViewable) part;			
+			}
+		}
+		return viewable;
 	}
 
 	public boolean equals(Object obj) {

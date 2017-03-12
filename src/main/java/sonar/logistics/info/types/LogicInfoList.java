@@ -1,9 +1,12 @@
 package sonar.logistics.info.types;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,11 +22,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
+import sonar.core.utils.CustomColour;
 import sonar.core.network.sync.SyncUUID;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
@@ -34,9 +39,13 @@ import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
+import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -102,18 +111,20 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		return new LogicInfoList(monitorUUID.getUUID(), infoID.getObject(), networkID.getObject());
 	}
 
+	public MonitoredList<?> getCachedList(InfoUUID id) {
+		return Logistics.getClientManager().getMonitoredList(networkID.getObject(), id);
+	}
+
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-
+		/*
 		if (displayMenu) {
 			renderButtons(container, displayInfo, width, height, scale, infoPos);
 			return;
 		}
-
-		MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), displayInfo.getInfoUUID());
-		IInfoProvider monitor = Logistics.getClientManager().monitors.get(monitorUUID.getUUID());
-
-		if (monitor == null || list == null)
+		*/
+		MonitoredList<?> list = getCachedList(displayInfo.getInfoUUID());
+		if (list == null)
 			return;
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			if (list == null || list.isEmpty()) {
@@ -127,6 +138,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glPushMatrix();
+			GlStateManager.pushAttrib();
 			GL11.glTranslated(-1 + (0.0625 * 1.3), -1 + 0.0625 * 5, 0.00);
 			GL11.glRotated(180, 0, 1, 0);
 			GL11.glScaled(-1, 1, 1);
@@ -152,16 +164,16 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 					RenderHelper.renderItemIntoGUI(item.item, 0, 0);
 					GlStateManager.disablePolygonOffset();
 					GlStateManager.translate(0, 0, 1);
-					//GlStateManager.depthMask(false);
+					GlStateManager.depthMask(false);
 					RenderHelper.renderStoredItemStackOverlay(item.item, 0, 0, 0, "" + item.stored, false);
-					//GlStateManager.depthMask(true);
+					GlStateManager.depthMask(true);
 					GL11.glPopMatrix();
 				}
 			}
-			GlStateManager.enableDepth();
+			GlStateManager.disableDepth();
+			GlStateManager.popAttrib();
 			GL11.glPopMatrix();
-		}
-		if (infoID.getObject().equals(MonitoredFluidStack.id)) {
+		} else if (infoID.getObject().equals(MonitoredFluidStack.id)) {
 			MonitoredList<MonitoredFluidStack> fluids = (MonitoredList<MonitoredFluidStack>) list.copyInfo();
 			double dimension = (14 * 0.0625);
 			xSlots = (int) Math.round(width);
@@ -198,6 +210,46 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 					GL11.glPopMatrix();
 				}
 			}
+		} else if (infoID.getObject().equals(MonitoredEnergyStack.id)) {
+			MonitoredList<MonitoredEnergyStack> energy = (MonitoredList<MonitoredEnergyStack>) list.copyInfo();
+			xSlots = (int) 1;
+			ySlots = (int) ((Math.round(height)) / (0.0625 * 7));
+			perPage = xSlots * ySlots;
+			double spacing = 0.0625 * 7;
+			if (energy.size() < perPage * pageCount) {
+				pageCount = 0;
+			}
+			GL11.glTranslated(-1, -1 + 0.0625 * 4, 0.00);
+			int end = Math.min(perPage + perPage * pageCount, energy.size());
+			for (int i = perPage * pageCount; i < end; i++) {
+				MonitoredEnergyStack info = energy.get(i);
+				int current = i - perPage * pageCount;
+				int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
+				int yLevel = (int) (Math.floor((current / xSlots)));
+				GL11.glPushMatrix();
+				GL11.glTranslated(xLevel * spacing, yLevel * spacing, 0);
+				double l = ((double) info.energyStack.obj.stored * (double) (width) / info.energyStack.obj.capacity);
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderHelper.saveBlendState();
+
+				GlStateManager.disableLighting();
+				boolean isHighlighted = false;
+				if (!RenderBlockSelection.positions.isEmpty()) {
+					if (RenderBlockSelection.isPositionRenderered(info.coords.getMonitoredInfo().syncCoords.getCoords())) {
+						isHighlighted=true;						
+					}
+				}
+				Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(2));
+				InfoRenderer.renderProgressBar(width, 6 * 0.0625, scale, l, width);
+				RenderHelper.restoreBlendState();
+				GL11.glTranslated(0, 0, -0.00625);
+
+				// GL11.glTranslated((width/2)-1, +1 + 0.0625 * 4, 0.00);
+				GL11.glTranslated(1, 1 - 0.0625 * 3.5, 0.00);
+				InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, 0.0625 * 6, scale / 3, isHighlighted? new CustomColour(20, 100, 180).getRGB() : -1, Lists.newArrayList(info.coords.getMonitoredInfo().getClientIdentifier() + " - " + info.coords.getMonitoredInfo().getClientObject(), info.getClientIdentifier() + " - " + info.getClientObject()));
+				GL11.glPopMatrix();
+
+			}
 		}
 	}
 
@@ -205,22 +257,24 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public NBTTagCompound onClientClick(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
 		NBTTagCompound clickTag = new NBTTagCompound();
 		if (event.type == BlockInteractionType.SHIFT_RIGHT) {
-			MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), renderInfo.getInfoUUID());
+			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
 			/* displayMenu=!displayMenu; this.resetButtons(); */
 			if (list.size() > perPage * (pageCount + 1)) {
 				this.pageCount++;
-			}else{
-				this.pageCount=0;
+			} else {
+				this.pageCount = 0;
 			}
-			player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "PAGE " + (pageCount+1) +" of " + (list.size()/perPage )));
+			player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "PAGE " + (pageCount + 1) + " of " + Math.min(pageCount + 1, Math.round((double) list.size() / Math.max(perPage, 1)))));
 			return clickTag;
 		}
+		/*
 		if (displayMenu) {
 			return clickTag;
 		}
+		*/
 		if (infoID.getObject().equals(MonitoredItemStack.id) && event.hit != null) {
 			int slot = (perPage * pageCount) + CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 2, 2);
-			MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), renderInfo.getInfoUUID());
+			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredItemStack itemStack = (MonitoredItemStack) list.get(slot);
 				if (itemStack != null) {
@@ -230,12 +284,30 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			}
 		} else if (infoID.getObject().equals(MonitoredFluidStack.id) && event.hit != null) {
 			int slot = (perPage * pageCount) + CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 1, 1);
-			MonitoredList<?> list = Logistics.getClientManager().getMonitoredList(networkID.getObject(), renderInfo.getInfoUUID());
+			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredFluidStack fluidStack = (MonitoredFluidStack) list.get(slot);
 				if (fluidStack != null) {
 					fluidStack.writeData(clickTag, SyncType.SAVE);
 				}
+				return clickTag;
+			}
+		} else if (infoID.getObject().equals(MonitoredEnergyStack.id) && event.hit != null) {
+			int slot = (int) ((perPage * pageCount) + CableHelper.getListSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 0.0625 * 6, 0.0625 * 1, perPage));
+			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
+			if (list != null && slot >= 0 && slot < list.size()) {
+				MonitoredEnergyStack energyStack = (MonitoredEnergyStack) list.get(slot);
+				if (energyStack != null) {
+					if (event.type == BlockInteractionType.RIGHT) {
+						RenderBlockSelection.addPosition(energyStack.coords.getMonitoredInfo().syncCoords.getCoords(), false);
+						player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "'"  +energyStack.coords.getMonitoredInfo().getClientIdentifier() + "'" + " has been highlighted"));
+
+					}
+				}
+				// MonitoredEnergyStack energyStack = (MonitoredEnergyStack) list.get(slot);
+				// if (energyStack != null) {
+				// energyStack.writeData(clickTag, SyncType.SAVE);
+				// }
 				return clickTag;
 			}
 		}
@@ -252,14 +324,14 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			InfoHelper.screenFluidStackClicked(clicked.fluidStack.getObject(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
 		}
 	}
-
+	/*
 	@SideOnly(Side.CLIENT)
 	public void getButtons(ArrayList<DisplayButton> buttons) {
 		super.getButtons(buttons);
 		buttons.add(new DisplayButton("nxPg", 16, 16, "Next Page"));
 		buttons.add(new DisplayButton("pvPg", 16, 16, "Previous Page"));
 	}
-
+	*/
 	@Override
 	public String getClientIdentifier() {
 		return "List: " + infoID.getObject().toLowerCase();

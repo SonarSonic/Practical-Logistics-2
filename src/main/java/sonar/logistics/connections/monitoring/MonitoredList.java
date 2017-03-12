@@ -69,12 +69,12 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 		add(newInfo);
 	}
 
-	public MonitoredList<T> updateList(MonitoredList<T> lastList) {
+	public MonitoredList<T> updateList(MonitoredList<?> monitoredList) {
 		ArrayList<T> changed = ((ArrayList<T>) cloneInfo());
-		ArrayList<T> removed = ((ArrayList<T>) lastList.cloneInfo());
+		ArrayList<T> removed = ((ArrayList<T>) monitoredList.cloneInfo());
 		
 		
-		((ArrayList<T>) lastList.cloneInfo()).forEach(last -> 
+		((ArrayList<T>) monitoredList.cloneInfo()).forEach(last -> 
 			forEach(current -> {				
 				if (last.isMatchingInfo(current)) {
 					removed.remove(last);

@@ -59,7 +59,7 @@ public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart 
 	}
 
 	/// BUTTONS///
-
+	/*
 	@SideOnly(Side.CLIENT)
 	public ArrayList<DisplayButton> buttons = new ArrayList();
 	public boolean displayMenu = false;
@@ -95,5 +95,6 @@ public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart 
 	
 	@SideOnly(Side.CLIENT)
 	public void onButtonClicked(String buttonID) {}
+	*/
 
 }

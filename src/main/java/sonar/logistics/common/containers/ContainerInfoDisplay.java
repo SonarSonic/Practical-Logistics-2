@@ -13,15 +13,6 @@ public class ContainerInfoDisplay extends ContainerMultipartSync {
 	public ContainerInfoDisplay(IInfoDisplay display) {
 		super((SonarMultipart) display);
 	}
-	
-	public boolean syncInventory() {
-		return false;
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = null;
@@ -31,5 +22,14 @@ public class ContainerInfoDisplay extends ContainerMultipartSync {
 
 	public SyncType[] getSyncTypes() {
 		return new SyncType[] { SyncType.DEFAULT_SYNC };
+	}
+	
+	public boolean syncInventory() {
+		return false;
+	}
+
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 }

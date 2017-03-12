@@ -3,36 +3,87 @@ package sonar.logistics.client.gui;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import sonar.core.SonarCore;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.utils.CustomColour;
+import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.readers.EnergyReader;
+import sonar.logistics.api.readers.EnergyReader.Modes;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
+import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.common.multiparts.EnergyReaderPart;
 import sonar.logistics.common.multiparts.MonitorMultipart;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
+import sonar.logistics.network.PacketInventoryReader;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
 	public EnergyReaderPart part;
+	public EntityPlayer player;
 
 	public GuiEnergyReader(EntityPlayer player, EnergyReaderPart tile) {
 		super(new ContainerEnergyReader(player, tile), tile);
 		this.part = tile;
+		this.player = player;
 		this.xSize = 182 + 66;
 		this.listHeight = 18;
+	}
+
+	public void initGui() {
+		super.initGui();
+		initButtons();
+	}
+
+	public void initButtons() {
+		int start = 8;
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 9, 32, 96 + 16, "Channels", "button.Channels"));
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 18 * 2, guiTop + 9, 64 + 64 + 16, 16 * part.setting.getObject().ordinal(), part.setting.getObject().getName(), part.setting.getObject().getDescription()));
+		if (part.setting.getObject() != Modes.STORAGES)
+			this.buttonList.add(new GuiButton(3, guiLeft + 190, guiTop + 6, 40, 20, part.energyType.getEnergyType().getStorageSuffix()));
+	}
+
+	public void actionPerformed(GuiButton button) {
+		super.actionPerformed(button);
+		if (button != null) {
+			switch (button.id) {
+			case 0:
+				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
+				break;
+			case 1:
+				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
+				reset();
+				break;
+			case 2:
+				part.setting.incrementEnum();
+				part.sendByteBufPacket(3);
+				reset();
+				break;
+			case 3:
+				part.energyType.incrementType();
+				part.sendByteBufPacket(4);
+				reset();
+				break;
+			/* case 0: part.sortingOrder.incrementEnum(); part.sendByteBufPacket(5); initButtons(); break; case 3: Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 3)); break; case 4: Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 4)); break; */
+			}
+		}
 	}
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(FontHelper.translate("item.EnergyReader.name"), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(String.format("Select the energy you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(FontHelper.translate("item.EnergyReader.name"), xSize, 10, LogisticsColours.white_text);
 	}
 
 	public double listScale() {
@@ -69,8 +120,8 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	public boolean isSelectedInfo(MonitoredEnergyStack info) {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
-		}//X: -468 Y: 4 Z: -975 D: 0
-		return part.selected.getCoords()!=null && part.selected.getCoords().equals(info.coords.getMonitoredInfo().syncCoords.getCoords());
+		} // X: -468 Y: 4 Z: -975 D: 0
+		return part.selected.getCoords() != null && part.selected.getCoords().equals(info.coords.getMonitoredInfo().syncCoords.getCoords());
 	}
 
 	@Override
@@ -83,15 +134,13 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
 	@Override
 	public void renderInfo(MonitoredEnergyStack info, int yPos) {
-
 		int l = (int) (info.energyStack.obj.stored * 231 / info.energyStack.obj.capacity);
-		if (l != 0) {
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderHelper.saveBlendState();
-			this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderHelper.saveBlendState();
+		this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
+		if (l != 0)
 			this.drawTransparentRect(25, (yPos) + 6, l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
-			RenderHelper.restoreBlendState();
-		}
+		RenderHelper.restoreBlendState();
 
 		StoredItemStack storedStack = info.dropStack.getObject();
 		if (storedStack != null) {

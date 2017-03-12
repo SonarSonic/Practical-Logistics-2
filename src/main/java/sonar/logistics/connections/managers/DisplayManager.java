@@ -14,8 +14,6 @@ import sonar.logistics.api.displays.ILargeDisplay;
 
 public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	
-	
-
 	@Override
 	public void onNetworksConnected(int newID, int oldID) {
 		ConnectedDisplayScreen screen = Logistics.getServerManager().getConnectedDisplays().get(newID);

@@ -1,6 +1,7 @@
 package sonar.logistics.common.multiparts;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
@@ -28,26 +29,30 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
+import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.utils.LogisticsHelper;
+import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.api.viewers.ViewerTally;
+import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ViewersList;
 import sonar.logistics.client.gui.GuiClock;
 import sonar.logistics.client.gui.GuiNode;
 import sonar.logistics.info.types.ClockInfo;
 
-public class ClockPart extends SidedMultipart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui {
+public class ClockPart extends SidedMultipart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui, ILogicViewable {
 
+	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
 	public static final PropertyBool HAND = PropertyBool.create("hand");
 
 	public long lastMillis;// when the movement was started
 	public long currentMillis;// the current millis
 	public long offset = 0;
-	// public long tickTime;// tick time in millis
 
 	public SyncTagType.LONG tickTime = new SyncTagType.LONG(1);
-	protected SyncUUID uuid = new SyncUUID(2); // CAN I USE THE MULTIPART UUID INSTEAD?
 
 	public float rotation;// 0-360 indicating rotation of the clock hand.
 	public boolean isSet;
@@ -58,7 +63,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public long finalStopTime;
 	{
-		this.syncList.addParts(tickTime, uuid);
+		this.syncList.addParts(tickTime);
 	}
 
 	public ClockPart() {
@@ -136,25 +141,27 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 	}
 
 	public UUID getIdentity() {
-		if (uuid.getUUID() == null) {
-			setUUID();
-		}
-		return uuid.getUUID();
-	}
-
-	public void setUUID() {
-		if (this.getWorld() != null && !this.getWorld().isRemote) {
-			if (uuid.getUUID() == null) {
-				uuid.setObject(UUID.randomUUID());
-				Logistics.getServerManager().addMonitor(this);
-			}
-			sendByteBufPacket(-2);
-		}
+		return getUUID();
 	}
 
 	@Override
 	public int getMaxInfo() {
 		return 1;
+	}
+
+	//// ILogicViewable \\\\
+
+	public ViewersList getViewersList() {
+		return viewers;
+	}
+
+	@Override
+	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
+		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+	}
+
+	@Override
+	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
 	}
 
 	//// STATE \\\\
@@ -172,8 +179,8 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public void onLoaded() {
 		super.onLoaded();
+		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 		if (isServer()) {
-			Logistics.getServerManager().addMonitor(this);
 			setClockInfo();
 		}
 	}
@@ -190,12 +197,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		if (isServer()) {
-			setUUID();
-			Logistics.getServerManager().addMonitor(this);
-		} else {
-			this.sendByteBufPacket(-4); // request the monitor UUID
-		}
+		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 	}
 
 	//// SAVING \\\\
@@ -235,9 +237,6 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 		case 1:
 			tickTime.writeToBuf(buf);
 			break;
-		case -2:
-			uuid.writeToBuf(buf);
-			break;
 		}
 	}
 
@@ -246,10 +245,6 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 		switch (id) {
 		case -4:
 			sendByteBufPacket(-2);
-			break;
-		case -2:
-			uuid.readFromBuf(buf);
-			Logistics.getInfoManager(true).addMonitor(this);
 			break;
 		case 0:
 			rotation = buf.readFloat();
@@ -319,7 +314,6 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 	public String getDisplayName() {
 		return FontHelper.translate("item.Clock.name");
 	}
-
 
 	@Override
 	public boolean canConnectRedstone(EnumFacing side) {

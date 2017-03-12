@@ -12,18 +12,27 @@ import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
 import sonar.logistics.Logistics;
+import sonar.logistics.LogisticsASMLoader;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.EntityConnection;
 
 @EntityMonitorHandler(handlerID = ItemMonitorHandler.id, modid = Logistics.MODID)
 @TileMonitorHandler(handlerID = ItemMonitorHandler.id, modid = Logistics.MODID)
 public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> implements ITileMonitorHandler<MonitoredItemStack>, IEntityMonitorHandler<MonitoredItemStack> {
 
 	public static final String id = "item";
+	public static ItemMonitorHandler handler;
+
+	public static ItemMonitorHandler instance() {
+		if (handler == null)
+			handler = (ItemMonitorHandler) LogisticsASMLoader.tileMonitorHandlers.get(id);
+		return handler;
+	}
 
 	@Override
 	public String id() {
@@ -52,8 +61,9 @@ public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> 
 	}
 
 	@Override
-	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, Entity entity) {
+	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, EntityConnection connection) {
 		MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(network.getNetworkID());
+		Entity entity = connection.entity;
 		if (entity instanceof EntityPlayer) {
 			List<StoredItemStack> info = new ArrayList();
 			StorageSize size = GenericInventoryHandler.getItems(info, ((EntityPlayer) entity).inventory, null);

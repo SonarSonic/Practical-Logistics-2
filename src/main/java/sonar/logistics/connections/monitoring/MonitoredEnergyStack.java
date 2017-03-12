@@ -24,7 +24,7 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
-import sonar.logistics.network.SyncMonitoredType;
+import sonar.logistics.network.sync.SyncMonitoredType;
 
 @LogicInfoType(id = MonitoredEnergyStack.id, modid = Logistics.MODID)
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {
@@ -88,6 +88,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 	@Override
 	public IJoinableInfo joinInfo(MonitoredEnergyStack info) {
 		energyStack.getObject().add(info.energyStack.getObject());
+		energyStack.markChanged();
 		return this;
 	}
 

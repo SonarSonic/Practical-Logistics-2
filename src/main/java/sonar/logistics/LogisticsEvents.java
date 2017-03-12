@@ -23,13 +23,11 @@ public class LogisticsEvents {
 			return;
 		}
 		if (event.phase == Phase.END) {
-			//SimpleProfiler.start("nets");
 			Logistics.getNetworkManager().tick();
 			Logistics.getServerManager().onServerTick();
 			Logistics.getNetworkManager().updateEmitters = false;
 			EmitterManager.tick(); // this must happen at the end, since the dirty boolean will be changed and will upset tiles
 			Logistics.getDisplayManager().tick();
-			//System.out.println("nets: " + SimpleProfiler.finish("nets")/1000.0);
 			ArrayPart.entityChanged=false;
 		}
 	}
@@ -50,13 +48,6 @@ public class LogisticsEvents {
 	public void onLoggedIn(EntityEvent.EnteringChunk event) {
 		if (event.getEntity() != null && !event.getEntity().getEntityWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
 			Logistics.getServerManager().requireUpdates.add((EntityPlayer) event.getEntity());
-		}
-	}
-
-	@SubscribeEvent
-	public void onEntityTransceiverClicked(PlayerInteractEvent.EntityInteract event) {
-		if (event.getSide().isServer() && event.getItemStack() != null && event.getItemStack().getItem() instanceof IEntityTransceiver) {
-			//((IEntityTransceiver) event.getItemStack().getItem()).onRightClickEntity(event.getEntityPlayer(), event.getItemStack(), event.getEntity());
 		}
 	}
 

@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
@@ -19,6 +20,7 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.SonarHelper;
+import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
@@ -28,27 +30,26 @@ import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.FluidReader.SortingType;
 import sonar.logistics.api.wrappers.FluidWrapper;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
+import sonar.logistics.helpers.ItemHelper.ConnectionFilters;
 
 public class FluidHelper extends FluidWrapper {
 
-	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action) {
+	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action, ITankFilter filter) {
 		if (add.stored == 0) {
 			return add;
 		}
-		ArrayList<BlockConnection> connections = network.getExternalBlocks(true);
-		connections: for (BlockConnection entry : connections) {
-			if (!entry.canTransferFluid(entry.coords, add, NodeTransferMode.ADD)) {
+		ArrayList<NodeConnection> connections = network.getConnectedChannels(true);
+		for (NodeConnection entry : connections) {
+			if (!entry.canTransferFluid(entry, add, NodeTransferMode.ADD)) {
 				continue;
 			}
-			TileEntity tile = entry.coords.getTileEntity();
-			if (tile != null) {
-				for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
-					if (provider.canHandleFluids(tile, entry.face)) {
-						add = provider.addStack(add, tile, entry.face, action);
-						if (add == null || add.stored == 0) {
-							return null;
-						}
-						continue connections;
+			if (entry instanceof BlockConnection) {
+				BlockConnection connection = (BlockConnection) entry;
+				TileEntity tile = connection.coords.getTileEntity();
+				if (tile != null) {
+					add = SonarAPI.getFluidHelper().addFluids(add, tile, connection.face, action, filter);
+					if (add == null) {
+						return null;
 					}
 				}
 			}
@@ -56,58 +57,29 @@ public class FluidHelper extends FluidWrapper {
 		return add;
 	}
 
-	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action) {
+	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action, ITankFilter filter) {
 		if (remove.stored == 0) {
 			return remove;
 		}
-		ArrayList<BlockConnection> connections = network.getExternalBlocks(true);
-		for (BlockConnection entry : connections) {
-			remove = removeFluids(remove, entry, action);
-			if (remove == null) {
-				return null;
+		ArrayList<NodeConnection> connections = network.getConnectedChannels(true);
+		for (NodeConnection entry : connections) {
+			if (!entry.canTransferFluid(entry, remove, NodeTransferMode.REMOVE)) {
+				continue;
 			}
-		}
-		return remove;
-	}
-
-	public StoredFluidStack removeFluids(StoredFluidStack remove, BlockConnection connection, ActionType type) {
-		if (!connection.canTransferFluid(connection.coords, remove, NodeTransferMode.REMOVE)) {
-			return remove;
-		}
-		TileEntity tile = connection.coords.getTileEntity();
-		if (tile != null) {
-			for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
-				if (provider.canHandleFluids(tile, connection.face)) {
-					remove = provider.removeStack(remove, tile, connection.face, type);
+			if (entry instanceof BlockConnection) {
+				BlockConnection connection = (BlockConnection) entry;
+				TileEntity tile = connection.coords.getTileEntity();
+				if (tile != null) {
+					remove = SonarAPI.getFluidHelper().removeFluids(remove, tile, connection.face, action, filter);
 					if (remove == null) {
 						return null;
 					}
-					break;
 				}
 			}
 		}
 		return remove;
 	}
 
-	public StoredFluidStack addFluids(StoredFluidStack remove, BlockConnection connection, ActionType type) {
-		if (!connection.canTransferFluid(connection.coords, remove, NodeTransferMode.ADD)) {
-			return remove;
-		}
-		TileEntity tile = connection.coords.getTileEntity();
-		if (tile != null) {
-			for (ISonarFluidHandler provider : SonarCore.fluidHandlers) {
-				if (provider.canHandleFluids(tile, connection.face)) {
-					remove = provider.addStack(remove, tile, connection.face, type);
-					if (remove == null) {
-						return null;
-					}
-					break;
-				}
-			}
-		}
-		return remove;
-	}
-	
 	public int fillCapabilityStack(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
 		if (container.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
 			return container.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).fill(fill.getFullStack(), !action.shouldSimulate());
@@ -123,7 +95,7 @@ public class FluidHelper extends FluidWrapper {
 			FluidStack stack = handler.getTankProperties()[0].getContents();
 			if (stack != null && stack.amount >= 0) {
 				StoredFluidStack add = new StoredFluidStack(stack, Math.min(toDrain, stack.amount));
-				StoredFluidStack added = SonarAPI.getFluidHelper().getStackToAdd(toDrain, add, addFluids(add.copy(), network, ActionType.SIMULATE));
+				StoredFluidStack added = SonarAPI.getFluidHelper().getStackToAdd(toDrain, add, addFluids(add.copy(), network, ActionType.SIMULATE, null));
 				if (added == null || added.stored >= 0) {
 					return handler.drain((int) added.stored, !action.shouldSimulate());
 				}
@@ -141,7 +113,7 @@ public class FluidHelper extends FluidWrapper {
 		heldItem = heldItem.copy();
 		heldItem.stackSize = 1;
 
-		StoredFluidStack remaining = removeFluids(toFill.copy(), cache, ActionType.SIMULATE);
+		StoredFluidStack remaining = removeFluids(toFill.copy(), cache, ActionType.SIMULATE, null);
 		StoredFluidStack removed = SonarAPI.getFluidHelper().getStackToAdd(toFill.getStackSize(), toFill, remaining);
 		if (removed.stored <= 0) {
 			return;
@@ -149,7 +121,7 @@ public class FluidHelper extends FluidWrapper {
 		int filled = fillCapabilityStack(heldItem.copy(), removed, cache, ActionType.SIMULATE);
 		if (filled != 0) {
 			ItemStack toAdd = heldItem.copy();
-			removed = SonarAPI.getFluidHelper().getStackToAdd(toFill.getStackSize(), toFill, removeFluids(new StoredFluidStack(toFill.getFullStack(), filled, toFill.capacity), cache, ActionType.PERFORM));
+			removed = SonarAPI.getFluidHelper().getStackToAdd(toFill.getStackSize(), toFill, removeFluids(new StoredFluidStack(toFill.getFullStack(), filled, toFill.capacity), cache, ActionType.PERFORM, null));
 			int fill = fillCapabilityStack(toAdd, removed, cache, ActionType.PERFORM);
 			if (player.getHeldItemMainhand().stackSize != 1) {
 				player.inventory.decrStackSize(player.inventory.currentItem, 1);
@@ -168,13 +140,27 @@ public class FluidHelper extends FluidWrapper {
 		FluidStack drained = drainCapabilityStack(heldItem.copy(), toDrain, cache, ActionType.SIMULATE);
 		if (drained != null && drained.amount > 0) {
 			ItemStack toAdd = heldItem.copy();
-			addFluids(new StoredFluidStack(drainCapabilityStack(toAdd, toDrain, cache, ActionType.PERFORM)), cache, ActionType.PERFORM);
+			addFluids(new StoredFluidStack(drainCapabilityStack(toAdd, toDrain, cache, ActionType.PERFORM)), cache, ActionType.PERFORM, null);
 			if (heldItem.stackSize != 1) {
 				player.inventory.decrStackSize(player.inventory.currentItem, 1);
 				LogisticsAPI.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
 			} else {
 				player.inventory.setInventorySlotContents(player.inventory.currentItem, toAdd);
 			}
+		}
+	}
+
+	public static void transferFluids(NodeTransferMode mode, BlockConnection filter, BlockConnection connection) {
+		TileEntity filterTile = filter.coords.getTileEntity();
+		TileEntity netTile = connection.coords.getTileEntity();
+		if (filterTile != null && netTile != null) {
+			EnumFacing dirFrom = mode.shouldRemove() ? filter.face : connection.face;
+			EnumFacing dirTo = !mode.shouldRemove() ? filter.face : connection.face;
+			TileEntity from = mode.shouldRemove() ? filterTile : netTile;
+			TileEntity to = !mode.shouldRemove() ? filterTile : netTile;
+			ConnectionFilters filters = new ConnectionFilters(filter, connection);
+
+			SonarAPI.getFluidHelper().transferFluids(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), filters);
 		}
 	}
 

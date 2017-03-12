@@ -53,7 +53,10 @@ public class RenderOperatorOverlay {
 			Vec3d end = RayTraceUtils.getEnd(player);
 			AdvancedRayTraceResultPart result = SonarMultipartHelper.collisionRayTrace(container, start, end);
 			
-			if (result != null) {				
+			if (result != null) {			
+				GlStateManager.pushAttrib();	
+				net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
+		        GlStateManager.disableLighting();
 				RenderHelper.offsetRendering(pos, evt.getPartialTicks());
 				Entity view = Minecraft.getMinecraft().getRenderViewEntity();
 				IMultipart part = result.hit.partHit;
@@ -79,6 +82,7 @@ public class RenderOperatorOverlay {
 					GlStateManager.rotate(-view.rotationPitch, 1, 0, 0);
 					RenderHelper.saveBlendState();
 					GlStateManager.disableDepth();
+					GlStateManager.depthMask(true);
 					GlStateManager.scale(0.016, 0.016, 1);
 					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 					
@@ -103,6 +107,7 @@ public class RenderOperatorOverlay {
 
 				}
 				GlStateManager.popMatrix();
+				GlStateManager.popAttrib();	
 			}
 		}
 		// }

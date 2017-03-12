@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.entity.Entity;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.IInfoProvider;
 
@@ -21,19 +19,9 @@ public class EmptyNetworkCache implements INetworkCache {
 	public static EmptyNetworkCache createEmptyCache() {
 		return new EmptyNetworkCache();
 	}
-
+	
 	@Override
-	public BlockConnection getExternalBlock(boolean includeChannels) {
-		return null;
-	}
-
-	@Override
-	public ArrayList<BlockConnection> getExternalBlocks(boolean includeChannels) {
-		return Lists.newArrayList();
-	}
-
-	@Override
-	public ArrayList<Entity> getExternalEntities(boolean includeChannels) {
+	public ArrayList<NodeConnection> getConnectedChannels(boolean includeChannels) {
 		return Lists.newArrayList();
 	}
 

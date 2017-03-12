@@ -8,6 +8,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
+import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerDataReceiver;
 import sonar.logistics.common.multiparts.DataReceiverPart;
 import sonar.logistics.helpers.InfoRenderer;

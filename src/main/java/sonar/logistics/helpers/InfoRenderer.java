@@ -39,12 +39,20 @@ public class InfoRenderer {
 		renderNormalInfo(displayType, width, height, scale, SonarHelper.convertArray(toDisplay));
 	}
 
+	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, String... toDisplay) {
+		renderNormalInfo(displayType, width, height, scale, colour, SonarHelper.convertArray(toDisplay));
+	}
+
 	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, List<String> toDisplay) {
+		renderNormalInfo(displayType, width, height, scale, -1, toDisplay);
+	}
+
+	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, List<String> toDisplay) {
 		GlStateManager.disableLighting();
 		GlStateManager.enableCull();
-		float offset = (float) (12/(1/scale));
+		float offset = (float) (12 / (1 / scale));
 		double yCentre = 0;
-		double centre =  (double)toDisplay.size() / 2  -0.5;
+		double centre = (double) toDisplay.size() / 2 - 0.5;
 		int fontHeight = RenderHelper.fontRenderer.FONT_HEIGHT;
 		for (int i = 0; i < toDisplay.size(); i++) {
 			GlStateManager.pushMatrix();
@@ -52,7 +60,7 @@ public class InfoRenderer {
 			GlStateManager.scale(scale, scale, 1.0f);
 			String string = toDisplay.get(i);
 			int length = RenderHelper.fontRenderer.getStringWidth(string);
-			RenderHelper.fontRenderer.drawString(string, (float) ((-1+0.0625 + width / 2) / scale - length / 2), (float) 0.625, -1, false);
+			RenderHelper.fontRenderer.drawString(string, (float) ((-1 + 0.0625 + width / 2) / scale - length / 2), (float) 0.625, colour, false);
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.disableCull();
@@ -72,6 +80,7 @@ public class InfoRenderer {
 	}
 
 	public static void renderProgressBar(double width, double height, double scale, double d, double e) {
+		GlStateManager.depthMask(true);
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -119,16 +128,16 @@ public class InfoRenderer {
 		switch (face) {
 		case DOWN:
 			GL11.glRotated(90, 1, 0, 0);
-			
+
 			int ordinal = rotation.ordinal();
 			ordinal = ordinal == 4 ? 5 : ordinal == 5 ? 4 : ordinal;
 			GL11.glRotated(rotate[ordinal], 0, 0, 1);
 			translate = getDownMatrix(ordinal, width, height);
-			
+
 			break;
 		case UP:
 			GL11.glRotated(270, 1, 0, 0);
-			
+
 			GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
 			translate = getUpMatrix(rotation.ordinal(), width, height);
 			GL11.glTranslated(0, 0, 0);
@@ -140,15 +149,15 @@ public class InfoRenderer {
 		}
 		GL11.glTranslated(translate[0] + 0.0625, translate[1], translate[2] - 0.005);
 	}
-	
-	public static double[] getDownMatrix(int i, int width, int height){
+
+	public static double[] getDownMatrix(int i, int width, int height) {
 		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, width, 0 }, { height, 0, 0 }, { 0, 0, 0 }, { height, width, 0 } };
-		return newMatrix[i];			
+		return newMatrix[i];
 	}
-	
-	public static double[] getUpMatrix(int i, int width, int height){
+
+	public static double[] getUpMatrix(int i, int width, int height) {
 		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
-		return newMatrix[i];			
+		return newMatrix[i];
 	}
 
 	public static int identifierLeft = (int) ((1.0 / 0.75) * 10);

@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client.gui.generic;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +26,9 @@ import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.api.logistics.EmitterStatement;
 import sonar.logistics.api.logistics.InputTypes;
 import sonar.logistics.api.logistics.LogicOperator;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.IInfoProvider;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.containers.ContainerStatementList;
@@ -333,9 +335,9 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 	@Override
 	public boolean isPairedInfo(Object info) {
-		if (info instanceof ILogicMonitor) {
+		if (info instanceof INetworkReader) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((ILogicMonitor) info).getCoords())) {
+				if (RenderBlockSelection.isPositionRenderered(((INetworkReader) info).getCoords())) {
 					return true;
 				}
 			}
@@ -380,7 +382,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			return info == currentFilter;
 		}
 
-		return info instanceof ILogicMonitor;
+		return info instanceof IInfoProvider;
 	}
 
 	@Override
@@ -395,8 +397,8 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 					FontHelper.text("-", InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
 				}
-			} else if (info instanceof ILogicMonitor) {
-				ILogicMonitor monitor = (ILogicMonitor) info;
+			} else if (info instanceof IInfoProvider) {
+				IInfoProvider monitor = (IInfoProvider) info;
 				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), monitor.getDisplayName()), yPos + 1, LogisticsColours.white_text.getRGB());
 			}
 			break;
@@ -495,8 +497,8 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 					currentFilter.uuid2.setObject((InfoUUID) info);
 				}
 				/* part.container().setUUID((InfoUUID) info, infoID); part.currentSelected = infoID; tile.sendByteBufPacket(0); */
-			} else if (info instanceof ILogicMonitor) {
-				RenderBlockSelection.addPosition(((ILogicMonitor) info).getCoords(), false);
+			} else if (info instanceof INetworkReader) {
+				RenderBlockSelection.addPosition(((INetworkReader) info).getCoords(), false);
 			}
 			break;
 		case STRING:

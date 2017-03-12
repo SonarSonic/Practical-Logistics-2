@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import sonar.core.SonarCore;
 import sonar.core.common.tileentity.TileEntityInventory;
 import sonar.core.inventory.SonarInventory;
 import sonar.core.network.sync.SyncTagType;
@@ -23,8 +24,8 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	public static int speed = 100;
 
 	public TileEntityHammer() {
-		syncList.addParts(progress, coolDown);
 		super.inv = new SonarInventory(this, 2);
+		syncList.addParts(progress, coolDown, inv);
 	}
 
 	public void update() {
@@ -39,23 +40,22 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 			// SonarCore.sendFullSyncAround(this, 64);
 		} else if (canProcess()) {
 			if (progress.getObject() < speed) {
-				progress.increaseBy(1);
-				// if (!this.worldObj.isRemote && progress.getObject() == 1)
-				// SonarCore.sendPacketAround(this, 64, 0);
+				if(progress.getObject()==0){
+					SonarCore.sendPacketAround(this, 64, 2);
+				}
+				progress.increaseBy(1);				
 			} else {
 				coolDown.setObject(speed * 2);
 				progress.setObject(0);
 				if (!this.worldObj.isRemote) {
-					finishProcess();					
-					markBlockForUpdate();
+					finishProcess();	
+					SonarCore.sendPacketAround(this, 64, 2);
 				}
 			}
 			// SonarCore.sendPacketAround(this, 64, 0);
-			// SonarCore.sendFullSyncAround(this, 64);
 		} else {
 			if (progress.getObject() != 0) {
 				this.progress.setObject(0);
-				// SonarCore.sendPacketAround(this, 64, 0);
 			}
 
 		}
@@ -137,7 +137,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		super.setInventorySlotContents(i, itemstack);
 		if (i == 1) {
 			markBlockForUpdate();
-			// SonarCore.sendFullSyncAround(this, 64);
+			SonarCore.sendFullSyncAround(this, 64);
 		}
 	}
 
@@ -168,6 +168,9 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		case 1:
 			coolDown.writeToBuf(buf);
 			break;
+		case 2:
+			inv.writeToBuf(buf);
+			break;
 		}
 
 	}
@@ -180,6 +183,9 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 			break;
 		case 1:
 			coolDown.readFromBuf(buf);
+			break;
+		case 2:
+			inv.readFromBuf(buf);
 			break;
 		}
 	}

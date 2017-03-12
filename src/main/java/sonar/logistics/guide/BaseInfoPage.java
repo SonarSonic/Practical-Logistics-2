@@ -74,7 +74,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				lineTally = 0;
 				newPage = false;
 			} else if (newPage) {
-				lineTally = 0;
+				//lineTally = 0;
 				newPage = false;
 			}
 
@@ -93,7 +93,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				for (ElementLink link : links) {
 					if (link.lineNum >= from && link.lineNum <= to) {
 						int linePos = lineTally + link.lineNum - 1;
-						link.setDisplayPosition(ordinal, (int) (this.getLineOffset(linePos, ordinal) * 0.75 + link.index), (int) (25 + ((linePos) * 12) * 0.75));
+						link.setDisplayPosition(ordinal, (int) (this.getLineOffset(linePos, ordinal) * 0.75 + link.index), (int) (25 + ((linePos-((numPagesNeeded - currentPages)*GuidePageHelper.maxLinesPerPage)) * 12) * 0.75));
 						pageLinks.add(link);
 					} else {
 						break;
@@ -169,6 +169,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 	}
 	
 	public void drawPageInGui(GuiGuide gui, int yPos) {
+		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		FontHelper.text(getDisplayName(), 28, yPos + 3, -1);
 	}
 
@@ -177,9 +178,9 @@ public abstract class BaseInfoPage implements IGuidePage {
 		for (ElementLink pageLink : currentLinks) {
 			if (pageLink != null && pageLink.isMouseOver(gui, x - gui.getGuiLeft(), y - gui.getGuiTop())) {
 				GlStateManager.disableDepth();
-				gui.drawSonarCreativeTabHoveringText(TextFormatting.BLUE + "Open: " + TextFormatting.RESET + pageLink.getGuidePage() == null ? "ERROR" : pageLink.getGuidePage().getDisplayName(), x, y);
+				gui.drawSonarCreativeTabHoveringText(TextFormatting.BLUE + "Open: " + TextFormatting.RESET + (pageLink.getGuidePage() == null ? "ERROR" : pageLink.getGuidePage().getDisplayName()), x, y);
 
-				// GlStateManager.disableLighting();
+				GlStateManager.disableLighting();
 				break;
 			}
 		}
@@ -203,17 +204,20 @@ public abstract class BaseInfoPage implements IGuidePage {
 	}
 
 	public void drawForegroundPage(GuiGuide gui, int x, int y, int page) {
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		for (int i = 0; i < this.guideButtons.size(); ++i) {
 			GuiButton button = ((GuiButton) this.guideButtons.get(i));
 			button.drawButtonForegroundLayer(x, y);
 		}
 		GL11.glScaled(0.75, 0.75, 0.75);
 		int listTally = 0;
+		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+		//GlStateManager.enableLighting();
 		for (ElementInfoFormatted guidePage : currentData) {
 			List<String> info = guidePage.formattedList;
 			for (int i = 0; i < Math.min(16, info.size()); i++) {
 				String s = info.get(i);
-				FontHelper.text(s, guidePage.displayX + getLineOffset(i + listTally, currentSubPage), 25 + (i + listTally) * 12, LogisticsColours.white_text.getRGB());
+				FontHelper.text(s, guidePage.displayX + getLineOffset(i + listTally, currentSubPage), 25 + (i + listTally) * 12, -1);
 			}
 			listTally += (listTally == 0 ? 1 : 1) + guidePage.formattedList.size();
 		}

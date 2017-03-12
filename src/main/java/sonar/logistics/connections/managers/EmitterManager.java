@@ -21,6 +21,7 @@ public class EmitterManager {
 
 	public static void removeAll() {
 		emitters.clear();
+		viewers.clear();
 	}
 
 	public static void emitterChanged(IDataEmitter emitter) {

@@ -14,18 +14,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.MultipartStateOverride;
+import sonar.logistics.Logistics;
+import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.displays.ConnectedDisplayScreen;
+import sonar.logistics.api.displays.DisplayConnections;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.common.multiparts.DataEmitterPart;
 import sonar.logistics.common.multiparts.DataReceiverPart;
 import sonar.logistics.common.multiparts.DisplayScreenPart;
 import sonar.logistics.common.multiparts.InfoReaderPart;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
 import sonar.logistics.common.multiparts.NodePart;
 import sonar.logistics.common.multiparts.RedstoneSignallerPart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
+import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.LogicInfoRegistry.RegistryType;
 import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.ProgressInfo;
 
 public class ExampleConfigurations {
@@ -91,7 +99,6 @@ public class ExampleConfigurations {
 			DataEmitterPart emitter = new DataEmitterPart();
 			emitter.face.setObject(EnumFacing.EAST);
 			addMultiparts(Lists.newArrayList(node, cable, emitter), new BlockPos(1, 0, 1));
-			
 
 			InfoReaderPart reader = new InfoReaderPart(EnumFacing.NORTH);
 			DataReceiverPart receiver = new DataReceiverPart();
@@ -101,20 +108,124 @@ public class ExampleConfigurations {
 					return super.getActualState(state, world, pos).withProperty(DataCablePart.WEST, CableRenderType.INTERNAL);
 				}
 			};
-			
-			addMultiparts(Lists.newArrayList(reader, cable2, receiver), new BlockPos(-1, 0, 1));	
+
+			addMultiparts(Lists.newArrayList(reader, cable2, receiver), new BlockPos(-1, 0, 1));
 			MultipartStateOverride signaller = new MultipartStateOverride(new RedstoneSignallerPart(EnumFacing.NORTH)) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 					return super.getActualState(state, world, pos).withProperty(RedstoneSignallerPart.ACTIVE, true);
 				}
 			};
-			
+
 			MultipartStateOverride cable3 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 					return super.getActualState(state, world, pos).withProperty(DataCablePart.NORTH, CableRenderType.HALF).withProperty(DataCablePart.SOUTH, CableRenderType.INTERNAL);
 				}
 			};
-			addMultiparts(Lists.newArrayList(signaller, cable3), new BlockPos(-1, 0, 0));	
+			addMultiparts(Lists.newArrayList(signaller, cable3), new BlockPos(-1, 0, 0));
+		}
+
+	}
+
+	public static class MultipleInventory extends Logistics3DRenderer {
+
+		public MultipleInventory() {
+			super(16);
+
+			NodePart node = new NodePart(EnumFacing.DOWN);
+			InventoryReaderPart reader = new InventoryReaderPart(EnumFacing.NORTH);
+			ConnectedDisplayScreen fullDisplay = new ConnectedDisplayScreen(-1);
+			fullDisplay.width.setObject(2);
+			fullDisplay.height.setObject(0);
+			LargeDisplayScreenPart screen1 = new LargeDisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
+
+			screen1.overrideDisplay = fullDisplay;
+			screen1.shouldRender.setObject(true);
+			fullDisplay.topLeftScreen = screen1;
+			fullDisplay.container.resetRenderProperties();
+
+			MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(-1);
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.sapphire), 512)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.stone_plate), 256)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.SAND), 256)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.LOG, 1, 0), 128)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.LOG, 1, 1), 128)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.LOG, 1, 2), 128)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.LOG, 1, 3), 128)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.PLANKS, 1, 0), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.PLANKS, 1, 1), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.PLANKS, 1, 2), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.PLANKS, 1, 3), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.DIRT), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.GLOWSTONE), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.IRON_ORE), 64)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.partCable), 16)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.infoReaderPart), 4)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.operator), 1)));
+
+			fullDisplay.container.storedInfo.get(0).cachedInfo = new LogicInfoList() {
+				{
+					infoID.setObject(MonitoredItemStack.id);
+				}
+
+				public MonitoredList<?> getCachedList(InfoUUID id) {
+					return list;
+				}
+			};
+
+			LargeDisplayScreenPart screen2 = new LargeDisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
+			LargeDisplayScreenPart screen3 = new LargeDisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
+
+			MultipartStateOverride screenState1 = new MultipartStateOverride(screen1) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(LargeDisplayScreenPart.TYPE, DisplayConnections.ONE_E);
+				}
+
+			};
+
+			MultipartStateOverride screenState2 = new MultipartStateOverride(screen2) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(LargeDisplayScreenPart.TYPE, DisplayConnections.OPPOSITE_2);
+				}
+
+			};
+
+			MultipartStateOverride screenState3 = new MultipartStateOverride(screen3) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(LargeDisplayScreenPart.TYPE, DisplayConnections.ONE_W);
+				}
+
+			};
+
+			MultipartStateOverride cable1 = new MultipartStateOverride(new DataCablePart()) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL).withProperty(DataCablePart.WEST, CableRenderType.CABLE).withProperty(DataCablePart.NORTH, CableRenderType.INTERNAL);
+				}
+			};
+
+			MultipartStateOverride cable2 = new MultipartStateOverride(new DataCablePart()) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL).withProperty(DataCablePart.EAST, CableRenderType.CABLE).withProperty(DataCablePart.WEST, CableRenderType.CABLE);
+				}
+			};
+
+			MultipartStateOverride cable3 = new MultipartStateOverride(new DataCablePart()) {
+				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL).withProperty(DataCablePart.EAST, CableRenderType.CABLE).withProperty(DataCablePart.NORTH, CableRenderType.INTERNAL);
+				}
+			};
+
+			addMultiparts(Lists.newArrayList(node, screenState1, cable1), new BlockPos(1, 0, 0));
+			addMultiparts(Lists.newArrayList(node, screenState3, cable3), new BlockPos(-1, 0, 0));
+			addMultiparts(Lists.newArrayList(node, reader, screenState2, cable2), new BlockPos(0, 0, 0));
+			IBlockState chestState = Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH);
+			addBlock(chestState, new BlockPos(0, -1, 0));
+			addBlock(chestState, new BlockPos(1, -1, 0));
+			addBlock(chestState, new BlockPos(-1, -1, 0));
+			addTileEntity(new TileEntityChest(), new BlockPos(0, -1, 0));
+			addTileEntity(new TileEntityChest(), new BlockPos(1, -1, 0));
+			addTileEntity(new TileEntityChest(), new BlockPos(-1, -1, 0));
+
 		}
 
 	}

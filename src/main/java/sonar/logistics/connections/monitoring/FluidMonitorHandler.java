@@ -9,6 +9,7 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.logistics.Logistics;
+import sonar.logistics.LogisticsASMLoader;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ITileMonitorHandler;
@@ -18,6 +19,13 @@ import sonar.logistics.api.nodes.BlockConnection;
 public class FluidMonitorHandler extends LogicMonitorHandler<MonitoredFluidStack> implements ITileMonitorHandler<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
+	public static FluidMonitorHandler handler;
+
+	public static FluidMonitorHandler instance() {
+		if (handler == null)
+			handler = (FluidMonitorHandler) LogisticsASMLoader.tileMonitorHandlers.get(id);
+		return handler;
+	}
 
 	@Override
 	public String id() {

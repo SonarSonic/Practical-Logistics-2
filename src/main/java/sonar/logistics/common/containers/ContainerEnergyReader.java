@@ -17,20 +17,6 @@ public class ContainerEnergyReader extends ContainerMultipartSync {
 		this.part = part;
 	}
 
-	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
-	}
-
-	public boolean syncInventory() {
-		return false;
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
-
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = null;
 		Slot slot = (Slot) this.inventorySlots.get(slotID);
@@ -45,12 +31,21 @@ public class ContainerEnergyReader extends ContainerMultipartSync {
 		return super.slotClick(slotID, drag, click, player);
 	}
 
-	public SyncType[] getSyncTypes() {
-		return new SyncType[] { SyncType.DEFAULT_SYNC };
-	}
-
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		part.getViewersList().removeViewer(player, ViewerType.INFO);
+	}
+
+	public SyncType[] getSyncTypes() {
+		return new SyncType[] { SyncType.DEFAULT_SYNC };
+	}
+	
+	public boolean syncInventory() {
+		return false;
+	}
+
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 }

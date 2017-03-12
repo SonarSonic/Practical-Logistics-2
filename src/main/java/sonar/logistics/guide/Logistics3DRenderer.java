@@ -10,12 +10,14 @@ import javax.vecmath.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import mcmultipart.multipart.MultipartRegistry;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
 import sonar.core.client.gui.MultipartStateOverride;
@@ -48,6 +50,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 			for (MultipartStateOverride part : entry.getValue()) {
 				IBlockState state = part.getActualState(MultipartRegistry.getDefaultState(part.part).getBaseState(), this, pos);
 				renderMultipart(state, pos, this, Tessellator.getInstance().getBuffer());
+
 			}
 		}
 
@@ -57,23 +60,32 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) {
 			BlockPos pos = entry.getKey();
 			for (MultipartStateOverride part : entry.getValue()) {
-				if (part.part instanceof ScreenMultipart)
-					renderScreenAt((ScreenMultipart) part.part, pos, 0);
+				if (part.part instanceof ScreenMultipart) {
+					try {
+						renderScreenAt((ScreenMultipart) part.part, pos, 0);
+					} catch (Throwable t) {
+
+					}
+				}
 			}
 		}
 		mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	public void renderScreenAt(ScreenMultipart part, BlockPos pos, float partialTicks) {
+		if(part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()){
+			return;
+		}
 		GlStateManager.pushMatrix();
 		GlStateManager.pushAttrib();
-		translate(pos.getX()-0.5, pos.getY(), pos.getZ()-0.5);
+		translate(pos.getX() - 0.5, pos.getY(), pos.getZ() - 0.5);
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplayScreen screen = ((ILargeDisplay) part).getDisplayScreen();
-			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, screen.width.getObject(), screen.height.getObject());
+			InfoRenderer.rotateDisplayRendering(part.face, EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject());
 		} else {
-			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, 0, 0);
+			InfoRenderer.rotateDisplayRendering(part.face, EnumFacing.NORTH, 0, 0);
 		}
+		GL11.glTranslated(-0.0625, 0, 0);
 		// part.container().renderContainer();
 		if (part.getDisplayType() == DisplayType.LARGE) {
 			GL11.glTranslated(0, -0.0625 * 4, 0);

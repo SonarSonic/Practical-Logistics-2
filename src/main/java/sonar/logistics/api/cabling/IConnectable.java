@@ -4,7 +4,7 @@ import net.minecraft.util.EnumFacing;
 import sonar.core.utils.IWorldPosition;
 
 /**implemented on multiparts which can join together, used by Large Display Screens and cables*/
-public interface INetworkConnectable extends IWorldPosition {
+public interface IConnectable extends IWorldPosition {
 
 	/** is the cable limited by the number of channels, true for Channelled Cables, false for Data Cables */
 	public ConnectableType getCableType();

@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client.gui.generic;
 
 import java.io.IOException;
 
@@ -13,6 +13,7 @@ import sonar.core.utils.IWorldPosition;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
 public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogistics {

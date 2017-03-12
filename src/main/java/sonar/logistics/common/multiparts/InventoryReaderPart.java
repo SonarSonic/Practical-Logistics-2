@@ -3,7 +3,6 @@ package sonar.logistics.common.multiparts;
 import java.util.ArrayList;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,10 +24,12 @@ import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.EntityConnection;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.client.gui.GuiChannelSelection;
 import sonar.logistics.client.gui.GuiInventoryReader;
+import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.connections.monitoring.ItemMonitorHandler;
@@ -36,6 +37,7 @@ import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.LogicInfoRegistry.RegistryType;
+import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.ProgressInfo;
@@ -59,7 +61,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	public InventoryReaderPart(EnumFacing face) {
 		super(ItemMonitorHandler.id, face);
 	}
-	
+
 	//// ILogicReader \\\\
 
 	@Override
@@ -69,7 +71,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case INVENTORIES:
@@ -81,7 +83,25 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 				info = updateInfo.get(posSlot.getObject());
 			break;
 		case SLOT:
-			// make a way of getting the slot
+			StoredItemStack slotStack = null;
+			if (!usedChannels.isEmpty()) {
+				NodeConnection connection = usedChannels.get(0);
+				if (connection != null) {
+					if (connection instanceof BlockConnection) {
+						slotStack = ItemHelper.getTileStack((BlockConnection) connection, targetSlot.getObject());
+					}
+					if (connection instanceof EntityConnection) {
+						slotStack = ItemHelper.getEntityStack((EntityConnection) connection, targetSlot.getObject());
+					}
+
+				}
+			}
+			if (slotStack != null) {
+				MonitoredItemStack newInfo = new MonitoredItemStack(slotStack);
+				newInfo.networkID.setObject(network.getNetworkID());
+				info = newInfo;
+			}
+			// make a way of getting the stack
 			break;
 		case STACK:
 			ItemStack stack = inventory.getStackInSlot(0);
@@ -108,18 +128,18 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 		}
 	}
-	
+
 	//// IChannelledTile \\\\
 
 	@Override
 	public ChannelType channelType() {
 		return ChannelType.UNLIMITED;
 	}
-	
+
 	//// PACKETS \\\\
-	
+
 	public void writePacket(ByteBuf buf, int id) {
-		super.writePacket(buf, id);		
+		super.writePacket(buf, id);
 	}
 
 	public void readPacket(ByteBuf buf, int id) {
@@ -133,28 +153,28 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 		}
 	}
-	
+
 	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			return new ContainerInventoryReader(this, player);
 		case 1:
 			return new ContainerChannelSelection(this);
-		}		
+		}
 		return null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			return new GuiInventoryReader(this, player);
 		case 1:
 			return new GuiChannelSelection(player, this, 0);
-		}		
+		}
 		return null;
 	}
 

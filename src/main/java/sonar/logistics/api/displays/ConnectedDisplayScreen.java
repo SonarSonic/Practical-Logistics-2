@@ -24,15 +24,18 @@ import sonar.core.network.sync.ISyncableListener;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncableList;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.INetworkConnectable;
+import sonar.logistics.api.cabling.IConnectable;
+import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.viewers.ViewersList;
@@ -40,7 +43,7 @@ import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
-public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable, INBTSyncable, IScaleableDisplay, ISyncPart {
+public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTSyncable, IScaleableDisplay, ISyncPart {
 
 	public ViewersList viewers = new ViewersList(this, Lists.newArrayList(ViewerType.INFO, ViewerType.FULL_INFO));
 	private int registryID = -1;
@@ -102,6 +105,8 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	}
 
 	public void setDisplayScaling(ILargeDisplay primary, ArrayList<ILargeDisplay> displays) {
+		displays.forEach(display -> display.setConnectedDisplay(this)); // make sure to read the NBT first so WIDTH and HEIGHT arn't altered
+
 		BlockCoords primaryCoords = primary.getCoords();
 		int minX = primaryCoords.getX();
 		int maxX = primaryCoords.getX();
@@ -171,8 +176,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 					break;
 
 				}
-			}
-			if (meta == EnumFacing.DOWN) {
+			} else if (meta == EnumFacing.DOWN) {
 				switch (primary.getRotation()) {
 				case DOWN:
 					break;
@@ -233,11 +237,11 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 		this.canBeRendered.setObject(true);
 	}
 
-	public ArrayList<IInfoProvider> getLogicMonitors(ArrayList<IInfoProvider> monitors) {
+	public ArrayList<ILogicViewable> getLogicMonitors(ArrayList<ILogicViewable> monitors) {
 		displays = Logistics.getDisplayManager().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
 			if (display instanceof ScreenMultipart) {
-				monitors = Logistics.getServerManager().getLocalMonitors(monitors, (ScreenMultipart) display);
+				monitors = Logistics.getServerManager().getViewables(monitors, (ScreenMultipart) display);
 			}
 		}
 		return monitors;
@@ -248,7 +252,6 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	}
 
 	public void setTopLeftScreen(ILargeDisplay display, boolean isTopLeft) {
-		display.setConnectedDisplay(this);
 		if (isTopLeft) {
 			topLeftScreen = display;
 			this.topLeftCoords.setCoords(display.getCoords());
@@ -305,6 +308,11 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	}
 
 	@Override
+	public INetworkCache getNetwork() {
+		return topLeftScreen != null ? topLeftScreen.getNetwork() : EmptyNetworkCache.INSTANCE;
+	}
+
+	@Override
 	public void setLocalNetworkCache(INetworkCache network) {
 	}
 
@@ -358,15 +366,17 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 
 	public ILargeDisplay getTopLeftScreen() {
 		if (topLeftCoords.getCoords() != null) {
-			this.topLeftScreen = (ILargeDisplay) LogisticsAPI.getCableHelper().getDisplayScreen(topLeftCoords.getCoords(), face.getObject());
+			IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(topLeftCoords.getCoords(), face.getObject());
+			if (display instanceof ILargeDisplay)
+				this.topLeftScreen = (ILargeDisplay) display;
 		}
 		return topLeftScreen;
 	}
 
 	@Override
 	public double[] getScaling() {
-		double max = Math.min(this.height.getObject().intValue() + 1.4, this.width.getObject().intValue() + 1);
-		return new double[] { this.getDisplayType().width + this.width.getObject().intValue(), this.getDisplayType().height + this.height.getObject().intValue(), max / 80 };
+		double max = Math.min(this.height.getObject().intValue() + 1.3, this.width.getObject().intValue() + 1);
+		return new double[] { this.getDisplayType().width + this.width.getObject().intValue(), this.getDisplayType().height + this.height.getObject().intValue(), max / 100 };
 	}
 
 	@Override
@@ -434,5 +444,10 @@ public class ConnectedDisplayScreen implements IInfoDisplay, INetworkConnectable
 	@Override
 	public EnumFacing getRotation() {
 		return getTopLeftScreen() == null ? EnumFacing.NORTH : getTopLeftScreen().getRotation();
+	}
+
+	@Override
+	public UUID getUUID() {
+		return topLeftScreen != null ? topLeftScreen.getUUID() : null;
 	}
 }

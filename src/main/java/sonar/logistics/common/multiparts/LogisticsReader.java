@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.ProgressInfo;
-import sonar.logistics.network.SyncMonitoredType;
+import sonar.logistics.network.sync.SyncMonitoredType;
 
 public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMultipart<T> {
 
@@ -81,7 +80,7 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 	//// ILogicMonitor \\\\
 	
 	@Override
-	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
+	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
 		ArrayList<IMonitorInfo> cachedSelected = this.getSelectedInfo();
 		ArrayList<IMonitorInfo> cachedPaired = this.getPairedInfo();
 		for (int i = 0; i < this.getMaxInfo(); i++) {
@@ -90,7 +89,7 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 			IMonitorInfo lastInfo = Logistics.getServerManager().info.get(id);
 			if (selectedInfo != null) {
 				IMonitorInfo latestInfo = selectedInfo;
-				Pair<Boolean, IMonitorInfo> newInfo = LogicInfoRegistry.getLatestInfo(updateInfo, connections, latestInfo);
+				Pair<Boolean, IMonitorInfo> newInfo = LogicInfoRegistry.getLatestInfo(updateInfo, usedChannels, latestInfo);
 				if(newInfo.b!=null){
 					this.selected.get(i).info = newInfo.b;
 				}
@@ -98,7 +97,7 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 				if (cachedPaired != null) {
 					IMonitorInfo paired = cachedPaired.get(i);
 					if (paired != null) {
-						Pair<Boolean, IMonitorInfo> newPaired = LogicInfoRegistry.getLatestInfo(updateInfo, connections, paired);
+						Pair<Boolean, IMonitorInfo> newPaired = LogicInfoRegistry.getLatestInfo(updateInfo, usedChannels, paired);
 						if(newPaired.b!=null){
 							this.paired.get(i).info = newPaired.b;
 						}

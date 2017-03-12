@@ -24,8 +24,10 @@ import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.LogisticsItems;
+import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.EntityTarget;
 import sonar.logistics.api.nodes.IEntityNode;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.client.gui.GuiEntityNode;
 import sonar.logistics.client.gui.GuiNode;
@@ -35,6 +37,9 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 	public SyncEnum<EntityTarget> entityTarget = new SyncEnum<EntityTarget>(EntityTarget.values(), 1);
 	public SyncTagType.INT entityRange = (INT) new SyncTagType.INT(2).setDefault(10);
 	public SyncTagType.BOOLEAN nearest = (BOOLEAN) new SyncTagType.BOOLEAN(3).setDefault(true);
+	{
+		syncList.addParts(entityTarget, entityRange, nearest);
+	}
 
 	public EntityNodePart() {
 		super(5 * 0.0625, 0.0625 * 1, 0.0625 * 4);
@@ -55,7 +60,7 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 		return false;
 	}
 
-	public Entity getNearestEntity() {
+	public Entity getEntity() {
 		switch (entityTarget.getObject()) {
 		case ANIMAL:
 			return SonarHelper.getEntity(EntityAnimal.class, this, entityRange.getObject(), nearest.getObject());
@@ -71,8 +76,10 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 	}
 
 	@Override
-	public void addEntities(List<Entity> entities) {
-
+	public void addEntities(List<NodeConnection> entities) {
+		Entity entity = getEntity();
+		if (entity != null)
+			entities.add(new EntityConnection(this, entity));
 	}
 
 	//// PACKETS \\\\
@@ -80,12 +87,21 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {
+		case 0:
+			entityTarget.writeToBuf(buf);
+			break;
+		case 3:
+			nearest.writeToBuf(buf);
+			break;
 		}
 	}
 
 	@Override
 	public void readPacket(ByteBuf buf, int id) {
 		switch (id) {
+		case 0:
+			entityTarget.readFromBuf(buf);
+			break;
 		case 1:
 			if (entityRange.getObject() != 64)
 				entityRange.increaseBy(1);
@@ -94,9 +110,12 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 			if (entityRange.getObject() != 1)
 				entityRange.decreaseBy(1);
 			break;
+		case 3:
+			nearest.readFromBuf(buf);
+			break;
 		}
 	}
-	
+
 	//// GUI \\\\
 
 	@Override
@@ -121,5 +140,10 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 	@Override
 	public ItemStack getItemStack() {
 		return new ItemStack(LogisticsItems.partEntityNode);
+	}
+
+	@Override
+	public int getPriority() {
+		return 0;
 	}
 }

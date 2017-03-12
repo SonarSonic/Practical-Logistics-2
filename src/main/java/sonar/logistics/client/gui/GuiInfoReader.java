@@ -12,7 +12,9 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.HelpOverlays;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -68,7 +70,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	public void setInfo() {
-		if (part.getChannels().isEmpty()) {
+		if (!part.getChannels().hasChannels()) {
 			infoList = MonitoredList.newMonitoredList(part.getNetworkID());
 		} else {
 			infoList = part.getMonitoredList().cloneInfo();

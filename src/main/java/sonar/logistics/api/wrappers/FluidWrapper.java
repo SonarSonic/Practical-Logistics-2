@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
+import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.logistics.api.connecting.INetworkCache;
 
 public class FluidWrapper {
@@ -13,7 +14,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to add to
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't added), can be null */
-	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action) {
+	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action, ITankFilter filter) {
 		return add;
 	}
 
@@ -22,7 +23,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to remove from
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't removed), can be null */
-	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action) {
+	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action, ITankFilter filter) {
 		return remove;
 	}
 

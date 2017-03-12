@@ -7,9 +7,13 @@ import net.minecraft.entity.Entity;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.IListReader;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.readers.IdentifiedChannelsList;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
@@ -24,21 +28,17 @@ public interface ILogisticsNetwork extends INetworkCache {
 	/** called when a display is disconnected from the network */
 	public void removeDisplay(IInfoDisplay display);
 	
-	/** called when a {@link ILogicMonitor} is connected to the network */
-	public <T extends IMonitorInfo> void addMonitor(ILogicMonitor<T> monitor);
+	/** called when a {@link INetworkReader} is connected to the network */
+	public <T extends IMonitorInfo> void addMonitor(IListReader<T> monitor);
 
-	/** called when a {@link ILogicMonitor} is disconnected to the network */
-	public <T extends IMonitorInfo> void removeMonitor(ILogicMonitor<T> monitor);
-
-	/** gathers the monitored list required by the {@link ILogicMonitor} which is then cached
-	 * @return the updated monitored list */
-	public <T extends IMonitorInfo> MonitoredList<T> updateMonitoredList(ILogicMonitor<T> monitor, int infoID, Map<BlockConnection, MonitoredList<?>> connections, Map<Entity, MonitoredList<?>> entityConnections, ArrayList<BlockConnection> nodeConnections, ArrayList<Entity> entities);
+	/** called when a {@link INetworkReader} is disconnected to the network */
+	public <T extends IMonitorInfo> void removeMonitor(IListReader<T> monitor);
 
 	/** gets the full monitored list for the Handler type
 	 * @param type the type of handler to get a list for
 	 * @return a full list of data */
-	public <T extends IMonitorInfo> Map<BlockConnection, MonitoredList<?>> getTileMonitoredList(LogicMonitorHandler<T> type);
+	public <T extends IMonitorInfo> Map<NodeConnection, MonitoredList<?>> getChannels(LogicMonitorHandler<T> type, IdentifiedChannelsList channels);
 
-	public <T extends IMonitorInfo> Map<Entity, MonitoredList<?>> getEntityMonitoredList(LogicMonitorHandler<T> type);
+	//public <T extends IMonitorInfo> Map<EntityConnection, MonitoredList<?>> getEntityMonitoredList(LogicMonitorHandler<T> type, IdentifiedChannelsList channels);
 
 }

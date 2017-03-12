@@ -57,7 +57,6 @@ public class Logistics {
 	public DisplayManager displayManager = new DisplayManager();
 	public ServerInfoManager serverManager = new ServerInfoManager();
 	public ClientInfoManager clientManager = new ClientInfoManager();
-
 	public static ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
 	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics 2") {

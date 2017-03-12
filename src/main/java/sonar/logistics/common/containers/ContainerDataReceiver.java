@@ -13,11 +13,6 @@ public class ContainerDataReceiver extends ContainerMultipartSync {
 		super(entity);
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
-
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = null;
 		Slot slot = (Slot) this.inventorySlots.get(slotID);
@@ -27,5 +22,10 @@ public class ContainerDataReceiver extends ContainerMultipartSync {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		EmitterManager.removeViewer(player);
+	}
+
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 }

@@ -27,10 +27,13 @@ public class ClockRenderer extends MultipartSpecialRenderer<ClockPart> {
 	public void renderMultipartAt(ClockPart part, double x, double y, double z, float partialTicks, int destroyStage) {
 		World world = part.getWorld();
 		if (world != null) {
+			GlStateManager.pushAttrib();
 			BlockPos pos = part.getPos();
 			RenderHelper.offsetRendering(pos, partialTicks);
 			GlStateManager.disableLighting();
 			GlStateManager.enableTexture2D();
+			GlStateManager.enableDepth();
+			GlStateManager.depthMask(true);
 			VertexBuffer wr = Tessellator.getInstance().getBuffer();
 			switch (part.getFacing()) {
 			case UP:
@@ -65,12 +68,13 @@ public class ClockRenderer extends MultipartSpecialRenderer<ClockPart> {
 			}
 
 			IBakedModel ibakedmodel = blockrendererdispatcher.getModelForState(state);
-			blockrendererdispatcher.getBlockModelRenderer().renderModel(world, ibakedmodel, state, pos, wr, false);
+			blockrendererdispatcher.getBlockModelRenderer().renderModel(world, ibakedmodel, state, pos, wr, true);
 
 			Tessellator.getInstance().draw();
 			Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
 			// GL11.glPopMatrix();
 			GL11.glPopMatrix();
+			GlStateManager.popAttrib();
 
 		}
 	}

@@ -41,11 +41,6 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 		}
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
-
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
 		ItemStack itemstack = null;
 		Slot slot = (Slot) this.inventorySlots.get(par2);
@@ -99,6 +94,11 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 		return itemstack;
 	}
 
+	public void onContainerClosed(EntityPlayer player) {
+		super.onContainerClosed(player);
+		part.getViewersList().removeViewer(player, ViewerType.INFO);
+	}
+
     public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player){
 		Slot targetSlot = slotID < 0 ? null : (Slot) this.inventorySlots.get(slotID);
 		if ((targetSlot instanceof SlotList)) {
@@ -116,9 +116,9 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 		return new SyncType[] { SyncType.SPECIAL };
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		super.onContainerClosed(player);
-		part.getViewersList().removeViewer(player, ViewerType.INFO);
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 
 }

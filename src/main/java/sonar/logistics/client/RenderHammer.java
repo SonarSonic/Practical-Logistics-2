@@ -16,14 +16,13 @@ import sonar.logistics.common.tileentity.TileEntityHammer;
 public class RenderHammer extends TileEntitySpecialRenderer {
 
 	public final static String modelFolder = Logistics.MODID + ":textures/model/";
+	public String texture = modelFolder + "forging_hammer_stone.png";
 	public ModelHammer model = new ModelHammer();
-	public String texture = modelFolder + "hammer.png";
-	public String textureNew = modelFolder + "hammer_machine.png";
 	public ResourceLocation rope = new ResourceLocation(modelFolder + "rope.png");
 
 	@Override
 	public void renderTileEntityAt(TileEntity entity, double x, double y, double z, float f, int par) {
-		RenderHelper.beginRender(x + 0.5F, y + 1.5F, z + 0.5F, RenderHelper.setMetaData(entity), textureNew);
+		RenderHelper.beginRender(x + 0.5F, y + 1.5F, z + 0.5F, RenderHelper.setMetaData(entity), texture);
 		int progress = 0;
 		boolean cooling = false;
 		if (entity != null && entity.getWorld() != null) {

@@ -118,7 +118,6 @@ public abstract class SidedMultipart extends LogisticsMultipart implements ISlot
 				face.setObject(rotate.b);
 				firstTick = false;
 				MultipartHelper.addPart(world, pos, this, uuid);
-				// getWorld().notifyNeighborsOfStateChange(pos, getWorld().getBlockState(pos).getBlock());
 				sendUpdatePacket(true);
 			}
 		}

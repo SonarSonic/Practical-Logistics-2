@@ -5,7 +5,7 @@ import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.render.ICableRenderer;
 
 /** implemented on Tile Entities and Forge Multipart parts which are cables */
-public interface IDataCable extends ICableRenderer, IWorldPosition, INetworkConnectable {
+public interface IDataCable extends ICableRenderer, IWorldPosition, IConnectable {
 	
 	/** the cable should check it's connections and see if it is connected to the correct ones */
 	public void refreshConnections();

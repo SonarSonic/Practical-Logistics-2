@@ -60,6 +60,8 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 	//// DRAWING \\\\
 
 	public void drawPageInGui(GuiGuide gui, int yPos) {
+		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderHelper.saveBlendState();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.renderItem(gui, 8, yPos - 1, stack);

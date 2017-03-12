@@ -102,7 +102,7 @@ public class InfoHelper {
 				tag.setTag(SYNC, list);
 				return tag;
 			} else {
-				if (!lastWasNull)
+				//if (!lastWasNull)
 					tag.setBoolean(DELETE, true);
 				return tag;
 			}

@@ -43,7 +43,7 @@ import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.helpers.CableHelper;
 
 public class DataCablePart extends SonarMultipart implements ISlotOccludingPart, IDataCable, IOperatorTile, IOperatorProvider {
@@ -71,6 +71,11 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	@Override
 	public void onPartChanged(IMultipart changedPart) {
 		if (!this.getWorld().isRemote) {
+			if (changedPart instanceof SidedMultipart) {
+				SidedMultipart sided = (SidedMultipart) changedPart;
+				isBlocked[sided.getFacing().ordinal()] = false;
+				this.sendUpdatePacket(true);
+			}
 			refreshConnections();
 			if (changedPart instanceof LogisticsMultipart) {
 				getNetwork().markDirty(RefreshType.FULL);
@@ -109,6 +114,10 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	@Override
 	public boolean canConnectOnSide(EnumFacing dir) {
 		return isBlocked[dir.ordinal()] ? false : getContainer().getPartInSlot(PartSlot.getFaceSlot(dir)) == null;
+	}
+
+	public boolean isBlocked(EnumFacing dir) {
+		return isBlocked[dir.ordinal()];
 	}
 
 	@Override

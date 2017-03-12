@@ -2,33 +2,19 @@ package sonar.logistics.api.connecting;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.IInfoProvider;
 
 /** implemented on Logistics Network Caches, used for retrieving info about */
 public interface INetworkCache {
 
-	/** used to get the first external block connected to the network.
-	 * 
-	 * @param includeChannels normally true, false if you are retrieving blocks from multiple connected networks, which have already been logged
-	 * @return a {@link Entry} of {@link BlockCoords} paired with {@link EnumFacing} */
-	@Deprecated
-	public BlockConnection getExternalBlock(boolean includeChannels);
-
 	/** @param includeChannels normally true, false if you are retrieving blocks from multiple connected networks, which have already been logged
 	 * @return the {@link LinkedHashMap} of {@link BlockCoords} paired with {@link EnumFacing} */
-	public ArrayList<BlockConnection> getExternalBlocks(boolean includeChannels);
-
-	/** @param includeChannels normally true, false if you are retrieving blocks from multiple connected networks, which have already been logged
-	 * @return the {@link LinkedHashMap} of {@link BlockCoords} paired with {@link EnumFacing} */
-	public ArrayList<Entity> getExternalEntities(boolean includeChannels);
+	public ArrayList<NodeConnection> getConnectedChannels(boolean includeChannels);
 
 	/** gets the full list of Cached Coordinates for a given {@link CacheType}.
 	 * 
@@ -54,7 +40,7 @@ public interface INetworkCache {
 
 	/** quick method to check this network can be used/edited typically only and EmptyNetworkCache would return true */
 	public boolean isFakeNetwork();
-
+	
 	public void addLocalInfoProvider(IInfoProvider monitor);
 
 	public IInfoProvider getLocalInfoProvider();

@@ -1,4 +1,4 @@
-package sonar.logistics.network;
+package sonar.logistics.network.sync;
 
 import java.util.ArrayList;
 
@@ -7,16 +7,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import sonar.core.api.fluids.StoredFluidStack;
+import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
+import sonar.logistics.api.filters.FilterList;
+import sonar.logistics.api.filters.IFluidFilter;
+import sonar.logistics.api.filters.IItemFilter;
 import sonar.logistics.api.filters.INodeFilter;
+import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.helpers.InfoHelper;
 
-public class SyncStatementList extends SyncPart {
+public class SyncFilterList extends SyncPart {
 
 	public ArrayList<INodeFilter> objs = new ArrayList();
 
-	public SyncStatementList(int id) {
+	public SyncFilterList(int id) {
 		super(id);
 	}
 
@@ -29,6 +35,46 @@ public class SyncStatementList extends SyncPart {
 		markChanged();
 	}
 
+	public boolean matches(StoredItemStack stack, NodeTransferMode mode) {
+		boolean hasWhiteLists = false;
+		boolean whitelisted = objs.isEmpty();
+		for (INodeFilter filter : objs) {
+			if (filter.getTransferMode().matches(mode) && filter instanceof IItemFilter) {
+				IItemFilter itemFilter = (IItemFilter) filter;
+				if (filter.getListType() == FilterList.BLACKLIST) {
+					if (itemFilter.canTransferItem(stack)) {
+						return false;
+					}
+				}
+				if (filter.getListType() == FilterList.WHITELIST && !whitelisted) {
+					hasWhiteLists=true;
+					whitelisted = itemFilter.canTransferItem(stack);
+				}
+			}
+		}
+		return !hasWhiteLists || whitelisted;
+	}
+
+	public boolean matches(StoredFluidStack stack, NodeTransferMode mode) {
+		boolean hasWhiteLists = false;
+		boolean whitelisted = objs.isEmpty();
+		for (INodeFilter filter : objs) {
+			if (filter.getTransferMode().matches(mode) && filter instanceof IFluidFilter) {
+				IFluidFilter fluidFilter = (IFluidFilter) filter;
+				if (filter.getListType() == FilterList.BLACKLIST) {
+					if (fluidFilter.canTransferFluid(stack)) {
+						return false;
+					}
+				}
+				if (filter.getListType() == FilterList.WHITELIST && !whitelisted) {
+					hasWhiteLists=true;
+					whitelisted = fluidFilter.canTransferFluid(stack);
+				}
+			}
+		}
+		return !hasWhiteLists || whitelisted;
+	}
+	
 	public void addObject(INodeFilter object) {
 		if (!objs.contains(object)) {
 			objs.add(object);
@@ -83,8 +129,8 @@ public class SyncStatementList extends SyncPart {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof SyncStatementList) {
-			return ((SyncStatementList) obj).getObjects().equals(this.objs);
+		if (obj != null && obj instanceof SyncFilterList) {
+			return ((SyncFilterList) obj).getObjects().equals(this.objs);
 		}
 		return false;
 	}

@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client.gui.generic;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -46,6 +46,7 @@ import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.network.PacketNodeFilter;
@@ -220,6 +221,7 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			case 0:
 				filter = new ItemFilter();
+				filter.transferMode.setObject(tile.getTransferMode());
 				// tile.getFilters().addObject(filter);
 				lastFilter = filter;
 				currentFilter = filter;
@@ -228,6 +230,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 			case 1:
 				OreDictFilter orefilter = new OreDictFilter();
+				orefilter.transferMode.setObject(tile.getTransferMode());
 				// tile.getFilters().addObject(orefilter);
 				lastFilter = orefilter;
 				currentFilter = orefilter;
@@ -236,6 +239,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 			case 2:
 				fluidFilter = new FluidFilter();
+				fluidFilter.transferMode.setObject(tile.getTransferMode());
 				// tile.getFilters().addObject(fluidFilter);
 				lastFilter = fluidFilter;
 				currentFilter = fluidFilter;
@@ -477,7 +481,10 @@ public class GuiFilterList extends GuiSelectionList {
 				if (i == 12) {
 					yOffset++;
 				}
-				ItemStack item = ores.get(i);
+				ItemStack item = ores.get(i).copy();
+				if(item.getItemDamage()==OreDictionary.WILDCARD_VALUE){
+					item.setItemDamage(0);
+				}
 				RenderHelper.renderItem(this, 13 + i * 18, -2 + yPos, item);
 				RenderHelper.renderStoredItemStackOverlay(item, 0, 13 + i * 18, -2 + yPos + yOffset * 18, null, true);
 				RenderHelper.restoreBlendState();

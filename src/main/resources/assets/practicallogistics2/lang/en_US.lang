@@ -20,6 +20,7 @@ item.DataReceiver.name=Data Receiver
 item.DataEmitter.name=Data Emitter
 item.TransferNode.name=Transfer Node
 item.Clock.name=Clock
+item.EtchedPlate.name=Etched Plate
 
 //items
 item.DisplayScreenItem.name=Display Screen
@@ -32,7 +33,8 @@ item.Operator.name=Operator Tool
 item.DisplayScreen.name=Display Screen
 item.HolographicDisplay.name=Holographic Display
 item.LargeDisplayScreen.name=Large Display Screen
-item.Guide.name=Guide
+item.PLGuide.name=Practical Logistics Guide
+item.WirelessStorage.name=Wireless Storage Reader
 
 //messages
 dataBlock.denied=Access Denied
@@ -40,6 +42,9 @@ dataBlock.denied=Access Denied
 //general guide pages
 guide.Welcome.title=Welcome to Practical Logistics 2!
 guide.Welcome.name=Practical Logistics 2 gives you the ability to create automated systems for reading, displaying and acting upon data. You can monitor items, energy, fluids, entities, machines, tanks, light, weather, direction, movement and much more.- -You can create Item, Fluid and Energy networks and transfer them anywhere in the world instantly; you can even transfer across dimensions. This mod also gives you more interactive control, via the use of Large Display Screens.- -This gives you infinite control and management of your base. You can also monitor and control blocks wirelessly.- -This mod is a continuation of the mod Practical Logistics 1.7.10.-This mod was created by Ollie Lansdell.
+guide.GettingStarted.title=Getting started
+guide.GettingStarted.name=To get started with Practical Logisitics you need to find some #SapphireOre# in the overworld. Once you have found a plentiful supply build yourself a #Hammer# and make sure you have some #StonePlate#, #Sapphire# and #SapphireDust#. Next build some #DataCable# and you're ready to start with Practical Logisitcs.- -<blue>Basic Principals<reset>-To get started you first need to connect the blocks or entities you want to monitor/interact with. These blocks will be referred to as the Connections or the Channels-See #Node#, #EntityNode#, #Array#, #Transceiver#, #EntityTransceiver# on how to connect channels-To read info from the channels you need to use a Reader, there are currently four types which can show various types of data.-See #InfoReader#, #InventoryReader#, #FluidReader#, #EnergyReader#.
+guide.GettingStarted2.name=Once you've setup a reader and a channel you can display the data using a screen. This must be connected to the outward side of the reader-See #DisplayScreen#, #LargeDisplayScreen#, #HolographicDisplay#.- -To then act upon this data you can use the #RedstoneSignaller#.- -These are all the principal blocks required for most basic setups which you can see examples for on #2#.
 
 //item guide pages
 guide.SapphireOre.name=Sapphire Ore spawns in the overworld and is relatively common. It is used for obtaining #Sapphire#. It spawns between Y Level && and &&- -It requires an Iron Pickaxe to mine.
@@ -54,7 +59,7 @@ guide.DataCable.name=You will be needing a plentiful supply of Data Cables as th
 guide.EntityNode.name=The #CURRENT# is used to connect entities to the network.
 guide.RedstoneSignaller.name=The #CURRENT# is used to monitor info and emit a redstone signal based on various statements which can be configured by the user.
 guide.DataReceiver.name=The #CURRENT# is used to connect multiple networks wirelessly. To join networks you must connect a #DataEmitter# to the network you want to connect to and then select it in the GUI of the Data Receiver, you can select as many emitters as you want.
-guide.DataEmitter.name=The #CURRENT# is used to connect multiple networks wirelessly. To join networks you must place an Emitter on the network you want to join to your main network and then connect to it using a #DataReceiver#.-The connected networks can both access each other.
+guide.DataEmitter.name=The #CURRENT# is used to connect multiple networks wirelessly. To join networks you must place an Emitter on the network you want to join to your main network and then connect to it using a #DataReceiver#.-The connected networks can both access each other.--The #CURRENT# can also be used to monitor the network wirelessly see #WirelessStorage#
 guide.TransferNode.name=The #CURRENT# is used to transfer items, fluids and energy into a connection-You can create Item Filters, Ore Dictionary filters and Fluid filters to make sure only the items you want are transfered.- -<blue>Modes:<reset>-<blue>ADD:<reset> Allows the #CURRENT# to add items to the block it is connected to from the Logistics Network.-<blue>REMOVE:<reset> Allows the #CURRENT# to remove items from the block it is connected to from the Logistics Network.-<blue>ADD_REMOVE:<reset> Allows the #CURRENT# to remove/add items to and from the block it is connected to from the Logistics Network.-<blue>PASSIVE:<reset> Disables any type of transfer.
 guide.Sapphire.name=Sapphire's have a mystic quality which allows them to transfer Practical Logistics Info quickly. It is therefore a key crafting ingredient in the mod, make sure you have plenty!-It is obtained by placing #SapphireOre# in the #Hammer#
 guide.SapphireDust.name=Obtained by placing #Sapphire# in the #Hammer#- -It shares the qualities of #Sapphire# and is a key crafting ingredient in the mod.
@@ -67,18 +72,21 @@ guide.LargeDisplayScreen.name=The Large Display Screen works in exactly the same
 guide.Guide.name=The Guide is what you're using right now!
 guide.HolographicDisplay.name=The #CURRENT# works in the same way as the #DisplayScreen# except it is transparent!
 guide.Clock.name=The clock currently has a very simple function, in allows you to set a interval for a redstone signal to be emitted. Connecting a display to the side will display the current time of the clock as a progress bar. You can also see the progress of the clock by the rotating hand at the top. When it passes the small red marker it will emit a signal.- -Inside the GUI you can set the interval, this can be anywhere between 0.100 ms to 24 hours, however if the clock isn't chunk loaded the timer will be reset.
+guide.ExampleConfig.name=Example Configurations
+guide.WirelessStorage.name=Allows you to wirelessly monitor/add/remove Items in your network from any dimension with a simple right click.-To use the #CURRENT# you must first connect it to a Data Emitter, do this by right clicking or by selecting the 'Emitters' menu in the #CURRENT#s GUI.
+guide.EtchedPlate.name=An incredibly durable and conductive item. Used in creating some higher tier logistics blocks.
+
+
+guide.FurnaceProgress.name=<underline>Furnace Cooking Progress<reset>- -<blue>Step 1:<reset> Place the blocks as seen.-<blue>Step 2:<reset> Ensure the Info Reader is connected to the node by selecting the furnace in the channels menu.-<blue>Step 3:<reset> In the Info Reader's GUI left click "Cook Time" and right click "Total Cook Time" this will create a progress bar from the info!- -Blocks Required: #Node#, #DataCable#, #InfoReader# and #DisplayScreen#.
+guide.ChestMonitoring.name=<underline>Simple Item Monitoring<reset>- -<blue>Step 1:<reset> Place the blocks as seen.-<blue>Step 2:<reset> Change the Inventory Reader to stack mode and then place the item you wish to monitor in the slot.- -Blocks Required: #Node#, #DataCable#, #InventoryReader# and #DisplayScreen#.
+guide.WirelessRedstone.name=<underline>Wireless Redstone<reset>- -<blue>Step 1:<reset>  Place the blocks as seen.-<blue>Step 2:<reset> Ensure the Info Reader is connected to the node by selecting the Redstone Dust in the channels menu.-<blue>Step 3:<reset> In the Info Reader's GUI select "Meta"-<blue>Step 4:<reset> Configure the Redstone Emitter to emit a signal.
+guide.MultipleInventory.name=<underline>Inventories<reset>- -<blue>Step 1:<reset>  Place the blocks as seen.... That's it! Inventories is the default mode of the Inventory Reader so there is no more configuration needed.- -Blocks Required: #Node#x3, #DataCable#x3, #InventoryReader#.
 
 //generic Guide Pages
 guide.ChannelsSTART.name=<blue>Channels<reset>-The #CURRENT# can also be configured by channels. The 'channels' are the blocks/entities connected to the network meaning this will alter what the #CURRENT# can access.
 guide.ChannelsSINGLE.name=Due to it's type of opperation the #CURRENT# can only have one channel, therefore you must select the first channel manually.
 guide.ChannelsUNLIMITED.name=The #CURRENT# can have an unlimited number of connected channels.
 guide.ChannelsEND.name=You can edit the channels by pressing the channel button in it's GUI or by right clicking it with an #Operator# in Channels mode.
-
-guide.ExampleConfig.name=Example Configurations
-guide.FurnaceProgress.name=<underline>Furnace Cooking Progress<reset>- -<blue>Step 1:<reset> Place the blocks as seen.-<blue>Step 2:<reset> Ensure the Info Reader is connected to the node by selecting the furnace in the channels menu.-<blue>Step 3:<reset> In the Info Reader's GUI left click "Cook Time" and right click "Total Cook Time" this will create a progress bar from the info!- -Blocks Required: #Node#, #DataCable#, #InfoReader# and #DisplayScreen#.
-guide.ChestMonitoring.name=<underline>Simple Item Monitoring<reset>- -<blue>Step 1:<reset> Place the blocks as seen.-<blue>Step 2:<reset> Change the Inventory Reader to stack mode and then place the item you wish to monitor in the slot.- -Blocks Required: #Node#, #DataCable#, #InventoryReader# and #DisplayScreen#.
-guide.WirelessRedstone.name=<underline>Wireless Redstone<reset>- -<blue>Step 1:<reset>  Place the blocks as seen.-<blue>Step 2:<reset> Ensure the Info Reader is connected to the node by selecting the Redstone Dust in the channels menu.-<blue>Step 3:<reset> In the Info Reader's GUI select "Meta"-<blue>Step 4:<reset> Configure the Redstone Emitter to emit a signal.
-
 
 //HELPOVERLAYS//
 

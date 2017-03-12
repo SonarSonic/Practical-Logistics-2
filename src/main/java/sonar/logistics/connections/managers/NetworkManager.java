@@ -16,6 +16,7 @@ import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.IRefreshCache;
 import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.DefaultNetwork;
@@ -28,21 +29,16 @@ public class NetworkManager {
 	public boolean updateEmitters;
 
 	public Map<Integer, INetworkCache> cache = new ConcurrentHashMap<Integer, INetworkCache>();
-	public Map<Integer, MonitoredList<MonitoredBlockCoords>> coordMap = new ConcurrentHashMap<Integer, MonitoredList<MonitoredBlockCoords>>();
+	public Map<Integer, MonitoredList<IMonitorInfo>> channelMap = new ConcurrentHashMap<Integer, MonitoredList<IMonitorInfo>>();
 	public ChannelMonitorHandler handler = new ChannelMonitorHandler();
 
 	public void removeAll() {
 		cache.clear();
 	}
 
-	public BlockConnection getFirstConnection(int networkID) {
+	public ArrayList<NodeConnection> getChannelArray(int networkID) {
 		INetworkCache network = getNetwork(networkID);
-		return network != null ? network.getExternalBlock(true) : null;
-	}
-
-	public ArrayList<BlockConnection> getChannelArray(int networkID) {
-		INetworkCache network = getNetwork(networkID);
-		return network != null ? network.getExternalBlocks(true) : Lists.newArrayList();
+		return network != null ? network.getConnectedChannels(true) : Lists.newArrayList();
 	}
 
 	public void tick() {
@@ -121,7 +117,7 @@ public class NetworkManager {
 		return cache;
 	}
 
-	public Map<Integer, MonitoredList<MonitoredBlockCoords>> getCoordMap() {
-		return coordMap;
+	public Map<Integer, MonitoredList<IMonitorInfo>> getCoordMap() {
+		return channelMap;
 	}
 }

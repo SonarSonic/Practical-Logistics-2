@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.text.TextFormatting;
+import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
@@ -15,18 +18,20 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
-import sonar.logistics.client.DisplayTextField;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.client.DisplayTextFields;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
+import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	public ScreenMultipart part;
+	public DisplayTextFields textFields;
 	private GuiState state = GuiState.LIST;
-	private DisplayTextField textField;
 	private int left = 7;
 	public int infoID = -1;
 	public int coolDown = 0;
@@ -72,13 +77,12 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			this.buttonList.add(new GuiButton(1, guiLeft + 48, guiTop + 5, 40, 20, "Name"));
 			this.buttonList.add(new GuiButton(2, guiLeft + 88, guiTop + 5, 40, 20, "Prefix"));
 			this.buttonList.add(new GuiButton(3, guiLeft + 128, guiTop + 5, 40, 20, "Suffix"));
-			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 80, 20, "RESET"));
-			this.buttonList.add(new GuiButton(5, guiLeft + 88, guiTop + 130 + 8, 80, 20, "SAVE"));
-
-			textField = new DisplayTextField(0, this.fontRendererObj, 8, 28 + 4, 160, 100);
-			textField.setMaxStringLength(25);
-			textField.setStrings(part.container().getDisplayInfo(infoID).getUnformattedStrings());
-
+			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 50, 20, "RESET"));
+			this.buttonList.add(new GuiButton(5, guiLeft + 8+50, guiTop + 130 + 8, 50, 20, "CLEAR"));
+			this.buttonList.add(new GuiButton(6, guiLeft + 108, guiTop + 130 + 8, 50, 20, "SAVE"));
+			ArrayList<String> strings = textFields == null ? part.container().getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
+			textFields = new DisplayTextFields(8, 28 + 4, 8);
+			textFields.initFields(strings);
 			break;
 		case LIST:
 			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 137, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout(), "button.ScreenLayout"));
@@ -105,19 +109,12 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		/* nameField = new GuiTextField(0, this.fontRendererObj, 8, 18, 160, 12); nameField.setMaxStringLength(20); nameField.setText(part.getEmitterName()); */
 	}
 
-	public void handleMouseInput() throws IOException {
-		super.handleMouseInput();
-	}
 
 	public void drawScreen(int x, int y, float var) {
 		super.drawScreen(x, y, var);
 		if (coolDown != 0) {
 			coolDown--;
 		}
-	}
-
-	public void mouseReleased(int mouseX, int mouseY, int mouseState) {
-		super.mouseReleased(mouseX, mouseY, mouseState);
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -128,26 +125,35 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		case CREATE:
 			break;
 		case EDIT:
+			GuiTextField field = textFields.getSelectedField();
 			switch (button.id) {
 			case 0:
-				textField.writeText(DisplayConstants.DATA);
+				if (field != null)
+					field.writeText(DisplayConstants.DATA);
 				break;
 			case 1:
-				textField.writeText(DisplayConstants.NAME);
+				if (field != null)
+					field.writeText(DisplayConstants.NAME);
 				break;
 			case 2:
-				textField.writeText(DisplayConstants.PREFIX);
+				if (field != null)
+					field.writeText(DisplayConstants.PREFIX);
 				break;
 			case 3:
-				textField.writeText(DisplayConstants.SUFFIX);
+				if (field != null)
+					field.writeText(DisplayConstants.SUFFIX);
 				break;
 			case 4:
-				textField.setStrings(part.container().getDisplayInfo(infoID).getUnformattedStrings());
+				textFields.initFields(part.container().getDisplayInfo(infoID).getUnformattedStrings());
 				break;
 			case 5:
-				part.container().getDisplayInfo(infoID).setFormatStrings(textField.textList);
+				textFields.initFields(new ArrayList());
+				break;
+			case 6:
+				part.container().getDisplayInfo(infoID).setFormatStrings(textFields.textList());
 				part.currentSelected = infoID;
 				part.sendByteBufPacket(1);
+				changeState(GuiState.LIST, -1);
 				break;
 			}
 			break;
@@ -192,7 +198,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		case CREATE:
 			break;
 		case EDIT:
-			textField.drawTextBox();
+			textFields.drawTextBox();
 			break;
 		case LIST:
 			FontHelper.textCentre(FontHelper.translate("item.DisplayScreen.name"), xSize, 6, LogisticsColours.white_text.getRGB());
@@ -217,23 +223,17 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			return;
 		}
 		if (state == GuiState.EDIT) {
-			textField.mouseClicked(i - guiLeft, j - guiTop, k);
+			textFields.mouseClicked(i - guiLeft, j - guiTop, k);
 		}
 		super.mouseClicked(i, j, k);
 		// nameField.mouseClicked(i - guiLeft, j - guiTop, k);
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) throws IOException {
+	public void keyTyped(char c, int i) throws IOException {
 		if (state == GuiState.EDIT) {
-			if (textField.isFocused()) {
-				if (c == 13 || c == 27) {
-					textField.setFocused(false);
-				} else {
-					textField.textboxKeyTyped(c, i);
-					// final String text = textField.getText();
-					// setString((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text);
-				}
+			if (textFields.isFocused()) {
+				textFields.keyTyped(c, i);
 				return;
 			}
 		}

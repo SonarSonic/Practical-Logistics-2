@@ -17,21 +17,22 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.ClientViewable;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.helpers.CableHelper;
 
-public class PacketLogicMonitors implements IMessage {
+public class PacketViewables implements IMessage {
 
-	public ArrayList<ClientLogicReader> monitors;
+	public ArrayList<ClientViewable> viewables;
 	public UUID screenID;
 
-	public PacketLogicMonitors() {
+	public PacketViewables() {
 	}
 
-	public PacketLogicMonitors(ArrayList<ClientLogicReader> monitors, UUID screenID) {
-		this.monitors = monitors;
+	public PacketViewables(ArrayList<ClientViewable> viewables, UUID screenID) {
+		this.viewables = viewables;
 		this.screenID = screenID;
 	}
 
@@ -41,11 +42,11 @@ public class PacketLogicMonitors implements IMessage {
 		long lsb = buf.readLong();
 		screenID = new UUID(msb, lsb);
 		NBTTagCompound tag = ByteBufUtils.readTag(buf);
-		monitors = new ArrayList();
+		viewables = new ArrayList();
 		if (tag.hasKey("monitors")) {
 			NBTTagList tagList = tag.getTagList("monitors", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
-				monitors.add(NBTHelper.instanceNBTSyncable(ClientLogicReader.class, tagList.getCompoundTagAt(i)));
+				viewables.add(NBTHelper.instanceNBTSyncable(ClientViewable.class, tagList.getCompoundTagAt(i)));
 			}
 		}
 	}
@@ -56,7 +57,7 @@ public class PacketLogicMonitors implements IMessage {
 		buf.writeLong(screenID.getLeastSignificantBits());
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagList tagList = new NBTTagList();
-		monitors.forEach(emitter -> tagList.appendTag(emitter.writeData(new NBTTagCompound(), SyncType.SAVE)));
+		viewables.forEach(emitter -> tagList.appendTag(emitter.writeData(new NBTTagCompound(), SyncType.SAVE)));
 		if (!tagList.hasNoTags()) {
 			tag.setTag("monitors", tagList);
 		}
@@ -64,24 +65,24 @@ public class PacketLogicMonitors implements IMessage {
 
 	}
 
-	public static class Handler implements IMessageHandler<PacketLogicMonitors, IMessage> {
+	public static class Handler implements IMessageHandler<PacketViewables, IMessage> {
 		@Override
-		public IMessage onMessage(PacketLogicMonitors message, MessageContext ctx) {
+		public IMessage onMessage(PacketViewables message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				Map<UUID, ArrayList<ClientLogicReader>> monitors = Logistics.getClientManager().clientLogicMonitors;
+				Map<UUID, ArrayList<ClientViewable>> monitors = Logistics.getClientManager().clientLogicMonitors;
 				if (monitors.get(message.screenID) == null) {
-					monitors.put(message.screenID, message.monitors);
+					monitors.put(message.screenID, message.viewables);
 				} else {
 					monitors.get(message.screenID).clear();
-					monitors.get(message.screenID).addAll(message.monitors);
+					monitors.get(message.screenID).addAll(message.viewables);
 				}
 				ArrayList<Object> cache = new ArrayList();
-				for (ClientLogicReader clientMonitor : message.monitors) {
-					IInfoProvider monitor = CableHelper.getMonitorFromHashCode(clientMonitor.uuid.getUUID().hashCode(), true);
-					if (monitor != null) {
+				for (ClientViewable clientMonitor : message.viewables) {
+					ILogicViewable monitor = clientMonitor.getViewable();					
+					if (monitor != null && monitor instanceof IInfoProvider) {
 						int hashCode = monitor.getIdentity().hashCode();
 						cache.add(monitor);
-						for (int i = 0; i < monitor.getMaxInfo(); i++) {
+						for (int i = 0; i < ((IInfoProvider) monitor).getMaxInfo(); i++) {
 							cache.add(new InfoUUID(hashCode, i));
 						}
 					}

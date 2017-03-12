@@ -6,8 +6,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.Logistics;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.GuiGuide;
-import sonar.logistics.client.gui.LogisticsButton;
 import sonar.logistics.guide.BaseInfoPage;
 import sonar.logistics.guide.ExampleConfigurations;
 import sonar.logistics.guide.ExampleConfigurations.FurnaceProgress;
@@ -35,6 +35,7 @@ public class ExamplesPages extends BaseInfoPage {
 		pageInfo.add(new ElementInfo("guide.FurnaceProgress.name", new String[0]));
 		pageInfo.add(new ElementInfo("guide.ChestMonitoring.name", new String[0]).setRequiresNewPage());
 		pageInfo.add(new ElementInfo("guide.WirelessRedstone.name", new String[0]).setRequiresNewPage());
+		pageInfo.add(new ElementInfo("guide.MultipleInventory.name", new String[0]).setRequiresNewPage());		
 		return pageInfo;
 	}
 
@@ -42,6 +43,7 @@ public class ExamplesPages extends BaseInfoPage {
 		elements.add(new Element3DRenderer(FurnaceProgress.instance2, 0, 48, 4, 16, 80, 120));
 		elements.add(new Element3DRenderer(new InventoryExample(), 1, 48, 4, 16, 80, 120));
 		elements.add(new Element3DRenderer(new ExampleConfigurations.WirelessRedstone(), 2, 32, 4, 16, 120, 120));
+		elements.add(new Element3DRenderer(new ExampleConfigurations.MultipleInventory(), 3, 32, 4, 16, 120, 120));
 		return elements;
 	}
 

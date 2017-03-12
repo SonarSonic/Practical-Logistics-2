@@ -12,15 +12,15 @@ public class ContainerGuide extends Container {
 		this.player = player;
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
-
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = null;
 		Slot slot = (Slot) this.inventorySlots.get(slotID);
 		return itemstack;
+	}
+
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 
 }

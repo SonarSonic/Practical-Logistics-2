@@ -15,6 +15,7 @@ import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.common.multiparts.ReaderMultipart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
+import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class ItemWrapper {
 	
@@ -146,5 +147,5 @@ public class ItemWrapper {
 
 	public void dumpInventoryFromPlayer(EntityPlayer player, INetworkCache cache) {}
 
-	public void dumpNetworkToPlayer(ReaderMultipart<MonitoredItemStack> part, EntityPlayer player, INetworkCache cache) {}
+	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, INetworkCache cache) {}
 }

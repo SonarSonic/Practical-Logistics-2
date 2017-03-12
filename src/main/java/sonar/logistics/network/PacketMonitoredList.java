@@ -1,23 +1,30 @@
 package sonar.logistics.network;
 
+import java.util.UUID;
+
 import io.netty.buffer.ByteBuf;
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.IListReader;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 
-public class PacketMonitoredList extends PacketMultipart {
+public class PacketMonitoredList implements IMessage {
 
+	public UUID identity;
 	public InfoUUID id;
 	public int networkID;
 	public MonitoredList list;
@@ -27,8 +34,9 @@ public class PacketMonitoredList extends PacketMultipart {
 	public PacketMonitoredList() {
 	}
 
-	public PacketMonitoredList(ILogicMonitor monitor, InfoUUID id, int networkID, NBTTagCompound listTag, SyncType type) {
-		super(monitor.getUUID(), monitor.getCoords().getBlockPos());
+	public PacketMonitoredList(UUID identity, InfoUUID id, int networkID, NBTTagCompound listTag, SyncType type) {
+		super();
+		this.identity = identity;
 		this.id = id;
 		this.networkID = networkID;
 		this.listTag = listTag;
@@ -37,7 +45,9 @@ public class PacketMonitoredList extends PacketMultipart {
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		super.fromBytes(buf);
+		long msb = buf.readLong();
+		long lsb = buf.readLong();
+		identity = new UUID(msb, lsb);
 		networkID = buf.readInt();
 		id = InfoUUID.getUUID(buf);
 		type = SyncType.values()[buf.readInt()];
@@ -46,20 +56,30 @@ public class PacketMonitoredList extends PacketMultipart {
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		super.toBytes(buf);
+		buf.writeLong(identity.getMostSignificantBits());
+		buf.writeLong(identity.getLeastSignificantBits());
 		buf.writeInt(networkID);
 		id.writeToBuf(buf);
 		buf.writeInt(type.ordinal());
 		ByteBufUtils.writeTag(buf, listTag);
 	}
 
-	public static class Handler extends PacketMultipartHandler<PacketMonitoredList> {
+	public static class Handler implements IMessageHandler<PacketMonitoredList, IMessage> {
 
 		@Override
-		public IMessage processMessage(PacketMonitoredList message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
-			if (message.list != null && part instanceof ILogicMonitor) {
-				Logistics.getClientManager().monitoredLists.put(message.id, ((ILogicMonitor) part).sortMonitoredList(message.list, message.id.channelID));
-			}
+		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
+			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				public void run() {
+					if (message.list != null) {
+						ILogicViewable viewable = Logistics.getClientManager().monitors.get(message.identity);
+						if (viewable instanceof IListReader) {
+							Logistics.getClientManager().monitoredLists.put(message.id, ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID));
+						} else {
+							Logistics.getClientManager().monitoredLists.put(message.id, message.list);
+						}
+					}
+				}
+			});
 			return null;
 		}
 

@@ -21,6 +21,6 @@ public class LogisticsInfoRegistry extends IInfoRegistry {
 	public void registerAdjustments() {
 		LogicInfoRegistry.registerInfoAdjustments(Lists.newArrayList("TileEntityHammer.getSpeed", "TileEntityHammer.getProgress", "TileEntityHammer.getCoolDown", "TileEntityHammer.getCoolDownSpeed"), "", "ticks");
 		LogicInfoRegistry.registerInfoAdjustments("item.storage", "", "items");
-		
+		LogicInfoRegistry.registerInfoAdjustments("fluid.storage", "", "mb");
 	}
 }

@@ -1,9 +1,9 @@
 package sonar.logistics.api.displays;
 
-import sonar.logistics.api.cabling.INetworkConnectable;
+import sonar.logistics.api.cabling.IConnectable;
 
 /**implemented on Large Display Screen*/
-public interface ILargeDisplay extends IInfoDisplay,INetworkConnectable {
+public interface ILargeDisplay extends IInfoDisplay,IConnectable {
 	
 	/**gets the {@link ConnectedDisplayScreen} this {@link ILargeDisplay} is connected to*/
 	public ConnectedDisplayScreen getDisplayScreen();

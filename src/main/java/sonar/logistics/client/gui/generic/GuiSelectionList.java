@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client.gui.generic;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
@@ -21,6 +22,7 @@ import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.GuiLogistics;
 
 public abstract class GuiSelectionList<T> extends GuiLogistics {
 
@@ -98,6 +100,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 			start = (int) (infoSize() * scroller.getCurrentScroll());
 			finish = Math.min(start + size, infoSize());
 			GL11.glPushMatrix();
+			GlStateManager.pushAttrib();
 			GL11.glScaled(listScale(), listScale(), listScale());
 			for (int i = start; i < finish; i++) {
 				T info = infoList.get(i);
@@ -106,6 +109,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 					renderInfo(info, yPos);
 				}
 			}
+			GlStateManager.popAttrib();
 			GL11.glPopMatrix();
 		}
 		super.drawGuiContainerForegroundLayer(x, y);

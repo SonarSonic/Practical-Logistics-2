@@ -37,6 +37,7 @@ public class DisplayRenderer extends MultipartSpecialRenderer<ScreenMultipart> {
 		}
 
 		if (part instanceof HolographicDisplayPart) {
+			
 			this.bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));
 			GL11.glPushMatrix();
 			RenderHelper.saveBlendState();
@@ -44,7 +45,7 @@ public class DisplayRenderer extends MultipartSpecialRenderer<ScreenMultipart> {
 			GlStateManager.disableCull();
 			GlStateManager.depthMask(false);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.2F);
-			GlStateManager.translate(-1 + 0.022, -1.2, .01);
+			GlStateManager.translate(-1 - 0.042, -1.2, .01);
 			GlStateManager.scale(0.015, 0.015, 0.015);
 			GlStateManager.enableBlend();
 			OpenGlHelper.glBlendFunc(770, 1, 1, 0);
@@ -54,6 +55,8 @@ public class DisplayRenderer extends MultipartSpecialRenderer<ScreenMultipart> {
 			RenderHelper.restoreBlendState();
 			GL11.glPopMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.translate(-0.0625, 0, 0);
+			
 
 		}
 		GlStateManager.translate(-0.0625, 0, 0);

@@ -1,5 +1,7 @@
 package sonar.logistics.api.cabling;
 
+import java.util.UUID;
+
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IWorldPosition;
@@ -18,7 +20,13 @@ public interface ILogicTile extends IWorldPosition {
 
 	/** gets the network cache's ID */
 	public int getNetworkID();
+	
+	/**the currently connected network*/
+	public INetworkCache getNetwork();
 
 	/** sets the network this tile is connected to */
 	public void setLocalNetworkCache(INetworkCache network);
+	
+	///get part UUID
+	public UUID getUUID();		
 }

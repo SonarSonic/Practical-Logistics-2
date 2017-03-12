@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client;
 
 import net.minecraft.client.gui.Gui;
 

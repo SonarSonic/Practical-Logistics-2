@@ -17,6 +17,7 @@ public class InfoError implements IMonitorInfo<InfoError> {
 
 	public static final InfoError noData = new InfoError("NO DATA");
 	public static final InfoError noMonitor = new InfoError("NO MONITOR");
+	public static final InfoError noItem = new InfoError("NO ITEMSTACK");
 	
 	public static final String id = "error";
 	public String error;

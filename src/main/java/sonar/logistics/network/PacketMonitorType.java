@@ -7,19 +7,20 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.helpers.CableHelper;
 
 public class PacketMonitorType implements IMessage {
 
-	public IInfoProvider monitor;
+	public ILogicViewable monitor;
 	public ViewerType type;
 
 	public PacketMonitorType() {
 	}
 
-	public PacketMonitorType(IInfoProvider monitor, ViewerType type) {
+	public PacketMonitorType(ILogicViewable monitor, ViewerType type) {
 		this.monitor = monitor;
 		this.type = type;
 	}
@@ -41,8 +42,8 @@ public class PacketMonitorType implements IMessage {
 		@Override
 		public IMessage onMessage(PacketMonitorType message, MessageContext ctx) {
 			EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-			if (message.monitor != null && player != null && message.monitor instanceof ILogicMonitor) {
-				((ILogicMonitor)message.monitor).getViewersList().addViewer(player, message.type);
+			if (message.monitor != null && player != null) {
+				message.monitor.getViewersList().addViewer(player, message.type);
 			}
 			return null;
 		}

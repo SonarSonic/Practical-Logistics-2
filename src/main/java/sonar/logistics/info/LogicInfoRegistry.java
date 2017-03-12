@@ -31,6 +31,7 @@ import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
@@ -307,7 +308,7 @@ public class LogicInfoRegistry {
 		try {
 			return method.invoke(obj, inputs);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			Logistics.logger.error("COULDN'T INVOKE METHOD!" + method + " on object" + obj);
+			Logistics.logger.error("COULDN'T INVOKE METHOD! " + method + " on object " + obj);
 		}
 		return null;
 
@@ -435,7 +436,7 @@ public class LogicInfoRegistry {
 		}
 	}
 
-	public static Pair<Boolean, IMonitorInfo> getLatestInfo(MonitoredList updateInfo, ArrayList<BlockConnection> connections, IMonitorInfo paired) {
+	public static Pair<Boolean, IMonitorInfo> getLatestInfo(MonitoredList updateInfo, ArrayList<NodeConnection> connections, IMonitorInfo paired) {
 		Pair<Boolean, IMonitorInfo> newPaired = null;
 		if (paired instanceof LogicInfo && !connections.isEmpty()) {
 			LogicInfo info = (LogicInfo) paired;
@@ -456,17 +457,27 @@ public class LogicInfoRegistry {
 		return newPaired;
 	}
 
-	public static Pair<Boolean, IMonitorInfo> getLatestInfo(LogicInfo info, BlockConnection connection) {
+	public static Pair<Boolean, IMonitorInfo> getLatestInfo(LogicInfo info, NodeConnection entry) {
 		if (info.path == null) {
 			return null;
 		}
-		EnumFacing face = connection.face.getOpposite();
-		World world = connection.coords.getWorld();
-		IBlockState state = connection.coords.getBlockState(world);
-		BlockPos pos = connection.coords.getBlockPos();
-		Block block = state.getBlock();
-		TileEntity tile = connection.coords.getTileEntity(world);
-		LogicInfo returned = LogicInfoRegistry.getLogicInfoFromPath(info, info.path, face, world, state, pos, face, block, tile);
+		LogicInfo returned = null;
+		if (entry instanceof BlockConnection) {
+			BlockConnection connection = (BlockConnection) entry;
+			EnumFacing face = connection.face.getOpposite();
+			World world = connection.coords.getWorld();
+			IBlockState state = connection.coords.getBlockState(world);
+			BlockPos pos = connection.coords.getBlockPos();
+			Block block = state.getBlock();
+			TileEntity tile = connection.coords.getTileEntity(world);
+			returned = LogicInfoRegistry.getLogicInfoFromPath(info, info.path, face, world, state, pos, face, block, tile);
+		}
+		if (entry instanceof EntityConnection) {
+			EntityConnection connection = (EntityConnection) entry;
+			Entity entity = connection.entity;
+			World world = entity.getEntityWorld();
+			returned = LogicInfoRegistry.getLogicInfoFromPath(info, info.path, EnumFacing.NORTH, entity, world);
+		}
 		if (returned != null) {
 			return new Pair(true, returned);
 		}
@@ -510,10 +521,8 @@ public class LogicInfoRegistry {
 					return null;
 				}
 			}
-			if (arg instanceof InvField) {
+			if (arg instanceof InvField && returned instanceof IInventory) {
 				InvField field = ((InvField) arg);
-
-				// LogicInfo newInfo = LogicInfo.buildDirectInfo(returned.getClass().getSimpleName() + "." + field.key, field.type, ((IInventory) returned).getField(field.value), logicPath);
 				info.obj.obj = ((IInventory) returned).getField(field.value);
 				return info;
 			}

@@ -23,15 +23,16 @@ import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
-import sonar.logistics.api.cabling.INetworkConnectable;
+import sonar.logistics.api.cabling.IConnectable;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.render.RenderInfoProperties;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.common.multiparts.SidedMultipart;
@@ -94,7 +95,7 @@ public class CableHelper extends CablingWrapper {
 		}
 		return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() };
 	}
-	
+
 	public static int getSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
 		double[] pos = CableHelper.getPos(display, renderInfo);
 
@@ -102,7 +103,7 @@ public class CableHelper extends CablingWrapper {
 		int minH = 0;
 		int maxY = (int) Math.ceil(renderInfo.getScaling()[1]);
 		int minY = 0;
-		int hSlots = (Math.round(maxH - minH) * xSize);
+		int hSlots = Math.max(1, (Math.round(maxH - minH) * xSize));
 		int yPos = (int) ((1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
 
 		switch (display.getFace()) {
@@ -166,6 +167,72 @@ public class CableHelper extends CablingWrapper {
 		default:
 			break;
 		}
+		return -1;
+	}
+
+	public static int getListSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, double elementSize, double spacing, int maxPageSize) {
+		double[] pos = CableHelper.getPos(display, renderInfo);
+
+		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
+		int minH = 0;
+		int maxY = (int) Math.ceil(renderInfo.getScaling()[1]);
+		int minY = 0;
+		int hSlots = 1;
+		double yClick = (1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height);
+
+		// int yPos = (int) ((1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
+
+		switch (display.getFace()) {
+		case DOWN:
+			switch (display.getRotation()) {
+			case EAST:
+				yClick = ((maxH - minH - (hitVec.xCoord - pos[0])) * 2);
+				break;
+			case NORTH:
+				yClick = ((minH + (hitVec.zCoord - pos[2])) * 2);
+				break;
+			case SOUTH:
+				yClick = ((maxH - minH - (hitVec.zCoord - pos[2])) * 2);
+				break;
+			case WEST:
+				yClick = ((minH + (hitVec.xCoord - pos[0])) * 2);
+				break;
+			default:
+				break;
+			}
+			break;
+		case UP:
+			switch (display.getRotation()) {
+			case EAST:
+				yClick = ((minH + (hitVec.xCoord - pos[0])) * 2);
+				break;
+			case NORTH:
+				yClick = ((maxH - (hitVec.zCoord - pos[2])) * 2);
+				break;
+			case SOUTH:
+				yClick = ((minH + (hitVec.zCoord - pos[2])) * 2);
+				break;
+			case WEST:
+				yClick = ((minH - (hitVec.xCoord - pos[0])) * 2);
+				break;
+			default:
+				break;
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		for (int i = 0; i < maxPageSize; i++) {
+			double yStart = (i * elementSize) + (Math.max(0, (i - 1) * spacing)) + 0.0625;
+			double yEnd = yStart + elementSize;
+			if (yClick > yStart && yClick < yEnd) {
+				// System.out.println("SLOT:" + i);
+				return i;
+			}
+		}
+
 		return -1;
 	}
 
@@ -255,14 +322,22 @@ public class CableHelper extends CablingWrapper {
 		ArrayList<T> logicTiles = new ArrayList();
 		for (IMultipart part : cable.getContainer().getParts()) {
 			if (validate.isValid(part)) {
+				if (part instanceof SidedMultipart) {
+					SidedMultipart sided = (SidedMultipart) part;
+					if (cable.isBlocked(sided.getFacing())) {
+						continue;
+					}
+				}
 				logicTiles.add((T) part);
 			}
 		}
 		for (EnumFacing face : EnumFacing.values()) {
-			BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-			ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
-			if (validate.isValid(tile) && tile.canConnect(face).canConnect()) {
-				logicTiles.add((T) tile);
+			if (cable.canConnectOnSide(face)) {
+				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
+				ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
+				if (validate.isValid(tile) && tile.canConnect(face).canConnect()) {
+					logicTiles.add((T) tile);
+				}
 			}
 		}
 		return logicTiles;
@@ -271,10 +346,12 @@ public class CableHelper extends CablingWrapper {
 	public static ArrayList<IInfoProvider> getLocalMonitors(DataCablePart cable) {
 		ArrayList<IInfoProvider> logicTiles = new ArrayList();
 		for (EnumFacing face : EnumFacing.values()) {
-			BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-			ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
-			if (tile instanceof IInfoProvider) {
-				logicTiles.add((IInfoProvider) tile);
+			if (!cable.isBlocked(face.getOpposite())) {
+				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
+				ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
+				if (tile instanceof IInfoProvider) {
+					logicTiles.add((IInfoProvider) tile);
+				}
 			}
 		}
 		return logicTiles;
@@ -296,16 +373,16 @@ public class CableHelper extends CablingWrapper {
 		return Logistics.instance.networkManager.getNetwork(registryID);
 	}
 
-	public static IInfoProvider getMonitorFromHashCode(int hashCode, boolean isRemote) {
-		for (IInfoProvider monitor : ((LinkedHashMap<UUID, IInfoProvider>) Logistics.getInfoManager(isRemote).getMonitors().clone()).values()) {
-			if (monitor.getIdentity().hashCode() == hashCode) {
+	public static ILogicViewable getMonitorFromHashCode(int hashCode, boolean isRemote) {
+		for (ILogicViewable monitor : ((LinkedHashMap<UUID, ILogicViewable>) Logistics.getInfoManager(isRemote).getMonitors().clone()).values()) {
+			if (monitor.getIdentity() != null && monitor.getIdentity().hashCode() == hashCode) {
 				return monitor;
 			}
 		}
 		return null;
 	}
 
-	public static <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
+	public static <T extends IConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
 		BlockPos offset = pos.offset(dir);
 		IMultipartContainer container = MultipartHelper.getPartContainer(world, offset);
 		if (container != null) {
@@ -320,7 +397,7 @@ public class CableHelper extends CablingWrapper {
 	}
 
 	/** checks what cable type can be connected via a certain direction, assumes the other block can connect from this side */
-	public static <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, IMultipartContainer container, EnumFacing dir, ConnectableType cableType) {
+	public static <T extends IConnectable> Pair<ConnectableType, Integer> getConnectionType(T source, IMultipartContainer container, EnumFacing dir, ConnectableType cableType) {
 		ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(dir.getOpposite()));
 		if (part != null) {
 			return getConnectionTypeFromObject(source, part, dir, cableType);
@@ -333,7 +410,7 @@ public class CableHelper extends CablingWrapper {
 		return new Pair(ConnectableType.NONE, -1);
 	}
 
-	public static <T extends INetworkConnectable> Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType) {
+	public static <T extends IConnectable> Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType) {
 		if (connection instanceof IDataCable) {
 			IDataCable cable = (IDataCable) connection;
 			if (cable.getCableType().canConnect(cableType)) {

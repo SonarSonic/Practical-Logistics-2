@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,7 +12,9 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
+import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerGuide;
 import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.guide.IGuidePage;
@@ -116,60 +119,64 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	public void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 		if (currentPage != null) {
-			switch (button.id) {
-			case 0:
-				if (lastPos != -1) {
-					this.setCurrentPage(this.lastPos, this.lastPagePos);
-					this.lastPos = -1;
-					this.lastPagePos = -1;
-					return;
-				} else if (currentPage != null) {
-					this.currentPage = null;
-					reset();
-				} else {
-					Element3DRenderer.reset();
-					this.mc.thePlayer.closeScreen();
-				}
-				break;
-			case -1:
-				if (currentPos - 1 >= 0) {
-					currentPos--;
-					updatePage();
-				} else {
-					currentPos = infoList.size() - 1;
-					updatePage();
-				}
-				break;
-			case -2:
-				if (currentPos + 1 < infoList.size()) {
-					currentPos++;
-					updatePage();
-				} else {
-					currentPos = 0;
-					updatePage();
-				}
-				break;
-			case -3:
-				if (pagePos - 1 >= 0) {
-					pagePos--;
-				} else {
-					pagePos = currentPage.getPageCount() - 1;
-				}
-				reset();
-				Element3DRenderer.reset();
-				break;
-			case -4:
-				if (pagePos + 1 < currentPage.getPageCount()) {
-					pagePos++;
-				} else {
-					pagePos = 0;
-				}
-				reset();
-				Element3DRenderer.reset();
-				break;
-			}
+			buttonAction(button.id);
 		}
 
+	}
+
+	public void buttonAction(int buttonID) {
+		switch (buttonID) {
+		case 0:
+			if (lastPos != -1) {
+				this.setCurrentPage(this.lastPos, this.lastPagePos);
+				this.lastPos = -1;
+				this.lastPagePos = -1;
+				return;
+			} else if (currentPage != null) {
+				this.currentPage = null;
+				reset();
+			} else {
+				Element3DRenderer.reset();
+				this.mc.thePlayer.closeScreen();
+			}
+			break;
+		case -1:
+			if (currentPos - 1 >= 0) {
+				currentPos--;
+				updatePage();
+			} else {
+				currentPos = infoList.size() - 1;
+				updatePage();
+			}
+			break;
+		case -2:
+			if (currentPos + 1 < infoList.size()) {
+				currentPos++;
+				updatePage();
+			} else {
+				currentPos = 0;
+				updatePage();
+			}
+			break;
+		case -3:
+			if (pagePos - 1 >= 0) {
+				pagePos--;
+			} else {
+				pagePos = currentPage.getPageCount() - 1;
+			}
+			reset();
+			Element3DRenderer.reset();
+			break;
+		case -4:
+			if (pagePos + 1 < currentPage.getPageCount()) {
+				pagePos++;
+			} else {
+				pagePos = 0;
+			}
+			reset();
+			Element3DRenderer.reset();
+			break;
+		}
 	}
 
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -180,14 +187,15 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	}
 
 	public void drawGuiContainerForegroundLayer(int x, int y) {
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		if (currentPage != null) {
-			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, LogisticsColours.white_text);
+			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, -1);
 			currentPage.drawForegroundPage(this, x, y, pagePos);
-			FontHelper.textCentre(pagePos + 1 + " / " + currentPage.getPageCount(), xSize, 140, LogisticsColours.white_text);
-			FontHelper.textCentre(currentPos + 1 + " / " + infoList.size(), xSize, 152, LogisticsColours.white_text);
+			FontHelper.textCentre(pagePos + 1 + " / " + currentPage.getPageCount(), xSize, 140, -1);
+			FontHelper.textCentre(currentPos + 1 + " / " + infoList.size(), xSize, 152, -1);
 		} else {
-			FontHelper.textCentre(FontHelper.translate("Practical Logistics Guide"), xSize, 6, LogisticsColours.white_text);
+			FontHelper.textCentre(FontHelper.translate("Practical Logistics Guide"), xSize, 6, -1);
 		}
 		if (coolDown != 0) {
 			coolDown--;
@@ -253,6 +261,24 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	}
 
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if (keyCode == Keyboard.KEY_LEFT) {
+			if (this.pagePos == 0) {
+				this.buttonAction(-1);
+				this.pagePos = currentPage.getPageCount() - 1;
+				this.reset();
+			} else {
+				this.buttonAction(-3);
+			}
+			return;
+		} else if (keyCode == Keyboard.KEY_RIGHT) {
+			if (this.pagePos == currentPage.getPageCount() - 1) {
+				this.buttonAction(-2);
+			}else{
+				this.buttonAction(-4);
+			}
+			return;
+		}
+
 		Element3DRenderer.reset();
 		super.keyTyped(typedChar, keyCode);
 	}

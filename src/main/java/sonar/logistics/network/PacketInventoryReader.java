@@ -22,6 +22,7 @@ import sonar.core.network.PacketStackUpdate;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.helpers.ItemHelper;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketInventoryReader extends PacketMultipart {
@@ -67,46 +68,8 @@ public class PacketInventoryReader extends PacketMultipart {
 				return null;
 			}
 			InventoryReaderPart reader = (InventoryReaderPart) part;
-			INetworkCache network = reader.network;
-			if (message.button == 3) {
-				LogisticsAPI.getItemHelper().dumpInventoryFromPlayer(player, network);
-			} else if (message.button == 4) {
-				LogisticsAPI.getItemHelper().dumpNetworkToPlayer(reader, player, network);
-			} else if (message.button == 2) {
-				if (message.selected == null) {
-					return null;
-				}
-				LogisticsAPI.getItemHelper().removeToPlayerInventory(new StoredItemStack(message.selected), (long) 64, network, player, ActionType.PERFORM);
-			} else if (player.inventory.getItemStack() != null) {
-				StoredItemStack add = new StoredItemStack(player.inventory.getItemStack().copy());
-				int stackSize = Math.min(message.button == 1 ? 1 : 64, add.getValidStackSize());
-				StoredItemStack stack = LogisticsAPI.getItemHelper().addItems(add.copy().setStackSize(stackSize), network, ActionType.PERFORM);
-				StoredItemStack remove = SonarAPI.getItemHelper().getStackToAdd(stackSize, add, stack);
-				ItemStack actualStack = add.copy().setStackSize(add.stored - SonarAPI.getItemHelper().getStackToAdd(stackSize, add, stack).stored).getActualStack();
-				if (actualStack == null || (actualStack.stackSize != add.stored && !(actualStack.stackSize <= 0)) && !ItemStack.areItemStacksEqual(StoredItemStack.getActualStack(stack), player.inventory.getItemStack())) {
-					player.inventory.setItemStack(actualStack);
-					SonarCore.network.sendTo(new PacketStackUpdate(actualStack), (EntityPlayerMP) player);
-				}
-			} else if (player.inventory.getItemStack() == null) {
-				if (message.selected == null) {
-					return null;
-				}
-				ItemStack stack = message.selected;
-				StoredItemStack toAdd = new StoredItemStack(stack.copy()).setStackSize(Math.min(stack.getMaxStackSize(), 64));
-				StoredItemStack removed = LogisticsAPI.getItemHelper().removeItems(toAdd.copy(), network, ActionType.SIMULATE);
-				StoredItemStack simulate = SonarAPI.getItemHelper().getStackToAdd(toAdd.stored, toAdd, removed);
-				if (simulate != null && simulate.stored != 0) {
-					if (message.button == 1 && simulate.stored != 1) {
-						simulate.setStackSize((long) Math.ceil(simulate.getStackSize() / 2));
-					}
-					StoredItemStack storedStack = SonarAPI.getItemHelper().getStackToAdd(simulate.stored, simulate, LogisticsAPI.getItemHelper().removeItems(simulate.copy(), network, ActionType.PERFORM));
-					if (storedStack != null && storedStack.stored != 0) {
-						player.inventory.setItemStack(storedStack.getFullStack());
-						SonarCore.network.sendTo(new PacketStackUpdate(storedStack.getFullStack()), (EntityPlayerMP) player);
-					}
-				}
-
-			}
+			INetworkCache network = reader.getNetwork();
+			ItemHelper.onNetworkItemInteraction(network, reader.getMonitoredList(), player, message.selected, message.button);
 			return null;
 		}
 	}

@@ -13,7 +13,7 @@ public class HelpOverlays {
 		{
 			this.overlays.add(new HelpOverlay<GuiInfoReader>("select channel", 7, 5, 20, 19, Color.RED.getRGB()) {
 				public boolean isCompletedSuccess(GuiInfoReader gui) {
-					if (!gui.part.getChannels().isEmpty()) {
+					if (!gui.part.getChannels().hasChannels()) {
 						return true;
 					}
 					return false;

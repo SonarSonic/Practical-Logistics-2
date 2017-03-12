@@ -55,7 +55,7 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 	//// IConnectionNode \\\\
 
 	@Override
-	public void addConnections(ArrayList<BlockConnection> connections) {
+	public void addConnections(ArrayList<NodeConnection> connections) {
 		BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());
 		connections.add(new BlockConnection(this, tileCoords, getFacing()));
 	}

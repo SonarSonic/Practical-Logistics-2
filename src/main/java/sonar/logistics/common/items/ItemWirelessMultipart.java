@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import sonar.logistics.common.multiparts.SidedMultipart;
 
 /** for data emitter and data receiver */
-public class ItemWirelessMultipart extends ItemMultiPart {
+public class ItemWirelessMultipart extends ItemMultiPart  {
 	public final Class<? extends SidedMultipart> type;
 
 	public ItemWirelessMultipart(Class<? extends SidedMultipart> type) {

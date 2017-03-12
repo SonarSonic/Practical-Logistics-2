@@ -18,27 +18,27 @@ public class ContainerChannelSelection extends ContainerMultipartSync {
 		this.tile = tile;
 	}
 
-	public boolean syncInventory() {
-		return false;
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
-
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = null;
 		Slot slot = (Slot) this.inventorySlots.get(slotID);
 		return itemstack;
 	}
 
+	public void onContainerClosed(EntityPlayer player) {
+		super.onContainerClosed(player);
+		tile.getViewersList().removeViewer(player, ViewerType.CHANNEL);
+	}
+
+	public boolean syncInventory() {
+		return false;
+	}
+
 	public SyncType[] getSyncTypes() {
 		return new SyncType[] { SyncType.DEFAULT_SYNC };
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		super.onContainerClosed(player);
-		tile.getViewersList().removeViewer(player, ViewerType.CHANNEL);
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 }

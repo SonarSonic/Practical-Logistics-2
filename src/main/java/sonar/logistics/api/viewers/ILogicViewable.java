@@ -1,6 +1,7 @@
 package sonar.logistics.api.viewers;
 
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.utils.IUUIDIdentity;
@@ -13,5 +14,5 @@ public interface ILogicViewable extends ILogicTile, IUUIDIdentity {
 	public void onViewerAdded(EntityPlayer player, List<ViewerTally> arrayList);
 	
 	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> arrayList);
-				
+			
 }

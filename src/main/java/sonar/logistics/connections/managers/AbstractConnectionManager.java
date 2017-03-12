@@ -14,9 +14,9 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.INetworkConnectable;
+import sonar.logistics.api.cabling.IConnectable;
 
-public abstract class AbstractConnectionManager<T extends INetworkConnectable> {
+public abstract class AbstractConnectionManager<T extends IConnectable> {
 
 	private Map<Integer, ArrayList<T>> connections = new ConcurrentHashMap<Integer, ArrayList<T>>();
 	private NetworkManager NetworkManager;

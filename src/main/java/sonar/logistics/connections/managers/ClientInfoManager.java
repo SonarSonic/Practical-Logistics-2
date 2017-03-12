@@ -18,9 +18,10 @@ import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.ClientLogicReader;
+import sonar.logistics.api.readers.ClientViewable;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -29,20 +30,19 @@ import sonar.logistics.helpers.InfoHelper;
 public class ClientInfoManager implements IInfoManager {
 
 	public ConcurrentHashMap<Integer, ConnectedDisplayScreen> connectedDisplays = new ConcurrentHashMap<Integer, ConnectedDisplayScreen>();
-	
-	//public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = new LinkedHashMap();
+
+	// public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = new LinkedHashMap();
 	public LinkedHashMap<InfoUUID, IMonitorInfo> info = new LinkedHashMap();
 
 	public Map<UUID, ArrayList<Object>> sortedLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<Object>>();
-	public Map<UUID, ArrayList<ClientLogicReader>> clientLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<ClientLogicReader>>();
-	
-	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();	
-	public LinkedHashMap<UUID, IInfoProvider> monitors = new LinkedHashMap();
-	public Map<Integer, MonitoredList<MonitoredBlockCoords>> coordMap = new ConcurrentHashMap<Integer, MonitoredList<MonitoredBlockCoords>>();
-	
-	//emitters
-	public ArrayList<ClientDataEmitter> clientEmitters = new ArrayList<ClientDataEmitter>();
+	public Map<UUID, ArrayList<ClientViewable>> clientLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<ClientViewable>>();
 
+	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();
+	public LinkedHashMap<UUID, ILogicViewable> monitors = new LinkedHashMap();
+	public Map<Integer, MonitoredList<IMonitorInfo>> channelMap = new ConcurrentHashMap<Integer, MonitoredList<IMonitorInfo>>();
+
+	// emitters
+	public ArrayList<ClientDataEmitter> clientEmitters = new ArrayList<ClientDataEmitter>();
 
 	@Override
 	public void removeAll() {
@@ -52,7 +52,7 @@ public class ClientInfoManager implements IInfoManager {
 		clientLogicMonitors.clear();
 		monitoredLists.clear();
 		monitors.clear();
-		coordMap.clear();
+		channelMap.clear();
 		clientEmitters.clear();
 	}
 
@@ -64,10 +64,10 @@ public class ClientInfoManager implements IInfoManager {
 			InfoUUID id = NBTHelper.instanceNBTSyncable(InfoUUID.class, infoTag);
 			if (save) {
 				info.put(id, InfoHelper.readInfoFromNBT(infoTag));
-				//info.replace(id, );
+				// info.replace(id, );
 			} else {
 				IMonitorInfo currentInfo = info.get(id);
-				if(currentInfo!=null){
+				if (currentInfo != null) {
 					currentInfo.readData(infoTag, type);
 					info.put(id, currentInfo);
 				}
@@ -75,19 +75,19 @@ public class ClientInfoManager implements IInfoManager {
 		}
 	}
 
-	public void addMonitor(IInfoProvider monitor) {
+	public void addMonitor(ILogicViewable monitor) {
 		if (monitors.containsValue(monitor)) {
 			return;
 		}
 		monitors.put(monitor.getIdentity(), monitor);
 	}
-	
-	public void removeMonitor(IInfoProvider monitor) {
+
+	public void removeMonitor(ILogicViewable monitor) {
 		monitors.remove(monitor.getIdentity());
 	}
-	
+
 	@Override
-	public LinkedHashMap<UUID, IInfoProvider> getMonitors() {
+	public LinkedHashMap<UUID, ILogicViewable> getMonitors() {
 		return monitors;
 	}
 
@@ -95,7 +95,7 @@ public class ClientInfoManager implements IInfoManager {
 	public LinkedHashMap<InfoUUID, IMonitorInfo> getInfoList() {
 		return info;
 	}
-	
+
 	public <T extends IMonitorInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid) {
 		MonitoredList<T> list = MonitoredList.<T>newMonitoredList(networkID);
 		monitoredLists.putIfAbsent(uuid, list);
@@ -106,7 +106,6 @@ public class ClientInfoManager implements IInfoManager {
 		}
 		return list;
 	}
-
 
 	public ConnectedDisplayScreen getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID) {
 		ConcurrentHashMap<Integer, ConnectedDisplayScreen> displays = getConnectedDisplays();

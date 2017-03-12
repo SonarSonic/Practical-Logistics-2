@@ -57,7 +57,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	public int registryID = -1;
 	public boolean wasAdded = false;
 	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.<DisplayConnections>create("type", DisplayConnections.class);
-	// public ConnectedDisplayScreen connectedDisplay = null;
+	public ConnectedDisplayScreen overrideDisplay = null;
 	public NBTTagCompound savedTag = null;
 	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // set default info
 	public boolean onRenderChange = true;
@@ -172,7 +172,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 	@Override
 	public ConnectedDisplayScreen getDisplayScreen() {
-		return Logistics.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
+		return overrideDisplay!=null ? overrideDisplay : Logistics.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
 	}
 
 	@Override
@@ -219,18 +219,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			getDisplayScreen().setHasChanged();
 		}
 	}
-	
-	public void addToNetwork() {
-		if (isServer()) {
-			Logistics.getDisplayManager().addConnection(this);
-		}
-	}
-
-	public void removeFromNetwork() {
-		if (isServer()) {
-			Logistics.getDisplayManager().removeConnection(this.getRegistryID(), this);
-		}
-	}
 
 	@Override
 	public boolean canConnectOnSide(EnumFacing dir) {
@@ -242,6 +230,18 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		super.addInfo(info);
 		info.add("Large Display ID: " + registryID);
 		info.add("Should Render " + this.shouldRender.getObject());
+	}
+	
+	public void addToNetwork() {
+		if (isServer()) {
+			Logistics.getDisplayManager().addConnection(this);
+		}
+	}
+
+	public void removeFromNetwork() {
+		if (isServer()) {
+			Logistics.getDisplayManager().removeConnection(this.getRegistryID(), this);
+		}
 	}
 
 	//// EVENTS \\\\
@@ -444,7 +444,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			Logistics.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
-			Logistics.getServerManager().sendLocalMonitorsToClientFromScreen(part, player);
+			Logistics.getServerManager().sendViewablesToClientFromScreen(part, player);
 			break;
 		}
 	}

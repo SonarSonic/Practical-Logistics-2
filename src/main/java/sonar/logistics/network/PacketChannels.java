@@ -8,20 +8,21 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.Logistics;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 
-public class PacketMonitoredCoords implements IMessage {
+public class PacketChannels implements IMessage {
 
-	public MonitoredList<MonitoredBlockCoords> list;
+	public MonitoredList<IMonitorInfo> list;
 	public NBTTagCompound listTag;
 	public int registryID;
 
-	public PacketMonitoredCoords() {
+	public PacketChannels() {
 	}
 
-	public PacketMonitoredCoords(int registryID, NBTTagCompound listTag) {
+	public PacketChannels(int registryID, NBTTagCompound listTag) {
 		this.listTag = listTag;
 		this.registryID = registryID;
 	}
@@ -31,7 +32,7 @@ public class PacketMonitoredCoords implements IMessage {
 		registryID = buf.readInt();
 		listTag = ByteBufUtils.readTag(buf);
 		if (listTag != null)
-			list = InfoHelper.readMonitoredList(listTag, Logistics.getClientManager().coordMap.getOrDefault(registryID, MonitoredList.newMonitoredList(registryID)).copyInfo(), SyncType.DEFAULT_SYNC);
+			list = InfoHelper.readMonitoredList(listTag, Logistics.getClientManager().channelMap.getOrDefault(registryID, MonitoredList.newMonitoredList(registryID)).copyInfo(), SyncType.DEFAULT_SYNC);
 	}
 
 	@Override
@@ -40,11 +41,11 @@ public class PacketMonitoredCoords implements IMessage {
 		ByteBufUtils.writeTag(buf, listTag);
 	}
 
-	public static class Handler implements IMessageHandler<PacketMonitoredCoords, IMessage> {
+	public static class Handler implements IMessageHandler<PacketChannels, IMessage> {
 		@Override
-		public IMessage onMessage(PacketMonitoredCoords message, MessageContext ctx) {
+		public IMessage onMessage(PacketChannels message, MessageContext ctx) {
 			if (message.list != null)
-				Logistics.getClientManager().coordMap.put(message.registryID, message.list);
+				Logistics.getClientManager().channelMap.put(message.registryID, message.list);
 			return null;
 		}
 	}

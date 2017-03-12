@@ -50,11 +50,6 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 			addSlotToContainer(new SlotList(part.inventory, 0, 63, 9));
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
-	}
-
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
 		ItemStack itemstack = null;
 		Slot slot = (Slot) this.inventorySlots.get(id);
@@ -102,6 +97,12 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 		return itemstack;
 	}
 
+	public void onContainerClosed(EntityPlayer player) {
+		super.onContainerClosed(player);
+		if (!player.getEntityWorld().isRemote)
+			part.getViewersList().removeViewer(player, ViewerType.INFO);
+	}
+
 	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
 		if (slotID < this.inventorySlots.size()) {
 			Slot targetSlot = slotID < 0 ? null : (Slot) this.inventorySlots.get(slotID);
@@ -118,13 +119,13 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 		return new SyncType[] { SyncType.DEFAULT_SYNC };
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		super.onContainerClosed(player);
-		part.getViewersList().removeViewer(player, ViewerType.INFO);
-	}
-
 	@Override
 	public InventoryReader.Modes getCurrentState() {
 		return part.setting.getObject();
+	}
+
+	@Override
+	public boolean canInteractWith(EntityPlayer player) {
+		return true;
 	}
 }

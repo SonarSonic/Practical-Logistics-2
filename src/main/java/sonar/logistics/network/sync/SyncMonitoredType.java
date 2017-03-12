@@ -1,4 +1,4 @@
-package sonar.logistics.network;
+package sonar.logistics.network.sync;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;

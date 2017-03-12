@@ -23,12 +23,24 @@ public class ContainerFilterList extends ContainerMultipartSync {
 			}
 		}
 
-
 		for (int i = 0; i < 9; ++i) {
 			this.addSlotToContainer(new Slot(player.inventory, i, 41 + i * 18, 232));
 		}
 	}
-		
+
+	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
+		return null;
+	}
+
+	public void onContainerClosed(EntityPlayer player) {
+		super.onContainerClosed(player);
+		tile.getViewersList().removeViewer(player, ViewerType.CHANNEL);
+	}
+
+	public SyncType[] getSyncTypes() {
+		return new SyncType[] { SyncType.DEFAULT_SYNC };
+	}
+
 	public boolean syncInventory() {
 		return true;
 	}
@@ -36,18 +48,5 @@ public class ContainerFilterList extends ContainerMultipartSync {
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
 		return true;
-	}
-
-	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
-		return null;
-	}
-
-	public SyncType[] getSyncTypes() {
-		return new SyncType[] { SyncType.DEFAULT_SYNC };
-	}
-
-	public void onContainerClosed(EntityPlayer player) {
-		super.onContainerClosed(player);
-		tile.getViewersList().removeViewer(player, ViewerType.CHANNEL);
 	}
 }

@@ -4,9 +4,10 @@ import sonar.core.utils.IUUIDIdentity;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.viewers.ILogicViewable;
 
-public interface IInfoProvider extends ILogicTile, IUUIDIdentity {
-
+public interface IInfoProvider extends ILogicViewable {
+	
 	public IMonitorInfo getMonitorInfo(int pos);
 	
 	public String getDisplayName();

@@ -3,7 +3,6 @@ package sonar.logistics.common.multiparts;
 import java.util.ArrayList;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,11 +21,11 @@ import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.client.gui.GuiChannelSelection;
 import sonar.logistics.client.gui.GuiFluidReader;
+import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.connections.monitoring.FluidMonitorHandler;
@@ -37,7 +36,7 @@ import sonar.logistics.info.LogicInfoRegistry.RegistryType;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.ProgressInfo;
-import sonar.logistics.network.SyncMonitoredType;
+import sonar.logistics.network.sync.SyncMonitoredType;
 
 public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implements IByteBufTile {
 
@@ -68,7 +67,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, ArrayList<BlockConnection> connections, ArrayList<Entity> entities, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case SELECTED:

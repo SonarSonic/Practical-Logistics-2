@@ -35,9 +35,10 @@ import sonar.logistics.api.logistics.EmitterStatement;
 import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.logistics.SignallerModes;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.utils.LogisticsHelper;
-import sonar.logistics.client.gui.GuiStatementList;
+import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.client.gui.generic.GuiStatementList;
 import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.helpers.CableHelper;
 
@@ -86,7 +87,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 		HashMap<InfoUUID, IMonitorInfo> infoList = new HashMap();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				IInfoProvider monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
+				ILogicViewable monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
 				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
 					IMonitorInfo monitorInfo = Logistics.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
@@ -167,17 +168,17 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	
 	@Override
 	public boolean canConnectRedstone(EnumFacing side) {
-		return side == getFacing();
+		return true;
 	}
 
 	@Override
 	public int getWeakSignal(EnumFacing side) {
-		return (side == getFacing() && isActive()) ? 15 : 0;
+		return (isActive()) ? 15 : 0;
 	}
 
 	@Override
 	public int getStrongSignal(EnumFacing side) {
-		return (side == getFacing() && isActive()) ? 15 : 0;
+		return (isActive()) ? 15 : 0;
 	}
 	
 	//// STATE \\\\
@@ -208,7 +209,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
-		Logistics.getServerManager().sendLocalMonitorsToClient(this, getIdentity(), player);
+		Logistics.getServerManager().sendViewablesToClient(this, getIdentity(), player);
 	}
 	
 	@Override
@@ -255,7 +256,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			Logistics.getServerManager().sendLocalMonitorsToClient(this, getIdentity(), player);
+			Logistics.getServerManager().sendViewablesToClient(this, getIdentity(), player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}

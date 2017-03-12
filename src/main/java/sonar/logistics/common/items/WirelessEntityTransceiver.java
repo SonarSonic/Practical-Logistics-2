@@ -36,7 +36,7 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
 		if (player.isSneaking()) {
 			if (!world.isRemote) {
-				onRightClickEntity(player, stack, player);
+				onRightClickEntity(player, stack, player, hand);
 			}
 			return new ActionResult(EnumActionResult.SUCCESS, stack);
 		}
@@ -44,7 +44,7 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 	}
 
 	@Override
-	public void onRightClickEntity(EntityPlayer player, ItemStack stack, Entity entity) {
+	public ItemStack onRightClickEntity(EntityPlayer player, ItemStack stack, Entity entity, EnumHand hand) {
 		if (entity != null) {
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag == null)
@@ -53,12 +53,14 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 			tag.setString("targetName", entity.getDisplayName().getUnformattedText());
 			FontHelper.sendMessage(stack.hasTagCompound() ? "Overwritten Entity" : "Saved Entity", player.getEntityWorld(), player);
 			stack.setTagCompound(tag);
+            player.setHeldItem(hand, stack);
 		}
+		return stack;
 	}
 
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
 		if (!player.isSneaking() &&!player.getEntityWorld().isRemote){
-			onRightClickEntity(player, stack, target);
+			stack = onRightClickEntity(player, stack, target, hand);
 		}
 		return true;
 	}
@@ -69,7 +71,6 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 		super.addInformation(stack, player, list, par);
 		if (stack.hasTagCompound()) {
 			list.add("Entity: " + TextFormatting.ITALIC + FontHelper.translate(stack.getTagCompound().getString("targetName")));
-			list.add("UUID: " + TextFormatting.ITALIC + getEntityUUID(stack).toString());
 		}
 	}
 }

@@ -2,20 +2,18 @@ package sonar.logistics.api.readers;
 
 /**all the modes used by the Fluid Reader*/
 public class EnergyReader {
-	/*
+	
 	public static enum Modes {
-		FLUID, POS, TANKS, STORAGE;
-
+		STORAGES, STORAGE, TOTAL;
+		
 		public String getDescription() {
 			switch (this) {
-			case FLUID:
-				return "Selected Fluid";
-			case POS:
-				return "Fluid at the given position";
-			case TANKS:
-				return "List of Fluids";
+			case STORAGES:
+				return "All connected storages";
 			case STORAGE:
-				return "Current Tank Usage";
+				return "The selected storage";
+			case TOTAL:
+				return "A total of all the storages";
 			default:
 				return "ERROR";
 			}
@@ -23,20 +21,18 @@ public class EnergyReader {
 
 		public String getName() {
 			switch (this) {
-			case FLUID:
-				return "Fluid";
-			case POS:
-				return "Pos";
-			case TANKS:
-				return "Tanks";
+			case STORAGES:
+				return "Storages";
 			case STORAGE:
 				return "Storage";
+			case TOTAL:
+				return "Total";
 			default:
 				return "ERROR";
 			}
 		}
 	}
-	*/
+	
 	public static enum SortingType {
 		STORED, CAPACITY, INPUT, TYPE, NAME;
 		

@@ -22,6 +22,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.api.nodes.BlockConnection;
+import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
@@ -35,7 +36,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
 	public ArrayList<BlockConnection> coordList = Lists.newArrayList();
-	public ArrayList<Entity> entityList = Lists.newArrayList();
+	public ArrayList<EntityConnection> entityList = Lists.newArrayList();
 	public static boolean entityChanged = true;
 	{
 		syncList.addPart(priority);
@@ -80,7 +81,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 
 	public void updateConnectionLists() {
 		ArrayList<BlockConnection> coordList = Lists.newArrayList();
-		ArrayList<Entity> entityList = Lists.newArrayList();
+		ArrayList<EntityConnection> entityList = Lists.newArrayList();
 		for (int i = 0; i < 8; i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if (stack != null && stack.hasTagCompound()) {
@@ -94,7 +95,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 					if (uuid != null) {
 						for (Entity entity : getWorld().getLoadedEntityList()) {
 							if (entity.getPersistentID().equals(uuid)) {
-								entityList.add(entity);
+								entityList.add(new EntityConnection(this, entity));
 								break;
 							}
 						}
@@ -115,14 +116,14 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	}
 
 	@Override
-	public void addConnections(ArrayList<BlockConnection> connections) {
+	public void addConnections(ArrayList<NodeConnection> connections) {
 		connections.addAll(coordList);
 	}
 
 	//// IEntityNode \\\\
-	
+
 	@Override
-	public void addEntities(List<Entity> entities) {
+	public void addEntities(List<NodeConnection> entities) {
 		entities.addAll(entityList);
 	}
 
@@ -139,7 +140,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	}
 
 	//// GUI \\\\
-	
+
 	@Override
 	public Object getGuiContainer(EntityPlayer player) {
 		return new ContainerArray(player, this);

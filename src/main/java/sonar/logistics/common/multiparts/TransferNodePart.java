@@ -21,20 +21,26 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.IFlexibleGui;
+import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
+import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
+import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.NodeConnection;
@@ -42,18 +48,19 @@ import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.readers.IdentifiedCoordsList;
+import sonar.logistics.api.readers.IdentifiedChannelsList;
 import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.api.viewers.IViewersList;
 import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.viewers.ViewersList;
-import sonar.logistics.client.gui.GuiChannelSelection;
-import sonar.logistics.client.gui.GuiFilterList;
+import sonar.logistics.client.gui.generic.GuiChannelSelection;
+import sonar.logistics.client.gui.generic.GuiFilterList;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
-import sonar.logistics.network.SyncFilterList;
+import sonar.logistics.connections.monitoring.MonitoredEntity;
+import sonar.logistics.network.sync.SyncFilterList;
 
 public class TransferNodePart extends SidedMultipart implements IConnectionNode, IOperatorTile, IFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
 
@@ -62,13 +69,14 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
 	public SyncEnum<NodeTransferMode> transferMode = new SyncEnum(NodeTransferMode.values(), 2).setDefault(NodeTransferMode.ADD);
 	public SyncFilterList filters = new SyncFilterList(3);
-	public IdentifiedCoordsList list = new IdentifiedCoordsList(4);
+	public IdentifiedChannelsList list = new IdentifiedChannelsList(this, this.channelType(), 4);
 	public SyncTagType.BOOLEAN connection = new SyncTagType.BOOLEAN(5);
 	public SyncTagType.BOOLEAN items = (BOOLEAN) new SyncTagType.BOOLEAN(6).setDefault(true);
 	public SyncTagType.BOOLEAN fluids = (BOOLEAN) new SyncTagType.BOOLEAN(7).setDefault(true);
 	public SyncTagType.BOOLEAN energy = (BOOLEAN) new SyncTagType.BOOLEAN(8).setDefault(true);
+	public SyncCoords lastSelected = new SyncCoords(-11);
+	public SyncUUID lastSelectedUUID = new SyncUUID(-10);
 	// public SyncTagType.BOOLEAN gases = (BOOLEAN) new SyncTagType.BOOLEAN(8).setDefault(true);
-	public BlockCoords lastSelected = null;
 
 	public int ticks = 20;
 	{
@@ -110,10 +118,15 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		return filters.matches(new StoredItemStack(stack), transferMode.getObject());
 	}
 
+	@Override
+	public boolean allowed(FluidStack stack) {
+		return filters.matches(new StoredFluidStack(stack), transferMode.getObject());
+	}
+
 	//// IConnectionNode \\\\
 
 	@Override
-	public void addConnections(ArrayList<BlockConnection> connections) {
+	public void addConnections(ArrayList<NodeConnection> connections) {
 		// if (canConnectToNodeConnection()) {
 		connections.add(getConnected());
 		// }
@@ -204,14 +217,25 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	//// IChannelledTile \\\\
 
 	@Override
-	public IdentifiedCoordsList getChannels() {
+	public ChannelType channelType() {
+		return ChannelType.UNLIMITED;
+	}
+	
+	@Override
+	public IdentifiedChannelsList getChannels() {
 		return list;
 	}
 
 	@Override
-	public void modifyCoords(MonitoredBlockCoords coords, int channelID) {
-		lastSelected = coords.syncCoords.getCoords();
-		sendByteBufPacket(-3);
+	public void modifyCoords(IMonitorInfo info, int channelID) {
+		if (info instanceof MonitoredBlockCoords) {
+			lastSelected.setCoords(((MonitoredBlockCoords) info).syncCoords.getCoords());
+			sendByteBufPacket(-3);
+		}
+		if (info instanceof MonitoredEntity) {
+			lastSelectedUUID.setObject(((MonitoredEntity) info).uuid.getUUID());;
+			sendByteBufPacket(-4);
+		}
 	}
 
 	//// ILogicViewable \\\\
@@ -234,6 +258,14 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		return getUUID();
 	}
 
+	//// EVENTS \\\\
+
+	public void onFirstTick() {
+		super.onFirstTick();
+		if (isClient())
+			this.requestSyncPacket();
+	}
+
 	//// STATE \\\\
 
 	@Override
@@ -250,8 +282,11 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {
+		case -4:
+			lastSelectedUUID.writeToBuf(buf);
+			break;
 		case -3:
-			BlockCoords.writeToBuf(buf, lastSelected);
+			lastSelected.writeToBuf(buf);
 			break;
 		case 1:
 			list.writeToBuf(buf);
@@ -271,9 +306,14 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	@Override
 	public void readPacket(ByteBuf buf, int id) {
 		switch (id) {
+		case -4:
+			lastSelectedUUID.readFromBuf(buf);			
+			list.modifyUUID(lastSelectedUUID.getUUID());
+			sendByteBufPacket(1);			
+			break;
 		case -3:
-			BlockCoords coords = BlockCoords.readFromBuf(buf);
-			list.modifyCoords(ChannelType.UNLIMITED, coords);
+			lastSelected.readFromBuf(buf);		
+			list.modifyCoords(lastSelected.getCoords());
 			sendByteBufPacket(1);
 			break;
 		case 1:

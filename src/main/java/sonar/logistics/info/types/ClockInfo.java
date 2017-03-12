@@ -1,5 +1,7 @@
 package sonar.logistics.info.types;
 
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -13,14 +15,16 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.ISuffixable;
 import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = ClockInfo.id, modid = Logistics.MODID)
-public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<ClockInfo>, INBTSyncable, INameableInfo<ClockInfo> {
+public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<ClockInfo>, INBTSyncable, INameableInfo<ClockInfo>, IComparableInfo<ClockInfo> {
 
 	public static final String id = "clock";
 	public int compare;
@@ -42,7 +46,7 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<Clock
 
 	@Override
 	public String getClientIdentifier() {
-		return "";
+		return "Time";
 	}
 
 	@Override
@@ -112,5 +116,11 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<Clock
 		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), displayWidth, displayHeight, displayScale, displayInfo.getFormattedStrings());
 		GL11.glPopMatrix();
 
+	}
+
+	@Override
+	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+		objects.add(new ComparableObject(this, "isEmitting", firstNum.getObject()==secondNum.getObject()));
+		return objects;
 	}
 }

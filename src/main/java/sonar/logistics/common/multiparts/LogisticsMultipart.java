@@ -19,11 +19,12 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.network.PacketMonitoredCoords;
+import sonar.logistics.network.PacketChannels;
 
 public abstract class LogisticsMultipart extends SonarMultipart implements ILogicTile, IOperatorProvider {
 
@@ -47,10 +48,10 @@ public abstract class LogisticsMultipart extends SonarMultipart implements ILogi
 		if (isClient() || network.isFakeNetwork() || getNetworkID() == -1) {
 			return;
 		}
-		MonitoredList<MonitoredBlockCoords> coords = Logistics.getNetworkManager().getCoordMap().get(getNetworkID());
+		MonitoredList<IMonitorInfo> coords = Logistics.getNetworkManager().getCoordMap().get(getNetworkID());
 		NBTTagCompound coordTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC);
 		if (!coordTag.hasNoTags()) {
-			Logistics.network.sendTo(new PacketMonitoredCoords(getNetworkID(), coordTag), (EntityPlayerMP) player);
+			Logistics.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) player);
 		}
 	}
 	

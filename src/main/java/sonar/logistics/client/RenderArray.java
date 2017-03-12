@@ -19,7 +19,7 @@ public class RenderArray extends MultipartSpecialRenderer<ArrayPart> {
 		InfoRenderer.rotateDisplayRendering(part.getFacing(), EnumFacing.NORTH, 0, 0);
 		GL11.glRotated(90, 1, 0, 0);
 		GL11.glScaled(0.7, 0.7, 0.7);
-		GL11.glTranslated(-8.91, -8.0, 0.45);
+		GL11.glTranslated(-9, -8.0, 0.45);
 		for (int i = 0; i < part.inventory.getSizeInventory(); i++) {
 			ItemStack stack = part.inventory.getStackInSlot(i);
 			if (stack != null) {

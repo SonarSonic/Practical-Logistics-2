@@ -32,7 +32,7 @@ import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.client.gui.GuiChannelSelection;
+import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {

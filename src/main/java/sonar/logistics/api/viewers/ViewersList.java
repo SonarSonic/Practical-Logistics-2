@@ -172,6 +172,7 @@ public class ViewersList implements IViewersList {
 			if (playerTypes.isEmpty()) {
 				viewerList.viewers.remove(player);
 			}
+			viewerList.viewers.put(player, playerTypes);
 			return playerTypes.size() < types.size();
 		}
 		return false;

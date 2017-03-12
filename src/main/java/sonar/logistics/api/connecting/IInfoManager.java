@@ -10,12 +10,13 @@ import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.ILogicMonitor;
+import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
 public interface IInfoManager {
 
-	public LinkedHashMap<UUID, IInfoProvider> getMonitors();
+	public LinkedHashMap<UUID, ILogicViewable> getMonitors();
 
 	public LinkedHashMap<InfoUUID, IMonitorInfo> getInfoList();
 
@@ -24,10 +25,10 @@ public interface IInfoManager {
 	public <T extends IMonitorInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid);
 
 	public ConnectedDisplayScreen getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID);
+	
+	public void addMonitor(ILogicViewable monitor);
 
-	public void addMonitor(IInfoProvider monitor);
-
-	public void removeMonitor(IInfoProvider monitor);
+	public void removeMonitor(ILogicViewable monitor);
 
 	public void removeAll();
 }

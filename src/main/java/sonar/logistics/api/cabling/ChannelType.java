@@ -6,5 +6,9 @@ public enum ChannelType {
 	SINGLE, 
 	
 	/**allows an unlimited amount of channels to be connected. e.g. InventoryReader*/
-	UNLIMITED;
+	UNLIMITED,
+	
+	NETWORK_SINGLE;
+	
+	
 }

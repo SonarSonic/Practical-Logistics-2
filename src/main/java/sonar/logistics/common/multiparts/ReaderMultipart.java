@@ -18,11 +18,12 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.readers.IReader;
 import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.api.viewers.ViewerType;
 
-public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMultipart<T> implements ISlottedPart, IReader<T>, IFlexibleGui {
+public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMultipart<T> implements INetworkReader<T>, ISlottedPart, IReader<T>, IFlexibleGui {
 
 	public ReaderMultipart(String handlerID) {
 		super(handlerID, 6 * 0.0625, 0.0625 * 1, 0.0625 * 6);
@@ -31,7 +32,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 	public ReaderMultipart(String handlerID, EnumFacing face) {
 		super(handlerID, face, 6 * 0.0625, 0.0625 * 1, 0.0625 * 6);
 	}
-	
+
 	@Override
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
 		if (!LogisticsHelper.isPlayerUsingOperator(player)) {
@@ -54,7 +55,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 	}
 
 	//// PACKETS \\\\
-	
+
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		super.writePacket(buf, id);
@@ -70,7 +71,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 		if (part != null)
 			part.readFromBuf(buf);
 	}
-	
+
 	//// GUI \\\\
 
 	@Override
@@ -80,7 +81,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			viewers.addViewer(player, ViewerType.FULL_INFO);
-			break;			
+			break;
 		}
 	}
 }

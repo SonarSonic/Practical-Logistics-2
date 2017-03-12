@@ -56,18 +56,4 @@ public class ContainerArray extends ContainerMultipartSync {
 		return true;
 	}
 
-	public static class ArraySlot extends Slot {
-
-		ArrayPart part;
-
-		public ArraySlot(ArrayPart part, int index, int x, int y) {
-			super(part.inventory, index, x, y);
-			this.part = part;
-		}
-
-		public boolean isItemValid(ItemStack stack) {
-			return part.inventory.isItemValidForSlot(this.getSlotIndex(), stack);
-		}
-	}
-
 }

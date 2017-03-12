@@ -22,6 +22,8 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
+import sonar.logistics.client.LogisticsButton;
+import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.common.multiparts.FluidReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
@@ -80,6 +82,14 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
 	}
 
+	public void onTextFieldChanged(SonarTextField field) {
+		super.onTextFieldChanged(field);
+		if (field == slotField) {
+			part.posSlot.setObject(field.getIntegerFromText());
+			part.sendByteBufPacket(4);
+		}
+	}
+
 	public void actionPerformed(GuiButton button) {
 		if (button != null) {
 			switch (button.id) {
@@ -107,21 +117,6 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 				break;
 			}
 		}
-	}
-
-	@Override
-	public void drawGuiContainerForegroundLayer(int x, int y) {
-		super.drawGuiContainerForegroundLayer(x, y);
-	}
-
-	@Override
-	public void mouseClicked(int i, int j, int k) throws IOException {
-		super.mouseClicked(i, j, k);
-	}
-
-	public void setPosSlot(String string) {
-		part.posSlot.setObject(Integer.parseInt(string));
-		part.sendByteBufPacket(4);
 	}
 
 	@Override
@@ -158,7 +153,8 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 					if (stack.equals(selection)) {
 						String posString = String.valueOf(position);
 						slotField.setText(posString);
-						setPosSlot(posString);
+						part.posSlot.setObject(slotField.getIntegerFromText());
+						part.sendByteBufPacket(4);
 					}
 				}
 				position++;
@@ -241,5 +237,6 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {}
+	public void renderStrings(int x, int y) {
+	}
 }
