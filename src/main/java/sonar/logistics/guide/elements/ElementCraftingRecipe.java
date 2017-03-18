@@ -55,7 +55,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 				if (!list.isEmpty()) {
 					Integer cyclePos = positions.get(i);
 					ItemStack stack = list.get(cyclePos);
-					renderItem(gui, stack, x + 1 + xy[0], 6 + y + 1 + xy[1]);
+					IGuidePageElement.renderItem(gui, stack, x + 1 + xy[0], 6 + y + 1 + xy[1]);
 				}
 			}
 			GlStateManager.popAttrib();

@@ -21,7 +21,7 @@ public class GuidePageHelper {
 	public static String FORMAT_START = "<";
 	public static String FORMAT_END = ">";
 	public static String PAGE_LINK = "#";
-	public static String PAGE_LINK_PLACEHOLDER = "£";
+	public static String PAGE_LINK_PLACEHOLDER = "\u00a3";
 	public static String PAGE_LINK_ERROR = TextFormatting.RED + "PAGE NOT FOUND";
 	public static String CURRENT = "CURRENT";
 

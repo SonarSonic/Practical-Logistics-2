@@ -106,16 +106,4 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 		}
 		return false;
 	}
-
-	public void renderItem(GuiGuide gui, ItemStack stack, int xPos, int yPos) {
-		ItemStack rendStack = stack.copy();
-		if (rendStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-			rendStack.setItemDamage(0);
-		}
-		RenderHelper.saveBlendState();
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		RenderHelper.renderItem(gui, xPos, yPos, rendStack);
-		RenderHelper.renderStoredItemStackOverlay(rendStack, rendStack.stackSize == 1 ? 0 : rendStack.stackSize, xPos, yPos, null, true);
-		RenderHelper.restoreBlendState();
-	}
 }

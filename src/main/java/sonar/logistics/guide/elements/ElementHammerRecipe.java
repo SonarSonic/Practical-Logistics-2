@@ -52,7 +52,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 				if (!list.isEmpty()) {
 					Integer cyclePos = positions.get(i);
 					ItemStack stack = list.get(cyclePos);
-					renderItem(gui, stack, x + 1 + xy[0], y + 9 + 1 + xy[1]);
+					IGuidePageElement.renderItem(gui, stack, x + 1 + xy[0], y + 9 + 1 + xy[1]);
 				}
 			}
 			GlStateManager.popAttrib();

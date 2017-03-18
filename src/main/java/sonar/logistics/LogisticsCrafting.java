@@ -10,7 +10,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 public class LogisticsCrafting extends Logistics {
 
 	public static void addRecipes() {
-		addShapelessOre(new ItemStack(LogisticsItems.guide, 1), new Object[] { LogisticsItems.sapphire, Items.BOOK });
+		addShapelessOre(new ItemStack(LogisticsItems.guide, 1), new Object[] { "gemSapphire", Items.BOOK });
 
 		addShapedOre(new ItemStack(LogisticsItems.partCable, 16), new Object[] { "PPP", "DDD", "PPP", 'P', LogisticsItems.stone_plate, 'D', "dustSapphire" });
 		addShapelessOre(new ItemStack(LogisticsItems.displayScreen, 1), new Object[] { LogisticsItems.stone_plate, "dustSapphire", LogisticsItems.partCable });
