@@ -35,7 +35,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	public static final String id = "item";
 	public static LogicMonitorHandler<MonitoredItemStack> handler = LogicMonitorHandler.instance(ItemMonitorHandler.id);
-	public final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 0);
+	private final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 0);
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 	{
 		syncList.addParts(itemStack, networkID);
@@ -98,6 +98,18 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 		if (itemStack.getObject() != null)
 			return itemStack.getObject().toString();
 		return super.toString() + " : NULL";
+	}
+	
+	public ItemStack getItemStack(){
+		return this.itemStack.getObject().getItemStack();
+	}
+	
+	public StoredItemStack getStoredStack(){
+		return this.itemStack.getObject();
+	}
+	
+	public long getStored(){
+		return this.itemStack.getObject().stored;
 	}
 
 	@Override

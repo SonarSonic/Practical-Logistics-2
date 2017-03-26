@@ -19,7 +19,7 @@ import sonar.logistics.api.cabling.*;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.IRefreshCache;
 import sonar.logistics.api.connecting.RefreshType;
-import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.BlockConnection;
@@ -48,7 +48,7 @@ import sonar.logistics.helpers.ItemHelper;
 
 public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	
-	private ArrayList<Class<?>> cacheTypes = Lists.newArrayList(IDataCable.class, ILogicTile.class, INetworkReader.class, IDataReceiver.class, IDataEmitter.class, IFilteredTile.class, IConnectionNode.class, IEntityNode.class);
+	private ArrayList<Class<?>> cacheTypes = Lists.newArrayList(IDataCable.class, ILogicTile.class, INetworkReader.class, IDataReceiver.class, IDataEmitter.class, ITransferFilteredTile.class, IConnectionNode.class, IEntityNode.class);
 	public int networkID = -1;
 	private HashMap<Class<?>, ArrayList<IWorldPosition>> connections = getFreshMap();
 	private ArrayList<NodeConnection> channelCache = Lists.newArrayList(), networkedChannelCache = Lists.newArrayList();
@@ -289,11 +289,11 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	}
 
 	public void updateTransferNetwork() {
-		ArrayList<IFilteredTile> transferNodes = this.getConnections(IFilteredTile.class, true);
+		ArrayList<ITransferFilteredTile> transferNodes = this.getConnections(ITransferFilteredTile.class, true);
 		if (transferNodes.isEmpty()) {
 			return;
 		}
-		for (IFilteredTile tile : transferNodes) {
+		for (ITransferFilteredTile tile : transferNodes) {
 			BlockConnection connected = tile.getConnected();
 			NodeTransferMode mode = tile.getTransferMode();
 			if (connected == null || mode.isPassive()) {

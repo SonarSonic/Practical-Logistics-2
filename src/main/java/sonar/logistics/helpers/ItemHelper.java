@@ -29,7 +29,7 @@ import sonar.core.network.PacketStackUpdate;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
-import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.IEntityNode;
@@ -360,9 +360,9 @@ public class ItemHelper extends ItemWrapper {
 
 	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, INetworkCache cache) {
 		for (MonitoredItemStack stack : items) {
-			StoredItemStack returned = removeToPlayerInventory(stack.itemStack.getObject(), stack.itemStack.getObject().stored, cache, player, ActionType.SIMULATE);
+			StoredItemStack returned = removeToPlayerInventory(stack.getStoredStack(), stack.getStored(), cache, player, ActionType.SIMULATE);
 			if (returned != null) {
-				removeToPlayerInventory(stack.itemStack.getObject(), returned.stored, cache, player, ActionType.PERFORM);
+				removeToPlayerInventory(stack.getStoredStack(), returned.stored, cache, player, ActionType.PERFORM);
 			}
 		}
 	}
@@ -393,7 +393,7 @@ public class ItemHelper extends ItemWrapper {
 		public boolean allowed(ItemStack stack) {
 			for (NodeConnection connection : connections) {
 				if (connection.isFiltered) {
-					IFilteredTile tile = (IFilteredTile) connection.source;
+					ITransferFilteredTile tile = (ITransferFilteredTile) connection.source;
 					if (!tile.allowed(stack)) {
 						return false;
 					}
@@ -406,7 +406,7 @@ public class ItemHelper extends ItemWrapper {
 		public boolean allowed(FluidStack stack) {
 			for (NodeConnection connection : connections) {
 				if (connection.isFiltered) {
-					IFilteredTile tile = (IFilteredTile) connection.source;
+					ITransferFilteredTile tile = (ITransferFilteredTile) connection.source;
 					if (!tile.allowed(stack)) {
 						return false;
 					}
@@ -462,7 +462,7 @@ public class ItemHelper extends ItemWrapper {
 	public static void sortItemList(ArrayList<MonitoredItemStack> info, final SortingDirection dir, SortingType type) {
 		info.sort(new Comparator<MonitoredItemStack>() {
 			public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
-				StoredItemStack item1 = str1.itemStack.getObject(), item2 = str2.itemStack.getObject();
+				StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();
 				return SonarHelper.compareStringsWithDirection(item1.getItemStack().getDisplayName(), item2.getItemStack().getDisplayName(), dir);
 			}
 		});
@@ -471,7 +471,7 @@ public class ItemHelper extends ItemWrapper {
 		case STORED:
 			info.sort(new Comparator<MonitoredItemStack>() {
 				public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
-					StoredItemStack item1 = str1.itemStack.getObject(), item2 = str2.itemStack.getObject();
+					StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();
 					return SonarHelper.compareWithDirection(item1.stored, item2.stored, dir);
 				}
 			});
@@ -479,7 +479,7 @@ public class ItemHelper extends ItemWrapper {
 		case MODID:
 			info.sort(new Comparator<MonitoredItemStack>() {
 				public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
-					StoredItemStack item1 = str1.itemStack.getObject(), item2 = str2.itemStack.getObject();
+					StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();
 					String modid1 = item1.getItemStack().getItem().getRegistryName().getResourceDomain();
 					String modid2 = item2.getItemStack().getItem().getRegistryName().getResourceDomain();
 					return SonarHelper.compareStringsWithDirection(modid1, modid2, dir);

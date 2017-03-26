@@ -62,6 +62,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(2).setDefault(-1);
 	public int pageCount = 0;
 	public int xSlots, ySlots, perPage;
+	
 
 	{
 		syncList.addParts(monitorUUID, infoID, networkID);
@@ -144,6 +145,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			GL11.glScaled(-1, 1, 1);
 			GlStateManager.enableDepth();
 			MonitoredList<MonitoredItemStack> stacks = (MonitoredList<MonitoredItemStack>) list.copyInfo();
+			
 			if (stacks.size() < perPage * pageCount - 1) {
 				pageCount = 0;
 			}
@@ -151,7 +153,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				MonitoredItemStack stack = stacks.get(i);
 				if (stack.isValid()) {
 					int current = i - perPage * pageCount;
-					StoredItemStack item = stack.itemStack.getObject();
+					StoredItemStack item = stack.getStoredStack();
 					int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
 					int yLevel = (int) (Math.floor((current / xSlots)));
 					GL11.glPushMatrix();
@@ -193,7 +195,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 				// fluid.renderInfo(container, displayInfo, dimension, dimension, 0.012, infoPos);
 
-				FluidStack stack = fluid.fluidStack.getObject().fluid;
+				FluidStack stack = fluid.getStoredStack().fluid;
 				if (stack != null) {
 					GL11.glPushMatrix();
 					GL11.glPushMatrix();
@@ -201,7 +203,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 					GL11.glTranslated(-1, -0.0625 * 12, +0.004);
 					TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(stack.getFluid().getStill().toString());
 					Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-					InfoRenderer.renderProgressBarWithSprite(sprite, dimension, dimension, 0.012, fluid.fluidStack.getObject().stored, fluid.fluidStack.getObject().capacity);
+					InfoRenderer.renderProgressBarWithSprite(sprite, dimension, dimension, 0.012, fluid.getStored(), fluid.getStoredStack().capacity);
 					GlStateManager.enableLighting();
 					GL11.glTranslated(0, 0, -0.001);
 					GL11.glPopMatrix();
@@ -318,10 +320,10 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, ScreenInteractionEvent event, NBTTagCompound clickTag) {
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			MonitoredItemStack clicked = NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag);
-			InfoHelper.screenItemStackClicked(clicked.itemStack.getObject(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
+			InfoHelper.screenItemStackClicked(clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
 		} else if (infoID.getObject().equals(MonitoredFluidStack.id)) {
 			MonitoredFluidStack clicked = NBTHelper.instanceNBTSyncable(MonitoredFluidStack.class, clickTag);
-			InfoHelper.screenFluidStackClicked(clicked.fluidStack.getObject(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
+			InfoHelper.screenFluidStackClicked(clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
 		}
 	}
 	/*

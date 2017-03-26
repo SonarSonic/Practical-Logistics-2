@@ -105,7 +105,8 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		for (Entry<NodeConnection, MonitoredList<?>> entry : channels.entrySet()) {
 			if ((entry.getValue() != null && !entry.getValue().isEmpty()) && readerChannels.isMonitored(entry.getKey())) {
 				for (T coordInfo : (MonitoredList<T>) entry.getValue()) {
-					updateList.addInfoToList(coordInfo, (MonitoredList<T>) entry.getValue());
+					if (canMonitorInfo(coordInfo, infoID, channels, usedChannels))
+						updateList.addInfoToList((T) coordInfo.copy(), (MonitoredList<T>) entry.getValue());
 				}
 				updateList.sizing.add(entry.getValue().sizing);
 				usedChannels.add(entry.getKey());
@@ -115,6 +116,10 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 			}
 		}
 		return updateList;
+	}
+
+	public boolean canMonitorInfo(T info, int infoID, Map<NodeConnection, MonitoredList<?>> channels, ArrayList<NodeConnection> usedChannels) {
+		return true;
 	}
 
 	@Override
@@ -203,9 +208,10 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getFacing()) != null);
 		}
 	}
+
 	@Override
 	public boolean rotatePart(EnumFacing axis) {
-		if(super.rotatePart(axis)){
+		if (super.rotatePart(axis)) {
 			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getFacing()) != null);
 			sendUpdatePacket(true);
 			return true;

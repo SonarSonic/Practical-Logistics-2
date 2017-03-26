@@ -39,7 +39,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.cabling.IChannelledTile;
-import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
@@ -62,7 +62,7 @@ import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredEntity;
 import sonar.logistics.network.sync.SyncFilterList;
 
-public class TransferNodePart extends SidedMultipart implements IConnectionNode, IOperatorTile, IFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
+public class TransferNodePart extends SidedMultipart implements IConnectionNode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
 
 	public ViewersList viewers = new ViewersList(this, Lists.newArrayList(ViewerType.FULL_INFO, ViewerType.INFO));
 	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.<NodeTransferMode>create("transfer", NodeTransferMode.class);

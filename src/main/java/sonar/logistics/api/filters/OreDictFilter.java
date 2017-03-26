@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.oredict.OreDictionary;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncTagTypeList;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.NodeFilter;
@@ -41,6 +43,7 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 			}
 		}
 		oreDict.addObject(oreName);
+		ints = null;
 	}
 
 	public void removeOreDict(String oreName) {
@@ -51,6 +54,13 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 			}
 		}
 		toRemove.forEach(remove -> oreDict.removeObject(remove));
+		ints = null;
+	}
+	
+	@Override
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		super.readData(nbt, type);
+		ints = null;		
 	}
 
 	@Override

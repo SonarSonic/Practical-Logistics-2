@@ -80,6 +80,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), "Sorting Order", ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
+	
 	}
 
 	public void onTextFieldChanged(SonarTextField field) {
@@ -127,7 +128,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		else {
 			MonitoredList<MonitoredFluidStack> searchList = MonitoredList.<MonitoredFluidStack>newMonitoredList(part.getNetworkID());
 			for (MonitoredFluidStack stack : (ArrayList<MonitoredFluidStack>) part.getMonitoredList().clone()) {
-				StoredFluidStack fluidStack = stack.fluidStack.getObject();
+				StoredFluidStack fluidStack = stack.getStoredStack();
 				if (stack != null && fluidStack.fluid != null && fluidStack.fluid.getLocalizedName().toLowerCase().contains(searchField.getText().toLowerCase())) {
 					searchList.add(stack);
 				}
@@ -190,7 +191,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		if (this.getSetting() == FluidReader.Modes.SELECTED && part.selected.getMonitoredInfo() != null) {
 			MonitoredFluidStack stack = part.selected.getMonitoredInfo();
 			if (stack != null) {
-				StoredFluidStack fluidStack = stack.fluidStack.getObject();
+				StoredFluidStack fluidStack = stack.getStoredStack();
 				final int br = 16 << 20 | 16 << 4;
 				final int var11 = br % 65536;
 				final int var12 = br / 65536;
@@ -205,8 +206,8 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void renderSelection(MonitoredFluidStack selection, int x, int y) {
-		StoredFluidStack fluidStack = selection.fluidStack.getObject();
+	public void renderSelection(MonitoredFluidStack selection, int x, int y, int slot) {
+		StoredFluidStack fluidStack = selection.getStoredStack();
 		if (fluidStack.fluid != null) {
 			GL11.glPushMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -219,7 +220,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 	@Override
 	public void renderToolTip(MonitoredFluidStack selection, int x, int y) {
-		StoredFluidStack fluidStack = selection.fluidStack.getObject();
+		StoredFluidStack fluidStack = selection.getStoredStack();
 		List list = new ArrayList();
 		list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 		if (fluidStack.stored != 0) {

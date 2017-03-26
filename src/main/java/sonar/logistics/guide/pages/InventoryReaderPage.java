@@ -14,13 +14,14 @@ public class InventoryReaderPage extends BaseItemPage implements IGuidePage {
 	public InventoryReaderPage(int pageID) {
 		super(pageID, new ItemStack(LogisticsItems.inventoryReaderPart));
 	}
-	
+
 	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo) {
 		pageInfo.add(new ElementInfo("guide." + unlocalizedName.substring(5) + ".name", new String[0]));
+		pageInfo.add(new ElementInfo("guide." + unlocalizedName.substring(5) + "2" + ".name", new String[0]));
 		pageInfo.add(new ElementInfo("guide." + "ChannelsSTART" + ".name", new String[0]));
 		pageInfo.add(new ElementInfo("guide." + "ChannelsUNLIMITED" + ".name", new String[0]));
-		pageInfo.add(new ElementInfo("guide." + "ChannelsEND" + ".name", new String[0]));		
+		pageInfo.add(new ElementInfo("guide." + "ChannelsEND" + ".name", new String[0]));
 		return pageInfo;
 	}
-	
+
 }

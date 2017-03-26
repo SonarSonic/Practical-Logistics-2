@@ -166,7 +166,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 			} else {
 				MonitoredList<IMonitorInfo> searchList = MonitoredList.newMonitoredList(networkID);
 				for (MonitoredItemStack stack : (ArrayList<MonitoredItemStack>) currentList.clone()) {
-					StoredItemStack item = stack.itemStack.getObject();
+					StoredItemStack item = stack.getStoredStack();
 					if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 						searchList.add(stack);
 					}
@@ -190,9 +190,9 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				@Override
 				public void writeToBuf(ByteBuf buf) {
 					MonitoredItemStack selection = (MonitoredItemStack) info;
-					if (selection != null && selection.itemStack.getObject().item != null) {
+					if (selection != null && selection.getStoredStack().item != null) {
 						buf.writeBoolean(true);
-						ByteBufUtils.writeItemStack(buf, selection.itemStack.getObject().item);
+						ByteBufUtils.writeItemStack(buf, selection.getStoredStack().item);
 					} else {
 						buf.writeBoolean(false);
 					}
@@ -221,11 +221,11 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	}
 
 	@Override
-	public void renderSelection(IMonitorInfo info, int x, int y) {
+	public void renderSelection(IMonitorInfo info, int x, int y, int slot) {
 		if (info instanceof MonitoredItemStack) {
 			MonitoredItemStack selection = (MonitoredItemStack) info;
 			RenderHelper.saveBlendState();
-			StoredItemStack storedStack = selection.itemStack.getObject();
+			StoredItemStack storedStack = selection.getStoredStack();
 			if (storedStack == null) {
 				return;
 			}
@@ -240,7 +240,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	public void renderToolTip(IMonitorInfo info, int x, int y) {
 		if (info instanceof MonitoredItemStack) {
 			MonitoredItemStack selection = (MonitoredItemStack) info;
-			StoredItemStack storedStack = selection.itemStack.getObject();
+			StoredItemStack storedStack = selection.getStoredStack();
 			if (storedStack == null) {
 				return;
 			}

@@ -199,7 +199,7 @@ public class ServerInfoManager implements IInfoManager {
 			IInfoContainer container = display.container();
 			for (int i = 0; i < container.getMaxCapacity(); i++) {
 				InfoUUID id = container.getInfoUUID(i);
-				if (id.valid() && !ids.contains(id)) {
+				if (id != null && id.valid() && !ids.contains(id)) {
 					ids.add(id);
 				}
 			}

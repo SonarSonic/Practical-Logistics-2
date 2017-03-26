@@ -16,6 +16,7 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
+import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.filters.ListPacket;

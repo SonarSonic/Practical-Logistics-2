@@ -11,7 +11,7 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.IPriority;
-import sonar.logistics.api.filters.IFilteredTile;
+import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IMonitorInfo;
 
 public abstract class NodeConnection<T extends IMonitorInfo> {
@@ -21,7 +21,7 @@ public abstract class NodeConnection<T extends IMonitorInfo> {
 
 	public NodeConnection(ILogicTile source) {
 		this.source = source;
-		this.isFiltered = source instanceof IFilteredTile;
+		this.isFiltered = source instanceof ITransferFilteredTile;
 		this.priority = source instanceof IPriority ? ((IPriority) source).getPriority() : 0;
 	}
 	
@@ -29,7 +29,7 @@ public abstract class NodeConnection<T extends IMonitorInfo> {
 
 	public boolean canTransferFluid(NodeConnection connection, StoredFluidStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
-			IFilteredTile node = (IFilteredTile) source;
+			ITransferFilteredTile node = (ITransferFilteredTile) source;
 			if (!node.getChannels().isMonitored(connection) && (!node.getTransferMode().matches(mode) || !node.getFilters().matches(stack, mode))) {
 				return false;
 			}
@@ -39,7 +39,7 @@ public abstract class NodeConnection<T extends IMonitorInfo> {
 
 	public boolean canTransferItem(NodeConnection connection, StoredItemStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
-			IFilteredTile node = (IFilteredTile) source;
+			ITransferFilteredTile node = (ITransferFilteredTile) source;
 			if (!node.getChannels().isMonitored(connection) && (!node.getTransferMode().matches(mode) || !node.getFilters().matches(stack, mode))) {
 				return false;
 			}
@@ -49,7 +49,7 @@ public abstract class NodeConnection<T extends IMonitorInfo> {
 
 	public boolean canTransferEnergy(NodeConnection connection, StoredEnergyStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
-			IFilteredTile node = (IFilteredTile) source;
+			ITransferFilteredTile node = (ITransferFilteredTile) source;
 			if (!node.getChannels().isMonitored(connection) && !(node.isTransferEnabled(TransferType.ENERGY))) {
 				// if (!node.getSetting(TransferType.ENERGY).canTransfer(mode) || !node.canTransferEnergy(stack, mode)) {
 				return false;

@@ -54,6 +54,7 @@ guide.FluidReader.name=The #CURRENT# lists all fluids in the connected blocks. T
 guide.InfoReader.name=Lists all available pieces of info from the Block/Entity it is connected to. It can also be used to create progress bars- -You can select up to 4 pieces of Info at once.-You may only select info from one block at a time.
 guide.EnergyReader.name=(UNFINISHED)The #CURRENT# lists the energy values of the connected blocks, it can read Forge Energy, RF, EU, AE.
 guide.InventoryReader.name=The #CURRENT# lists all items in the connected blocks. The #CURRENT# has various modes for selecting inventory data...- -<blue>Inventories:<reset> This will display the list of items as sorted by the Inventory Reader.-<blue>Stack:<reset> This will display how many items are stored of the selected type. Select an item by clicking with it onto the slot next to the mode button.-<blue>Slot:<reset> This mode will display the item in the selected slot of the first connected inventory. To select a slot type it into the input box next to the mode button. You can configure the first connected inventory by entering the 'Channels' Menu.-<blue>Pos:<reset> This mode will display the item in the selected position of the item list as sorted by the Inventory Reader.-<blue>Storage:<reset> This will create a progress bar of Items Stored against total possible items stored similar to those created by the #InfoReader#. 
+guide.InventoryReader2.name=<blue>Filters:<reset> Similar to 'Inventories' mode except you can filter the items shown in a similar way to the #TransferNode#
 guide.Array.name=The Array is used to wirelessly connect blocks to the network preventing the need for a #Node#.-To connect a block to the network with the Array you must place a #Transceiver# inside it's inventory which has already been connected to a block, via shift clicking.
 guide.DataCable.name=You will be needing a plentiful supply of Data Cables as they are essential for all basic setups in the mod- -They can transfer Items, Fluids, Energy, Gases and Info
 guide.EntityNode.name=The #CURRENT# is used to connect entities to the network.
@@ -114,6 +115,7 @@ button.ClearAllStatements=Clears ALL configured statements
 button.RedstoneSignallerRefresh=Refreshes the configured statements-Updating the data and if they were true last tick
 button.InfoSignallerSource=Used to select the source of the info used in the statement.
 button.ObjectSelectionSource=Used to select the object used in the statement.
+button.TileFilters=Add, Remove, and Create the filters for this tile.
 
 /////INFO/////
 
@@ -127,6 +129,7 @@ pl.inv.mode.slot=Slot
 pl.inv.mode.pos=Position
 pl.inv.mode.inventories=Inventories
 pl.inv.mode.storage=Storage
+pl.inv.mode.filtered=Filters
 
 pl.inv.sort.stored=Items Stored
 pl.inv.sort.name=Item Name

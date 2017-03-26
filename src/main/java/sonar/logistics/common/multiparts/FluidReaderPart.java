@@ -57,7 +57,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	public FluidReaderPart(EnumFacing face) {
 		super(FluidMonitorHandler.id, face);
 	}
-	
+
 	//// ILogicReader \\\\
 
 	@Override
@@ -73,7 +73,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 		case SELECTED:
 			MonitoredFluidStack stack = selected.getMonitoredInfo();
 			if (stack != null && stack.isValid()) {
-				stack.fluidStack.getObject().stored = 0;
+				stack.getStoredStack().setStackSize(0);
 				MonitoredFluidStack dummyInfo = stack.copy();
 				Pair<Boolean, IMonitorInfo> latestInfo = updateInfo.getLatestInfo(dummyInfo);
 				info = latestInfo.a ? latestInfo.b : dummyInfo;
@@ -83,7 +83,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 			break;
 		case STORAGE:
 
-			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, updateInfo.sizing.getStored(),null), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored(), null));
+			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, updateInfo.sizing.getStored(), null), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored(), null));
 			break;
 		case TANKS:
 			info = new LogicInfoList(getIdentity(), MonitoredFluidStack.id, this.getNetworkID());
@@ -99,51 +99,51 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 			}
 		}
 	}
-	
+
 	//// IChannelledTile \\\\
 
 	@Override
 	public ChannelType channelType() {
 		return ChannelType.UNLIMITED;
 	}
-	
+
 	//// PACKETS \\\\
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
-		
-		//when the order of the list is changed the viewers need to recieve a full update
+
+		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
 			ArrayList<EntityPlayer> players = viewers.getViewers(true, ViewerType.INFO);
-			for(EntityPlayer player : players){
+			for (EntityPlayer player : players) {
 				viewers.addViewer(player, ViewerType.TEMPORARY);
 			}
 		}
 	}
-	
+
 	//// GUI \\\\
 
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			return new ContainerFluidReader(this, player);
 		case 1:
 			return new ContainerChannelSelection(this);
-		}		
+		}
 		return null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch(id){
+		switch (id) {
 		case 0:
 			return new GuiFluidReader(this, player);
 		case 1:
 			return new GuiChannelSelection(player, this, 0);
-		}		
+		}
 		return null;
-	}	
+	}
 
 	@Override
 	public String getDisplayName() {

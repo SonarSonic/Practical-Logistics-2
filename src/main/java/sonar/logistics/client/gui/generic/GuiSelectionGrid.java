@@ -22,7 +22,7 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 
 	public abstract void onGridClicked(T selection, int pos, int button, boolean empty);
 
-	public abstract void renderSelection(T selection, int x, int y);
+	public abstract void renderSelection(T selection, int x, int y, int slot);
 
 	public abstract void renderStrings(int x, int y);
 
@@ -80,6 +80,7 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
+		super.drawGuiContainerForegroundLayer(x, y);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		renderStrings(x, y);		   
@@ -95,7 +96,7 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 					if (i < finish) {
 						T selection = list.get(i);
 						if (selection != null) {
-							renderSelection(selection, X, Y);
+							renderSelection(selection, X, Y, i);
 						}
 					}
 					i++;
@@ -126,7 +127,6 @@ public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogist
 				}
 			}
 		}
-		super.drawGuiContainerForegroundLayer(x, y);
 		//GlStateManager.disableCull();
 	}
 

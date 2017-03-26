@@ -186,7 +186,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 				if (channels == null || channels.isCoordsMonitored(connection.coords)) {
 					list = ((ITileMonitorHandler) type).updateInfo(this, oldList, connection);
 				}
-			} else if (entry.getKey() instanceof EntityConnection) {
+			} else if (entry.getKey() instanceof EntityConnection && type instanceof IEntityMonitorHandler) {
 				EntityConnection connection = (EntityConnection) entry.getKey();
 				if (channels == null || channels.isEntityMonitored(connection.entity.getPersistentID())) {
 					list = ((IEntityMonitorHandler) type).updateInfo(this, oldList, connection);

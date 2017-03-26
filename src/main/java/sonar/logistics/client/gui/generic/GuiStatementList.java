@@ -441,7 +441,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				FontHelper.text(comparable.string, InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
 				if (comparable.object != null) {
 					if (comparable.object instanceof Item) {
-						FontHelper.text(((MonitoredItemStack) comparable.source).itemStack.getObject().getItemStack().getDisplayName(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
+						FontHelper.text(((MonitoredItemStack) comparable.source).getItemStack().getDisplayName(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
 					} else {
 						FontHelper.text(comparable.object.toString(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
 					}

@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
+import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
@@ -38,7 +39,7 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 
 	public static final String id = "fluid";
 	public static LogicMonitorHandler<MonitoredFluidStack> handler = LogicMonitorHandler.instance(FluidMonitorHandler.id);
-	public SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
+	private SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 
 	{
@@ -152,6 +153,18 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	
 	public String toString(){
 		return fluidStack.getObject().toString();
+	}
+	
+	public FluidStack getItemStack(){
+		return this.fluidStack.getObject().getFullStack();
+	}
+	
+	public StoredFluidStack getStoredStack(){
+		return this.fluidStack.getObject();
+	}
+	
+	public long getStored(){
+		return this.fluidStack.getObject().stored;
 	}
 
 }

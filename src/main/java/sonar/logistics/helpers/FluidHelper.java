@@ -167,7 +167,7 @@ public class FluidHelper extends FluidWrapper {
 	public static void sortFluidList(ArrayList<MonitoredFluidStack> current, final SortingDirection dir, SortingType type) {
 		current.sort(new Comparator<MonitoredFluidStack>() {
 			public int compare(MonitoredFluidStack str1, MonitoredFluidStack str2) {
-				StoredFluidStack flu1 = str1.fluidStack.getObject(), flu2 = str2.fluidStack.getObject();
+				StoredFluidStack flu1 = str1.getStoredStack(), flu2 = str2.getStoredStack();
 				int res = String.CASE_INSENSITIVE_ORDER.compare(flu1.getFullStack().getLocalizedName(), flu2.getFullStack().getLocalizedName());
 				if (res == 0) {
 					res = flu1.getFullStack().getLocalizedName().compareTo(flu2.getFullStack().getLocalizedName());
@@ -178,7 +178,7 @@ public class FluidHelper extends FluidWrapper {
 
 		current.sort(new Comparator<MonitoredFluidStack>() {
 			public int compare(MonitoredFluidStack str1, MonitoredFluidStack str2) {
-				StoredFluidStack flu1 = str1.fluidStack.getObject(), flu2 = str2.fluidStack.getObject();
+				StoredFluidStack flu1 = str1.getStoredStack(), flu2 = str2.getStoredStack();
 				switch (type) {
 				case MODID:
 					return SonarHelper.compareStringsWithDirection(flu1.getFullStack().getFluid().getBlock().getRegistryName().getResourceDomain(), flu2.getFullStack().getFluid().getBlock().getRegistryName().getResourceDomain(), dir);

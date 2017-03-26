@@ -20,15 +20,18 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.Logistics;
+import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.client.LogisticsButton;
+import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.network.PacketInventoryReader;
+import sonar.logistics.network.PacketNodeFilter;
 
 public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
@@ -85,6 +88,10 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
 		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, "Dump Player Inventory", ""));
 		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, "Dump Network", ""));
+		if (part.setting.getObject() == Modes.FILTERED) {
+			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 18 * 3, guiTop + 9, 32, 64, "Configure Filters", "button.TileFilters"));
+			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 18 * 4, guiTop + 9, 32, 96, "Clear All", "button.ClearAllFilter"));
+		}
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -118,6 +125,12 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			case 5:
 				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
 				reset();
+				break;
+			case 6:
+				FlexibleGuiHandler.changeGui(part, 2, 0, player.getEntityWorld(), player);
+				break;
+			case 7:
+				Logistics.network.sendToServer(new PacketNodeFilter(part.getIdentity(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			}
 		}
@@ -157,12 +170,12 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	@Override
 	public MonitoredList<MonitoredItemStack> getGridList() {
 		String search = searchField.getText();
-		if (search == null || search.isEmpty() || search.equals(" ")){
+		if (search == null || search.isEmpty() || search.equals(" ")) {
 			return part.getMonitoredList();
-		}else {
+		} else {
 			MonitoredList<MonitoredItemStack> searchList = MonitoredList.newMonitoredList(part.getNetworkID());
 			for (MonitoredItemStack stack : (ArrayList<MonitoredItemStack>) part.getMonitoredList().clone()) {
-				StoredItemStack item = stack.itemStack.getObject();
+				StoredItemStack item = stack.getStoredStack();
 				if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 					searchList.add(stack);
 				}
@@ -177,7 +190,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			button = 2;
 		}
 		if (!empty) {
-			Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), selection.itemStack.getObject().item, button));
+			Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), selection.getStoredStack().item, button));
 		} else {
 			Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, button));
 		}
@@ -189,10 +202,16 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void renderSelection(MonitoredItemStack selection, int x, int y) {
-
+	public void renderSelection(MonitoredItemStack selection, int x, int y, int slot) {
+		/*
+		if (part.setting.getObject() == Modes.POS && slot == part.posSlot.getObject()) {
+			RenderHelper.saveBlendState();
+			this.drawTransparentRect(13 + (x * 18), 32 + (y * 18), 13 + (x * 18) + 16, 32 + (y * 18) + 16, LogisticsColours.getDefaultSelection().getRGB());
+			RenderHelper.restoreBlendState();
+		}
+		*/
 		RenderHelper.saveBlendState();
-		StoredItemStack storedStack = selection.itemStack.getObject();
+		StoredItemStack storedStack = selection.getStoredStack();
 		if (storedStack == null) {
 			return;
 		}
@@ -200,11 +219,12 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
 		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
 		RenderHelper.restoreBlendState();
+
 	}
 
 	@Override
 	public void renderToolTip(MonitoredItemStack selection, int x, int y) {
-		StoredItemStack storedStack = selection.itemStack.getObject();
+		StoredItemStack storedStack = selection.getStoredStack();
 		if (storedStack == null) {
 			return;
 		}
@@ -231,9 +251,4 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		}
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 	}
-
-	/* public class FilterButton extends AnimatedButton { public int id; public FilterButton(int id, int x, int y) { super(id, x, y, sorting_icons, 15, 15); this.id = id; } public void func_146111_b(int x, int y) { String text = "BUTTON TEXT"; switch (id) { case 0: text = ("Sorting Direction"); break; case 1: text = part.sortingType.getObject().getClientName(); } drawCreativeTabHoveringText(text, x, y); }
-	 * @Override public void onClicked() { }
-	 * @Override public int getTextureX() { switch (id) { case 0: return 0 + part.sortingOrder.getObject().ordinal() * 16; case 1: return 32 + (part.sortingType.getObject().ordinal() * 16); } return 0; }
-	 * @Override public int getTextureY() { return 0; } } */
 }

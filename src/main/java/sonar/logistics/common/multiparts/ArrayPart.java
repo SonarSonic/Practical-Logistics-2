@@ -11,6 +11,7 @@ import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -107,6 +108,19 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 		this.entityList = entityList;
 		network.markDirty(RefreshType.FULL);
 	}
+	
+	@Override
+	public List<ItemStack> getDrops() {
+		List<ItemStack> stacks = Lists.newArrayList();
+		stacks.add(getItemStack());		
+		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+			ItemStack itemstack = inventory.getStackInSlot(i);
+			if (itemstack != null) {
+				stacks.add(itemstack);
+			}
+		}		
+		return stacks;
+	}
 
 	//// IConnectionNode \\\\
 
@@ -129,7 +143,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partNode);
+		return new ItemStack(LogisticsItems.partArray);
 	}
 
 	//// EVENTS \\\\

@@ -5,7 +5,7 @@ import sonar.core.helpers.FontHelper;
 /**all the modes used by the Inventory Reader*/
 public class InventoryReader {
 	public static enum Modes {
-		INVENTORIES, STACK, SLOT, POS,  STORAGE;
+		INVENTORIES, STACK, SLOT, POS,  STORAGE, FILTERED;
 
 		public String getClientName() {
 			return FontHelper.translate("pl.inv.mode." + name().toLowerCase());
