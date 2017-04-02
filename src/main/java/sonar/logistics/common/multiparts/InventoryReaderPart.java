@@ -31,6 +31,7 @@ import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
+import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -42,8 +43,6 @@ import sonar.logistics.connections.monitoring.ItemMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
-import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.ProgressInfo;
@@ -132,7 +131,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			}
 			break;
 		case STORAGE:
-			info = new ProgressInfo(LogicInfo.buildDirectInfo("item.storage", RegistryType.TILE, updateInfo.sizing.getStored(), null), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored(), null));
+			info = new ProgressInfo(LogicInfo.buildDirectInfo("item.storage", RegistryType.TILE, updateInfo.sizing.getStored()), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored()));
 			break;
 		default:
 			break;

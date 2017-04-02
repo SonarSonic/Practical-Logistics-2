@@ -1,7 +1,6 @@
 package sonar.logistics.common.multiparts;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,13 +23,11 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.EnergyReader;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.client.gui.GuiEnergyReader;
 import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.connections.monitoring.EnergyMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.EnergyHelper;
 import sonar.logistics.info.types.LogicInfoList;

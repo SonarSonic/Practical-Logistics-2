@@ -17,5 +17,5 @@ public interface ICustomEntityHandler {
 	 * @param infoList the current info list
 	 * @param world the world
 	 * @param entity the entity */
-	public void addInfo(List<LogicInfo> infoList, World world, Entity entity);
+	public void addInfo(List<IProvidableInfo> infoList, World world, Entity entity);
 }

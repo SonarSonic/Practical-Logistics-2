@@ -30,6 +30,7 @@ import sonar.logistics.api.displays.IScaleableDisplay;
 import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.common.multiparts.LogisticsMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -160,7 +161,7 @@ public class InfoHelper {
 				Iterator<T> iterator = stacks.iterator();
 				while (iterator.hasNext()) {
 					T stored = iterator.next();
-					if (stack.isMatchingInfo(stored)) {
+					if (stack.isMatchingType(stored) && stack.isMatchingInfo(stored)) {
 						if (removed) {
 							stacks.remove(stored);
 						} else {
@@ -175,16 +176,16 @@ public class InfoHelper {
 		return stacks;
 	}
 
-	public static ArrayList<LogicInfo> sortInfoList(ArrayList<LogicInfo> oldInfo) {
-		ArrayList<LogicInfo> providerInfo = (ArrayList<LogicInfo>) oldInfo.clone();
-		Collections.sort(providerInfo, new Comparator<LogicInfo>() {
-			public int compare(LogicInfo str1, LogicInfo str2) {
+	public static ArrayList<IProvidableInfo> sortInfoList(ArrayList<IProvidableInfo> oldInfo) {
+		ArrayList<IProvidableInfo> providerInfo = (ArrayList<IProvidableInfo>) oldInfo.clone();
+		Collections.sort(providerInfo, new Comparator<IProvidableInfo>() {
+			public int compare(IProvidableInfo str1, IProvidableInfo str2) {
 				return Integer.compare(str1.getRegistryType().sortOrder, str2.getRegistryType().sortOrder);
 			}
 		});
-		ArrayList<LogicInfo> sortedInfo = new ArrayList();
-		LogicInfo lastInfo = null;
-		for (LogicInfo blockInfo : (ArrayList<LogicInfo>) providerInfo.clone()) {
+		ArrayList<IProvidableInfo> sortedInfo = new ArrayList();
+		IProvidableInfo lastInfo = null;
+		for (IProvidableInfo blockInfo : (ArrayList<IProvidableInfo>) providerInfo.clone()) {
 			if (blockInfo != null && !blockInfo.isHeader()) {
 				if (lastInfo == null || (!lastInfo.isHeader() && !lastInfo.getRegistryType().equals(blockInfo.getRegistryType()))) {
 					sortedInfo.add(LogicInfo.buildCategoryInfo(blockInfo.getRegistryType()));

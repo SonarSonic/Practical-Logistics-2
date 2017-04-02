@@ -7,7 +7,6 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.filters.IFilteredTile;
-import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.viewers.ViewerType;
 
 public class ContainerFilterList extends ContainerMultipartSync {

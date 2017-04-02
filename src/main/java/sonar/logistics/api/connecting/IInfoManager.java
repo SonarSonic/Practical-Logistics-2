@@ -9,8 +9,6 @@ import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.connections.monitoring.MonitoredList;
 

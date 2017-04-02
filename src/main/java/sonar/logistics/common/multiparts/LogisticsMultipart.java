@@ -21,7 +21,6 @@ import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.operator.IOperatorProvider;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.network.PacketChannels;

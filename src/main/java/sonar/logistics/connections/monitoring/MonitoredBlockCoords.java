@@ -13,6 +13,7 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 
@@ -41,7 +42,7 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 
 	@Override
 	public boolean isMatchingInfo(MonitoredBlockCoords info) {
-		return info.syncCoords.equals(syncCoords);
+		return info.syncCoords.getCoords().equals(syncCoords.getCoords());
 	}
 
 	@Override

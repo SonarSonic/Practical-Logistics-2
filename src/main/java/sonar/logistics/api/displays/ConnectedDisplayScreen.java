@@ -24,17 +24,14 @@ import sonar.core.network.sync.ISyncableListener;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncableList;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IConnectable;
+import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
-import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
@@ -55,6 +52,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	public SyncTagType.BOOLEAN canBeRendered = new SyncTagType.BOOLEAN(4);
 	public InfoContainer container = new InfoContainer(this);
 	public SyncCoords topLeftCoords = new SyncCoords(5);
+	public SyncTagType.BOOLEAN isLocked = new SyncTagType.BOOLEAN(6);
 	// public double[] scaling = null;
 	public boolean hasChanged = true;
 	public boolean sendViewers;
@@ -63,7 +61,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	public ArrayList<ILargeDisplay> displays = new ArrayList(); // cached
 
 	{
-		syncParts.addParts(face, layout, width, height, canBeRendered, topLeftCoords, container);
+		syncParts.addParts(face, layout, width, height, canBeRendered, topLeftCoords, container, isLocked);
 	}
 
 	public ConnectedDisplayScreen(ILargeDisplay display) {
@@ -75,6 +73,16 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	public ConnectedDisplayScreen(int registryID) {
 		this.registryID = registryID;
 		this.hasChanged = true;
+	}
+	
+	public void lock(){
+		isLocked.setObject(true);
+		Logistics.getDisplayManager().lockedIDs.add(registryID);
+	}
+	
+	public void unlock(){
+		isLocked.setObject(false);
+		Logistics.getDisplayManager().lockedIDs.remove(registryID);		
 	}
 
 	public void update(int registryID) {
@@ -341,7 +349,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	}
 
 	@Override
-	public boolean canConnectOnSide(EnumFacing dir) {
+	public boolean canConnectOnSide(int connectingID, EnumFacing dir) {
 		return true;
 	}
 

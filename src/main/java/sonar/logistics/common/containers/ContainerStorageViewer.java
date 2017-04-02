@@ -3,22 +3,15 @@ package sonar.logistics.common.containers;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.core.api.IFlexibleContainer;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.readers.InventoryReader;
-import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.connections.managers.EmitterManager;
 
 public class ContainerStorageViewer extends Container {

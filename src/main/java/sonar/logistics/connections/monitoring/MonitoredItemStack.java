@@ -27,6 +27,7 @@ import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.info.types.BaseInfo;
 

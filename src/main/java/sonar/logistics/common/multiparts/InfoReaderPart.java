@@ -9,6 +9,8 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.ChannelType;
+import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
@@ -16,9 +18,8 @@ import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.connections.monitoring.InfoMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.info.types.LogicInfo;
 
-public class InfoReaderPart extends LogisticsReader<LogicInfo> implements IByteBufTile {
+public class InfoReaderPart extends LogisticsReader<IProvidableInfo> implements IByteBufTile {
 
 	public InfoReaderPart() {
 		super(InfoMonitorHandler.id);
@@ -31,7 +32,7 @@ public class InfoReaderPart extends LogisticsReader<LogicInfo> implements IByteB
 	//// ILogicReader \\\\
 
 	@Override
-	public MonitoredList<LogicInfo> sortMonitoredList(MonitoredList<LogicInfo> updateInfo, int channelID) {
+	public MonitoredList<IProvidableInfo> sortMonitoredList(MonitoredList<IProvidableInfo> updateInfo, int channelID) {
 		updateInfo.setInfo(InfoHelper.sortInfoList(updateInfo));
 		return updateInfo;
 	}

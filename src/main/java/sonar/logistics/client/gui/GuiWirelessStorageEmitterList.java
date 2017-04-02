@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.util.IWorldLocation;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.SonarCore;
-import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.FontHelper;
-import sonar.core.inventory.ContainerEmpty;
 import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.core.network.utils.ByteBufWritable;
 import sonar.logistics.Logistics;
@@ -22,10 +18,8 @@ import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
-import sonar.logistics.common.containers.ContainerDataReceiver;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.items.WirelessStorageReader;
-import sonar.logistics.common.multiparts.DataReceiverPart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.network.PacketWirelessStorage;
 

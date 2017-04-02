@@ -3,12 +3,9 @@ package sonar.logistics.api.readers;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.cabling.IChannelledTile;
-import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
 /** a reader which is controlled by the network */

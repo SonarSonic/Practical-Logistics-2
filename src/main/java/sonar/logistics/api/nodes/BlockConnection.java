@@ -4,7 +4,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.cabling.ILogicTile;
-import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 
 public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {

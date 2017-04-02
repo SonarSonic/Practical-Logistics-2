@@ -60,10 +60,11 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	public ConnectedDisplayScreen overrideDisplay = null;
 	public NBTTagCompound savedTag = null;
 	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // set default info
+	public SyncTagType.BOOLEAN wasLocked = (BOOLEAN) new SyncTagType.BOOLEAN(4);
 	public boolean onRenderChange = true;
 
 	{
-		syncList.addPart(shouldRender);
+		syncList.addParts(shouldRender, wasLocked);
 	}
 
 	public LargeDisplayScreenPart() {
@@ -117,14 +118,14 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			super.updateDefaultInfo();
 		}
 	}
-	
+
 	//// IInfoDisplay \\\\
 
 	@Override
 	public InfoContainer container() {
 		return getDisplayScreen().container;
 	}
-	
+
 	@Override
 	public ScreenLayout getLayout() {
 		ConnectedDisplayScreen screen = getDisplayScreen();
@@ -140,7 +141,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		sendSyncPacket();
 		getDisplayScreen().sendViewers();
 	}
-	
 
 	@Override
 	public DisplayType getDisplayType() {
@@ -170,9 +170,10 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			registryID = id;
 		}
 	}
+
 	@Override
 	public ConnectedDisplayScreen getDisplayScreen() {
-		return overrideDisplay!=null ? overrideDisplay : Logistics.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
+		return overrideDisplay != null ? overrideDisplay : Logistics.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
 	}
 
 	@Override
@@ -205,12 +206,12 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// ILogicViewable \\\\
-	
+
 	@Override
 	public IViewersList getViewersList() {
 		return getDisplayScreen() != null ? getDisplayScreen().getViewersList() : EmptyViewersList.INSTANCE;
 	}
-	
+
 	//// NETWORK \\\\
 
 	public void setLocalNetworkCache(INetworkCache network) {
@@ -221,8 +222,8 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	@Override
-	public boolean canConnectOnSide(EnumFacing dir) {
-		return dir != face && dir != face.getOpposite();
+	public boolean canConnectOnSide(int connectingID, EnumFacing dir) {
+		return (dir != face && dir != face.getOpposite()) && (connectingID == registryID || !(wasLocked.getObject() || getDisplayScreen().isLocked.getObject()));
 	}
 
 	@Override
@@ -231,7 +232,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		info.add("Large Display ID: " + registryID);
 		info.add("Should Render " + this.shouldRender.getObject());
 	}
-	
+
 	public void addToNetwork() {
 		if (isServer()) {
 			Logistics.getDisplayManager().addConnection(this);
@@ -246,7 +247,8 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	//// EVENTS \\\\
 
-	public void onLoaded() {}
+	public void onLoaded() {
+	}
 
 	@Override
 	public void onFirstTick() {
@@ -271,7 +273,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			wasAdded = false;
 		}
 	}
-	
+
 	//// MULTIPART \\\\
 
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
@@ -302,7 +304,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 		}
 	}
-	
+
 	//// STATE \\\\
 
 	@Override
@@ -315,7 +317,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			}
 			if (this.getWorld() != null) {
 				IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(getCoords(), face), this.face);
-				if (display != null && display.getDisplayType() == DisplayType.LARGE) {
+				if (display != null && display.getDisplayType() == DisplayType.LARGE && ((ILargeDisplay) display).getRegistryID() == registryID) {
 					switch (this.face) {
 					case DOWN:
 						EnumFacing toAdd = face;
@@ -375,9 +377,10 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		super.readData(nbt, type);
-		if (type.isType(SyncType.DEFAULT_SYNC)) {
+		if (nbt.hasKey("id")) {
 			registryID = nbt.getInteger("id");
 			shouldRender.readData(nbt, type);
+			wasLocked.readData(nbt, type);
 		}
 		if (this.isServer() && type.isType(SyncType.SAVE) && nbt.hasKey("connected")) {
 			this.savedTag = nbt;
@@ -386,9 +389,11 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		if (type.isType(SyncType.DEFAULT_SYNC)) {
+		if (type.isType(SyncType.DEFAULT_SYNC) || (type.isType(SyncType.SAVE) && this.getDisplayScreen().isLocked.getObject())) {
 			nbt.setInteger("id", registryID);
 			shouldRender.writeData(nbt, type);
+			wasLocked.setObject(this.getDisplayScreen().isLocked.getObject());
+			wasLocked.writeData(nbt, type);
 		}
 		if (this.isServer() && type.isType(SyncType.SAVE) && this.shouldRender()) {
 			if (this.getDisplayScreen() != null) {
@@ -406,7 +411,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		if (screen != null)
 			Logistics.network.sendTo(new PacketConnectedDisplayScreen(screen, registryID), (EntityPlayerMP) player);
 	}
-	
+
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		super.writePacket(buf, id);
@@ -423,6 +428,13 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		switch (id) {
 		case 5:
 			this.shouldRender.readFromBuf(buf);
+			break;
+		case 6:
+			if (getDisplayScreen().isLocked.getObject()) {
+				getDisplayScreen().unlock();
+			} else {
+				getDisplayScreen().lock();
+			}
 			break;
 		}
 	}

@@ -10,7 +10,6 @@ import javax.vecmath.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import mcmultipart.multipart.MultipartRegistry;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;

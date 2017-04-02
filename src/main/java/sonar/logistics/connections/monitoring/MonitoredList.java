@@ -46,22 +46,22 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 	public MonitoredList<T> copyInfo() {
 		return new MonitoredList<T>(networkID, (ArrayList<T>) cloneInfo(), new StorageSize(sizing.getStored(), sizing.getMaxStored()), (ArrayList<T>) changed.clone(), (ArrayList<T>) removed.clone());
 	}
-	
-	public T findInfoInList(T newInfo, MonitoredList<T> previousList){
-		for(T lastInfo : previousList){
-			if(lastInfo.isIdenticalInfo(newInfo)){
+
+	public T findInfoInList(T newInfo, MonitoredList<T> previousList) {
+		for (T lastInfo : previousList) {
+			if (lastInfo.isIdenticalInfo(newInfo)) {
 				return lastInfo;
 			}
 		}
 		return null;
 	}
 
-	public void addInfoToList(T newInfo, MonitoredList<T> previousList) {			
+	public void addInfoToList(T newInfo, MonitoredList<T> previousList) {
 		if (newInfo instanceof IJoinableInfo) {
 			for (int i = 0; i < this.size(); i++) {
 				T storedInfo = this.get(i);
 				if (((IJoinableInfo) storedInfo).canJoinInfo(newInfo)) {
-					set(i, (T) ((IJoinableInfo) storedInfo).joinInfo(newInfo)); // should I copy the new info???? if stuff gets messed up copy it 
+					set(i, (T) ((IJoinableInfo) storedInfo).joinInfo(newInfo)); // should I copy the new info???? if stuff gets messed up copy it
 					return;
 				}
 			}
@@ -72,23 +72,20 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 	public MonitoredList<T> updateList(MonitoredList<?> monitoredList) {
 		ArrayList<T> changed = ((ArrayList<T>) cloneInfo());
 		ArrayList<T> removed = ((ArrayList<T>) monitoredList.cloneInfo());
-		
-		
-		((ArrayList<T>) monitoredList.cloneInfo()).forEach(last -> 
-			forEach(current -> {				
+
+		((ArrayList<T>) monitoredList.cloneInfo()).forEach(last -> forEach(current -> {
+			if (last.isMatchingType(current)) {
 				if (last.isMatchingInfo(current)) {
 					removed.remove(last);
 				}
-				if(last.isIdenticalInfo(current)){
+				if (last.isIdenticalInfo(current)) {
 					changed.remove(current);
-				}				
+				}
+			}
 		}));
 		this.changed = changed;
 		this.removed = removed;
 		hasChanged = !changed.isEmpty() || !removed.isEmpty();
-		if(this.hasChanged){
-			this.changed = changed;
-		}		
 		return this;
 	}
 

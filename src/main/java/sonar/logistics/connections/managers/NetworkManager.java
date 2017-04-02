@@ -17,11 +17,9 @@ import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.IRefreshCache;
 import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.DefaultNetwork;
 import sonar.logistics.connections.monitoring.ChannelMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class NetworkManager {

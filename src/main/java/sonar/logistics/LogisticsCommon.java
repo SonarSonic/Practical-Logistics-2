@@ -18,10 +18,10 @@ import sonar.logistics.network.PacketConnectedDisplayScreen;
 import sonar.logistics.network.PacketEmitterStatement;
 import sonar.logistics.network.PacketInfoList;
 import sonar.logistics.network.PacketInventoryReader;
-import sonar.logistics.network.PacketViewables;
 import sonar.logistics.network.PacketMonitorType;
 import sonar.logistics.network.PacketMonitoredList;
 import sonar.logistics.network.PacketNodeFilter;
+import sonar.logistics.network.PacketViewables;
 import sonar.logistics.network.PacketWirelessStorage;
 
 public class LogisticsCommon implements IGuiHandler {

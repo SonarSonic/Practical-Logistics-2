@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.awt.Color;
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
@@ -18,21 +16,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.core.utils.CustomColour;
 import sonar.core.network.sync.SyncUUID;
+import sonar.core.utils.CustomColour;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.DisplayButton;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenInteractionEvent;
@@ -40,9 +34,7 @@ import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
-import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
@@ -349,5 +341,4 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public String getClientType() {
 		return "list";
 	}
-
 }

@@ -1,31 +1,14 @@
 package sonar.logistics.network;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
-import sonar.core.api.SonarAPI;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.utils.ActionType;
-import sonar.core.network.PacketMultipart;
-import sonar.core.network.PacketMultipartHandler;
-import sonar.core.network.PacketStackUpdate;
 import sonar.core.network.utils.ByteBufWritable;
-import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.readers.IWirelessStorageReader;
-import sonar.logistics.common.multiparts.InventoryReaderPart;
-import sonar.logistics.helpers.ItemHelper;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketWirelessStorage implements IMessage {

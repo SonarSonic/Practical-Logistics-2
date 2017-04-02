@@ -30,7 +30,6 @@ import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.client.gui.GuiEntityNode;
-import sonar.logistics.client.gui.GuiNode;
 
 public class EntityNodePart extends SidedMultipart implements IEntityNode, IByteBufTile, IFlexibleGui {
 

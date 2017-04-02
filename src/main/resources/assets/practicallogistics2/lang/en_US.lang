@@ -215,6 +215,14 @@ pl.FoodStats.needFood=Needs Food
 pl.FoodStats.getSaturationLevel=Saturation Level
 pl.Team.getRegisteredName=Team Name
 
+//defaults
+pl.Default.Priority=Priority
+pl.Default.ProcessTime=Process Time
+pl.Default.BaseProcessTime=Base Process Time
+pl.Default.CurrentProcessTime=Current Process Time
+pl.Default.EnergyUsage=Energy Usage
+pl.Default.BaseEnergyUsage=Base Energy Usage
+
 //logistics
 pl.TileEntityHammer.getSpeed=Process Speed
 pl.TileEntityHammer.getProgress=Progress Time
@@ -228,12 +236,7 @@ pl.IGreenhouse.getTier=Tier
 pl.IGreenhouse.getCarbon=Carbon Levels
 pl.IGreenhouse.getOxygen=Oxygen Levels
 pl.IGreenhouse.maxGasLevel=Max Gas Level
-pl.IProcessMachine.getCurrentProcessTime=Current Process Time
-pl.IProcessMachine.getProcessTime=Process Time
-pl.IProcessMachine.getBaseProcessTime=Base Process Time
-pl.IProcessMachine.getEnergyUsage=Energy Usage
-pl.IProcessMachine.getBaseEnergyUsage=Base Energy Usage
-pl.ITeleport.name=Name
+pl.ITeleport.name=Link Name
 pl.ITeleport.teleporterID=Teleporter ID
 pl.IFlawlessGreenhouse.getPlantsHarvested=Plants Harvested
 pl.IFlawlessGreenhouse.getPlantsGrown=Plants Grown
@@ -254,6 +257,21 @@ pl.IFusionReactor.getCaseTemp=Case Temperature
 pl.IFusionReactor.getPlasmaTemp=Plasma Temperature
 pl.IFusionReactor.getInjectionRate=Injection Rate
 
+// applied energistics 2
+pl.TileGrinder.requiredTurns=Required Turns
+pl.TileGrinder.points=Current Turns
+
+//flux
+pl.IFlux.getTransferLimit=Base Transfer Limit
+pl.IFlux.getCurrentTransferLimit=Current Transfer Limit
+pl.IFluxCommon.getNetworkName=Network Name
+pl.IFluxCommon.getNetworkID=Network ID
+pl.IFluxCommon.getEnergyAvailable=Network Energy Stored
+pl.IFluxCommon.getMaxEnergyStored=Network Energy Max
+pl.AccessType.name=Access Type
+pl.EnergyStats.transfer=Current Transfer
+pl.EnergyStats.maxSent=Max Send
+pl.EnergyStats.maxReceived=Max Received
 
 
 

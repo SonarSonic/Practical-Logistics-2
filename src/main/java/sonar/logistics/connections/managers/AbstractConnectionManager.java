@@ -18,7 +18,7 @@ import sonar.logistics.api.cabling.IConnectable;
 
 public abstract class AbstractConnectionManager<T extends IConnectable> {
 
-	private Map<Integer, ArrayList<T>> connections = new ConcurrentHashMap<Integer, ArrayList<T>>();
+	protected Map<Integer, ArrayList<T>> connections = new ConcurrentHashMap<Integer, ArrayList<T>>();
 	private NetworkManager NetworkManager;
 	
 	public void removeAll() {
@@ -52,11 +52,11 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 
 	public int addConnection(T cable) {
 		ArrayList<Pair<ConnectableType, Integer>> connections = new ArrayList();
-		int cableID = -1;
+		int cableID = cable.getRegistryID();
 		int lastSize = -1;
 		BlockCoords coords = cable.getCoords();
 		for (EnumFacing dir : EnumFacing.values()) {
-			if (cable.canConnectOnSide(dir)) {
+			if (cable.canConnectOnSide(cable.getRegistryID(), dir)) {
 				Pair<ConnectableType, Integer> connection = getConnectionType(cable, coords.getWorld(), coords.getBlockPos(), dir, cable.getCableType());
 				if (connection.a != ConnectableType.NONE && connection.b != -1) {
 					List<T> cables = getConnections(connection.b);
@@ -120,7 +120,7 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 		BlockCoords coords = cable.getCoords();
 		for (EnumFacing dir : EnumFacing.values()) {
 			Pair<ConnectableType, Integer> connection = getConnectionType(cable, coords.getWorld(), coords.getBlockPos(), dir, cable.getCableType());
-			boolean canConnect = cable.canConnectOnSide(dir);
+			boolean canConnect = cable.canConnectOnSide(cable.getRegistryID(), dir);
 			if ((!canConnect && connection.a.canConnect(cable.getCableType()))) {
 				cable.removeFromNetwork();
 				cable.addToNetwork();

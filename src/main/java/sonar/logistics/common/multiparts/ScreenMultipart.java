@@ -38,7 +38,6 @@ import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.operator.IOperatorTile;
-import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.utils.LogisticsHelper;
@@ -93,7 +92,8 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 				IInfoProvider monitor = monitors.get(0);
 				if (container() != null && monitor != null && monitor.getIdentity() != null) {
 					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
-						container().setUUID(new InfoUUID(monitor.getIdentity().hashCode(), i), i);
+						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty())
+							container().setUUID(new InfoUUID(monitor.getIdentity().hashCode(), i), i);
 					}
 					defaultData.setObject(true);
 					sendSyncPacket();
@@ -117,7 +117,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	}
 
 	public void setIdentity(UUID identity) {
-		
+
 	}
 
 	//// IInfoDisplay \\\\

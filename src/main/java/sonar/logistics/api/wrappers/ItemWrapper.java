@@ -12,8 +12,6 @@ import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.IEntityNode;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.common.multiparts.ReaderMultipart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 

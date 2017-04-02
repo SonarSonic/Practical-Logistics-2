@@ -19,9 +19,7 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.ClientViewable;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.helpers.CableHelper;
 
 public class PacketViewables implements IMessage {
 

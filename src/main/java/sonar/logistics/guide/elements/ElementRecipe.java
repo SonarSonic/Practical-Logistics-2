@@ -3,15 +3,11 @@ package sonar.logistics.guide.elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 import sonar.core.SonarCore;
-import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.guide.IGuidePage;

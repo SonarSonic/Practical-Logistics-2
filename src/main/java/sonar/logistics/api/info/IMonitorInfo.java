@@ -4,6 +4,7 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 
 /**for your info to be registered you must use {@link LogicInfoType} implement this for all types of info*/
@@ -27,6 +28,11 @@ public interface IMonitorInfo<T extends IMonitorInfo> extends INBTSyncable{
 	
 	public boolean isValid();
 	
+	public LogicPath getPath();
+
+	public T setPath(LogicPath path);
+	
+	/**it is essential that you copy the LogicPath also*/
 	public T copy();
 	
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos);

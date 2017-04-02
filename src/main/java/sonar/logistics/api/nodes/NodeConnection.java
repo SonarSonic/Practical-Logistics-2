@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import net.minecraft.util.EnumFacing;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.IPriority;
 import sonar.logistics.api.filters.ITransferFilteredTile;

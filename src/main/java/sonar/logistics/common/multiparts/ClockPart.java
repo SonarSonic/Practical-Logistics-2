@@ -25,11 +25,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
-import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -40,7 +38,6 @@ import sonar.logistics.api.viewers.ViewerTally;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.viewers.ViewersList;
 import sonar.logistics.client.gui.GuiClock;
-import sonar.logistics.client.gui.GuiNode;
 import sonar.logistics.info.types.ClockInfo;
 
 public class ClockPart extends SidedMultipart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui, ILogicViewable {

@@ -6,11 +6,9 @@ import java.util.List;
 
 import mcmultipart.MCMultiPartMod;
 import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
 import mcmultipart.multipart.ISlotOccludingPart;
 import mcmultipart.multipart.PartSlot;
 import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
-import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -28,7 +26,6 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.utils.LabelledAxisAlignedBB;
-import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.LogisticsAPI;
@@ -43,7 +40,6 @@ import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.helpers.CableHelper;
 
 public class DataCablePart extends SonarMultipart implements ISlotOccludingPart, IDataCable, IOperatorTile, IOperatorProvider {
@@ -112,7 +108,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	}
 
 	@Override
-	public boolean canConnectOnSide(EnumFacing dir) {
+	public boolean canConnectOnSide(int connectingID, EnumFacing dir) {
 		return isBlocked[dir.ordinal()] ? false : getContainer().getPartInSlot(PartSlot.getFaceSlot(dir)) == null;
 	}
 

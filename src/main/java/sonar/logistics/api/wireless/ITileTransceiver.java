@@ -3,7 +3,6 @@ package sonar.logistics.api.wireless;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
-import sonar.logistics.api.nodes.NodeConnection;
 
 /** implemented on Items which can provide Channels for a network when placed in a {@link IConnectionArray} */
 public interface ITileTransceiver extends ITransceiver {

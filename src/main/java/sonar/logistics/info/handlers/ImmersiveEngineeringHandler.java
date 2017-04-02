@@ -10,12 +10,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.logistics.api.asm.CustomTileHandler;
+import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.ICustomTileHandler;
-import sonar.logistics.info.LogicInfoRegistry.LogicPath;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
+import sonar.logistics.api.info.ILogicInfoRegistry;
+import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.info.types.LogicInfo;
 
-@CustomTileHandler(handlerID = "immersiveengineering", modid = "immersiveengineering")
+@CustomTileHandler(handlerID = "immersiveengineering-progress", modid = "immersiveengineering")
 public class ImmersiveEngineeringHandler implements ICustomTileHandler {
 
 	@Override
@@ -24,7 +27,7 @@ public class ImmersiveEngineeringHandler implements ICustomTileHandler {
 	}
 
 	@Override
-	public void addInfo(List<LogicInfo> infoList, LogicPath currentPath, World world, IBlockState state, BlockPos pos, EnumFacing dir, TileEntity tile, Block block) {
+	public void addInfo(ILogicInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, Block block, TileEntity tile) {
 		if (tile instanceof IProcessTile) {
 			IProcessTile process = (IProcessTile) tile;
 			int[] steps = process.getCurrentProcessesStep();
@@ -32,8 +35,8 @@ public class ImmersiveEngineeringHandler implements ICustomTileHandler {
 			for (int i = 0; i < steps.length; i++) {
 				int step = steps[i];
 				int max = maxs[i];
-				infoList.add(LogicInfo.buildDirectInfo("IProcessMachine.getCurrentProcessTime", i, RegistryType.TILE, step, currentPath.dupe()));
-				infoList.add(LogicInfo.buildDirectInfo("IProcessMachine.getProcessTime", i, RegistryType.TILE, max, currentPath.dupe()));
+				infoList.add(LogicInfo.buildDirectInfo(ClientNameConstants.CURRENT_PROCESS_TIME, i, RegistryType.TILE, step).setPath(currentPath.dupe()));
+				infoList.add(LogicInfo.buildDirectInfo(ClientNameConstants.PROCESS_TIME, i, RegistryType.TILE, max).setPath(currentPath.dupe()));
 			}
 		}
 	}

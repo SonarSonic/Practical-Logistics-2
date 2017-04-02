@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
-import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.common.containers.ContainerGuide;
 

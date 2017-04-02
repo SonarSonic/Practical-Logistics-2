@@ -3,8 +3,6 @@ package sonar.logistics.api.nodes;
 import java.util.UUID;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
-import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.connections.monitoring.MonitoredEntity;
 

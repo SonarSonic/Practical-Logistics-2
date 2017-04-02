@@ -1,7 +1,5 @@
 package sonar.logistics.client;
 
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
 import org.lwjgl.opengl.GL11;
 
 import mcmultipart.client.multipart.MultipartSpecialRenderer;
@@ -19,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.common.multiparts.ClockPart;
-import sonar.logistics.common.multiparts.ScreenMultipart;
 
 public class ClockRenderer extends MultipartSpecialRenderer<ClockPart> {
 

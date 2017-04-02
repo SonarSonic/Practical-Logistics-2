@@ -3,19 +3,15 @@ package sonar.logistics.client.gui;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import sonar.core.SonarCore;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.readers.EnergyReader;
 import sonar.logistics.api.readers.EnergyReader.Modes;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
@@ -25,7 +21,6 @@ import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.common.multiparts.EnergyReaderPart;
 import sonar.logistics.common.multiparts.MonitorMultipart;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
-import sonar.logistics.network.PacketInventoryReader;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 

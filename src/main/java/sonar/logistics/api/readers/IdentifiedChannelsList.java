@@ -14,17 +14,11 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
-import sonar.core.network.sync.SyncCoords;
-import sonar.core.network.sync.SyncUUID;
 import sonar.core.utils.IUUIDIdentity;
 import sonar.logistics.api.cabling.ChannelType;
-import sonar.logistics.api.cabling.IChannelledTile;
-import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
-import sonar.logistics.connections.monitoring.MonitoredEntity;
 
 public class IdentifiedChannelsList implements ISyncPart {
 

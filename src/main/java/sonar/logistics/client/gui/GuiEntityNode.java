@@ -3,13 +3,11 @@ package sonar.logistics.client.gui;
 import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.EntityNodePart;
-import sonar.logistics.common.multiparts.NodePart;
 
 public class GuiEntityNode extends GuiLogistics {
 	public EntityNodePart part;

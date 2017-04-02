@@ -5,8 +5,6 @@ import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.text.TextFormatting;
-import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
@@ -18,12 +16,12 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.client.DisplayTextFields;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
+import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
 import sonar.logistics.common.multiparts.ScreenMultipart;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.helpers.InfoRenderer;
@@ -78,21 +76,26 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			this.buttonList.add(new GuiButton(2, guiLeft + 88, guiTop + 5, 40, 20, "Prefix"));
 			this.buttonList.add(new GuiButton(3, guiLeft + 128, guiTop + 5, 40, 20, "Suffix"));
 			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 50, 20, "RESET"));
-			this.buttonList.add(new GuiButton(5, guiLeft + 8+50, guiTop + 130 + 8, 50, 20, "CLEAR"));
+			this.buttonList.add(new GuiButton(5, guiLeft + 8 + 50, guiTop + 130 + 8, 50, 20, "CLEAR"));
 			this.buttonList.add(new GuiButton(6, guiLeft + 108, guiTop + 130 + 8, 50, 20, "SAVE"));
 			ArrayList<String> strings = textFields == null ? part.container().getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
 			textFields = new DisplayTextFields(8, 28 + 4, 8);
 			textFields.initFields(strings);
 			break;
 		case LIST:
-			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 137, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout(), "button.ScreenLayout"));
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 127, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout(), "button.ScreenLayout"));
+			if (part instanceof LargeDisplayScreenPart) {
+				LargeDisplayScreenPart display = (LargeDisplayScreenPart) part;
+				this.buttonList.add(new LogisticsButton(this, -2, guiLeft + 127 + 20, guiTop + 3, 160, display.getDisplayScreen().isLocked.getObject() ? 0 : 16, "Locked: " + display.getDisplayScreen().isLocked.getObject(), "button.LockDisplay"));
+
+			}
 			// int width = 162;
 			int height = 20;
 			int left = 7;
 			for (int i = 0; i < part.maxInfo(); i++) {
 				int top = 22 + ((height + 6) * i);
-				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 130 - 3, guiTop + top, 32, 256 - 32, "Edit", ""));
-				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 130 - 3 + 20, guiTop + top, 32, 256 - 16, "Source", ""));
+				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 127, guiTop + top, 32, 256 - 32, "Edit", ""));
+				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 147, guiTop + top, 32, 256 - 16, "Source", ""));
 			}
 
 			break;
@@ -108,7 +111,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		// this.buttonList.add(new DisplayButton(3, ButtonType.EDIT, guiLeft + 130 - 3, guiTop + 20));
 		/* nameField = new GuiTextField(0, this.fontRendererObj, 8, 18, 160, 12); nameField.setMaxStringLength(20); nameField.setText(part.getEmitterName()); */
 	}
-
 
 	public void drawScreen(int x, int y, float var) {
 		super.drawScreen(x, y, var);
@@ -162,6 +164,12 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				part.incrementLayout();
 				reset();
 				part.sendByteBufPacket(2);
+				break;
+			}
+			if(button.id==-2){
+				((LargeDisplayScreenPart)part).getDisplayScreen().isLocked.invert();
+				reset();
+				part.sendByteBufPacket(6);		
 				break;
 			}
 			if (button.id >= 100) {

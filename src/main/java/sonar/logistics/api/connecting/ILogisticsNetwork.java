@@ -1,19 +1,13 @@
 package sonar.logistics.api.connecting;
 
-import java.util.ArrayList;
 import java.util.Map;
 
-import net.minecraft.entity.Entity;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.IListReader;
 import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.readers.IdentifiedChannelsList;
-import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredList;
 

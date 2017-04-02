@@ -22,6 +22,7 @@ import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
@@ -67,7 +68,8 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 
 	@Override
 	public boolean isMatchingInfo(MonitoredEnergyStack info) {
-		return (energyStack.getObject().energyType == null || energyStack.getObject().energyType.equals(info.energyStack.getObject().energyType)) && coords.getMonitoredInfo().isMatchingInfo(info.coords.getMonitoredInfo()) && dropStack.getObject() == null ? info.dropStack.getObject() == null : dropStack.getObject().equals(info.dropStack.getObject());
+
+		return coords.getMonitoredInfo().isMatchingInfo(info.coords.getMonitoredInfo()); //&& info.dropStack.getObject() == null || dropStack.getObject()==null) ? true : dropStack.getObject().equals(info.dropStack.getObject());
 	}
 
 	@Override
@@ -118,7 +120,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 		GlStateManager.enableLighting();
 		GL11.glTranslated(0, 0, -0.001);
 		GL11.glPopMatrix();
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());		
+		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
 		GL11.glPopMatrix();
 	}
 
@@ -129,7 +131,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 
 	@Override
 	public String getClientObject() {
-		return energyStack.getObject() != null ? "" + FontHelper.formatStorage(energyStack.obj.energyType, energyStack.getObject().stored) + " / " +FontHelper.formatStorage(energyStack.obj.energyType, energyStack.getObject().capacity) : "ERROR";
+		return energyStack.getObject() != null ? "" + FontHelper.formatStorage(energyStack.obj.energyType, energyStack.getObject().stored) + " / " + FontHelper.formatStorage(energyStack.obj.energyType, energyStack.getObject().capacity) : "ERROR";
 	}
 
 	@Override

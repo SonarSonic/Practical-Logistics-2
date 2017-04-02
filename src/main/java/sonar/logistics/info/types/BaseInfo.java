@@ -2,32 +2,29 @@ package sonar.logistics.info.types;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.ICheckableSyncPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
-import sonar.logistics.api.displays.DisplayButton;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.client.gui.GuiInventoryReader;
+import sonar.logistics.api.register.LogicPath;
 
 /** typical implementation of IMonitorInfo which has a sync parts list for all the Info things it also has the required constructor which required empty constructor */
 public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart implements IMonitorInfo<T>, ISyncableListener {
 
+	private LogicPath path;
+	
 	public BaseInfo() {}
+	
+	public LogicPath getPath(){
+		return path;
+	}
 
+	public T setPath(LogicPath path){
+		this.path=path;
+		return (T) this;
+	}
+	
 	@Override
 	public boolean isHeader() {
 		return false;

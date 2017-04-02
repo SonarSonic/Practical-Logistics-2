@@ -6,21 +6,18 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.ISuffixable;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
-import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = ClockInfo.id, modid = Logistics.MODID)

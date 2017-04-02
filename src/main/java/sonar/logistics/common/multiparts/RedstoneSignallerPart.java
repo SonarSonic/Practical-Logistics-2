@@ -34,8 +34,6 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.logistics.EmitterStatement;
 import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.logistics.SignallerModes;
-import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.client.gui.generic.GuiStatementList;

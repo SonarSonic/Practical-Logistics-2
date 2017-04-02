@@ -1,16 +1,15 @@
 package sonar.logistics.client.gui;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.GuiHelpOverlay;
-import sonar.core.client.gui.HelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.client.HelpOverlays;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
@@ -19,9 +18,8 @@ import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.LogicInfo;
 
-public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
+public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 
 	public InfoReaderPart part;
 	public EntityPlayer player;
@@ -78,7 +76,7 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	@Override
-	public void selectionPressed(GuiButton button, int infoPos, int buttonID, LogicInfo info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, IProvidableInfo info) {
 		if (info.isValid() && !info.isHeader()) {
 			part.selectedInfo.setInfo(info);
 			part.sendByteBufPacket(buttonID == 0 ? -9 : -10);
@@ -86,18 +84,18 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	@Override
-	public boolean isCategoryHeader(LogicInfo info) {
+	public boolean isCategoryHeader(IProvidableInfo info) {
 		return info.isHeader();
 	}
 
 	@Override
-	public boolean isSelectedInfo(LogicInfo info) {
+	public boolean isSelectedInfo(IProvidableInfo info) {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
-		ArrayList<IMonitorInfo> selectedInfo = part.getSelectedInfo();
-		for (IMonitorInfo selected : selectedInfo) {
-			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((LogicInfo) selected)) {
+		ArrayList<IProvidableInfo> selectedInfo = part.getSelectedInfo();
+		for (IProvidableInfo selected : selectedInfo) {
+			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((IProvidableInfo) selected)) {
 				return true;
 			}
 		}
@@ -105,13 +103,13 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	@Override
-	public boolean isPairedInfo(LogicInfo info) {
+	public boolean isPairedInfo(IProvidableInfo info) {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
-		ArrayList<IMonitorInfo> pairedInfo = part.getPairedInfo();
-		for (IMonitorInfo selected : pairedInfo) {
-			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((LogicInfo) selected)) {
+		ArrayList<IProvidableInfo> pairedInfo = part.getPairedInfo();
+		for (IProvidableInfo selected : pairedInfo) {
+			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((IProvidableInfo) selected)) {
 				return true;
 			}
 		}
@@ -119,19 +117,19 @@ public class GuiInfoReader extends GuiSelectionList<LogicInfo> {
 	}
 
 	@Override
-	public void renderInfo(LogicInfo info, int yPos) {
+	public void renderInfo(IProvidableInfo info, int yPos) {
 		InfoRenderer.renderMonitorInfoInGUI(info, yPos + 1, LogisticsColours.white_text.getRGB());
 	}
 
 	@Override
 	public int getColour(int i, int type) {
-		IMonitorInfo info = (IMonitorInfo) infoList.get(i + start);
+		IProvidableInfo info = (IProvidableInfo) infoList.get(i + start);
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}
-		ArrayList<IMonitorInfo> selectedInfo = type == 0 ? part.getSelectedInfo() : part.getPairedInfo();
+		ArrayList<IProvidableInfo> selectedInfo = type == 0 ? part.getSelectedInfo() : part.getPairedInfo();
 		int pos = 0;
-		for (IMonitorInfo selected : selectedInfo) {
+		for (IProvidableInfo selected : selectedInfo) {
 			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo(selected)) {
 				return LogisticsColours.infoColours[pos].getRGB();
 			}

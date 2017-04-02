@@ -9,6 +9,7 @@ import sonar.logistics.api.displays.DisplayConstants;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
@@ -83,5 +84,15 @@ public class InfoError implements IMonitorInfo<InfoError> {
 
 	@Override
 	public void identifyChanges(InfoError newInfo) {}
+
+	@Override
+	public LogicPath getPath() {
+		return null;
+	}
+
+	@Override
+	public InfoError setPath(LogicPath path) {
+		return this;
+	}
 
 }

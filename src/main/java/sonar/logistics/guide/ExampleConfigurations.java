@@ -14,12 +14,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.MultipartStateOverride;
-import sonar.logistics.Logistics;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.DisplayConnections;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.common.multiparts.DataEmitterPart;
 import sonar.logistics.common.multiparts.DataReceiverPart;
@@ -31,7 +31,6 @@ import sonar.logistics.common.multiparts.NodePart;
 import sonar.logistics.common.multiparts.RedstoneSignallerPart;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.ProgressInfo;
@@ -46,8 +45,8 @@ public class ExampleConfigurations {
 			NodePart node = new NodePart(EnumFacing.DOWN);
 			InfoReaderPart reader = new InfoReaderPart(EnumFacing.NORTH);
 			DisplayScreenPart screen = new DisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
-			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100, null);
-			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200, null);
+			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
+			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
 			screen.container.storedInfo.get(0).cachedInfo = new ProgressInfo(info1, info2);
 
 			MultipartStateOverride cable = new MultipartStateOverride(new DataCablePart()) {

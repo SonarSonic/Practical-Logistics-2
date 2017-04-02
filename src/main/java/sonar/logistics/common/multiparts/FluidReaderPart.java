@@ -23,6 +23,7 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.FluidReader;
+import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.client.gui.GuiFluidReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -32,7 +33,6 @@ import sonar.logistics.connections.monitoring.FluidMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.FluidHelper;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.ProgressInfo;
@@ -82,8 +82,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 		case POS:
 			break;
 		case STORAGE:
-
-			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, updateInfo.sizing.getStored(), null), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored(), null));
+			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, updateInfo.sizing.getStored()), LogicInfo.buildDirectInfo("max", RegistryType.TILE, updateInfo.sizing.getMaxStored()));
 			break;
 		case TANKS:
 			info = new LogicInfoList(getIdentity(), MonitoredFluidStack.id, this.getNetworkID());

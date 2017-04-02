@@ -15,10 +15,10 @@ import net.minecraftforge.fluids.FluidRegistry;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.CustomTileHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
-import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.info.LogicInfoRegistry.LogicPath;
-import sonar.logistics.info.LogicInfoRegistry.RegistryType;
-import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.api.info.ILogicInfoRegistry;
+import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.register.RegistryType;
 
 @CustomTileHandler(handlerID = "normal-fluids", modid = Logistics.MODID)
 public class NormalFluidHandler implements ICustomTileHandler {
@@ -29,10 +29,10 @@ public class NormalFluidHandler implements ICustomTileHandler {
 	}
 
 	@Override
-	public void addInfo(List<LogicInfo> infoList, LogicPath currentPath, World world, IBlockState state, BlockPos pos, EnumFacing dir, TileEntity tile, Block block) {
+	public void addInfo(ILogicInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, Block block, TileEntity tile) {
 		BlockLiquid liquid = (BlockLiquid) block;
 		Fluid fluid = state.getMaterial() == Material.WATER ? FluidRegistry.WATER : FluidRegistry.LAVA;
-		LogicInfoRegistry.getAssignableMethods(fluid.getClass(), RegistryType.BLOCK).forEach(method -> LogicInfoRegistry.getClassInfo(infoList, currentPath.dupe(), RegistryType.BLOCK, fluid, method, world, state, pos, dir, tile, block));
+		registry.getAssignableMethods(fluid.getClass(), RegistryType.BLOCK).forEach(method -> registry.getClassInfo(infoList, currentPath.dupe(), RegistryType.BLOCK, fluid, method, world, state, pos, dir, block, tile));
 	}
 
 }

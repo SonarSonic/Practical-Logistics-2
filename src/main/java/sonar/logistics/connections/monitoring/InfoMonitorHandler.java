@@ -14,18 +14,18 @@ import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IEntityMonitorHandler;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.register.TileHandlerMethod;
 import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.info.LogicInfoRegistry.LogicPath;
-import sonar.logistics.info.LogicInfoRegistry.TileHandlerMethod;
 import sonar.logistics.info.types.LogicInfo;
 
 @EntityMonitorHandler(handlerID = InfoMonitorHandler.id, modid = Logistics.MODID)
 @TileMonitorHandler(handlerID = InfoMonitorHandler.id, modid = Logistics.MODID)
-public class InfoMonitorHandler extends LogicMonitorHandler<LogicInfo> implements ITileMonitorHandler<LogicInfo>, IEntityMonitorHandler<LogicInfo> {
+public class InfoMonitorHandler extends LogicMonitorHandler<IProvidableInfo> implements ITileMonitorHandler<IProvidableInfo>, IEntityMonitorHandler<IProvidableInfo> {
 
 	public static final String id = "info";
 
@@ -35,34 +35,34 @@ public class InfoMonitorHandler extends LogicMonitorHandler<LogicInfo> implement
 	}
 
 	@Override
-	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, BlockConnection connection) {
-		MonitoredList<LogicInfo> list = MonitoredList.<LogicInfo>newMonitoredList(network.getNetworkID());
+	public MonitoredList<IProvidableInfo> updateInfo(INetworkCache network, MonitoredList<IProvidableInfo> previousList, BlockConnection connection) {
+		MonitoredList<IProvidableInfo> list = MonitoredList.<IProvidableInfo>newMonitoredList(network.getNetworkID());
 		EnumFacing face = connection.face.getOpposite();
 		World world = connection.coords.getWorld();
 		IBlockState state = connection.coords.getBlockState(world);
 		BlockPos pos = connection.coords.getBlockPos();
 		Block block = connection.coords.getBlock(world);
 		TileEntity tile = connection.coords.getTileEntity(world);
-		LogicInfoRegistry.getTileInfo(list, face, world, state, pos, face, block, tile);
+		LogicInfoRegistry.INSTANCE.getTileInfo(list, face, world, state, pos, face, block, tile);
 
-		for (ICustomTileHandler handler : LogicInfoRegistry.customTileHandlers) {
+		for (ICustomTileHandler handler : LogicInfoRegistry.INSTANCE.customTileHandlers) {
 			if (handler.canProvideInfo(world, state, pos, face, tile, block)) {
 				TileHandlerMethod method = new TileHandlerMethod(handler);
 				LogicPath path = new LogicPath();
 				path.setStart(method);
-				handler.addInfo(list, path, world, state, pos, face, tile, block);
+				handler.addInfo(LogicInfoRegistry.INSTANCE, list, path, null, world, state, pos, face, block, tile);
 			}
 		}
 		return list;
 	}
 
 	@Override
-	public MonitoredList<LogicInfo> updateInfo(INetworkCache network, MonitoredList<LogicInfo> previousList, EntityConnection connection) {
-		MonitoredList<LogicInfo> list = MonitoredList.<LogicInfo>newMonitoredList(network.getNetworkID());
+	public MonitoredList<IProvidableInfo> updateInfo(INetworkCache network, MonitoredList<IProvidableInfo> previousList, EntityConnection connection) {
+		MonitoredList<IProvidableInfo> list = MonitoredList.<IProvidableInfo>newMonitoredList(network.getNetworkID());
 		Entity entity = connection.entity;
 		World world = entity.getEntityWorld();
-		LogicInfoRegistry.getEntityInfo(list, entity);
-		for (ICustomEntityHandler handler : LogicInfoRegistry.customEntityHandlers) {
+		LogicInfoRegistry.INSTANCE.getEntityInfo(list, entity);
+		for (ICustomEntityHandler handler : LogicInfoRegistry.INSTANCE.customEntityHandlers) {
 			if (handler.canProvideInfo(world, entity)) {
 				handler.addInfo(list, world, entity);
 			}

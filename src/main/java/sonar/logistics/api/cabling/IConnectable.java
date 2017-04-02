@@ -21,6 +21,7 @@ public interface IConnectable extends IWorldPosition {
 	/**sets the ID of this connection. Shouldn't be called outside of the ConnectionManager*/
 	public void setRegistryID(int id);
 	
-	/** can the Tile connect to cables on the given direction */
-	public boolean canConnectOnSide(EnumFacing dir);
+	/** can the Tile connect to cables on the given direction 
+	 * @param connectingID TODO*/
+	public boolean canConnectOnSide(int connectingID, EnumFacing dir);
 }

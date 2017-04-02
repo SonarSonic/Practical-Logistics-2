@@ -3,9 +3,7 @@ package sonar.logistics.guide.general;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.Logistics;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.BaseInfoPage;
@@ -14,7 +12,6 @@ import sonar.logistics.guide.ExampleConfigurations.FurnaceProgress;
 import sonar.logistics.guide.ExampleConfigurations.InventoryExample;
 import sonar.logistics.guide.IGuidePageElement;
 import sonar.logistics.guide.elements.Element3DRenderer;
-import sonar.logistics.guide.elements.ElementImage;
 import sonar.logistics.guide.elements.ElementInfo;
 
 public class ExamplesPages extends BaseInfoPage {

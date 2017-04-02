@@ -1,5 +1,7 @@
 package sonar.logistics.connections.managers;
 
+import java.util.ArrayList;
+
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -13,7 +15,24 @@ import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
 
 public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
-	
+
+	public ArrayList<Integer> lockedIDs = new ArrayList();
+
+	public int getNextAvailableID() {
+		for (int i = 0; i < Integer.MAX_VALUE; i++) {
+			if (!lockedIDs.contains(i)) {
+				if (i < connections.size()) {
+					if ((connections.get(i) == null || connections.get(i).isEmpty() || connections.get(i).size() == 0)) {
+						return i;
+					}
+				} else {
+					return i;
+				}
+			}
+		}
+		return -1; // impossible
+	}
+
 	@Override
 	public void onNetworksConnected(int newID, int oldID) {
 		ConnectedDisplayScreen screen = Logistics.getServerManager().getConnectedDisplays().get(newID);
@@ -37,7 +56,7 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 		IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(new BlockCoords(pos.offset(dir)), source.getFace());
 		if (display != null && display instanceof ILargeDisplay) {
 			ILargeDisplay largeDisplay = (ILargeDisplay) display;
-			if (largeDisplay.getFace().equals(source.getFace()) && largeDisplay.canConnectOnSide(dir)) {
+			if (largeDisplay.getFace().equals(source.getFace()) && source.canConnectOnSide(largeDisplay.getRegistryID(), dir.getOpposite()) && largeDisplay.canConnectOnSide(source.getRegistryID(), dir)) {
 				return new Pair(ConnectableType.CONNECTION, largeDisplay.getRegistryID());
 			}
 		}

@@ -3,8 +3,6 @@ package sonar.logistics.network;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -12,13 +10,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.network.PacketMultipart;
-import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IListReader;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 
@@ -68,6 +64,9 @@ public class PacketMonitoredList implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
+			if(message.list.get(0) instanceof MonitoredItemStack){
+				System.out.println("stack");
+			}
 			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 				public void run() {
 					if (message.list != null) {

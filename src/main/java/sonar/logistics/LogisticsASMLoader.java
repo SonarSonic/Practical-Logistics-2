@@ -48,9 +48,9 @@ public class LogisticsASMLoader {
 		LogisticsASMLoader.loadTileMonitorHandlers(asmDataTable);
 		LogisticsASMLoader.loadEntityMonitorHandlers(asmDataTable);
 		LogisticsASMLoader.loadNodeFilters(asmDataTable);
-		LogicInfoRegistry.infoRegistries.addAll(LogisticsASMLoader.getInfoRegistries(asmDataTable));
-		LogicInfoRegistry.customTileHandlers.addAll(LogisticsASMLoader.getCustomTileHandlers(asmDataTable));
-		LogicInfoRegistry.customEntityHandlers.addAll(LogisticsASMLoader.getCustomEntityHandlers(asmDataTable));
+		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(LogisticsASMLoader.getInfoRegistries(asmDataTable));
+		LogicInfoRegistry.INSTANCE.customTileHandlers.addAll(LogisticsASMLoader.getCustomTileHandlers(asmDataTable));
+		LogicInfoRegistry.INSTANCE.customEntityHandlers.addAll(LogisticsASMLoader.getCustomEntityHandlers(asmDataTable));
 	}
 
 	public static List<IInfoRegistry> getInfoRegistries(@Nonnull ASMDataTable asmDataTable) {

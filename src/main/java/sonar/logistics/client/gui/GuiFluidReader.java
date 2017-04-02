@@ -1,6 +1,5 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

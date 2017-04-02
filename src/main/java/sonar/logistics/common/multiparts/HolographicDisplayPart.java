@@ -2,28 +2,11 @@ package sonar.logistics.common.multiparts;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
-import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.network.sync.SyncEnum;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.api.displays.DisplayType;
-import sonar.logistics.api.displays.IInfoContainer;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenLayout;
-import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
 
 public class HolographicDisplayPart extends DisplayScreenPart {
 

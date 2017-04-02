@@ -21,16 +21,15 @@ import sonar.logistics.Logistics;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.IConnectable;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
-import sonar.logistics.api.cabling.IConnectable;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.wrappers.CablingWrapper;
@@ -64,7 +63,7 @@ public class CableHelper extends CablingWrapper {
 			}
 
 			Pair<ConnectableType, Integer> connection = CableHelper.getConnectionType(cable, container.getWorldIn(), container.getPosIn(), dir, cable.getCableType());
-			return !cable.canConnectOnSide(dir) || !connection.a.canConnect(cable.getCableType()) ? CableRenderType.NONE : CableRenderType.CABLE;
+			return !cable.canConnectOnSide(cable.registryID, dir) || !connection.a.canConnect(cable.getCableType()) ? CableRenderType.NONE : CableRenderType.CABLE;
 		}
 		return CableRenderType.NONE;
 	}
@@ -332,7 +331,7 @@ public class CableHelper extends CablingWrapper {
 			}
 		}
 		for (EnumFacing face : EnumFacing.values()) {
-			if (cable.canConnectOnSide(face)) {
+			if (cable.canConnectOnSide(cable.registryID, face)) {
 				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
 				ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
 				if (validate.isValid(tile) && tile.canConnect(face).canConnect()) {
@@ -414,7 +413,7 @@ public class CableHelper extends CablingWrapper {
 		if (connection instanceof IDataCable) {
 			IDataCable cable = (IDataCable) connection;
 			if (cable.getCableType().canConnect(cableType)) {
-				return cable.canConnectOnSide(dir.getOpposite()) ? new Pair(cable.getCableType(), cable.getRegistryID()) : new Pair(ConnectableType.NONE, -1);
+				return cable.canConnectOnSide(cable.getRegistryID(), dir.getOpposite()) ? new Pair(cable.getCableType(), cable.getRegistryID()) : new Pair(ConnectableType.NONE, -1);
 			}
 		} else if (connection instanceof ILogicTile) {
 			return ((ILogicTile) connection).canConnect(dir.getOpposite()).canShowConnection() ? new Pair(ConnectableType.BLOCK_CONNECTION, -1) : new Pair(ConnectableType.NONE, -1);

@@ -9,6 +9,7 @@ import net.minecraft.util.EnumFacing;
 import sonar.core.utils.Pair;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -17,7 +18,7 @@ import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 
-public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMultipart<T> {
+public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderMultipart<T> {
 
 	private ArrayList<SyncMonitoredType<T>> selected = Lists.newArrayListWithCapacity(getMaxInfo()), paired = Lists.newArrayListWithCapacity(getMaxInfo());
 	{
@@ -37,14 +38,14 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 		super(handlerID, face);
 	}
 
-	public ArrayList<IMonitorInfo> getSelectedInfo() {
-		ArrayList<IMonitorInfo> cachedSelected = Lists.<IMonitorInfo>newArrayList();
+	public ArrayList<IProvidableInfo> getSelectedInfo() {
+		ArrayList<IProvidableInfo> cachedSelected = Lists.<IProvidableInfo>newArrayList();
 		selected.forEach(info -> cachedSelected.add(info.getMonitoredInfo()));
 		return cachedSelected;
 	}
 
-	public ArrayList<IMonitorInfo> getPairedInfo() {
-		ArrayList<IMonitorInfo> cachedPaired = Lists.<IMonitorInfo>newArrayList();
+	public ArrayList<IProvidableInfo> getPairedInfo() {
+		ArrayList<IProvidableInfo> cachedPaired = Lists.<IProvidableInfo>newArrayList();
 		paired.forEach(info -> cachedPaired.add(info.getMonitoredInfo()));
 		return cachedPaired;
 	}
@@ -81,23 +82,23 @@ public abstract class LogisticsReader<T extends IMonitorInfo> extends ReaderMult
 	
 	@Override
 	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
-		ArrayList<IMonitorInfo> cachedSelected = this.getSelectedInfo();
-		ArrayList<IMonitorInfo> cachedPaired = this.getPairedInfo();
+		ArrayList<IProvidableInfo> cachedSelected = this.getSelectedInfo();
+		ArrayList<IProvidableInfo> cachedPaired = this.getPairedInfo();
 		for (int i = 0; i < this.getMaxInfo(); i++) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), i);
-			IMonitorInfo selectedInfo = cachedSelected.get(i);
+			IProvidableInfo selectedInfo = cachedSelected.get(i);
 			IMonitorInfo lastInfo = Logistics.getServerManager().info.get(id);
 			if (selectedInfo != null) {
 				IMonitorInfo latestInfo = selectedInfo;
-				Pair<Boolean, IMonitorInfo> newInfo = LogicInfoRegistry.getLatestInfo(updateInfo, usedChannels, latestInfo);
+				Pair<Boolean, IProvidableInfo> newInfo = LogicInfoRegistry.INSTANCE.getLatestInfo(updateInfo, usedChannels, latestInfo);
 				if(newInfo.b!=null){
 					this.selected.get(i).info = newInfo.b;
 				}
 				boolean isPair = false;
 				if (cachedPaired != null) {
-					IMonitorInfo paired = cachedPaired.get(i);
+					IProvidableInfo paired = cachedPaired.get(i);
 					if (paired != null) {
-						Pair<Boolean, IMonitorInfo> newPaired = LogicInfoRegistry.getLatestInfo(updateInfo, usedChannels, paired);
+						Pair<Boolean, IProvidableInfo> newPaired = LogicInfoRegistry.INSTANCE.getLatestInfo(updateInfo, usedChannels, paired);
 						if(newPaired.b!=null){
 							this.paired.get(i).info = newPaired.b;
 						}

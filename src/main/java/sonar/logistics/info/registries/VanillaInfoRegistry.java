@@ -1,18 +1,5 @@
 package sonar.logistics.info.registries;
 
-import static sonar.logistics.info.LogicInfoRegistry.registerFields;
-import static sonar.logistics.info.LogicInfoRegistry.registerInfoAdjustments;
-import static sonar.logistics.info.LogicInfoRegistry.registerInvFields;
-import static sonar.logistics.info.LogicInfoRegistry.registerMethods;
-import static sonar.logistics.info.LogicInfoRegistry.registerReturn;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.BLOCK;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.ENTITY;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.FACE;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.ITEMSTACK;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.POS;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.TILE;
-import static sonar.logistics.info.LogicInfoRegistry.RegistryType.WORLD;
-
 import java.util.HashMap;
 
 import com.google.common.collect.Lists;
@@ -41,60 +28,62 @@ import net.minecraftforge.fluids.Fluid;
 import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
+import sonar.logistics.api.info.ILogicInfoRegistry;
+import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = Logistics.MODID)
 public class VanillaInfoRegistry extends IInfoRegistry {
 
 	@Override
-	public void registerBaseReturns() {
-		registerReturn(WorldInfo.class);
-		registerReturn(WorldProvider.class);
-		registerReturn(DimensionType.class);
-		registerReturn(Fluid.class);
-		registerReturn(FoodStats.class);
-		registerReturn(Team.class);
-		registerReturn(NBTTagCompound.class);
-		registerReturn(BlockPos.class);
+	public void registerBaseReturns(ILogicInfoRegistry registry) {
+		registry.registerReturn(WorldInfo.class);
+		registry.registerReturn(WorldProvider.class);
+		registry.registerReturn(DimensionType.class);
+		registry.registerReturn(Fluid.class);
+		registry.registerReturn(FoodStats.class);
+		registry.registerReturn(Team.class);
+		registry.registerReturn(NBTTagCompound.class);
+		registry.registerReturn(BlockPos.class);
 	}
 
 	@Override
-	public void registerBaseMethods() {
-		registerMethods(Block.class, BLOCK, Lists.newArrayList("getUnlocalizedName", "getMetaFromState", "getHarvestLevel", "isFoliage", "isWood", "canSustainLeaves"));
-		registerMethods(Block.class, BLOCK, Lists.newArrayList("getWeakPower", "getStrongPower", "isSideSolid", "getBlockHardness"));
-		registerMethods(BlockFluidBase.class, BLOCK, Lists.newArrayList("getFluid"));
-		registerMethods(BlockCrops.class, BLOCK, Lists.newArrayList("isMaxAge"));
-		registerMethods(Fluid.class, BLOCK, Lists.newArrayList("getLuminosity", "getDensity", "getTemperature", "getViscosity"));
-		registerMethods(BlockPos.class, POS, Lists.newArrayList("getX", "getY", "getZ"));
-		registerMethods(EnumFacing.class, FACE, Lists.newArrayList("toString"));
-		registerMethods(World.class, WORLD, Lists.newArrayList("isBlockIndirectlyGettingPowered", "getWorldInfo"));
-		registerMethods(WorldInfo.class, WORLD, Lists.newArrayList("isRaining", "isThundering", "getWorldName"));
-		registerMethods(WorldProvider.class, WORLD, Lists.newArrayList("getDimension", "getDimensionType"));
-		registerMethods(DimensionType.class, WORLD, Lists.newArrayList("getName"));
-		registerMethods(Entity.class, ENTITY, Lists.newArrayList("getPosition", "getName"));
-		registerMethods(EntityLivingBase.class, ENTITY, Lists.newArrayList("getHealth", "getMaxHealth", "getAge", "getTotalArmorValue"));
-		registerMethods(EntityAgeable.class, ENTITY, Lists.newArrayList("getGrowingAge"));
-		registerMethods(EntityPlayer.class, ENTITY, Lists.newArrayList("isCreative", "isSpectator", "getFoodStats", "getAbsorptionAmount", "getTeam", "getExperiencePoints"));
-		registerMethods(FoodStats.class, ENTITY, Lists.newArrayList("getFoodLevel", "needFood", "getSaturationLevel"));
-		registerMethods(Team.class, ENTITY, Lists.newArrayList("getRegisteredName"));
-		registerMethods(ItemStack.class, ITEMSTACK, Lists.newArrayList("getItem", "getMaxStackSize", "getTagCompound"));
+	public void registerBaseMethods(ILogicInfoRegistry registry) {
+		registry.registerMethods(Block.class, RegistryType.BLOCK, Lists.newArrayList("getUnlocalizedName", "getMetaFromState", "getHarvestLevel", "isFoliage", "isWood", "canSustainLeaves"));
+		registry.registerMethods(Block.class, RegistryType.BLOCK, Lists.newArrayList("getWeakPower", "getStrongPower", "isSideSolid", "getBlockHardness"));
+		registry.registerMethods(BlockFluidBase.class, RegistryType.BLOCK, Lists.newArrayList("getFluid"));
+		registry.registerMethods(BlockCrops.class, RegistryType.BLOCK, Lists.newArrayList("isMaxAge"));
+		registry.registerMethods(Fluid.class, RegistryType.BLOCK, Lists.newArrayList("getLuminosity", "getDensity", "getTemperature", "getViscosity"));
+		registry.registerMethods(BlockPos.class, RegistryType.POS, Lists.newArrayList("getX", "getY", "getZ"));
+		registry.registerMethods(EnumFacing.class, RegistryType.FACE, Lists.newArrayList("toString"));
+		registry.registerMethods(World.class, RegistryType.WORLD, Lists.newArrayList("isBlockIndirectlyGettingPowered", "getWorldInfo"));
+		registry.registerMethods(WorldInfo.class, RegistryType.WORLD, Lists.newArrayList("isRaining", "isThundering", "getWorldName"));
+		registry.registerMethods(WorldProvider.class, RegistryType.WORLD, Lists.newArrayList("getDimension", "getDimensionType"));
+		registry.registerMethods(DimensionType.class, RegistryType.WORLD, Lists.newArrayList("getName"));
+		registry.registerMethods(Entity.class, RegistryType.ENTITY, Lists.newArrayList("getPosition", "getName"));
+		registry.registerMethods(EntityLivingBase.class, RegistryType.ENTITY, Lists.newArrayList("getHealth", "getMaxHealth", "getAge", "getTotalArmorValue"));
+		registry.registerMethods(EntityAgeable.class, RegistryType.ENTITY, Lists.newArrayList("getGrowingAge"));
+		registry.registerMethods(EntityPlayer.class, RegistryType.ENTITY, Lists.newArrayList("isCreative", "isSpectator", "getFoodStats", "getAbsorptionAmount", "getTeam", "getExperiencePoints"));
+		registry.registerMethods(FoodStats.class, RegistryType.ENTITY, Lists.newArrayList("getFoodLevel", "needFood", "getSaturationLevel"));
+		registry.registerMethods(Team.class, RegistryType.ENTITY, Lists.newArrayList("getRegisteredName"));
+		registry.registerMethods(ItemStack.class, RegistryType.ITEMSTACK, Lists.newArrayList("getItem", "getMaxStackSize", "getTagCompound"));
 	}
 
 	@Override
-	public void registerAllFields() {
+	public void registerAllFields(ILogicInfoRegistry registry) {
 		HashMap<String, Integer> furnaceFields = Maps.<String, Integer>newHashMap();
 		furnaceFields.put("furnaceBurnTime", 0);
 		furnaceFields.put("currentItemBurnTime", 1);
 		furnaceFields.put("cookTime", 2);
 		furnaceFields.put("totalCookTime", 3);
-		registerInvFields(TileEntityFurnace.class, furnaceFields);
-		registerFields(TileEntityNote.class, TILE, Lists.newArrayList("note"));
-		registerFields(ItemStack.class, ITEMSTACK, Lists.newArrayList("stackSize"));
+		registry.registerInvFields(TileEntityFurnace.class, furnaceFields);
+		registry.registerFields(TileEntityNote.class, RegistryType.TILE, Lists.newArrayList("note"));
+		registry.registerFields(ItemStack.class, RegistryType.ITEMSTACK, Lists.newArrayList("stackSize"));
 	}
 
 	@Override
-	public void registerAdjustments() {
-		registerInfoAdjustments(Lists.newArrayList("EntityLivingBase.getHealth", "EntityLivingBase.getMaxHealth"), "", "HP");
-		registerInfoAdjustments(Lists.newArrayList("TileEntityFurnace.furnaceBurnTime", "TileEntityFurnace.currentItemBurnTime", "TileEntityFurnace.cookTime", "TileEntityFurnace.totalCookTime"), "", "ticks");
+	public void registerAdjustments(ILogicInfoRegistry registry) {
+		registry.registerInfoAdjustments(Lists.newArrayList("EntityLivingBase.getHealth", "EntityLivingBase.getMaxHealth"), "", "HP");
+		registry.registerInfoAdjustments(Lists.newArrayList("TileEntityFurnace.furnaceBurnTime", "TileEntityFurnace.currentItemBurnTime", "TileEntityFurnace.cookTime", "TileEntityFurnace.totalCookTime"), "", "ticks");
 		// LogicRegistry.registerInfoAdjustments(Lists.newArrayList("Block.getUnlocalizedName"), "", ".name");
 	}
 

@@ -1,7 +1,6 @@
 package sonar.logistics.api.viewers;
 
 import java.util.List;
-import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.utils.IUUIDIdentity;

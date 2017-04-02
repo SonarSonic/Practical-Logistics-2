@@ -2,7 +2,6 @@ package sonar.logistics.common.multiparts;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.raytrace.PartMOP;
@@ -12,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;

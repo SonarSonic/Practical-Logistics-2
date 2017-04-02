@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.entity.Entity;
-import sonar.core.api.utils.BlockCoords;
-import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
 import sonar.logistics.Logistics;
@@ -16,6 +14,7 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 

@@ -47,7 +47,7 @@ public class CommandResetInfoRegistry implements ICommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		World world = sender.getEntityWorld();
 		if (!world.isRemote) {
-			LogicInfoRegistry.reload();
+			LogicInfoRegistry.INSTANCE.reload();
 			Logistics.logger.info("Reset Logic Info Registry");
 		}
 		sender.addChatMessage(new TextComponentTranslation("Reset Logic Info Registry"));

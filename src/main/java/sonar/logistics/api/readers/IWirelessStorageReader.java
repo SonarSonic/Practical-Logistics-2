@@ -5,12 +5,6 @@ import java.util.UUID;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import sonar.logistics.api.connecting.INetworkCache;
-import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.items.WirelessStorageReader;
-import sonar.logistics.connections.monitoring.MonitoredFluidStack;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
 
 public interface IWirelessStorageReader  {
 

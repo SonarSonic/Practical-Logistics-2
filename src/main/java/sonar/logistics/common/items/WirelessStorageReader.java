@@ -16,21 +16,14 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.Logistics;
-import sonar.logistics.api.connecting.EmptyNetworkCache;
-import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.readers.IWirelessStorageReader;
 import sonar.logistics.api.viewers.ViewerType;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.api.wireless.ITileTransceiver;
 import sonar.logistics.client.gui.GuiWirelessStorageEmitterList;
 import sonar.logistics.client.gui.GuiWirelessStorageReader;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.containers.ContainerStorageViewer;
 import sonar.logistics.connections.managers.EmitterManager;
-import sonar.logistics.connections.monitoring.MonitoredFluidStack;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
 
 public class WirelessStorageReader extends SonarItem implements IWirelessStorageReader, IFlexibleGui<ItemStack> {

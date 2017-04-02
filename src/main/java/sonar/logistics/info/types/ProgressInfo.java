@@ -14,6 +14,7 @@ import sonar.logistics.api.displays.ISuffixable;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
@@ -149,19 +150,30 @@ public class ProgressInfo implements IMonitorInfo<ProgressInfo>, INBTSyncable, I
 		GlStateManager.disableLighting();
 		GL11.glTranslated(-1, -+0.0625 * 12, +0.004);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(infoPos));
-		InfoRenderer.renderProgressBar(displayWidth, displayHeight, displayScale, (compare == 1 ? secondNum : firstNum), (compare == 1 ? firstNum : secondNum));
+		double num1 = (compare == 1 ? secondNum : firstNum);
+		double num2 = (compare == 1 ? firstNum : secondNum);
+		InfoRenderer.renderProgressBar(displayWidth, displayHeight, displayScale, num1 < 0 ? 0 : num1, num2);
 		GlStateManager.enableLighting();
 		GL11.glTranslated(0, 0, -0.001);
 		GL11.glPopMatrix();
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), displayWidth, displayHeight, displayScale, displayInfo.getFormattedStrings());		
+		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), displayWidth, displayHeight, displayScale, displayInfo.getFormattedStrings());
 		GL11.glPopMatrix();
-		
+
 	}
 
 	@Override
 	public void identifyChanges(ProgressInfo newInfo) {
 		first.identifyChanges(newInfo.first);
 		second.identifyChanges(newInfo.second);
+	}
+	@Override
+	public LogicPath getPath() {
+		return null;
+	}
+
+	@Override
+	public ProgressInfo setPath(LogicPath path) {
+		return this;
 	}
 
 }

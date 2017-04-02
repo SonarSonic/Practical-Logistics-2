@@ -10,7 +10,6 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementCraftingRecipe;
 import sonar.logistics.guide.elements.ElementHammerRecipe;
-import sonar.logistics.guide.elements.ElementInfo;
 import sonar.logistics.guide.elements.ElementItem;
 import sonar.logistics.guide.elements.ElementLink;
 

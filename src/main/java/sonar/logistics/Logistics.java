@@ -20,7 +20,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.IInfoManager;
 import sonar.logistics.commands.CommandResetInfoRegistry;
@@ -102,7 +101,7 @@ public class Logistics {
 			logger.info("Sapphire Ore Generation is disabled in the config");
 
 		LogisticsASMLoader.init(event);
-		LogicInfoRegistry.init();
+		LogicInfoRegistry.INSTANCE.init();
 		comparatorRegistry.register();
 	}
 

@@ -6,7 +6,11 @@ import net.minecraft.item.ItemStack;
 import sonar.logistics.LogisticsBlocks;
 import sonar.logistics.LogisticsItems;
 import sonar.logistics.guide.general.ExamplesPages;
-import sonar.logistics.guide.pages.*;
+import sonar.logistics.guide.pages.EnergyReaderPage;
+import sonar.logistics.guide.pages.FluidReaderPage;
+import sonar.logistics.guide.pages.InfoReaderPage;
+import sonar.logistics.guide.pages.InventoryReaderPage;
+import sonar.logistics.guide.pages.TransferNodePage;
 
 public class GuidePageRegistry {
 
