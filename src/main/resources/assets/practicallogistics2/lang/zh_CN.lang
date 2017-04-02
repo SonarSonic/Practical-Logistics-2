@@ -1,37 +1,274 @@
-itemGroup.Practical Logistics=实用物流监控
+itemGroup.Practical Logistics 2=Practical Logistics 2
 
 //blocks
 tile.SapphireOre.name=蓝宝石矿石
-tile.InfoReader.name=信息读取器
-tile.Node.name=信息监测节点
-tile.EnergyScreenItem.name=能源显示器
 tile.DisplayScreenItem.name=显示屏
-tile.DataEmitter.name=远程数据发射器
-tile.DataReceiver.name=远程数据接收器
-tile.DataCable.name=数据传输线缆
-tile.InventoryReader.name=物品栏信息读取器
-tile.RedstoneSignaller.name=红石信号器
-tile.HolographicDisplay.name=全息显示屏
-tile.DataModifier.name=数据修改器
-tile.InfoCreator.name=信息发生器
-tile.Hammer.name=重锤
-tile.Hammer_Air.name=重锤
-tile.EntityNode.name=实体监测节点
-tile.LargeDisplayScreen.name=大型显示屏
-tile.FluidReader.name=流体信息读取器
-tile.ItemRouter.name=物品路由器
-tile.MultiCable.name=频道线缆
-tile.ChannelSelector.name=频道选择器
-tile.Clock.name=钟
-tile.EnergyReader.name=能量信息读取器
-tile.TransceiverArray.name=无线电收发阵列
+tile.Hammer.name=锻造锤
+tile.Hammer_Air.name=锻造锤
+
+//multiparts
+item.Node.name=节点
+item.FluidReader.name=流体读取器
+item.InfoReader.name=信息读取器
+item.EnergyReader.name=能量读取器
+item.InventoryReader.name=存储读取器
+item.Array.name=阵列器
+item.DataCable.name=数据传输电缆
+item.EntityNode.name=实体节点
+item.RedstoneSignaller.name=红石信号器
+item.DataReceiver.name=数据接收器
+item.DataEmitter.name=数据发送器
+item.TransferNode.name=传输节点
+item.Clock.name=时钟
+item.EtchedPlate.name=腐蚀版
 
 //items
-item.EnergyScreenItem.name=能源显示屏
 item.DisplayScreenItem.name=显示屏
 item.Sapphire.name=蓝宝石
 item.SapphireDust.name=蓝宝石粉末
 item.StonePlate.name=石板
+item.Transceiver.name=无线接收器
+item.EntityTransceiver.name=实体无线接收器
+item.Operator.name=操纵工具
+item.DisplayScreen.name=显示屏
+item.HolographicDisplay.name=全息显示屏
+item.LargeDisplayScreen.name=大型显示屏
+item.PLGuide.name=Practical Logistics指导手册
+item.WirelessStorage.name=无限存储读取器
 
 //messages
 dataBlock.denied=拒绝访问
+
+//general guide pages
+guide.Welcome.title=欢迎使用 Practical Logistics 2！
+guide.Welcome.name=Practical Logistics 2 给予玩家一种读取、显示和操控数据的自动化系统。你可以轻松的使用此系统监控物品、能量、流体、实体、机器、储罐、光照、天气、方向、运动等诸多信息。- -你可以创建物品、流体和能量网络，并把它们传输到世界的任何一个角落；甚至跨纬度都没有问题。使用大型屏幕，还能够体验到更多交互式的控制。- -你还可以无限的控制并管理你的基地，甚至是无线的监控和控制方块。- -这个模组是1.7.10版本的Practical Logistics的升级版本。-这个模组由Ollie Lansdell制作。
+guide.GettingStarted.title=如何开始
+guide.GettingStarted.name=开始我们的Practical Logisitics之旅之前，你需要在主世界找到一些#SapphireOre#。找到了以后，你就可以做一个#Hammer#，通过它可以制作#StonePlate#，#Sapphire#和#SapphireDust#。接下来制作一些#DataCable#，你就可以开启你的Practical Logisitcs之旅了。- -<blue>基本原则<reset>-首先你需要链接你想监控/交互的方块或者实体。To get started you first need to connect the blocks or entities you want to monitor/interact with. These blocks will be referred to as the Connections or the Channels-See #Node#, #EntityNode#, #Array#, #Transceiver#, #EntityTransceiver# on how to connect channels-To read info from the channels you need to use a Reader, there are currently four types which can show various types of data.-See #InfoReader#, #InventoryReader#, #FluidReader#, #EnergyReader#.
+guide.GettingStarted2.name=Once you've setup a reader and a channel you can display the data using a screen. This must be connected to the outward side of the reader-See #DisplayScreen#, #LargeDisplayScreen#, #HolographicDisplay#.- -To then act upon this data you can use the #RedstoneSignaller#.- -These are all the principal blocks required for most basic setups which you can see examples for on #2#.
+
+//item guide pages
+guide.SapphireOre.name=蓝宝石矿石是一种在主世界生成很常见的矿物。采集处理可以获得#Sapphire#。它主要生成在&&和&&高度。- -需要铁镐等级才能采掘
+guide.Hammer.name=锻造锤不需要能量。它主要用于锻造一些该模组必须的物品……- -#Sapphire#由#SapphireOre#锻造得到。-#SapphireDust#由#Sapphire#锻造得到。-#StonePlate#由石头锻造得到。
+guide.Node.name=节点用于把方块接入到网络中。
+guide.FluidReader.name=#CURRENT#可以显示相连方块的所有流体相关信息。#CURRENT#对于选中的储罐，拥有多个模式可供选择……- -<blue>模式<reset> -<blue>储罐：<reset>这个模式会显示所有由#CURRENT#分类的流体信息。-<blue>流体：<reset>这个模式会显示选中流体的储量。只需要从列表中点击，就可以选择你想监控的流体-<blue>位置：<reset>这个模式会显示选中流体在#CURRENT#中排序的位置。-<blue>存储：<reset>这个模式会创建一个储量的进度条，有点像#InfoReader#创建的那个。
+guide.InfoReader.name=显示相连方块/实体的所有信息。也可以创建进度条- -玩家可以选择至多四条信息。-一次只能从一个方块里选择一条信息。
+guide.EnergyReader.name=（未完成）#CURRENT#可以显示相连方块的所有能量信息，可以监测包括Forge Energy，RF，EU，AE在内的能量。
+guide.InventoryReader.name=#CURRENT#可以显示相连方块内的所有存储物品。对于选中存储栏信息，#CURRENT#拥有多个模式可用选择- -<blue>物品栏：<reset>这个模式会显示由存储读取器排序的所有物品列表 -<blue>堆叠：<reset>这个模式会显示选中物品的存储数量。 通过点击模式按钮旁的格子来选择物品类型。-<blue>格子：<reset>这个模式会显示相连的第一个物品栏里，选中格子的物品。在模式按钮旁边的输入框类可以输入格子的序号。打开“频道”菜单，可以选择相连的第一个物品栏。-<blue>位置：<reset>这个模式会显示指定位置物品，而排序位置则是由存储读取器界定的。 -<blue>存储：<reset>这个模式会创建一个储量的进度条，有点像#InfoReader#创建的那个。
+guide.InventoryReader2.name=<blue>Filters:<reset> Similar to 'Inventories' mode except you can filter the items shown in a similar way to the #TransferNode#
+guide.Array.name=阵列器能够在不使用#Node#的情况下，无线的把方块和网络相连接。-为了无线的连接方块和网络，首先你需要手持#Transceiver#shift右击想要监控的方块，之后再把它放进阵列器里面就行。
+guide.DataCable.name=你需要准备大量的数据传输电缆，因为它们时这个模组最最基础的方块- -它能够传输物品，流体，能量，气体等其他信息。
+guide.EntityNode.name=#CURRENT#可以把实体和网络相连接起来。
+guide.RedstoneSignaller.name=#CURRENT#能够监测信息，并且依据玩家自定义的条件来发出红石信号。
+guide.DataReceiver.name=#CURRENT#用于连接多个无线网络。为了接入系统网络中，你需要连接到你想连接的#DataEmitter#上，之后在GUI里面选择这个数据接收器。你可以添加任意多个发送器。
+guide.DataEmitter.name=#CURRENT#用于连接多个无线网络。为了接入系统网络中，你必须要在你想加入的网络上放置一个发送器，之后在和主网络的#DataReceiver#相连接即可。-这样相连的网络能够互相访问。
+guide.TransferNode.name=#CURRENT#可以传输物品，流体和能量到连接的方块上-你可以借此创建物品过滤，矿典过滤和流体过滤来筛选传输的东西。- -<blue>模式：<reset>-<blue>增加：<reset>允许#CURRENT#添加物品到物流网络相连的方块中。-<blue>移除：<reset>允许#CURRENT#移除来着物流网络相连方块中的物品。-<blue>增加_移除:<reset>允许#CURRENT#移除/增加来自/去往物流网络相连方块中的物品。-<blue>禁阻：<reset>禁止任何类型的传输。
+guide.Sapphire.name=蓝宝石拥有神秘的属性，这种属性允许它们能够快速地传输物流信息。因此，蓝宝石当之无愧的成为了这个模组或不可缺的资源，当然是越多越好！-获得蓝宝石方式也很简单，把#SapphireOre#放在#Hammer#里处理即可得到。
+guide.SapphireDust.name=把#Sapphire#放进#Hammer#处理得到。- -和#Sapphire#一样，也是这个模组或不可缺的资源。
+guide.StonePlate.name=#CURRENT#坚固耐用，这种属性让它成为了理想的制作物流方块的材料，所以它也是这个模组或不可缺的资源。
+guide.Transceiver.name=传输节点能够在不需要#Node#的情况下无线的链接方块。-首先，shift右击一下你想链接的方块。然后把它塞进想链接的网络的#Array#里面即可。
+guide.EntityTransceiver.name=实体无线接收器使用方式和#Transceiver#颇为相似，但是工作对象是实体而不是方块。- -只需要右击对应实体即可绑定。想要把自己和#CURRENT#相连接，只需要shift右击即可。
+guide.Operator.name=它拥有6个模式。-只需要shift右击就可以转换模式。- -<blue>默认：<reset>点击可以连接/断开电缆，除此之外还对一些方块有基本功能- -<blue>旋转：<reset>右击一个方块可以旋转它- -<blue>信息：<reset>右击能够开启Practical Logistics相关信息，当你手持操纵工具指在上面时候能够显示出来- -<blue>频道：<reset>允许快速给选定方块配置频道- -<blue>分析：<reset> (UNFINISHED) When a block is right clicked the Operator will diagnose it to see if it can be fixed.
+guide.DisplayScreen.name=显示屏能够显示读取器传输过来的信息。为了配置显示屏，你必须要在屏幕背后右击来打开GUI-显示屏最多可以同时显示四种类型信息。-在GUI里面也可以调节相关的数据显示布局。
+guide.LargeDisplayScreen.name=大型显示屏工作方式和#DisplayScreen#几乎一模一样。但是它能够与其他大型屏幕相连，从而能做出一个巨型屏幕！
+guide.Guide.name=指导手册就是当前你用的这东西！
+guide.HolographicDisplay.name=The #CURRENT# works in the same way as the #DisplayScreen# except it is transparent!
+guide.Clock.name=时钟目前的功能还很简单，它允许你设置一个有特定间隔的红石脉冲。侧面连接一个显示器能够以进度条形式显示当前钟的时间。 你也可以通过顶部的旋转把手来识别当前的进度。当把手经过一个小的红色标记的时候，就会发出红石信号。- -在GUI里可以设置红石脉冲间隔的时间，可以在0.100毫秒到24小时之间随意设置。当区块被卸载掉时，时间会被重置。
+guide.ExampleConfig.name=应用举例
+guide.WirelessStorage.name=Allows you to wirelessly monitor/add/remove Items in your network from any dimension with a simple right click.-To use the #CURRENT# you must first connect it to a Data Emitter, do this by right clicking or by selecting the 'Emitters' menu in the #CURRENT#s GUI.
+guide.EtchedPlate.name=An incredibly durable and conductive item. Used in creating some higher tier logistics blocks.
+
+
+guide.FurnaceProgress.name=<underline>熔炉烧制进度<reset>- -<blue>第一步：<reset>如图放置方块。-<blue>第二步：<reset>确保信息读写器连接到了节点，并且在频道菜单里面选中熔炉。-<blue>第三步：<reset>在信息读写器的GUI里左击“烧制时间”，右击“总烧制时间”，这样就创建了一个相关的进度条！- -需要的方块：#Node#，#DataCable#，#InfoReader#和#DisplayScreen#。
+guide.ChestMonitoring.name=<underline>简单的物品面板<reset>- -<blue>第一步：<reset>如图放置方块。-<blue>第二步：<reset>把存储读取器调节到“堆叠”模式，之后将你想显示的方块标记在格子里面。- -需要的方块：#Node#，#DataCable#，#InventoryReader#和#DisplayScreen#。
+guide.WirelessRedstone.name=<underline>无线红石<reset>- -<blue>第一步：<reset>如图放置方块。-<blue>第二步：<reset>确保信息读写器连接到了节点，并且在频道菜单里面选中红石粉。-<blue>第三步：<reset>在信息读写器的GUI里面选择“方块附加值”-<blue>第四步：<reset>调节红石发信模式来发出红石信号。
+guide.MultipleInventory.name=<underline>Inventories<reset>- -<blue>Step 1:<reset>  Place the blocks as seen.... That's it! Inventories is the default mode of the Inventory Reader so there is no more configuration needed.- -Blocks Required: #Node#x3, #DataCable#x3, #InventoryReader#.
+
+//generic Guide Pages
+guide.ChannelsSTART.name=<blue>频道<reset>-The #CURRENT# can also be configured by channels. The 'channels' are the blocks/entities connected to the network meaning this will alter what the #CURRENT# can access.
+guide.ChannelsSINGLE.name=Due to it's type of opperation the #CURRENT# can only have one channel, therefore you must select the first channel manually.
+guide.ChannelsUNLIMITED.name=The #CURRENT# can have an unlimited number of connected channels.
+guide.ChannelsEND.name=You can edit the channels by pressing the channel button in it's GUI or by right clicking it with an #Operator# in Channels mode.
+
+//HELPOVERLAYS//
+
+//BUTTON HELPS//
+button.ScreenLayout=数据在屏幕上的布局显示
+button.TransferMode=The transfer mode of this Node-ADD: Allows adding-REMOVE: Allows removing-ADD/REMOVE: Allows adding/removing, however a filter is required-PASSIVE: No adding/removing can occur
+button.ItemFilter=创建一个新的物品过滤。
+button.OreFilter=创建一个新的矿物辞典过滤。
+button.FluidFilter=创建一个新的流体过滤。
+button.MoveUpFilter=将所选过滤向上移动一格。
+button.MoveDownFilter=将所选过滤向下移动一格。
+button.DeleteFilter=将所选过滤删除。
+button.ClearAllFilter=清除所有的过滤。
+button.Channels=配置受这个方块影响的方块。
+button.ItemTransfer=允许这个过滤器传输物品。
+button.FluidTransfer=允许这个过滤器传输流体。
+button.EnergyTransfer=允许这个过滤器传输能量。
+button.HelpButton=启用帮助提示-就像这一条这样 :)
+button.EmitterMode=Dictates when a signal is emittered.-ONE TRUE: Emits a signal if one statement is true-ONE FALSE: Emits a signal if one statement is false-ALL TRUE: Emits a signal if all statements are true-ALL FALSE: Emits a signal if all statements are false
+button.NewStatement=创建一个新的红石信号发信条件。
+button.MoveUpStatement=将所选发信条件向上移动一格。
+button.MoveDownStatement=将所选发信条件向下移动一格。
+button.DeleteStatement=删除所选发信条件。
+button.ClearAllStatements=清除所有发信条件。
+button.RedstoneSignallerRefresh=Refreshes the configured statements-Updating the data and if they were true last tick
+button.InfoSignallerSource=Used to select the source of the info used in the statement.
+button.ObjectSelectionSource=Used to select the object used in the statement.
+button.TileFilters=Add, Remove, and Create the filters for this tile.
+
+/////INFO/////
+
+//data emitter
+pl.emitter.public=公共
+pl.emitter.private=私有
+
+//inventory reader
+pl.inv.mode.stack=堆叠
+pl.inv.mode.slot=格子
+pl.inv.mode.pos=位置
+pl.inv.mode.inventories=物品栏
+pl.inv.mode.storage=存储
+pl.inv.mode.filtered=Filters
+
+pl.inv.sort.stored=存储物品
+pl.inv.sort.name=物品数量
+pl.inv.sort.modid=模组名称
+
+pl.item.storage=存储物品
+
+//fluid reader
+pl.fluid.mode.selected=流体
+pl.fluid.mode.pos=位置
+pl.fluid.mode.tanks=储罐
+pl.fluid.mode.storage=存储
+
+pl.fluid.desc.selected=被选中的流体
+pl.fluid.desc.pos=指定位置的流体
+pl.fluid.desc.tanks=列出所有流体
+pl.fluid.desc.storage=当前储罐使用状况
+
+pl.fluid.sort.stored=存储流体
+pl.fluid.sort.name=流体名称
+pl.fluid.sort.modid=模组名称
+pl.fluid.sort.temperature=温度
+
+pl.fluid.storage=存储流体
+
+//redstone signaller
+pl.signaller.default=默认
+pl.signaller.override=复写
+pl.signaller.all=全匹配
+pl.signaller.one=单个匹配
+
+//info
+pl.Vec3i.getX=X坐标
+pl.Vec3i.getY=Y坐标
+pl.Vec3i.getZ=Z坐标
+pl.EnumFacing.toString=方向
+
+//world
+pl.World.isBlockIndirectlyGettingPowered=方块是否被充能
+pl.WorldInfo.isRaining=是否雨天
+pl.WorldInfo.isThundering=是否雷暴天
+pl.WorldInfo.getWorldName=世界名称
+pl.WorldInfo.getDimension=维度ID
+pl.DimensionType.getName=维度名称
+
+//vanilla-tiles
+pl.TileEntityFurnace.furnaceBurnTime=熔炉燃烧时间
+pl.TileEntityFurnace.currentItemBurnTime=当前燃烧时间
+pl.TileEntityFurnace.cookTime=烧制时间
+pl.TileEntityFurnace.totalCookTime=总烧制时间
+pl.TileEntityNote.note=Current Note
+
+//blocks
+pl.Block.isFoliage=是否是树叶
+pl.Block.getUnlocalizedName=方块名称
+pl.Block.isWood=是否是木头
+pl.Block.canSustainLeaves=是否可以维持树叶不枯萎
+pl.Block.getHarvestLevel=采掘等级
+pl.Block.getMetaFromState=方块附加值
+pl.BlockCrops.isMaxAge=是否长熟
+pl.Block.getWeakPower=弱充能
+pl.Block.getStrongPower=强充能
+pl.Block.isSideSolid=是否是不透光方块
+pl.Block.getBlockHardness=硬度
+pl.Fluid.getLuminosity=亮度
+pl.Fluid.getDensity=密度
+pl.Fluid.getTemperature=温度
+pl.Fluid.getViscosity=粘度
+
+//entities
+pl.Entity.getName=名称
+pl.EntityLivingBase.getHealth=当前血量
+pl.EntityLivingBase.getMaxHealth=总血量
+pl.EntityLivingBase.getAge=年龄
+pl.EntityLivingBase.getTotalArmorValue=总护甲值
+pl.EntityAgeable.getGrowingAge=生长年龄
+pl.EntityPlayer.isCreative=创造模式
+pl.EntityPlayer.isSpectator=旁观者模式
+pl.EntityPlayer.getAbsorptionAmount=抗性提升点数
+pl.EntityPlayer.getExperiencePoints=经验值
+pl.FoodStats.getFoodLevel=饱食度
+pl.FoodStats.needFood=需要的饱食度
+pl.FoodStats.getSaturationLevel=饱腹度
+pl.Team.getRegisteredName=组名称
+
+//defaults
+pl.Default.Priority=Priority
+pl.Default.ProcessTime=Process Time
+pl.Default.BaseProcessTime=Base Process Time
+pl.Default.CurrentProcessTime=Current Process Time
+pl.Default.EnergyUsage=Energy Usage
+pl.Default.BaseEnergyUsage=Base Energy Usage
+
+//logistics
+pl.TileEntityHammer.getSpeed=工作速度
+pl.TileEntityHammer.getProgress=工作时间
+pl.TileEntityHammer.getCoolDown=冷却
+pl.TileEntityHammer.getCoolDownSpeed=冷却速度
+
+//calculator
+pl.IHungerProcessor.getHungerPoints=饥饿点
+pl.IHealthProcessor.getHealthPoints=生命点
+pl.IGreenhouse.getTier=规模
+pl.IGreenhouse.getCarbon=二氧化碳含量
+pl.IGreenhouse.getOxygen=氧气含量
+pl.IGreenhouse.maxGasLevel=最大气体储量
+pl.ITeleport.name=名称
+pl.ITeleport.teleporterID=传送ID
+pl.IFlawlessGreenhouse.getPlantsHarvested=作物收获量
+pl.IFlawlessGreenhouse.getPlantsGrown=作物种植量
+pl.ICalculatorGenerator.getItemLevel=物品等级
+pl.ICalculatorGenerator.getMaxItemLevel=最大物品等级
+
+//mekanism
+pl.IHeatTransfer.getTemp=温度
+pl.IHeatTransfer.getInverseConductionCoefficient=Inverse Conduction Coefficient
+pl.IHeatTransfer.getInsulationCoefficient=Insulation Coefficient
+pl.IHeatTransfer.canConnectHeat=Can connect heat
+pl.IEvaporationSolar.seesSun=Can Generate
+pl.ILaserReceptor.canLasersDig=Can Lasers Dig
+
+pl.IFusionReactor.isBurning=Is Burning
+pl.IFusionReactor.isFormed=Is Formed
+pl.IFusionReactor.getCaseTemp=Case Temperature
+pl.IFusionReactor.getPlasmaTemp=Plasma Temperature
+pl.IFusionReactor.getInjectionRate=Injection Rate
+
+// applied energistics 2
+pl.TileGrinder.requiredTurns=Required Turns
+pl.TileGrinder.points=Current Turns
+
+//flux
+pl.IFlux.getTransferLimit=Base Transfer Limit
+pl.IFlux.getCurrentTransferLimit=Current Transfer Limit
+pl.IFluxCommon.getNetworkName=Network Name
+pl.IFluxCommon.getNetworkID=Network ID
+pl.IFluxCommon.getEnergyAvailable=Network Energy Stored
+pl.IFluxCommon.getMaxEnergyStored=Network Energy Max
+pl.AccessType.name=Access Type
+pl.EnergyStats.transfer=Current Transfer
+pl.EnergyStats.maxSent=Max Send
+pl.EnergyStats.maxReceived=Max Received
