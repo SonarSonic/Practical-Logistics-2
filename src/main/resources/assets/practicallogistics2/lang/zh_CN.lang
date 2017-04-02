@@ -129,7 +129,7 @@ pl.inv.mode.slot=格子
 pl.inv.mode.pos=位置
 pl.inv.mode.inventories=物品栏
 pl.inv.mode.storage=存储
-pl.inv.mode.filtered=Filters
+pl.inv.mode.filtered=过滤
 
 pl.inv.sort.stored=存储物品
 pl.inv.sort.name=物品数量
@@ -180,7 +180,7 @@ pl.TileEntityFurnace.furnaceBurnTime=熔炉燃烧时间
 pl.TileEntityFurnace.currentItemBurnTime=当前燃烧时间
 pl.TileEntityFurnace.cookTime=烧制时间
 pl.TileEntityFurnace.totalCookTime=总烧制时间
-pl.TileEntityNote.note=Current Note
+pl.TileEntityNote.note=当前记录
 
 //blocks
 pl.Block.isFoliage=是否是树叶
@@ -216,12 +216,12 @@ pl.FoodStats.getSaturationLevel=饱腹度
 pl.Team.getRegisteredName=组名称
 
 //defaults
-pl.Default.Priority=Priority
-pl.Default.ProcessTime=Process Time
-pl.Default.BaseProcessTime=Base Process Time
-pl.Default.CurrentProcessTime=Current Process Time
-pl.Default.EnergyUsage=Energy Usage
-pl.Default.BaseEnergyUsage=Base Energy Usage
+pl.Default.Priority=优先级
+pl.Default.ProcessTime=工作时间
+pl.Default.BaseProcessTime=基础工作时间
+pl.Default.CurrentProcessTime=当前工作时间
+pl.Default.EnergyUsage=能量消耗
+pl.Default.BaseEnergyUsage=基础能量消耗
 
 //logistics
 pl.TileEntityHammer.getSpeed=工作速度
@@ -245,30 +245,30 @@ pl.ICalculatorGenerator.getMaxItemLevel=最大物品等级
 
 //mekanism
 pl.IHeatTransfer.getTemp=温度
-pl.IHeatTransfer.getInverseConductionCoefficient=Inverse Conduction Coefficient
-pl.IHeatTransfer.getInsulationCoefficient=Insulation Coefficient
-pl.IHeatTransfer.canConnectHeat=Can connect heat
-pl.IEvaporationSolar.seesSun=Can Generate
-pl.ILaserReceptor.canLasersDig=Can Lasers Dig
+pl.IHeatTransfer.getInverseConductionCoefficient=逆热传导系数
+pl.IHeatTransfer.getInsulationCoefficient=绝缘系数
+pl.IHeatTransfer.canConnectHeat=是否连接热量
+pl.IEvaporationSolar.seesSun=能否产能
+pl.ILaserReceptor.canLasersDig=是否激光挖掘
 
-pl.IFusionReactor.isBurning=Is Burning
-pl.IFusionReactor.isFormed=Is Formed
-pl.IFusionReactor.getCaseTemp=Case Temperature
-pl.IFusionReactor.getPlasmaTemp=Plasma Temperature
-pl.IFusionReactor.getInjectionRate=Injection Rate
+pl.IFusionReactor.isBurning=是否燃烧
+pl.IFusionReactor.isFormed=是否产生
+pl.IFusionReactor.getCaseTemp=外壳温度
+pl.IFusionReactor.getPlasmaTemp=等离子体温度
+pl.IFusionReactor.getInjectionRate=注射速率
 
 // applied energistics 2
-pl.TileGrinder.requiredTurns=Required Turns
-pl.TileGrinder.points=Current Turns
+pl.TileGrinder.requiredTurns=需要转数
+pl.TileGrinder.points=当前转数
 
 //flux
-pl.IFlux.getTransferLimit=Base Transfer Limit
-pl.IFlux.getCurrentTransferLimit=Current Transfer Limit
-pl.IFluxCommon.getNetworkName=Network Name
-pl.IFluxCommon.getNetworkID=Network ID
-pl.IFluxCommon.getEnergyAvailable=Network Energy Stored
-pl.IFluxCommon.getMaxEnergyStored=Network Energy Max
-pl.AccessType.name=Access Type
-pl.EnergyStats.transfer=Current Transfer
-pl.EnergyStats.maxSent=Max Send
-pl.EnergyStats.maxReceived=Max Received
+pl.IFlux.getTransferLimit=基础传输上限
+pl.IFlux.getCurrentTransferLimit=当前传送上限
+pl.IFluxCommon.getNetworkName=网络名称
+pl.IFluxCommon.getNetworkID=网络ID
+pl.IFluxCommon.getEnergyAvailable=网络能量存储
+pl.IFluxCommon.getMaxEnergyStored=网络能量上限
+pl.AccessType.name=登陆类型
+pl.EnergyStats.transfer=当前传输
+pl.EnergyStats.maxSent=最大传输
+pl.EnergyStats.maxReceived=最大接收
