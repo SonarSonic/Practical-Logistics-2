@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 
 public class LockedDisplayData extends WorldSavedData {
 
@@ -24,13 +24,13 @@ public class LockedDisplayData extends WorldSavedData {
 		for (int t = 0; t < tag.tagCount(); t++) {
 			int lockedID = tag.getIntAt(t);
 		}
-		Logistics.getDisplayManager().lockedIDs.addAll(lockedIDs);
+		PL2.getDisplayManager().lockedIDs.addAll(lockedIDs);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		NBTTagList list = new NBTTagList();
-		for (Integer i : Logistics.getDisplayManager().lockedIDs) {
+		for (Integer i : PL2.getDisplayManager().lockedIDs) {
 			list.set(i, new NBTTagInt(i));
 		}
 		compound.setTag("lockedIDs", list);

@@ -23,7 +23,7 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.EntityTarget;
 import sonar.logistics.api.nodes.IEntityNode;
@@ -138,7 +138,7 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partEntityNode);
+		return new ItemStack(PL2Items.entity_node);
 	}
 
 	@Override

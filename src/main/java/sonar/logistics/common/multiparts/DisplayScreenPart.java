@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncEnum;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.InfoContainer;
@@ -149,7 +149,7 @@ public class DisplayScreenPart extends ScreenMultipart {
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.displayScreen);
+		return new ItemStack(PL2Items.display_screen);
 	}
 
 }

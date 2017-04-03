@@ -15,8 +15,8 @@ import sonar.core.integration.jei.JEICategoryV2;
 import sonar.core.integration.jei.JEIHelper;
 import sonar.core.integration.jei.JEIRecipeV2;
 import sonar.core.recipes.IRecipeHelperV2;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsBlocks;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Blocks;
 import sonar.logistics.client.gui.GuiHammer;
 import sonar.logistics.common.containers.ContainerHammer;
 import sonar.logistics.utils.HammerRecipes;
@@ -26,7 +26,7 @@ public class PracticalLogisticsJEI extends BlankModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		Logistics.logger.info("Starting JEI Integration");
+		PL2.logger.info("Starting JEI Integration");
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
@@ -38,18 +38,18 @@ public class PracticalLogisticsJEI extends BlankModPlugin {
 			if (handler.getCrafterItemStack() != null)
 				registry.addRecipeCategoryCraftingItem(handler.getCrafterItemStack(), handler.getUUID());
 
-			Logistics.logger.info("Registering Recipe Handler: " + handler.getUUID());
+			PL2.logger.info("Registering Recipe Handler: " + handler.getUUID());
 		}
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
 		//registry.addRecipeCategoryCraftingItem(new ItemStack(LogisticsBlocks.hammer, 1), Handlers.HAMMER.getUUID());
 		registry.addRecipeClickArea(GuiHammer.class, 79, 26, 18, 8, Handlers.HAMMER.getUUID());
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerHammer.class, Handlers.HAMMER.getUUID(), 0, 1, 2, 36);
 
-		Logistics.logger.info("Finished JEI Integration");
+		PL2.logger.info("Finished JEI Integration");
 	}
 
 	public enum Handlers implements IJEIHandler {
-		HAMMER(HammerRecipes.instance(), LogisticsBlocks.hammer, "hammer", ForgingHammerJEI.Hammer.class);
+		HAMMER(HammerRecipes.instance(), PL2Blocks.hammer, "hammer", ForgingHammerJEI.Hammer.class);
 
 		/**/
 		public IRecipeHelperV2 helper;

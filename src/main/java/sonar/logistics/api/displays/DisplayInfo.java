@@ -15,7 +15,7 @@ import sonar.core.network.sync.SyncPart;
 import sonar.core.network.sync.SyncTagTypeList;
 import sonar.core.network.sync.SyncableList;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -58,7 +58,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		if (id == null) {
 			return null;
 		}
-		return Logistics.getInfoManager(isClient).getInfoList().get(id);
+		return PL2.getInfoManager(isClient).getInfoList().get(id);
 	}
 
 	@Override

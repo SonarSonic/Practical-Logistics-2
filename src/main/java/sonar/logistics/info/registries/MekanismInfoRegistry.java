@@ -13,7 +13,6 @@ import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.ILogicInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.info.LogicInfoRegistry;
 
 @InfoRegistry(modid = "Mekanism")
 public class MekanismInfoRegistry extends IInfoRegistry {

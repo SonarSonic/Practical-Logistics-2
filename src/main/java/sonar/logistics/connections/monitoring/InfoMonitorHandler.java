@@ -7,7 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
@@ -21,10 +21,9 @@ import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.TileHandlerMethod;
 import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.info.types.LogicInfo;
 
-@EntityMonitorHandler(handlerID = InfoMonitorHandler.id, modid = Logistics.MODID)
-@TileMonitorHandler(handlerID = InfoMonitorHandler.id, modid = Logistics.MODID)
+@EntityMonitorHandler(handlerID = InfoMonitorHandler.id, modid = PL2.MODID)
+@TileMonitorHandler(handlerID = InfoMonitorHandler.id, modid = PL2.MODID)
 public class InfoMonitorHandler extends LogicMonitorHandler<IProvidableInfo> implements ITileMonitorHandler<IProvidableInfo>, IEntityMonitorHandler<IProvidableInfo> {
 
 	public static final String id = "info";

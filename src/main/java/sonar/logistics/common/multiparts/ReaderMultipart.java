@@ -14,7 +14,7 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.ISyncPart;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -46,7 +46,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 
 	@Override
 	public IMonitorInfo getMonitorInfo(int pos) {
-		return Logistics.getInfoManager(this.getWorld().isRemote).getInfoList().get(new InfoUUID(getIdentity().hashCode(), pos));
+		return PL2.getInfoManager(this.getWorld().isRemote).getInfoList().get(new InfoUUID(getIdentity().hashCode(), pos));
 	}
 
 	@Override

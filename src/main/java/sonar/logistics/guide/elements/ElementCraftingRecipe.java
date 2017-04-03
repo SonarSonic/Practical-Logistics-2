@@ -13,14 +13,14 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.recipes.RecipeUtils;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.IGuidePageElement;
 
 public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGuidePageElement {
 
-	public static final ResourceLocation recipeB = new ResourceLocation(Logistics.MODID + ":textures/gui/crafting_recipe_guide.png");
+	public static final ResourceLocation recipeB = new ResourceLocation(PL2.MODID + ":textures/gui/crafting_recipe_guide.png");
 
 	public ElementCraftingRecipe(int page, EntityPlayer player, ItemStack stack, int x, int y) {
 		super(page, player, stack, x, y);

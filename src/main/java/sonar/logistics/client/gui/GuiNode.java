@@ -4,6 +4,7 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.NodePart;
 
@@ -30,7 +31,7 @@ public class GuiNode extends GuiLogistics {
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		FontHelper.textCentre(FontHelper.translate("item.Node.name"), xSize, 6, LogisticsColours.white_text.getRGB());
+		FontHelper.textCentre(PL2Translate.NODE.t(), xSize, 6, LogisticsColours.white_text.getRGB());
 	}
 
 	public void onTextFieldChanged(SonarTextField field) {

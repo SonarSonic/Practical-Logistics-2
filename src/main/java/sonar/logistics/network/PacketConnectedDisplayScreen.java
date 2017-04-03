@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.ILargeDisplay;
 
@@ -27,7 +27,7 @@ public class PacketConnectedDisplayScreen implements IMessage {
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		registryID = buf.readInt();
-		screen = Logistics.getClientManager().connectedDisplays.get(registryID);
+		screen = PL2.getClientManager().connectedDisplays.get(registryID);
 		savedBuf = buf;
 
 	}
@@ -47,7 +47,7 @@ public class PacketConnectedDisplayScreen implements IMessage {
 					message.screen = new ConnectedDisplayScreen(message.registryID);
 				}
 				message.screen.readFromBuf(message.savedBuf);
-				Logistics.getClientManager().connectedDisplays.put(message.registryID, message.screen);
+				PL2.getClientManager().connectedDisplays.put(message.registryID, message.screen);
 				ILargeDisplay topLeft = message.screen.getTopLeftScreen();
 				if (topLeft != null)
 					topLeft.setConnectedDisplay(message.screen);

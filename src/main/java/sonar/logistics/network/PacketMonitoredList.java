@@ -10,11 +10,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IListReader;
 import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 
@@ -47,7 +46,7 @@ public class PacketMonitoredList implements IMessage {
 		networkID = buf.readInt();
 		id = InfoUUID.getUUID(buf);
 		type = SyncType.values()[buf.readInt()];
-		list = InfoHelper.readMonitoredList(ByteBufUtils.readTag(buf), Logistics.getClientManager().getMonitoredList(networkID, id).copyInfo(), type);
+		list = InfoHelper.readMonitoredList(ByteBufUtils.readTag(buf), PL2.getClientManager().getMonitoredList(networkID, id).copyInfo(), type);
 	}
 
 	@Override
@@ -64,17 +63,14 @@ public class PacketMonitoredList implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
-			if(message.list.get(0) instanceof MonitoredItemStack){
-				System.out.println("stack");
-			}
 			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 				public void run() {
 					if (message.list != null) {
-						ILogicViewable viewable = Logistics.getClientManager().monitors.get(message.identity);
+						ILogicViewable viewable = PL2.getClientManager().monitors.get(message.identity);
 						if (viewable instanceof IListReader) {
-							Logistics.getClientManager().monitoredLists.put(message.id, ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID));
+							PL2.getClientManager().monitoredLists.put(message.id, ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID));
 						} else {
-							Logistics.getClientManager().monitoredLists.put(message.id, message.list);
+							PL2.getClientManager().monitoredLists.put(message.id, message.list);
 						}
 					}
 				}

@@ -2,14 +2,9 @@ package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
 
-import appeng.api.AEApi;
-import appeng.api.networking.IGridHost;
 import appeng.helpers.IPriorityHost;
-import appeng.me.helpers.AENetworkProxy;
-import appeng.me.helpers.IGridProxyable;
 import appeng.tile.grindstone.TileGrinder;
 import appeng.tile.misc.TileInscriber;
-import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.IInfoRegistry;

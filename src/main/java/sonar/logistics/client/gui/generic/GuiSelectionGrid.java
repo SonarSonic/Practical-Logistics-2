@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
@@ -18,7 +18,7 @@ import sonar.logistics.connections.monitoring.MonitoredList;
 
 public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogistics {
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation(Logistics.MODID + ":textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2.MODID + ":textures/gui/sorting_icons.png");
 
 	public abstract void onGridClicked(T selection, int pos, int button, boolean empty);
 

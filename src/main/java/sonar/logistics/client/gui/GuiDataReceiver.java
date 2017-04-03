@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
@@ -25,8 +26,8 @@ public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(FontHelper.translate("Data Receiver"), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(String.format("Select the emitters you wish to connect to"), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(PL2Translate.DATA_RECEIVER.t(), xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre("Select the emitters you wish to connect to", xSize, 18, LogisticsColours.grey_text);
 	}
 
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, ClientDataEmitter info) {
@@ -39,7 +40,7 @@ public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {
 	}
 
 	public void setInfo() {
-		infoList = (ArrayList<ClientDataEmitter>) Logistics.getClientManager().clientEmitters.clone();
+		infoList = (ArrayList<ClientDataEmitter>) PL2.getClientManager().clientEmitters.clone();
 	}
 
 	@Override

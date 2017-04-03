@@ -16,7 +16,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -128,21 +128,21 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				break;
 			case 2:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
 				}
 				break;
 			case 3:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
 				}
 				break;
 			case 4:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
 				}
 				break;
 			case 5:
-				Logistics.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			case 6:
 				tile.requestSyncPacket();
@@ -159,8 +159,8 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				currentFilter.incrementInputType();
 				inputField.setText("");
 				currentFilter.obj.set("", ObjectType.STRING);
-				currentFilter.comparatorID.setObject(Logistics.comparatorRegistry.getObjectID(currentFilter.getInputType().comparatorID));
-				currentFilter.comparator = Logistics.comparatorRegistry.getRegisteredObject(currentFilter.getInputType().comparatorID);
+				currentFilter.comparatorID.setObject(PL2.comparatorRegistry.getObjectID(currentFilter.getInputType().comparatorID));
+				currentFilter.comparator = PL2.comparatorRegistry.getRegisteredObject(currentFilter.getInputType().comparatorID);
 				if (!currentFilter.validOperators().contains(currentFilter.getOperator())) {
 					currentFilter.operator.setObject((LogicOperator) currentFilter.validOperators().get(0));
 				}
@@ -185,7 +185,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				this.reset();
 				break;
 			case 6:
-				Logistics.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
+				PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
 				this.changeState(GuiState.LIST);
 				break;
 			case 7:
@@ -244,7 +244,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			boolean has1 = false, has2 = false;
 
 			if (uuid1 != null) {
-				IMonitorInfo monitorInfo = Logistics.getClientManager().info.get(uuid1);
+				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
 				if (monitorInfo != null) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList()), currentFilter.key1.getObject());
@@ -256,7 +256,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			}
 			if (currentFilter.getInputType().usesInfo()) {
 				if (uuid2 != null) {
-					IMonitorInfo monitorInfo = Logistics.getClientManager().info.get(uuid2);
+					IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid2);
 					if (monitorInfo != null) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList()), currentFilter.key2.getObject());
@@ -293,7 +293,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			uuid1 = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (uuid1 != null) {
-				IMonitorInfo monitorInfo = Logistics.getClientManager().info.get(uuid1);
+				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
 				if (monitorInfo != null) {
 					FontHelper.textCentre("Info Type: " + monitorInfo.getID().toUpperCase(), xSize, 6, LogisticsColours.white_text.getRGB());
 					GlStateManager.scale(0.75, 0.75, 0.75);
@@ -390,7 +390,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case CHANNELS:
 			if (info instanceof InfoUUID) {
-				IMonitorInfo monitorInfo = Logistics.getClientManager().info.get((InfoUUID) info);
+				IMonitorInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
 				if (monitorInfo != null) {
 					InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 				} else {
@@ -459,7 +459,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 	public Pair<String, String> getInfoTypeAndObjectStrings(InfoUUID id, String key) {
 		String infoType = "INFO", infoObj = "NULL";
-		IMonitorInfo monitorInfo = Logistics.getClientManager().info.get(id);
+		IMonitorInfo monitorInfo = PL2.getClientManager().info.get(id);
 		if (monitorInfo instanceof INameableInfo) {
 			infoType = ((INameableInfo) monitorInfo).getClientIdentifier();
 		} else {
@@ -528,12 +528,12 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STATEMENT:
 			break;
 		case CHANNELS:
-			infoList = (ArrayList<Object>) Logistics.getClientManager().sortedLogicMonitors.getOrDefault(tile.getIdentity(), new ArrayList()).clone();
+			infoList = (ArrayList<Object>) PL2.getClientManager().sortedLogicMonitors.getOrDefault(tile.getIdentity(), new ArrayList()).clone();
 			break;
 		case STRING:
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (uuid != null) {
-				IMonitorInfo monitorInfo = Logistics.getClientManager().info.get(uuid);
+				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid);
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;
 					ArrayList<ComparableObject> objects = new ArrayList();

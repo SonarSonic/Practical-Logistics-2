@@ -33,7 +33,7 @@ import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.info.InfoUUID;
@@ -87,7 +87,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 
 	public void updateDefaultInfo() {
 		if (isServer() && !defaultData.getObject()) {
-			ArrayList<IInfoProvider> monitors = Logistics.getServerManager().getViewables(new ArrayList(), this);
+			ArrayList<IInfoProvider> monitors = PL2.getServerManager().getViewables(new ArrayList(), this);
 			if (!monitors.isEmpty()) {
 				IInfoProvider monitor = monitors.get(0);
 				if (container() != null && monitor != null && monitor.getIdentity() != null) {
@@ -143,7 +143,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	public void onFirstTick() {
 		super.onFirstTick();
 		if (!this.getWorld().isRemote)
-			Logistics.getServerManager().addDisplay(this);
+			PL2.getServerManager().addDisplay(this);
 		else
 			this.requestSyncPacket();
 	}
@@ -151,19 +151,19 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	public void onLoaded() {
 		super.onLoaded();
 		if (!this.getWorld().isRemote)
-			Logistics.getServerManager().addDisplay(this);
+			PL2.getServerManager().addDisplay(this);
 	}
 
 	public void onRemoved() {
 		super.onRemoved();
 		if (!this.getWorld().isRemote)
-			Logistics.getServerManager().removeDisplay(this);
+			PL2.getServerManager().removeDisplay(this);
 	}
 
 	public void onUnloaded() {
 		super.onUnloaded();
 		if (!this.getWorld().isRemote)
-			Logistics.getServerManager().removeDisplay(this);
+			PL2.getServerManager().removeDisplay(this);
 	}
 
 	//// STATE \\\\
@@ -222,7 +222,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 		super.onSyncPacketRequested(player);
 		if (isServer()) {
 			this.getViewersList().addViewer(player, ViewerType.FULL_INFO);
-			Logistics.getServerManager().sendViewablesToClientFromScreen(this, player);
+			PL2.getServerManager().sendViewablesToClientFromScreen(this, player);
 		}
 	}
 
@@ -255,7 +255,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 			InfoUUID uuid = InfoUUID.getUUID(buf);
 			container().setUUID(uuid, currentSelected);
 			if (isServer()) {
-				Logistics.getServerManager().updateViewingMonitors = true;
+				PL2.getServerManager().updateViewingMonitors = true;
 				this.sendSyncPacket();
 			}
 			break;
@@ -298,7 +298,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	public void onGuiOpened(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			Logistics.getServerManager().sendViewablesToClientFromScreen(this, player);
+			PL2.getServerManager().sendViewablesToClientFromScreen(this, player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}

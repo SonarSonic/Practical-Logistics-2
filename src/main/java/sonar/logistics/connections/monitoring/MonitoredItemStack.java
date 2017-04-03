@@ -16,7 +16,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -26,13 +26,15 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.info.types.BaseInfo;
 
-@LogicInfoType(id = MonitoredItemStack.id, modid = Logistics.MODID)
-public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack> {
+@LogicInfoType(id = MonitoredItemStack.id, modid = PL2.MODID)
+public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack> {
 
 	public static final String id = "item";
 	public static LogicMonitorHandler<MonitoredItemStack> handler = LogicMonitorHandler.instance(ItemMonitorHandler.id);
@@ -187,6 +189,22 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 		objects.add(new ComparableObject(this, "NBT", stack.item.hasTagCompound()? stack.getTagCompound() : new NBTTagCompound()));		
 		return objects;
 
+	}
+
+	@Override
+	public RegistryType getRegistryType() {
+		return RegistryType.TILE; //may want to be something different, may need to be configurable - tile would be the most likely, but not necessarily correct
+	}
+
+	@Override
+	public MonitoredItemStack setRegistryType(RegistryType type) {
+		return this;
+	}
+
+	@Override
+	public void setFromReturn(LogicPath path, Object returned) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

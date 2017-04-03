@@ -2,14 +2,14 @@ package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
 
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.ILogicInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.common.tileentity.TileEntityHammer;
 
-@InfoRegistry(modid = Logistics.MODID)
+@InfoRegistry(modid = PL2.MODID)
 public class LogisticsInfoRegistry extends IInfoRegistry {
 
 	@Override

@@ -23,7 +23,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IInfoRegistry;
@@ -150,7 +150,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 					infoMethods.get(type).get(classType).add(method);
 					used.add(method.getName());
 				} else {
-					Logistics.logger.error(String.format("Failed to load method: %s, Valid Parameters: %s, Valid Returns %s,", method.toString(), validParams, validReturns));
+					PL2.logger.error(String.format("Failed to load method: %s, Valid Parameters: %s, Valid Returns %s,", method.toString(), validParams, validReturns));
 				}
 			}
 		}
@@ -182,7 +182,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 				if (validReturns) {
 					infoFields.get(type).get(classType).add(field);
 				} else {
-					Logistics.logger.error(String.format("Failed to load field: %s, Valid Returns: %s,", field.toString(), validReturns));
+					PL2.logger.error(String.format("Failed to load field: %s, Valid Returns: %s,", field.toString(), validReturns));
 				}
 			}
 
@@ -282,7 +282,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		try {
 			return method.invoke(obj, inputs);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			Logistics.logger.error("COULDN'T INVOKE METHOD! " + method + " on object " + obj);
+			PL2.logger.error("COULDN'T INVOKE METHOD! " + method + " on object " + obj);
 		}
 		return null;
 

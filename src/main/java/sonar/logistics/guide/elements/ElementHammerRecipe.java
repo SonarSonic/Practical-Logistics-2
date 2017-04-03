@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.recipes.ISonarRecipe;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.IGuidePageElement;
@@ -19,7 +19,7 @@ import sonar.logistics.utils.HammerRecipes;
 
 public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements IGuidePageElement {
 
-	public static final ResourceLocation recipeB = new ResourceLocation(Logistics.MODID + ":textures/gui/forging_hammer_guide.png");
+	public static final ResourceLocation recipeB = new ResourceLocation(PL2.MODID + ":textures/gui/forging_hammer_guide.png");
 
 	public ElementHammerRecipe(int page, EntityPlayer player, ItemStack stack, int x, int y) {
 		super(page, player, stack, x, y);

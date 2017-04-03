@@ -1,7 +1,6 @@
 package sonar.logistics.info.types;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -12,11 +11,8 @@ import appeng.api.storage.IMEInventoryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncableList;
-import sonar.logistics.Logistics;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.ISuffixable;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;

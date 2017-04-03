@@ -25,7 +25,7 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.connecting.ILogisticsNetwork;
@@ -78,7 +78,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		for (int i = 0; i < getMaxInfo(); i++) {
 			IMonitorInfo info = getMonitorInfo(i);
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), i);
-			Logistics.getServerManager().changeInfo(id, info);
+			PL2.getServerManager().changeInfo(id, info);
 		}
 	}
 
@@ -126,7 +126,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 
 	public MonitoredList<T> getMonitoredList() {
 		InfoUUID id = new InfoUUID(this.getIdentity().hashCode(), 0);
-		return getNetworkID() == -1 ? MonitoredList.newMonitoredList(getNetworkID()) : Logistics.getClientManager().getMonitoredList(getNetworkID(), id);
+		return getNetworkID() == -1 ? MonitoredList.newMonitoredList(getNetworkID()) : PL2.getClientManager().getMonitoredList(getNetworkID(), id);
 	}
 
 	public int getMaxInfo() {
@@ -182,7 +182,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 
 	public void onLoaded() {
 		super.onLoaded();
-		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 		if (isServer()) {
 			updateAllInfo();
 		}
@@ -190,17 +190,17 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 
 	public void onRemoved() {
 		super.onRemoved();
-		Logistics.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
 	}
 
 	public void onUnloaded() {
 		super.onUnloaded();
-		Logistics.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
 	}
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 		if (isServer()) {
 			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getFacing()) != null);
 		}

@@ -19,7 +19,7 @@ import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
@@ -37,7 +37,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	// public static final ResourceLocation stackBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_stack.png");
 	// public static final ResourceLocation clearBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_clear.png");
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation(Logistics.MODID + ":textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2.MODID + ":textures/gui/sorting_icons.png");
 
 	private InventoryReaderPart part;
 	private SonarTextField slotField;
@@ -116,10 +116,10 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
 				break;
 			case 3:
-				Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 3));
+				PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 3));
 				break;
 			case 4:
-				Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 4));
+				PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 4));
 				break;
 			case 5:
 				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
@@ -129,7 +129,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 				FlexibleGuiHandler.changeGui(part, 2, 0, player.getEntityWorld(), player);
 				break;
 			case 7:
-				Logistics.network.sendToServer(new PacketNodeFilter(part.getIdentity(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketNodeFilter(part.getIdentity(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			}
 		}
@@ -189,9 +189,9 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			button = 2;
 		}
 		if (!empty) {
-			Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), selection.getStoredStack().item, button));
+			PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), selection.getStoredStack().item, button));
 		} else {
-			Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, button));
+			PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, button));
 		}
 		/* if (getSetting() == STACK) { handler.current = selection.item; handler.current.stackSize = 1; Logistics.network.sendToServer(new PacketInventoryReader(tile.xCoord, tile.yCoord, tile.zCoord, handler.current)); } if (getSetting() == POS) { List<StoredItemStack> currentList = (List<StoredItemStack>) ((ArrayList<StoredItemStack>) handler.stacks).clone(); int position = 0; for (StoredItemStack stack : currentList) { if (stack != null) { if (stack.equals(selection)) { String posString = String.valueOf(position); slotField.setText(posString); setPosSlot(posString); } } position++; } } */
 	}

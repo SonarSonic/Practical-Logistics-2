@@ -14,11 +14,11 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 
 @SideOnly(Side.CLIENT)
 public class LogisticsButton extends AnimatedButton {
-	public static final ResourceLocation logisticsButtons = new ResourceLocation(Logistics.MODID + ":textures/gui/filter_buttons.png");
+	public static final ResourceLocation logisticsButtons = new ResourceLocation(PL2.MODID + ":textures/gui/filter_buttons.png");
 	public GuiSonar sonar;
 	public String buttonText;
 	public int texX, texY;

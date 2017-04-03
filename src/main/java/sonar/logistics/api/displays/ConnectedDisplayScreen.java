@@ -25,7 +25,7 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IConnectable;
@@ -77,12 +77,12 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	
 	public void lock(){
 		isLocked.setObject(true);
-		Logistics.getDisplayManager().lockedIDs.add(registryID);
+		PL2.getDisplayManager().lockedIDs.add(registryID);
 	}
 	
 	public void unlock(){
 		isLocked.setObject(false);
-		Logistics.getDisplayManager().lockedIDs.remove(registryID);		
+		PL2.getDisplayManager().lockedIDs.remove(registryID);		
 	}
 
 	public void update(int registryID) {
@@ -91,7 +91,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 		}
 		if (hasChanged || this.registryID != registryID) {
 			this.registryID = registryID;
-			displays = Logistics.getDisplayManager().getConnections(registryID);
+			displays = PL2.getDisplayManager().getConnections(registryID);
 			if (!displays.isEmpty()) {
 				if (!displays.get(0).getCoords().getWorld().isRemote) {
 					setDisplayScaling(displays.get(0), displays);
@@ -105,7 +105,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	public void sendViewers() {
 		ArrayList<EntityPlayer> players = getViewersList().getViewers(false, ViewerType.INFO, ViewerType.FULL_INFO);
 		if (!players.isEmpty()) {
-			players.forEach(player -> Logistics.network.sendTo(new PacketConnectedDisplayScreen(this, registryID), (EntityPlayerMP) player));
+			players.forEach(player -> PL2.network.sendTo(new PacketConnectedDisplayScreen(this, registryID), (EntityPlayerMP) player));
 			sendViewers = false;
 		} else {
 			sendViewers = true;
@@ -246,10 +246,10 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	}
 
 	public ArrayList<ILogicViewable> getLogicMonitors(ArrayList<ILogicViewable> monitors) {
-		displays = Logistics.getDisplayManager().getConnections(registryID);
+		displays = PL2.getDisplayManager().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
 			if (display instanceof ScreenMultipart) {
-				monitors = Logistics.getServerManager().getViewables(monitors, (ScreenMultipart) display);
+				monitors = PL2.getServerManager().getViewables(monitors, (ScreenMultipart) display);
 			}
 		}
 		return monitors;
@@ -266,11 +266,11 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 			display.setShouldRender(true);
 			face.setObject(display.getFace());
 			if (!display.getCoords().getWorld().isRemote)
-				Logistics.getServerManager().addDisplay(display);
+				PL2.getServerManager().addDisplay(display);
 		} else {
 			display.setShouldRender(false);
 			if (!display.getCoords().getWorld().isRemote)
-				Logistics.getServerManager().removeDisplay(display);
+				PL2.getServerManager().removeDisplay(display);
 		}
 
 	}

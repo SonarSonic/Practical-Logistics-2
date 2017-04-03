@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
@@ -358,9 +358,9 @@ public class CableHelper extends CablingWrapper {
 
 	public INetworkCache getNetwork(TileEntity tile, EnumFacing dir) {
 		// watch out for this null :P
-		Pair<ConnectableType, Integer> connection = Logistics.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTION);
+		Pair<ConnectableType, Integer> connection = PL2.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTION);
 		if (connection.a != ConnectableType.NONE && connection.b != -1) {
-			INetworkCache cache = Logistics.instance.networkManager.getNetwork(connection.b);
+			INetworkCache cache = PL2.instance.networkManager.getNetwork(connection.b);
 			if (cache != null) {
 				return cache;
 			}
@@ -369,11 +369,11 @@ public class CableHelper extends CablingWrapper {
 	}
 
 	public INetworkCache getNetwork(int registryID) {
-		return Logistics.instance.networkManager.getNetwork(registryID);
+		return PL2.instance.networkManager.getNetwork(registryID);
 	}
 
 	public static ILogicViewable getMonitorFromHashCode(int hashCode, boolean isRemote) {
-		for (ILogicViewable monitor : ((LinkedHashMap<UUID, ILogicViewable>) Logistics.getInfoManager(isRemote).getMonitors().clone()).values()) {
+		for (ILogicViewable monitor : ((LinkedHashMap<UUID, ILogicViewable>) PL2.getInfoManager(isRemote).getMonitors().clone()).values()) {
 			if (monitor.getIdentity() != null && monitor.getIdentity().hashCode() == hashCode) {
 				return monitor;
 			}

@@ -18,7 +18,7 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
 import sonar.logistics.client.LogisticsButton;
@@ -30,8 +30,8 @@ import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
-	public static final ResourceLocation stackBGround = new ResourceLocation(Logistics.MODID + ":textures/gui/inventoryReader_stack.png");
-	public static final ResourceLocation clearBGround = new ResourceLocation(Logistics.MODID + ":textures/gui/inventoryReader_clear.png");
+	public static final ResourceLocation stackBGround = new ResourceLocation(PL2.MODID + ":textures/gui/inventoryReader_stack.png");
+	public static final ResourceLocation clearBGround = new ResourceLocation(PL2.MODID + ":textures/gui/inventoryReader_clear.png");
 
 	public FluidReaderPart part;
 	private SonarTextField slotField;

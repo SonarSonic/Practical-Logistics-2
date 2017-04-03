@@ -12,11 +12,11 @@ import sonar.core.helpers.ItemStackHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.nodes.TransferType;
 
-@NodeFilter(id = ItemFilter.id, modid = Logistics.MODID)
+@NodeFilter(id = ItemFilter.id, modid = PL2.MODID)
 public class ItemFilter extends BaseFilter implements IItemFilter {
 
 	public static final String id = "item";

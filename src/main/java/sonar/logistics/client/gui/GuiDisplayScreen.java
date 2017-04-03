@@ -9,7 +9,8 @@ import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.displays.DisplayConstants;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -209,7 +210,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			textFields.drawTextBox();
 			break;
 		case LIST:
-			FontHelper.textCentre(FontHelper.translate("item.DisplayScreen.name"), xSize, 6, LogisticsColours.white_text.getRGB());
+			FontHelper.textCentre(PL2Translate.DISPLAY_SCREEN.t(), xSize, 6, LogisticsColours.white_text.getRGB());
 			RenderHelper.saveBlendState();
 			for (int i = 0; i < part.maxInfo(); i++) {
 				drawInfo(i, i < size ? part.container().getDisplayInfo(i) : null);
@@ -321,7 +322,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			IMonitorInfo monitorInfo = Logistics.getClientManager().info.get((InfoUUID) info);
+			IMonitorInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
@@ -349,7 +350,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	public void setInfo() {
-		infoList = (ArrayList<Object>) Logistics.getClientManager().sortedLogicMonitors.getOrDefault(part.getIdentity(), new ArrayList()).clone();
+		infoList = (ArrayList<Object>) PL2.getClientManager().sortedLogicMonitors.getOrDefault(part.getIdentity(), new ArrayList()).clone();
 	}
 
 }

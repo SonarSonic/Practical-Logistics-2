@@ -10,7 +10,7 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUnidentifiedObject;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -45,7 +45,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 
 	public EmitterStatement(ILogicComparator<T> comparator) {
 		this.comparator = comparator;
-		this.comparatorID.setObject(Logistics.comparatorRegistry.getObjectID(comparator.getName()));
+		this.comparatorID.setObject(PL2.comparatorRegistry.getObjectID(comparator.getName()));
 		this.operator.setObject(comparator.getValidOperators().get(0));
 		this.hashCode.setObject(UUID.randomUUID().hashCode());
 	}
@@ -63,7 +63,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 
 	public ILogicComparator<T> getComparator() {
 		if (comparator == null) {
-			comparator = Logistics.comparatorRegistry.getRegisteredObject(comparatorID.getObject());
+			comparator = PL2.comparatorRegistry.getRegisteredObject(comparatorID.getObject());
 		}
 		return comparator;
 	}

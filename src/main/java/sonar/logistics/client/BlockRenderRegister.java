@@ -14,13 +14,13 @@ import sonar.core.client.renderers.ISonarRendererProvider;
 import sonar.core.client.renderers.SonarCustomStateMapper;
 import sonar.core.common.block.properties.IMetaRenderer;
 import sonar.core.registries.ISonarRegistryBlock;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsBlocks;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Blocks;
 
 public class BlockRenderRegister {
 
 	public static void register() {
-		for (ISonarRegistryBlock block : LogisticsBlocks.registeredBlocks) {
+		for (ISonarRegistryBlock block : PL2Blocks.registeredBlocks) {
 			if (block.getBlock() instanceof ISonarRendererProvider) {
 				ISonarCustomRenderer renderer = ((ISonarRendererProvider) block.getBlock()).getRenderer();
 				registerSpecial(renderer);
@@ -32,14 +32,14 @@ public class BlockRenderRegister {
 				}
 				if (item != null && item.getHasSubtypes()) {
 					List<ItemStack> stacks = new ArrayList();
-					item.getSubItems(item, Logistics.creativeTab, stacks);
+					item.getSubItems(item, PL2.creativeTab, stacks);
 					for (ItemStack stack : stacks) {
 						String variant = "variant=meta" + stack.getItemDamage();
 						if (block instanceof IMetaRenderer) {
 							IMetaRenderer meta = (IMetaRenderer) block;
 							variant = "variant=" + meta.getVariant(stack.getItemDamage()).getName();
 						}
-						ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(Logistics.MODID + ":" + item.getUnlocalizedName().substring(5), variant));
+						ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(PL2.MODID + ":" + item.getUnlocalizedName().substring(5), variant));
 					}
 				} else {
 					registerBlock(block.getBlock());
@@ -55,7 +55,7 @@ public class BlockRenderRegister {
 				SonarCore.logger.error("Enable to register renderer for " + block);
 				return;
 			}
-			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Logistics.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PL2.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 		}
 	}
 

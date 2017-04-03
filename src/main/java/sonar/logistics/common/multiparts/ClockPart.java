@@ -26,8 +26,8 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -123,9 +123,9 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
-			IMonitorInfo oldInfo = Logistics.getServerManager().info.get(id);
+			IMonitorInfo oldInfo = PL2.getServerManager().info.get(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
-				Logistics.getServerManager().changeInfo(id, info);
+				PL2.getServerManager().changeInfo(id, info);
 			}
 		}
 	}
@@ -134,7 +134,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	@Override
 	public IMonitorInfo getMonitorInfo(int pos) {
-		return Logistics.getServerManager().getInfoFromUUID(new InfoUUID(getIdentity().hashCode(), 0));
+		return PL2.getServerManager().getInfoFromUUID(new InfoUUID(getIdentity().hashCode(), 0));
 	}
 
 	public UUID getIdentity() {
@@ -176,7 +176,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public void onLoaded() {
 		super.onLoaded();
-		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 		if (isServer()) {
 			setClockInfo();
 		}
@@ -184,17 +184,17 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public void onRemoved() {
 		super.onRemoved();
-		Logistics.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
 	}
 
 	public void onUnloaded() {
 		super.onUnloaded();
-		Logistics.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
 	}
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 	}
 
 	//// SAVING \\\\
@@ -304,7 +304,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partClock);
+		return new ItemStack(PL2Items.clock);
 	}
 
 	@Override

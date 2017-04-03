@@ -33,8 +33,8 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.connecting.INetworkCache;
@@ -173,7 +173,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	@Override
 	public ConnectedDisplayScreen getDisplayScreen() {
-		return overrideDisplay != null ? overrideDisplay : Logistics.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
+		return overrideDisplay != null ? overrideDisplay : PL2.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
 	}
 
 	@Override
@@ -183,7 +183,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 				connectedDisplay.readData(savedTag, SyncType.SAVE);
 				savedTag = null;
 				connectedDisplay.sendViewers();
-				Logistics.getServerManager().updateViewingMonitors = true;
+				PL2.getServerManager().updateViewingMonitors = true;
 			}
 		}
 	}
@@ -200,7 +200,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		}
 		onRenderChange = true;
 		if (isServer()) {
-			Logistics.getServerManager().updateViewingMonitors = true;
+			PL2.getServerManager().updateViewingMonitors = true;
 		}
 		this.markDirty();
 	}
@@ -235,13 +235,13 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	public void addToNetwork() {
 		if (isServer()) {
-			Logistics.getDisplayManager().addConnection(this);
+			PL2.getDisplayManager().addConnection(this);
 		}
 	}
 
 	public void removeFromNetwork() {
 		if (isServer()) {
-			Logistics.getDisplayManager().removeConnection(this.getRegistryID(), this);
+			PL2.getDisplayManager().removeConnection(this.getRegistryID(), this);
 		}
 	}
 
@@ -409,7 +409,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		super.onSyncPacketRequested(player);
 		ConnectedDisplayScreen screen = this.getDisplayScreen();
 		if (screen != null)
-			Logistics.network.sendTo(new PacketConnectedDisplayScreen(screen, registryID), (EntityPlayerMP) player);
+			PL2.network.sendTo(new PacketConnectedDisplayScreen(screen, registryID), (EntityPlayerMP) player);
 	}
 
 	@Override
@@ -455,14 +455,14 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		case 0:
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			Logistics.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
-			Logistics.getServerManager().sendViewablesToClientFromScreen(part, player);
+			PL2.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
+			PL2.getServerManager().sendViewablesToClientFromScreen(part, player);
 			break;
 		}
 	}
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.largeDisplayScreen);
+		return new ItemStack(PL2Items.large_display_screen);
 	}
 }

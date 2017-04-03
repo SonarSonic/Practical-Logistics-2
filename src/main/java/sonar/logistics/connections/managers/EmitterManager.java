@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.network.PacketClientEmitters;
@@ -25,7 +25,7 @@ public class EmitterManager {
 	}
 
 	public static void emitterChanged(IDataEmitter emitter) {
-		Logistics.getNetworkManager().updateEmitters = true;
+		PL2.getNetworkManager().updateEmitters = true;
 		dirty = true;
 	}
 
@@ -86,7 +86,7 @@ public class EmitterManager {
 		for (IDataEmitter emitter : EmitterManager.emitters) {
 			clientEmitters.add(new ClientDataEmitter(emitter));
 		}
-		Logistics.network.sendTo(new PacketClientEmitters(clientEmitters), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketClientEmitters(clientEmitters), (EntityPlayerMP) player);
 	}
 
 }

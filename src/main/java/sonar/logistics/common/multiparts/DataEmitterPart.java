@@ -25,8 +25,8 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.STRING;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -130,18 +130,18 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	@Override
 	public MonitoredList<MonitoredItemStack> getServerItems() {
-		return Logistics.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity().hashCode(), STATIC_ITEM_ID));
+		return PL2.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity().hashCode(), STATIC_ITEM_ID));
 	}
 
 	@Override
 	public MonitoredList<MonitoredFluidStack> getServerFluids() {
-		return Logistics.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity().hashCode(), STATIC_FLUID_ID));
+		return PL2.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity().hashCode(), STATIC_FLUID_ID));
 	}
 	//// EVENTS \\\\
 
 	public void onLoaded() {
 		super.onLoaded();
-		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 		if (isServer()) {
 			EmitterManager.addEmitter(this);
 		}
@@ -149,7 +149,7 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	public void onRemoved() {
 		super.onRemoved();
-		Logistics.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
 		if (isServer()) {
 			EmitterManager.removeEmitter(this);
 		}
@@ -157,7 +157,7 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	public void onUnloaded() {
 		super.onUnloaded();
-		Logistics.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
 		if (isServer()) {
 			EmitterManager.removeEmitter(this);
 		}
@@ -165,7 +165,7 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		Logistics.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
 		if (isServer()) {
 			sendByteBufPacket(playerUUID.id);
 			EmitterManager.addEmitter(this);
@@ -227,7 +227,7 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partEmitter);
+		return new ItemStack(PL2Items.data_emitter);
 	}
 
 	@Override

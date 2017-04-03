@@ -25,7 +25,7 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.connecting.IInfoManager;
 import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.connecting.INetworkCache;
@@ -174,7 +174,7 @@ public class ServerInfoManager implements IInfoManager {
 			if (!packetList.hasNoTags()) {
 				NBTTagCompound packetTag = new NBTTagCompound();
 				packetTag.setTag("infoList", packetList);
-				Logistics.network.sendTo(new PacketInfoList(packetTag, SyncType.SAVE), (EntityPlayerMP) player);
+				PL2.network.sendTo(new PacketInfoList(packetTag, SyncType.SAVE), (EntityPlayerMP) player);
 			}
 		}
 	}
@@ -342,7 +342,7 @@ public class ServerInfoManager implements IInfoManager {
 	public void sendPlayerPacket(EntityPlayer player, NBTTagList list, SyncType type) {
 		NBTTagCompound packetTag = new NBTTagCompound();
 		packetTag.setTag("infoList", list);
-		Logistics.network.sendTo(new PacketInfoList(packetTag, type), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketInfoList(packetTag, type), (EntityPlayerMP) player);
 	}
 
 	public void changeInfo(InfoUUID id, IMonitorInfo newInfo) {
@@ -384,7 +384,7 @@ public class ServerInfoManager implements IInfoManager {
 			viewable.getViewersList().addViewer(player, ViewerType.TEMPORARY);
 			clientMonitors.add(new ClientViewable(viewable));
 		});
-		Logistics.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
 	}
 
 	public void sendViewablesToClient(LogisticsMultipart part, UUID identity, EntityPlayer player) {
@@ -394,7 +394,7 @@ public class ServerInfoManager implements IInfoManager {
 			viewable.getViewersList().addViewer(player, ViewerType.TEMPORARY);
 			clientMonitors.add(new ClientViewable(viewable));
 		});
-		Logistics.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
 	}
 
 	public class StoredChunkPos extends ChunkPos {

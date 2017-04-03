@@ -17,8 +17,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import sonar.core.utils.IGuiTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsBlocks;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Blocks;
 
 public class BlockHammerAir extends Block {
 	
@@ -28,11 +28,11 @@ public class BlockHammerAir extends Block {
 
 	@Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ){
-		if (world.getBlockState(pos.offset(EnumFacing.DOWN)).getBlock() == LogisticsBlocks.hammer) {
-			player.openGui(Logistics.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 1, pos.getZ());
+		if (world.getBlockState(pos.offset(EnumFacing.DOWN)).getBlock() == PL2Blocks.hammer) {
+			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 1, pos.getZ());
 			return true;
-		} else if (world.getBlockState(pos.offset(EnumFacing.DOWN, 2)).getBlock() == LogisticsBlocks.hammer) {
-			player.openGui(Logistics.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 2, pos.getZ());
+		} else if (world.getBlockState(pos.offset(EnumFacing.DOWN, 2)).getBlock() == PL2Blocks.hammer) {
+			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 2, pos.getZ());
 			return true;
 		}
 		return false;
@@ -45,12 +45,12 @@ public class BlockHammerAir extends Block {
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		world.setBlockToAir(pos);
 		IBlockState hammerState;
-		if ((hammerState = world.getBlockState(pos.offset(EnumFacing.DOWN))).getBlock() == LogisticsBlocks.hammer) {
+		if ((hammerState = world.getBlockState(pos.offset(EnumFacing.DOWN))).getBlock() == PL2Blocks.hammer) {
 			TileEntity i = world.getTileEntity(pos.offset(EnumFacing.DOWN));
 			Block bi = hammerState.getBlock();
 			bi.dropBlockAsItem(world, pos.offset(EnumFacing.DOWN), hammerState, 0);
 			world.setBlockToAir(pos.offset(EnumFacing.DOWN));
-		} else if ((hammerState = world.getBlockState(pos.offset(EnumFacing.DOWN, 2))).getBlock() == LogisticsBlocks.hammer) {
+		} else if ((hammerState = world.getBlockState(pos.offset(EnumFacing.DOWN, 2))).getBlock() == PL2Blocks.hammer) {
 			TileEntity i = world.getTileEntity(pos.offset(EnumFacing.DOWN, 2));
 			Block bi = hammerState.getBlock();
 			bi.dropBlockAsItem(world, pos.offset(EnumFacing.DOWN, 2), hammerState, 0);
@@ -88,6 +88,6 @@ public class BlockHammerAir extends Block {
 	}
 	
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player){
-		return new ItemStack(LogisticsBlocks.hammer, 1, 0);
+		return new ItemStack(PL2Blocks.hammer, 1, 0);
     }
 }

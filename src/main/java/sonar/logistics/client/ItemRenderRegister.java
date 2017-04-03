@@ -11,16 +11,16 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import sonar.core.common.block.properties.IMetaRenderer;
 import sonar.core.registries.ISonarRegistryItem;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 
 public class ItemRenderRegister {
 	public static void register() {
-		for (ISonarRegistryItem register : LogisticsItems.registeredItems) {
+		for (ISonarRegistryItem register : PL2Items.registeredItems) {
 			Item item = register.getItem();
 			if (item.getHasSubtypes()) {
 				List<ItemStack> stacks = new ArrayList();
-				item.getSubItems(item, Logistics.creativeTab, stacks);
+				item.getSubItems(item, PL2.creativeTab, stacks);
 				for (ItemStack stack : stacks) {
 					String variant = "variant=meta" + stack.getItemDamage();
 					if (item instanceof IMetaRenderer) {
@@ -28,15 +28,15 @@ public class ItemRenderRegister {
 						variant = "variant=" + meta.getVariant(stack.getItemDamage()).getName();
 					}
 
-					ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(Logistics.MODID + ":" + "items/" + register.getRegistryName().substring(5), variant));
+					ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(PL2.MODID + ":" + "items/" + register.getRegistryName().substring(5), variant));
 
 				}
 			} else {
 				if (item instanceof ItemMultiPart) {
-					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Logistics.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PL2.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 				} else {
 					//Logistics.logger.info(new ModelResourceLocation(new ResourceLocation(Logistics.MODID, "items/" + item.getUnlocalizedName().substring(5)), "inventory").toString());
-					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(new ResourceLocation(Logistics.MODID, item.getUnlocalizedName().substring(5)), "inventory"));
+					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(new ResourceLocation(PL2.MODID, item.getUnlocalizedName().substring(5)), "inventory"));
 				}
 			}
 		}

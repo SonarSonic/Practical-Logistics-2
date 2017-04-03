@@ -12,7 +12,8 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.core.network.utils.ByteBufWritable;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.readers.IWirelessStorageReader;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.client.LogisticsColours;
@@ -38,7 +39,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(FontHelper.translate("Wireless Storage Reader"), xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre(PL2Translate.WIRELESS_STORAGE_READER.t(), xSize, 6, LogisticsColours.white_text);
 		FontHelper.textCentre(String.format("Select the emitter you wish to connect to"), xSize, 18, LogisticsColours.grey_text);
 	}
 
@@ -47,7 +48,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 			RenderBlockSelection.addPosition(info.coords.getCoords(), false);
 		} else {
 			final UUID usedUUID = info.uuid.getUUID();
-			Logistics.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 1, new ByteBufWritable(false) {
+			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 1, new ByteBufWritable(false) {
 
 				@Override
 				public void writeToBuf(ByteBuf buf) {
@@ -60,7 +61,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	}
 
 	public void setInfo() {
-		infoList = (ArrayList<ClientDataEmitter>) Logistics.getClientManager().clientEmitters.clone();
+		infoList = (ArrayList<ClientDataEmitter>) PL2.getClientManager().clientEmitters.clone();
 	}
 
 	@Override

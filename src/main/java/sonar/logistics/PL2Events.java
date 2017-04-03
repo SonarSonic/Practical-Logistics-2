@@ -14,7 +14,7 @@ import sonar.logistics.common.multiparts.ArrayPart;
 import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.connections.managers.LockedDisplayData;
 
-public class LogisticsEvents {
+public class PL2Events {
 
 	public static final int saveDimension = 0;
 
@@ -24,11 +24,11 @@ public class LogisticsEvents {
 			return;
 		}
 		if (event.phase == Phase.END) {
-			Logistics.getNetworkManager().tick();
-			Logistics.getServerManager().onServerTick();
-			Logistics.getNetworkManager().updateEmitters = false;
+			PL2.getNetworkManager().tick();
+			PL2.getServerManager().onServerTick();
+			PL2.getNetworkManager().updateEmitters = false;
 			EmitterManager.tick(); // this must happen at the end, since the dirty boolean will be changed and will upset tiles
-			Logistics.getDisplayManager().tick();
+			PL2.getDisplayManager().tick();
 			ArrayPart.entityChanged=false;
 		}
 	}
@@ -50,27 +50,27 @@ public class LogisticsEvents {
 		if (event.getWorld().provider.getDimension() == saveDimension) {
 			MapStorage storage = event.getWorld().getPerWorldStorage();
 			LockedDisplayData data = (LockedDisplayData) storage.getOrLoadData(LockedDisplayData.class, LockedDisplayData.tag);
-			if (data == null && !Logistics.getDisplayManager().lockedIDs.isEmpty()) {
+			if (data == null && !PL2.getDisplayManager().lockedIDs.isEmpty()) {
 				storage.setData(LockedDisplayData.tag, new LockedDisplayData(LockedDisplayData.tag));
 			}
 		}
 	}
 	@SubscribeEvent
 	public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-		Logistics.getServerManager().sendFullPacket(event.player);
-		Logistics.getServerManager().requireUpdates.add((EntityPlayer) event.player);
+		PL2.getServerManager().sendFullPacket(event.player);
+		PL2.getServerManager().requireUpdates.add((EntityPlayer) event.player);
 	}
 
 	@SubscribeEvent
 	public void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-		Logistics.getServerManager().sendFullPacket(event.player);
-		Logistics.getServerManager().requireUpdates.add((EntityPlayer) event.player);
+		PL2.getServerManager().sendFullPacket(event.player);
+		PL2.getServerManager().requireUpdates.add((EntityPlayer) event.player);
 	}
 
 	@SubscribeEvent
 	public void onLoggedIn(EntityEvent.EnteringChunk event) {
 		if (event.getEntity() != null && !event.getEntity().getEntityWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
-			Logistics.getServerManager().requireUpdates.add((EntityPlayer) event.getEntity());
+			PL2.getServerManager().requireUpdates.add((EntityPlayer) event.getEntity());
 		}
 	}
 

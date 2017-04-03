@@ -27,8 +27,8 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.logistics.EmitterStatement;
@@ -87,7 +87,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 			if (!infoList.containsKey(id)) {
 				ILogicViewable monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
 				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
-					IMonitorInfo monitorInfo = Logistics.getServerManager().getInfoFromUUID(id);
+					IMonitorInfo monitorInfo = PL2.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
 						infoList.put(id, monitorInfo);
 				}
@@ -207,7 +207,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
-		Logistics.getServerManager().sendViewablesToClient(this, getIdentity(), player);
+		PL2.getServerManager().sendViewablesToClient(this, getIdentity(), player);
 	}
 	
 	@Override
@@ -254,7 +254,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			Logistics.getServerManager().sendViewablesToClient(this, getIdentity(), player);
+			PL2.getServerManager().sendViewablesToClient(this, getIdentity(), player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
@@ -280,6 +280,6 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partRedstoneSignaller);
+		return new ItemStack(PL2Items.redstone_signaller);
 	}
 }

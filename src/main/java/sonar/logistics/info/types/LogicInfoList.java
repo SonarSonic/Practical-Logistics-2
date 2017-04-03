@@ -25,7 +25,7 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
@@ -34,7 +34,6 @@ import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
@@ -45,7 +44,7 @@ import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
-@LogicInfoType(id = LogicInfoList.id, modid = Logistics.MODID)
+@LogicInfoType(id = LogicInfoList.id, modid = PL2.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList>, IAdvancedClickableInfo {
 
 	public static final String id = "logiclist";
@@ -55,7 +54,6 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public int pageCount = 0;
 	public int xSlots, ySlots, perPage;
 	
-
 	{
 		syncList.addParts(monitorUUID, infoID, networkID);
 	}
@@ -105,7 +103,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	public MonitoredList<?> getCachedList(InfoUUID id) {
-		return Logistics.getClientManager().getMonitoredList(networkID.getObject(), id);
+		return PL2.getClientManager().getMonitoredList(networkID.getObject(), id);
 	}
 
 	@Override

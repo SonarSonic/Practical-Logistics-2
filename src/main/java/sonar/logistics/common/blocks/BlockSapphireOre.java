@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import sonar.core.SonarCore;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 
 public class BlockSapphireOre extends BlockOre {
 
@@ -17,7 +17,7 @@ public class BlockSapphireOre extends BlockOre {
 	}
 
 	public Item getItemDropped(int meta, Random rand, int fortune) {
-		return LogisticsItems.sapphire;
+		return PL2Items.sapphire;
 	}
 
 	public int quantityDropped(Random rand) {

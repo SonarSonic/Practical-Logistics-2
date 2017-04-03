@@ -11,14 +11,14 @@ import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.fml.common.IWorldGenerator;
-import sonar.logistics.LogisticsBlocks;
+import sonar.logistics.PL2Blocks;
 
 public class SapphireOreGen implements IWorldGenerator {
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
 		if (world.provider.getDimension() == 0) {
-			generateOre(LogisticsBlocks.sapphire_ore.getDefaultState(), world, random, chunkX, chunkZ, 2, 8, 15, 1, 30, Blocks.STONE);
+			generateOre(PL2Blocks.sapphire_ore.getDefaultState(), world, random, chunkX, chunkZ, 2, 8, 15, 1, 30, Blocks.STONE);
 		}
 	}
 

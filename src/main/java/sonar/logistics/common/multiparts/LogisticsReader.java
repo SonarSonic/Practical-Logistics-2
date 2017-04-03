@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.EnumFacing;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -87,7 +87,7 @@ public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderM
 		for (int i = 0; i < this.getMaxInfo(); i++) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), i);
 			IProvidableInfo selectedInfo = cachedSelected.get(i);
-			IMonitorInfo lastInfo = Logistics.getServerManager().info.get(id);
+			IMonitorInfo lastInfo = PL2.getServerManager().info.get(id);
 			if (selectedInfo != null) {
 				IMonitorInfo latestInfo = selectedInfo;
 				Pair<Boolean, IProvidableInfo> newInfo = LogicInfoRegistry.INSTANCE.getLatestInfo(updateInfo, usedChannels, latestInfo);
@@ -113,10 +113,10 @@ public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderM
 				} else if (!isPair) {
 					latestInfo = newInfo.b; // FIXME: why was this commented out then?
 				}
-				Logistics.getServerManager().changeInfo(id, latestInfo);
+				PL2.getServerManager().changeInfo(id, latestInfo);
 			} else if (lastInfo != null) {
 				// set to empty info type
-				Logistics.getServerManager().changeInfo(id, null);
+				PL2.getServerManager().changeInfo(id, null);
 			}
 		}
 	}

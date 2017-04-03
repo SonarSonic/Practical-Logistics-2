@@ -26,7 +26,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
@@ -113,8 +113,8 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		} else if (world.isRemote) {
 			OperatorMode mode = getOperatorMode(stack);
 			if (mode == OperatorMode.INFO) {
-				boolean isUsing = !Logistics.proxy.isUsingOperator();
-				Logistics.proxy.setUsingOperator(isUsing);
+				boolean isUsing = !PL2.proxy.isUsingOperator();
+				PL2.proxy.setUsingOperator(isUsing);
 				player.addChatComponentMessage(new TextComponentTranslation("Display Info: " + TextFormatting.AQUA + isUsing));
 			}
 		}

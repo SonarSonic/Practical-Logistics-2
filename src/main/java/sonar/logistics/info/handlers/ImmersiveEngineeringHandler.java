@@ -28,16 +28,14 @@ public class ImmersiveEngineeringHandler implements ICustomTileHandler {
 
 	@Override
 	public void addInfo(ILogicInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, Block block, TileEntity tile) {
-		if (tile instanceof IProcessTile) {
-			IProcessTile process = (IProcessTile) tile;
-			int[] steps = process.getCurrentProcessesStep();
-			int[] maxs = process.getCurrentProcessesMax();
-			for (int i = 0; i < steps.length; i++) {
-				int step = steps[i];
-				int max = maxs[i];
-				infoList.add(LogicInfo.buildDirectInfo(ClientNameConstants.CURRENT_PROCESS_TIME, i, RegistryType.TILE, step).setPath(currentPath.dupe()));
-				infoList.add(LogicInfo.buildDirectInfo(ClientNameConstants.PROCESS_TIME, i, RegistryType.TILE, max).setPath(currentPath.dupe()));
-			}
+		IProcessTile process = (IProcessTile) tile;
+		int[] steps = process.getCurrentProcessesStep();
+		int[] maxs = process.getCurrentProcessesMax();
+		for (int i = 0; i < steps.length; i++) {
+			int step = steps[i];
+			int max = maxs[i];
+			infoList.add(LogicInfo.buildDirectInfo(ClientNameConstants.CURRENT_PROCESS_TIME, i, RegistryType.TILE, step).setPath(currentPath.dupe()));
+			infoList.add(LogicInfo.buildDirectInfo(ClientNameConstants.PROCESS_TIME, i, RegistryType.TILE, max).setPath(currentPath.dupe()));
 		}
 	}
 

@@ -22,7 +22,7 @@ import sonar.core.network.sync.DirtyPart;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncableList;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -146,8 +146,8 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 					IAdvancedClickableInfo clickable = ((IAdvancedClickableInfo) cachedInfo);
 					int hashCode = UUID.randomUUID().hashCode();
 					ScreenInteractionEvent event = new ScreenInteractionEvent(hashCode, cachedInfo, i, player, type, doubleClick, hand, hit);
-					Logistics.getServerManager().clickEvents.put(hashCode, event);
-					Logistics.network.sendTo(new PacketClickEventClient(part.getUUID(), part.getPos(), event), (EntityPlayerMP) player);
+					PL2.getServerManager().clickEvents.put(hashCode, event);
+					PL2.network.sendTo(new PacketClickEventClient(part.getUUID(), part.getPos(), event), (EntityPlayerMP) player);
 				}
 			} else if (cachedInfo instanceof IBasicClickableInfo) {
 				IBasicClickableInfo clickable = ((IBasicClickableInfo) cachedInfo);

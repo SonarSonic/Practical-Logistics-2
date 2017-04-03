@@ -5,7 +5,7 @@ import java.io.File;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class LogisticsConfig extends Logistics {
+public class PL2Config extends PL2 {
 
 	public static boolean displayMana;
 	public static int updateRate;

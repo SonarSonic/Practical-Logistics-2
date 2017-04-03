@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 
 public class PacketClientEmitters implements IMessage {
@@ -56,7 +56,7 @@ public class PacketClientEmitters implements IMessage {
 		public IMessage onMessage(PacketClientEmitters message, MessageContext ctx) {
 			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 				public void run() {
-					Logistics.getClientManager().clientEmitters = message.emitters;
+					PL2.getClientManager().clientEmitters = message.emitters;
 				}
 			});
 			return null;

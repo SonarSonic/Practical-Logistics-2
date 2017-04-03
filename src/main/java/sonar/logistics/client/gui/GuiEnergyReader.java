@@ -11,6 +11,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.utils.CustomColour;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.readers.EnergyReader.Modes;
 import sonar.logistics.client.LogisticsButton;
@@ -78,7 +79,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(FontHelper.translate("item.EnergyReader.name"), xSize, 10, LogisticsColours.white_text);
+		FontHelper.textCentre(PL2Translate.ENERGY_READER.t(), xSize, 10, LogisticsColours.white_text);
 	}
 
 	public double listScale() {

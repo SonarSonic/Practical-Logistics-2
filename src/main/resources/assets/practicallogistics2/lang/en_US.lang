@@ -262,17 +262,24 @@ pl.TileGrinder.requiredTurns=Required Turns
 pl.TileGrinder.points=Current Turns
 
 //flux
+pl.IFlux.getCustomName=Connection Name
 pl.IFlux.getTransferLimit=Base Transfer Limit
 pl.IFlux.getCurrentTransferLimit=Current Transfer Limit
 pl.IFluxCommon.getNetworkName=Network Name
 pl.IFluxCommon.getNetworkID=Network ID
 pl.IFluxCommon.getEnergyAvailable=Network Energy Stored
 pl.IFluxCommon.getMaxEnergyStored=Network Energy Max
+pl.IFluxCommon.getCachedPlayerName=Network Owner
 pl.AccessType.name=Access Type
 pl.EnergyStats.transfer=Current Transfer
 pl.EnergyStats.maxSent=Max Send
 pl.EnergyStats.maxReceived=Max Received
 
+//IC2
+
+pl.IReactor.getHeat=Current Heat
+pl.IReactor.getMaxHeat=Max Heat
+pl.IReactor.getReactorEUEnergyOutput=Energy Output
 
 
 

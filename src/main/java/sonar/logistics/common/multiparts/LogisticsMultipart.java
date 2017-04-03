@@ -15,7 +15,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
@@ -47,10 +47,10 @@ public abstract class LogisticsMultipart extends SonarMultipart implements ILogi
 		if (isClient() || network.isFakeNetwork() || getNetworkID() == -1) {
 			return;
 		}
-		MonitoredList<IMonitorInfo> coords = Logistics.getNetworkManager().getCoordMap().get(getNetworkID());
+		MonitoredList<IMonitorInfo> coords = PL2.getNetworkManager().getCoordMap().get(getNetworkID());
 		NBTTagCompound coordTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC);
 		if (!coordTag.hasNoTags()) {
-			Logistics.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) player);
+			PL2.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) player);
 		}
 	}
 	

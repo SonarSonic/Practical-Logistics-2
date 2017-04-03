@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
@@ -35,19 +35,19 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 
 	@Override
 	public void onNetworksConnected(int newID, int oldID) {
-		ConnectedDisplayScreen screen = Logistics.getServerManager().getConnectedDisplays().get(newID);
-		Logistics.getServerManager().getConnectedDisplays().remove(oldID);
+		ConnectedDisplayScreen screen = PL2.getServerManager().getConnectedDisplays().get(newID);
+		PL2.getServerManager().getConnectedDisplays().remove(oldID);
 		if (screen != null) {
 			screen.setHasChanged();
 		} else
-			Logistics.logger.error("CONNECTED DISPLAY SCREEN SHOULD NOT BE NULL!");
+			PL2.logger.error("CONNECTED DISPLAY SCREEN SHOULD NOT BE NULL!");
 	}
 
 	@Override
 	public void onConnectionAdded(int registryID, ILargeDisplay added) {
-		ConnectedDisplayScreen screen = Logistics.getServerManager().getConnectedDisplays().get(registryID);
+		ConnectedDisplayScreen screen = PL2.getServerManager().getConnectedDisplays().get(registryID);
 		if (screen == null) {
-			Logistics.getServerManager().getConnectedDisplays().put(registryID, screen = new ConnectedDisplayScreen(added));
+			PL2.getServerManager().getConnectedDisplays().put(registryID, screen = new ConnectedDisplayScreen(added));
 		}
 		screen.setHasChanged();
 	}
@@ -68,16 +68,16 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	}
 
 	public void tick() {
-		Logistics.getServerManager().getConnectedDisplays().entrySet().forEach(entry -> entry.getValue().update(entry.getKey()));
+		PL2.getServerManager().getConnectedDisplays().entrySet().forEach(entry -> entry.getValue().update(entry.getKey()));
 	}
 
 	@Override
 	public void onConnectionRemoved(int registryID, ILargeDisplay added) {
-		Logistics.getServerManager().removeDisplay(added);
+		PL2.getServerManager().removeDisplay(added);
 		if (this.getConnections(registryID).isEmpty()) {
-			Logistics.getServerManager().getConnectedDisplays().remove(registryID);
+			PL2.getServerManager().getConnectedDisplays().remove(registryID);
 		} else {
-			ConnectedDisplayScreen screen = Logistics.getServerManager().getConnectedDisplays().get(registryID);
+			ConnectedDisplayScreen screen = PL2.getServerManager().getConnectedDisplays().get(registryID);
 			screen.setHasChanged();
 		}
 

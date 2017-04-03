@@ -20,8 +20,8 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsASMLoader;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.displays.DisplayType;
@@ -46,7 +46,7 @@ public class InfoHelper {
 	public static void screenItemStackClicked(StoredItemStack itemstack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
 		if (toRemove.a != 0 && networkID != -1) {
-			INetworkCache cache = Logistics.instance.networkManager.getNetwork(networkID);
+			INetworkCache cache = PL2.instance.networkManager.getNetwork(networkID);
 			switch (toRemove.b) {
 			case ADD:
 				if (stack != null) {
@@ -78,7 +78,7 @@ public class InfoHelper {
 
 	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
 		if (networkID != -1) {
-			INetworkCache cache = Logistics.instance.networkManager.getNetwork(networkID);
+			INetworkCache cache = PL2.instance.networkManager.getNetwork(networkID);
 			if (type == BlockInteractionType.RIGHT) {
 				LogisticsAPI.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
 			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
@@ -306,15 +306,15 @@ public class InfoHelper {
 	}
 
 	public static int getName(String name) {
-		return LogisticsASMLoader.infoIds.get(name);
+		return PL2ASMLoader.infoIds.get(name);
 	}
 
 	public static Class<? extends IMonitorInfo> getInfoType(int id) {
-		return LogisticsASMLoader.infoClasses.get(LogisticsASMLoader.infoNames.get(id));
+		return PL2ASMLoader.infoClasses.get(PL2ASMLoader.infoNames.get(id));
 	}
 
 	public static NBTTagCompound writeInfoToNBT(NBTTagCompound tag, IMonitorInfo info, SyncType type) {
-		tag.setInteger("iiD", LogisticsASMLoader.infoIds.get(info.getID()));
+		tag.setInteger("iiD", PL2ASMLoader.infoIds.get(info.getID()));
 		info.writeData(tag, type);
 		return tag;
 	}
@@ -328,7 +328,7 @@ public class InfoHelper {
 	}
 
 	public static INodeFilter readFilterFromNBT(NBTTagCompound tag) {
-		return NBTHelper.instanceNBTSyncable(LogisticsASMLoader.filterClasses.get(tag.getString("id")), tag);
+		return NBTHelper.instanceNBTSyncable(PL2ASMLoader.filterClasses.get(tag.getString("id")), tag);
 	}
 
 	public static NBTTagCompound writeFilterToNBT(NBTTagCompound tag, INodeFilter filter, SyncType type) {

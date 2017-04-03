@@ -27,7 +27,7 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.ByteBufWritable;
 import sonar.core.utils.IWorldPosition;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.FluidReader;
@@ -44,7 +44,7 @@ import sonar.logistics.network.PacketWirelessStorage;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation(Logistics.MODID + ":textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2.MODID + ":textures/gui/sorting_icons.png");
 
 	private SonarTextField searchField;
 	public EntityPlayer player;
@@ -104,7 +104,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				FlexibleGuiHandler.changeGui((IFlexibleGui) player.getHeldItemMainhand().getItem(), 1, 0, player.getEntityWorld(), player);
 				break;
 			case 3:
-				Logistics.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
+				PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
 
 					@Override
 					public void writeToBuf(ByteBuf buf) {
@@ -115,7 +115,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				}));
 				break;
 			case 4:
-				Logistics.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
+				PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
 
 					@Override
 					public void writeToBuf(ByteBuf buf) {
@@ -149,7 +149,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	public MonitoredList<IMonitorInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
-			MonitoredList<MonitoredItemStack> currentList = Logistics.getClientManager().getMonitoredList(networkID, new InfoUUID(uuid.hashCode(), DataEmitterPart.STATIC_ITEM_ID));
+			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(uuid.hashCode(), DataEmitterPart.STATIC_ITEM_ID));
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
 
 			MonitoredList<IMonitorInfo> list = MonitoredList.newMonitoredList(networkID);
@@ -167,7 +167,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				return searchList;
 			}
 		} else {
-			return Logistics.getClientManager().getMonitoredList(networkID, new InfoUUID(uuid.hashCode(), DataEmitterPart.STATIC_FLUID_ID));
+			return PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(uuid.hashCode(), DataEmitterPart.STATIC_FLUID_ID));
 		}
 	}
 
@@ -178,7 +178,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 		}
 		final int usedButton = button;
 		if (!empty) {
-			Logistics.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
+			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
 
 				@Override
 				public void writeToBuf(ByteBuf buf) {
@@ -195,7 +195,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 			}));
 
 		} else {
-			Logistics.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
+			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
 
 				@Override
 				public void writeToBuf(ByteBuf buf) {

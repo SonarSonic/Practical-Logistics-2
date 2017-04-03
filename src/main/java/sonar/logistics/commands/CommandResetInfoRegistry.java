@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.info.LogicInfoRegistry;
 
 public class CommandResetInfoRegistry implements ICommand {
@@ -48,7 +48,7 @@ public class CommandResetInfoRegistry implements ICommand {
 		World world = sender.getEntityWorld();
 		if (!world.isRemote) {
 			LogicInfoRegistry.INSTANCE.reload();
-			Logistics.logger.info("Reset Logic Info Registry");
+			PL2.logger.info("Reset Logic Info Registry");
 		}
 		sender.addChatMessage(new TextComponentTranslation("Reset Logic Info Registry"));
 

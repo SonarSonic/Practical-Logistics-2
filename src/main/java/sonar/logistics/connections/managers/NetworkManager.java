@@ -10,8 +10,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.common.collect.Lists;
 
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsConfig;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Config;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.IRefreshCache;
@@ -51,7 +51,7 @@ public class NetworkManager {
 				((IRefreshCache) entryValueCache).updateNetwork(entryValueCache.getNetworkID());
 			}
 
-			if (Logistics.instance.cableManager.getConnections(entryValueCache.getNetworkID()).size() == 0) {
+			if (PL2.instance.cableManager.getConnections(entryValueCache.getNetworkID()).size() == 0) {
 				iterator.remove();
 			}
 		}
@@ -66,7 +66,7 @@ public class NetworkManager {
 		INetworkCache networkCache = cache.get(networkID);
 		if (networkCache == null || networkCache.isFakeNetwork()) {
 			DefaultNetwork network = new DefaultNetwork(networkID);
-			network.updateTicks = ThreadLocalRandom.current().nextInt(0, LogisticsConfig.updateRate + 1); // to prevents every network ticking at the same time
+			network.updateTicks = ThreadLocalRandom.current().nextInt(0, PL2Config.updateRate + 1); // to prevents every network ticking at the same time
 			cache.put(networkID, network);
 			networkCache = cache.get(networkID);
 			networkCache.markDirty(RefreshType.FULL);

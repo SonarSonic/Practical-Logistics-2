@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.displays.DisplayType;
 
 public class HolographicDisplayPart extends DisplayScreenPart {
@@ -53,7 +53,7 @@ public class HolographicDisplayPart extends DisplayScreenPart {
 	}
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.holographicDisplay);
+		return new ItemStack(PL2Items.holographic_display);
 	}
 
 }

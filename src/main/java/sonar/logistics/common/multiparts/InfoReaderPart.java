@@ -7,9 +7,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.cabling.ChannelType;
-import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -70,7 +69,7 @@ public class InfoReaderPart extends LogisticsReader<IProvidableInfo> implements 
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.infoReaderPart);
+		return new ItemStack(PL2Items.info_reader);
 	}
 		
 	@Override

@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.MultipartStateOverride;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.DisplayConnections;
@@ -143,8 +143,8 @@ public class ExampleConfigurations {
 			fullDisplay.container.resetRenderProperties();
 
 			MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(-1);
-			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.sapphire), 512)));
-			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.stone_plate), 256)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(PL2Items.sapphire), 512)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(PL2Items.stone_plate), 256)));
 			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256)));
 			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.SAND), 256)));
 			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.LOG, 1, 0), 128)));
@@ -158,9 +158,9 @@ public class ExampleConfigurations {
 			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.DIRT), 64)));
 			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.GLOWSTONE), 64)));
 			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.IRON_ORE), 64)));
-			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.partCable), 16)));
-			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.infoReaderPart), 4)));
-			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(LogisticsItems.operator), 1)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(PL2Items.cable), 16)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(PL2Items.info_reader), 4)));
+			list.add(new MonitoredItemStack(new StoredItemStack(new ItemStack(PL2Items.operator), 1)));
 
 			fullDisplay.container.storedInfo.get(0).cachedInfo = new LogicInfoList() {
 				{

@@ -33,7 +33,7 @@ import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.filters.FilterList;
@@ -65,7 +65,7 @@ public class GuiFilterList extends GuiSelectionList {
 	public INodeFilter currentFilter;
 	public EntityPlayer player;
 	public GuiTextField oreDictField;
-	public static final ResourceLocation filterButtons = new ResourceLocation(Logistics.MODID + ":textures/gui/filter_buttons.png");
+	public static final ResourceLocation filterButtons = new ResourceLocation(PL2.MODID + ":textures/gui/filter_buttons.png");
 
 	public enum GuiState {
 		LIST(176, 166, 11, true), ITEM_FILTER(100, 100, 16, true), ORE_FILTER(100, 100, 11, true), FLUID_FILTER(100, 100, 16, true);
@@ -276,21 +276,21 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			case 3:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
+					PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
 				}
 				break;
 			case 4:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
+					PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
 				}
 				break;
 			case 5:
 				if (currentFilter != null) {
-					Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
+					PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
 				}
 				break;
 			case 6:
-				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			case 7:
 				if (tile instanceof IFlexibleGui) {
@@ -331,7 +331,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 	public void changeState(GuiState state) {
 		if (state == GuiState.LIST && currentFilter != null) {
-			Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), currentFilter.isValidFilter() ? ListPacket.ADD : ListPacket.REMOVE, currentFilter));
+			PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), currentFilter.isValidFilter() ? ListPacket.ADD : ListPacket.REMOVE, currentFilter));
 		}
 		this.state = state;
 		this.xSize = 182 + 66;
@@ -418,12 +418,12 @@ public class GuiFilterList extends GuiSelectionList {
 			if (selection instanceof ItemFilter && this.player.inventory.getItemStack() != null) {
 				ItemFilter filter = (ItemFilter) selection;
 				filter.addItem(new StoredItemStack(this.player.inventory.getItemStack(), 1));
-				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
+				PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
 				return;
 			}
 			if (selection instanceof FluidFilter && this.player.inventory.getItemStack() != null) {
 				addFluidToFilter(selection, this.player.inventory.getItemStack());
-				Logistics.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
+				PL2.network.sendToServer(new PacketNodeFilter(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
 				return;
 			}
 

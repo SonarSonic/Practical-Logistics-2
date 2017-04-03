@@ -25,13 +25,13 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.ILogicInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
-@InfoRegistry(modid = Logistics.MODID)
+@InfoRegistry(modid = PL2.MODID)
 public class VanillaInfoRegistry extends IInfoRegistry {
 
 	@Override

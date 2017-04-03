@@ -13,8 +13,8 @@ import sonar.core.api.utils.BlockInteraction;
 import sonar.core.common.block.SonarMachineBlock;
 import sonar.core.common.block.SonarMaterials;
 import sonar.core.utils.IGuiTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsBlocks;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.tileentity.TileEntityHammer;
 
 public class BlockHammer extends SonarMachineBlock {
@@ -26,7 +26,7 @@ public class BlockHammer extends SonarMachineBlock {
 	@Override
 	public boolean operateBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, BlockInteraction interact) {
 		if (!world.isRemote && player != null) {
-			player.openGui(Logistics.instance, IGuiTile.ID, world, pos.getX(), pos.getY(), pos.getZ());
+			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		return false;
@@ -52,8 +52,8 @@ public class BlockHammer extends SonarMachineBlock {
 	}
 
 	private void setBlocks(World world, BlockPos pos) {
-		world.setBlockState(pos.offset(EnumFacing.UP), LogisticsBlocks.hammer_air.getDefaultState(), 2);
-		world.setBlockState(pos.offset(EnumFacing.UP, 2), LogisticsBlocks.hammer_air.getDefaultState(), 2);
+		world.setBlockState(pos.offset(EnumFacing.UP), PL2Blocks.hammer_air.getDefaultState(), 2);
+		world.setBlockState(pos.offset(EnumFacing.UP, 2), PL2Blocks.hammer_air.getDefaultState(), 2);
 	}
 
 	//// EVENTS \\\\

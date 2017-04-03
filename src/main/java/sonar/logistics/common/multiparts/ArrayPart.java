@@ -18,8 +18,8 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarMultipartInventory;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.utils.IGuiTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
@@ -67,7 +67,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
 		if (!this.getWorld().isRemote) {
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			openGui(player, Logistics.instance);
+			openGui(player, PL2.instance);
 		}
 		return false;
 	}
@@ -142,7 +142,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partArray);
+		return new ItemStack(PL2Items.array);
 	}
 
 	//// EVENTS \\\\

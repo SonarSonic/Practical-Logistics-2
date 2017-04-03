@@ -9,12 +9,12 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.client.LogisticsColours;
 
 public class GuiLogistics extends GuiSonar {
 
-	public static final ResourceLocation playerInv = new ResourceLocation(Logistics.MODID + ":textures/gui/player_inventory.png");
+	public static final ResourceLocation playerInv = new ResourceLocation(PL2.MODID + ":textures/gui/player_inventory.png");
 	public SonarScroller scroller;
 	
 	public GuiLogistics(Container container, IWorldPosition entity) {

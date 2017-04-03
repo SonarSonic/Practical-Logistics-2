@@ -16,8 +16,8 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -97,9 +97,9 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 		/* switch (setting.getObject()) { case FLUID: break; case POS: break; case STORAGE: break; case TANKS: break; default: break; } */
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
-			IMonitorInfo oldInfo = Logistics.getServerManager().info.get(id);
+			IMonitorInfo oldInfo = PL2.getServerManager().info.get(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
-				Logistics.getServerManager().changeInfo(id, info);
+				PL2.getServerManager().changeInfo(id, info);
 			}
 		}
 
@@ -158,7 +158,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.energyReaderPart);
+		return new ItemStack(PL2Items.energy_reader);
 	}
 
 	@Override

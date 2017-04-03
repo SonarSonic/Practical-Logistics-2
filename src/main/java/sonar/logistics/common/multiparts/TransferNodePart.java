@@ -35,7 +35,7 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.filters.ITransferFilteredTile;
@@ -372,7 +372,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partTransferNode);
+		return new ItemStack(PL2Items.transfer_node);
 	}
 
 }

@@ -26,8 +26,8 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.utils.LabelledAxisAlignedBB;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
@@ -84,7 +84,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	@Override
 	public void refreshConnections() {
 		if (isServer()) {
-			Logistics.getCableManager().refreshConnections(this);
+			PL2.getCableManager().refreshConnections(this);
 		}
 	}
 
@@ -135,13 +135,13 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 
 	public void addToNetwork() {
 		if (isServer()) {
-			Logistics.getCableManager().addCable(this);
+			PL2.getCableManager().addCable(this);
 		}
 	}
 
 	public void removeFromNetwork() {
 		if (isServer()) {
-			Logistics.getCableManager().removeConnection(this.getRegistryID(), this);
+			PL2.getCableManager().removeConnection(this.getRegistryID(), this);
 			configureConnections(EmptyNetworkCache.INSTANCE);
 		}
 	}
@@ -189,7 +189,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 					}
 					sendUpdatePacket(true);
 					markDirty();
-					Logistics.getNetworkManager().updateEmitters = true;
+					PL2.getNetworkManager().updateEmitters = true;
 					return true;
 				}
 			}
@@ -346,7 +346,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partCable);
+		return new ItemStack(PL2Items.cable);
 	}
 
 	public boolean equals(Object obj) {

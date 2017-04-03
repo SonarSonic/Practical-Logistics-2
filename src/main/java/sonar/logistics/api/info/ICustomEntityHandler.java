@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import sonar.logistics.info.types.LogicInfo;
 
 public interface ICustomEntityHandler {
 

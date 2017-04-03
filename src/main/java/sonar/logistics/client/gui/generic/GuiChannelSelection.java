@@ -12,7 +12,7 @@ import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.HelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.PacketFlexibleCloseGui;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
@@ -76,7 +76,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	public void setInfo() {
-		infoList = (ArrayList<IMonitorInfo>) Logistics.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IMonitorInfo>newMonitoredList(tile.getNetworkID())).clone();
+		infoList = (ArrayList<IMonitorInfo>) PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IMonitorInfo>newMonitoredList(tile.getNetworkID())).clone();
 	}
 
 	/// INTERACTION \\\

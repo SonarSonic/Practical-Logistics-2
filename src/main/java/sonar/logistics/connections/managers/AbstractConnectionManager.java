@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IConnectable;
 
@@ -27,7 +27,7 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 	
 	public NetworkManager NetworkManager(){
 		if(NetworkManager==null){
-			NetworkManager = Logistics.instance.networkManager;
+			NetworkManager = PL2.instance.networkManager;
 		}
 		return NetworkManager;
 	}

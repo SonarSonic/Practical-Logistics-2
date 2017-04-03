@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.IInfoDisplay;
@@ -79,7 +79,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 		if (players.isEmpty()) {
 			return;
 		}
-		MonitoredList<IMonitorInfo> coords = Logistics.getNetworkManager().getCoordMap().get(getNetworkID());
+		MonitoredList<IMonitorInfo> coords = PL2.getNetworkManager().getCoordMap().get(getNetworkID());
 		NBTTagCompound coordTag = !viewers.getViewers(true, ViewerType.CHANNEL).isEmpty() ? InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC) : null;
 
 		for (Entry<EntityPlayer, ArrayList<ViewerTally>> entry : ((HashMap<EntityPlayer, ArrayList<ViewerTally>>) viewers.getViewers(true).clone()).entrySet()) {
@@ -87,7 +87,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 				switch (tally.type) {
 				case CHANNEL:
 					if (!coordTag.hasNoTags()) {
-						Logistics.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) entry.getKey());
+						PL2.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) entry.getKey());
 						tally.origin.removeViewer(entry.getKey(), ViewerType.CHANNEL);
 					}
 					break;
@@ -101,7 +101,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 					NBTTagList list = new NBTTagList();
 					for (int i = 0; i < provider.getMaxInfo(); i++) {
 						InfoUUID id = new InfoUUID(provider.getIdentity().hashCode(), i);
-						IMonitorInfo info = Logistics.getServerManager().info.get(id);
+						IMonitorInfo info = PL2.getServerManager().info.get(id);
 						if (info != null) {
 							NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
 							nbt = id.writeData(nbt, SyncType.SAVE);
@@ -109,7 +109,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 
 						}
 					}
-					Logistics.getServerManager().sendPlayerPacket(entry.getKey(), list, SyncType.SAVE);
+					PL2.getServerManager().sendPlayerPacket(entry.getKey(), list, SyncType.SAVE);
 					break;
 				default:
 					break;
@@ -122,7 +122,7 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 	public void sendPacketsToViewers(ILogicViewable monitor, MonitoredList saveList, MonitoredList lastList, int id) {
 		IViewersList viewers = monitor.getViewersList();
 		ArrayList<EntityPlayer> players = viewers.getViewers(true, ViewerType.INFO, ViewerType.FULL_INFO, ViewerType.TEMPORARY);
-		MonitoredList<IMonitorInfo> coords = Logistics.getNetworkManager().getCoordMap().get(getNetworkID());
+		MonitoredList<IMonitorInfo> coords = PL2.getNetworkManager().getCoordMap().get(getNetworkID());
 		NBTTagCompound coordTag = !viewers.getViewers(true, ViewerType.CHANNEL).isEmpty() ? InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC) : null;
 		NBTTagCompound saveTag = !viewers.getViewers(true, ViewerType.FULL_INFO, ViewerType.TEMPORARY).isEmpty() ? InfoHelper.writeMonitoredList(new NBTTagCompound(), lastList.isEmpty(), saveList, SyncType.DEFAULT_SYNC) : null;
 		NBTTagCompound tag = !viewers.getViewers(true, ViewerType.INFO).isEmpty() ? InfoHelper.writeMonitoredList(new NBTTagCompound(), lastList.isEmpty(), saveList, SyncType.SPECIAL) : null;
@@ -133,36 +133,36 @@ public abstract class AbstractNetwork implements ILogisticsNetwork {
 					switch (tally.type) {
 					case CHANNEL:
 						if (!coordTag.hasNoTags()) {
-							Logistics.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) entry.getKey());
+							PL2.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) entry.getKey());
 							tally.origin.removeViewer(entry.getKey(), ViewerType.CHANNEL);
 						}
 						break;
 					case INFO:
 						if (!tag.hasNoTags() && (!saveList.changed.isEmpty() || !saveList.removed.isEmpty()))
-							Logistics.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), new InfoUUID(monitor.getIdentity().hashCode(), id), saveList.networkID, tag, SyncType.SPECIAL), (EntityPlayerMP) entry.getKey());
+							PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), new InfoUUID(monitor.getIdentity().hashCode(), id), saveList.networkID, tag, SyncType.SPECIAL), (EntityPlayerMP) entry.getKey());
 						break;
 
 					case FULL_INFO:
-						Logistics.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), new InfoUUID(monitor.getIdentity().hashCode(), id), saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), (EntityPlayerMP) entry.getKey());
+						PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), new InfoUUID(monitor.getIdentity().hashCode(), id), saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), (EntityPlayerMP) entry.getKey());
 						tally.origin.removeViewer(entry.getKey(), ViewerType.FULL_INFO);
 						tally.origin.addViewer(entry.getKey(), ViewerType.INFO);
 						break;
 					case TEMPORARY:
-						Logistics.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), new InfoUUID(monitor.getIdentity().hashCode(), id), saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), (EntityPlayerMP) entry.getKey());
+						PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), new InfoUUID(monitor.getIdentity().hashCode(), id), saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), (EntityPlayerMP) entry.getKey());
 						tally.origin.removeViewer(entry.getKey(), ViewerType.TEMPORARY);
 						if (monitor instanceof INetworkReader) {
 							INetworkReader reader = (INetworkReader) monitor;
 							NBTTagList list = new NBTTagList();
 							for (int i = 0; i < reader.getMaxInfo(); i++) {
 								InfoUUID infoID = new InfoUUID(reader.getIdentity().hashCode(), i);
-								IMonitorInfo info = Logistics.getServerManager().info.get(infoID);
+								IMonitorInfo info = PL2.getServerManager().info.get(infoID);
 								if (info != null) {
 									NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
 									nbt = infoID.writeData(nbt, SyncType.SAVE);
 									list.appendTag(nbt);
 								}
 							}
-							Logistics.getServerManager().sendPlayerPacket(entry.getKey(), list, SyncType.SAVE);
+							PL2.getServerManager().sendPlayerPacket(entry.getKey(), list, SyncType.SAVE);
 						}
 						break;
 					default:

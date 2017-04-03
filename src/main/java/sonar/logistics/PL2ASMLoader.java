@@ -26,7 +26,7 @@ import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
-public class LogisticsASMLoader {
+public class PL2ASMLoader {
 
 	public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap();
 	public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap();
@@ -40,17 +40,17 @@ public class LogisticsASMLoader {
 	public static LinkedHashMap<String, ITileMonitorHandler> tileMonitorHandlers = new LinkedHashMap();
 	public static LinkedHashMap<String, IEntityMonitorHandler> entityMonitorHandlers = new LinkedHashMap();
 
-	private LogisticsASMLoader() {}
+	private PL2ASMLoader() {}
 	
 	public static void init(FMLPreInitializationEvent event){
 		ASMDataTable asmDataTable = event.getAsmData();
-		LogisticsASMLoader.loadInfoTypes(asmDataTable);
-		LogisticsASMLoader.loadTileMonitorHandlers(asmDataTable);
-		LogisticsASMLoader.loadEntityMonitorHandlers(asmDataTable);
-		LogisticsASMLoader.loadNodeFilters(asmDataTable);
-		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(LogisticsASMLoader.getInfoRegistries(asmDataTable));
-		LogicInfoRegistry.INSTANCE.customTileHandlers.addAll(LogisticsASMLoader.getCustomTileHandlers(asmDataTable));
-		LogicInfoRegistry.INSTANCE.customEntityHandlers.addAll(LogisticsASMLoader.getCustomEntityHandlers(asmDataTable));
+		PL2ASMLoader.loadInfoTypes(asmDataTable);
+		PL2ASMLoader.loadTileMonitorHandlers(asmDataTable);
+		PL2ASMLoader.loadEntityMonitorHandlers(asmDataTable);
+		PL2ASMLoader.loadNodeFilters(asmDataTable);
+		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
+		LogicInfoRegistry.INSTANCE.customTileHandlers.addAll(PL2ASMLoader.getCustomTileHandlers(asmDataTable));
+		LogicInfoRegistry.INSTANCE.customEntityHandlers.addAll(PL2ASMLoader.getCustomEntityHandlers(asmDataTable));
 	}
 
 	public static List<IInfoRegistry> getInfoRegistries(@Nonnull ASMDataTable asmDataTable) {
@@ -72,10 +72,10 @@ public class LogisticsASMLoader {
 			try {
 				tileMonitorHandlers.put(name, info.b.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
-				Logistics.logger.error("FAILED: To Load Tile Monitor Handler - " + name);
+				PL2.logger.error("FAILED: To Load Tile Monitor Handler - " + name);
 			}
 		}
-		Logistics.logger.info("Loaded: " + tileMonitorHandlers.size() + " Tile Monitor Handlers");
+		PL2.logger.info("Loaded: " + tileMonitorHandlers.size() + " Tile Monitor Handlers");
 	}
 
 	public static void loadEntityMonitorHandlers(@Nonnull ASMDataTable asmDataTable) {
@@ -85,10 +85,10 @@ public class LogisticsASMLoader {
 			try {
 				entityMonitorHandlers.put(name, info.b.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
-				Logistics.logger.error("FAILED: To Load Entity Monitor Handler - " + name);
+				PL2.logger.error("FAILED: To Load Entity Monitor Handler - " + name);
 			}
 		}
-		Logistics.logger.info("Loaded: " + entityMonitorHandlers.size() + " Entity Monitor Handlers");
+		PL2.logger.info("Loaded: " + entityMonitorHandlers.size() + " Entity Monitor Handlers");
 	}
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
@@ -100,7 +100,7 @@ public class LogisticsASMLoader {
 			infoIds.put(name, hashCode);
 			infoClasses.put(name, info.b);
 		}
-		Logistics.logger.info("Loaded: " + infoIds.size() + " Info Types");
+		PL2.logger.info("Loaded: " + infoIds.size() + " Info Types");
 	}
 
 	public static void loadNodeFilters(@Nonnull ASMDataTable asmDataTable) {
@@ -109,7 +109,7 @@ public class LogisticsASMLoader {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			filterClasses.put(name, info.b);
 		}
-		Logistics.logger.info("Loaded: " + filterClasses.size() + " Filters");
+		PL2.logger.info("Loaded: " + filterClasses.size() + " Filters");
 	}	
 	
 }

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.ClientViewable;
 import sonar.logistics.api.readers.IInfoProvider;
@@ -67,7 +67,7 @@ public class PacketViewables implements IMessage {
 		@Override
 		public IMessage onMessage(PacketViewables message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				Map<UUID, ArrayList<ClientViewable>> monitors = Logistics.getClientManager().clientLogicMonitors;
+				Map<UUID, ArrayList<ClientViewable>> monitors = PL2.getClientManager().clientLogicMonitors;
 				if (monitors.get(message.screenID) == null) {
 					monitors.put(message.screenID, message.viewables);
 				} else {
@@ -86,7 +86,7 @@ public class PacketViewables implements IMessage {
 					}
 				}
 
-				Map<UUID, ArrayList<Object>> sortedMonitors = Logistics.getClientManager().sortedLogicMonitors;
+				Map<UUID, ArrayList<Object>> sortedMonitors = PL2.getClientManager().sortedLogicMonitors;
 				if (sortedMonitors.get(message.screenID) == null) {
 					sortedMonitors.put(message.screenID, cache);
 				} else {

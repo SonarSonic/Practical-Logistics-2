@@ -18,8 +18,8 @@ import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.api.utils.LogisticsHelper;
@@ -133,7 +133,7 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 	public void onFirstTick() {
 		super.onFirstTick();
 		if (this.isServer()) {
-			Logistics.getNetworkManager().updateEmitters = true;
+			PL2.getNetworkManager().updateEmitters = true;
 			network.markDirty(RefreshType.FULL);
 		}
 	}
@@ -188,6 +188,6 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partReceiver);
+		return new ItemStack(PL2Items.data_receiver);
 	}
 }

@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.ListHelper;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsConfig;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2Config;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.cabling.IDataCable;
@@ -83,7 +83,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 		if (includeChannels) {
 			ArrayList<Integer> networks = getAllConnectedNetworks();
 			networks.forEach(id -> {
-				INetworkCache network = Logistics.getNetworkManager().getNetwork(id);
+				INetworkCache network = PL2.getNetworkManager().getNetwork(id);
 				ListHelper.addWithCheck(list, network.getConnections(classType, false));
 			});
 		}
@@ -106,7 +106,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 			buildNetworkConnections();
 		}
 
-		if (Logistics.getNetworkManager().updateEmitters) {
+		if (PL2.getNetworkManager().updateEmitters) {
 			for (IDataReceiver receiver : getConnections(IDataReceiver.class, true)) {
 				receiver.refreshConnectedNetworks();
 			}
@@ -127,7 +127,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	public void refreshCables() {
 		localMonitors.clear();
 		HashMap<Class<?>, ArrayList<IWorldPosition>> newConnections = getFreshMap();
-		ArrayList<IDataCable> cables = Logistics.getCableManager().getConnections(networkID);
+		ArrayList<IDataCable> cables = PL2.getCableManager().getConnections(networkID);
 		Iterator<IDataCable> iterator = cables.iterator();
 		while (iterator.hasNext()) {
 			BlockCoords coord = iterator.next().getCoords();
@@ -146,7 +146,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 	public void alertWatchingNetworks() {
 		ArrayList<Integer> networks = getWatchingNetworks();
-		networks.forEach(id -> Logistics.getNetworkManager().markNetworkDirty(id, RefreshType.ALERT));
+		networks.forEach(id -> PL2.getNetworkManager().markNetworkDirty(id, RefreshType.ALERT));
 	}
 
 	public ArrayList<Integer> getConnectedNetworks() {
@@ -164,7 +164,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	public ArrayList<Integer> getAllConnectedNetworks() {
 		ArrayList<Integer> networks = getConnectedNetworks(new ArrayList());
 		ArrayList<Integer> fullNetworks = (ArrayList<Integer>) networks.clone();
-		networks.iterator().forEachRemaining(id -> Logistics.getNetworkManager().getNetwork(id).getConnectedNetworks(fullNetworks));
+		networks.iterator().forEachRemaining(id -> PL2.getNetworkManager().getNetwork(id).getConnectedNetworks(fullNetworks));
 		return fullNetworks;
 	}
 
@@ -184,7 +184,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 
 		ArrayList<Integer> networks = getAllConnectedNetworks();
 		for (Integer id : networks) {
-			INetworkCache network = Logistics.getNetworkManager().getNetwork(id);
+			INetworkCache network = PL2.getNetworkManager().getNetwork(id);
 			ListHelper.addWithCheck(map, (List<NodeConnection>) network.getConnectedChannels(false).clone());
 			ListHelper.addWithCheck(localMonitors, network.getLocalInfoProviders());
 		}
@@ -197,7 +197,7 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 		monitorInfo.entrySet().forEach(handlers -> compileConnectionList(handlers.getKey()));
 		MonitoredList<IMonitorInfo> list = MonitoredList.<IMonitorInfo>newMonitoredList(getNetworkID());
 		networkedChannelCache.forEach(CHANNEL -> list.add(CHANNEL.getChannel()));
-		Logistics.getNetworkManager().getCoordMap().put(networkID, list);
+		PL2.getNetworkManager().getCoordMap().put(networkID, list);
 	}
 
 	public <T extends IWorldPosition> T getFirstConnection(Class<T> type) {
@@ -219,14 +219,14 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 	@Override
 	public void updateNetwork(int networkID) {
 		updateTransferNetwork();
-		if (this.updateTicks < LogisticsConfig.updateRate) {
+		if (this.updateTicks < PL2Config.updateRate) {
 			updateTicks++;
 			return;
 		}
 		updateTicks = 0;
 
 		resendAllLists = networkID != this.getNetworkID();
-		if (resendAllLists || Logistics.getNetworkManager().updateEmitters) {
+		if (resendAllLists || PL2.getNetworkManager().updateEmitters) {
 			refreshCache(networkID, RefreshType.FULL);
 		} else if (toRefresh != RefreshType.NONE) {
 			refreshCache(networkID, toRefresh);
@@ -266,14 +266,14 @@ public class DefaultNetwork extends AbstractNetwork implements IRefreshCache {
 				ArrayList<NodeConnection> usedChannels = new ArrayList();
 				int id = monitor instanceof IDataEmitter ? (monitorMap.getKey().id().equals(FluidMonitorHandler.id) ? DataEmitterPart.STATIC_FLUID_ID : DataEmitterPart.STATIC_ITEM_ID) : 0;
 				InfoUUID infoID = new InfoUUID(monitor.getIdentity().hashCode(), id);
-				MonitoredList lastList = Logistics.getServerManager().monitoredLists.getOrDefault(infoID, MonitoredList.newMonitoredList(getNetworkID()));
+				MonitoredList lastList = PL2.getServerManager().monitoredLists.getOrDefault(infoID, MonitoredList.newMonitoredList(getNetworkID()));
 
 				MonitoredList updateList = monitor.getUpdatedList(id, newChannels, usedChannels).updateList(lastList);
 				if (monitor instanceof INetworkReader) {
 					((INetworkReader) monitor).setMonitoredInfo(updateList, usedChannels, id);// TODO only one channel atm!
 				}
 				sendPacketsToViewers(monitor, updateList.copyInfo(), lastList, id);
-				Logistics.getServerManager().monitoredLists.put(infoID, updateList);
+				PL2.getServerManager().monitoredLists.put(infoID, updateList);
 			}
 		}
 	}

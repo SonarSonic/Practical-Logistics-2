@@ -3,7 +3,7 @@ package sonar.logistics.info.types;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.DisplayConstants;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -13,7 +13,7 @@ import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
-@LogicInfoType(id = InfoError.id, modid = Logistics.MODID)
+@LogicInfoType(id = InfoError.id, modid = PL2.MODID)
 public class InfoError implements IMonitorInfo<InfoError> {
 
 	public static final InfoError noData = new InfoError("NO DATA");

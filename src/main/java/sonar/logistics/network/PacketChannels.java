@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
@@ -31,7 +31,7 @@ public class PacketChannels implements IMessage {
 		registryID = buf.readInt();
 		listTag = ByteBufUtils.readTag(buf);
 		if (listTag != null)
-			list = InfoHelper.readMonitoredList(listTag, Logistics.getClientManager().channelMap.getOrDefault(registryID, MonitoredList.newMonitoredList(registryID)).copyInfo(), SyncType.DEFAULT_SYNC);
+			list = InfoHelper.readMonitoredList(listTag, PL2.getClientManager().channelMap.getOrDefault(registryID, MonitoredList.newMonitoredList(registryID)).copyInfo(), SyncType.DEFAULT_SYNC);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class PacketChannels implements IMessage {
 		@Override
 		public IMessage onMessage(PacketChannels message, MessageContext ctx) {
 			if (message.list != null)
-				Logistics.getClientManager().channelMap.put(message.registryID, message.list);
+				PL2.getClientManager().channelMap.put(message.registryID, message.list);
 			return null;
 		}
 	}

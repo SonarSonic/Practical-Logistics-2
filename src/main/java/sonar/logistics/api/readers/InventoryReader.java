@@ -1,20 +1,37 @@
 package sonar.logistics.api.readers;
 
 import sonar.core.helpers.FontHelper;
+import sonar.core.utils.Localisation;
+import sonar.logistics.PL2Translate;
 
-/**all the modes used by the Inventory Reader*/
+/** all the modes used by the Inventory Reader */
 public class InventoryReader {
 	public static enum Modes {
-		INVENTORIES, STACK, SLOT, POS,  STORAGE, FILTERED;
+		INVENTORIES, STACK, SLOT, POS, STORAGE, FILTERED;
+
+		Localisation name;
+
+		Modes() {
+			name = PL2Translate.get("pl.inv.mode." + name().toLowerCase());
+		}
 
 		public String getClientName() {
-			return FontHelper.translate("pl.inv.mode." + name().toLowerCase());
+			return name.t();
 		}
 	}
 
 	public static enum SortingType {
 		STORED, NAME, MODID;
+		
+		Localisation name;
 
+		SortingType() {
+			name = PL2Translate.get("pl.inv.sort." + name().toLowerCase());
+		}
+
+		public String getClientName() {
+			return name.t();
+		}
 		public SortingType switchDir() {
 			switch (this) {
 			case STORED:
@@ -24,10 +41,6 @@ public class InventoryReader {
 			default:
 				return STORED;
 			}
-		}
-
-		public String getClientName() {
-			return FontHelper.translate("pl.inv.sort." + name().toLowerCase());
 		}
 	}
 }

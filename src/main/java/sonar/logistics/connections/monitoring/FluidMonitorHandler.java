@@ -8,14 +8,14 @@ import sonar.core.SonarCore;
 import sonar.core.api.StorageSize;
 import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.logistics.Logistics;
-import sonar.logistics.LogisticsASMLoader;
+import sonar.logistics.PL2;
+import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
 
-@TileMonitorHandler(handlerID = FluidMonitorHandler.id, modid = Logistics.MODID)
+@TileMonitorHandler(handlerID = FluidMonitorHandler.id, modid = PL2.MODID)
 public class FluidMonitorHandler extends LogicMonitorHandler<MonitoredFluidStack> implements ITileMonitorHandler<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
@@ -23,7 +23,7 @@ public class FluidMonitorHandler extends LogicMonitorHandler<MonitoredFluidStack
 
 	public static FluidMonitorHandler instance() {
 		if (handler == null)
-			handler = (FluidMonitorHandler) LogisticsASMLoader.tileMonitorHandlers.get(id);
+			handler = (FluidMonitorHandler) PL2ASMLoader.tileMonitorHandlers.get(id);
 		return handler;
 	}
 

@@ -9,7 +9,7 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.core.utils.Pair;
-import sonar.logistics.Logistics;
+import sonar.logistics.PL2;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.ISuffixable;
@@ -27,7 +27,7 @@ import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.LogicInfoRegistry;
 
 /** default info type, created by the LogicRegistry */
-@LogicInfoType(id = LogicInfo.id, modid = Logistics.MODID)
+@LogicInfoType(id = LogicInfo.id, modid = PL2.MODID)
 public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<LogicInfo>, INameableInfo<LogicInfo>, ISuffixable, IComparableInfo<LogicInfo> {
 
 	public static final String id = "logic";
@@ -65,7 +65,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 		info.iden.setObject(identifier);
 		info.idenNum.setObject(identifierNum);
 		if (info.obj.objType == ObjectType.NONE) {
-			Logistics.logger.error(String.format("Invalid Info: %s with object %s", identifier, obj));
+			PL2.logger.error(String.format("Invalid Info: %s with object %s", identifier, obj));
 			return null;
 		}
 		return info;

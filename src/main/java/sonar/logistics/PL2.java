@@ -35,11 +35,11 @@ import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.logic.comparators.ComparatorRegistry;
 import sonar.logistics.utils.SapphireOreGen;
 
-@Mod(modid = Logistics.MODID, name = Logistics.NAME, version = Logistics.VERSION, dependencies = "required-after:sonarcore")
-public class Logistics {
+@Mod(modid = PL2.MODID, name = PL2.NAME, version = PL2.VERSION, dependencies = "required-after:sonarcore")
+public class PL2 {
 
-	@SidedProxy(clientSide = "sonar.logistics.LogisticsClient", serverSide = "sonar.logistics.LogisticsCommon")
-	public static LogisticsCommon proxy;
+	@SidedProxy(clientSide = "sonar.logistics.PL2Client", serverSide = "sonar.logistics.PL2Common")
+	public static PL2Common proxy;
 
 	public static final String MODID = "practicallogistics2";
 	public static final String NAME = "Practical Logistics 2";
@@ -49,7 +49,7 @@ public class Logistics {
 	public static Logger logger = (Logger) LogManager.getLogger(MODID);
 
 	@Instance(MODID)
-	public static Logistics instance;
+	public static PL2 instance;
 
 	public NetworkManager networkManager = new NetworkManager();
 	public CableManager cableManager = new CableManager();
@@ -61,7 +61,7 @@ public class Logistics {
 	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics 2") {
 		@Override
 		public Item getTabIconItem() {
-			return LogisticsItems.partCable;
+			return PL2Items.cable;
 		}
 	};
 
@@ -80,47 +80,52 @@ public class Logistics {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		logger.info("Registered Network");
 
-		LogisticsCommon.registerPackets();
+		PL2Common.registerPackets();
 		logger.info("Registered Packets");
 
-		LogisticsConfig.initConfiguration(event);
+		PL2Config.initConfiguration(event);
 		logger.info("Loaded Configuration");
 
-		LogisticsBlocks.registerBlocks();
+		PL2Blocks.registerBlocks();
 		logger.info("Loaded Blocks");
 
-		LogisticsItems.registerItems();
+		PL2Items.registerItems();
 		logger.info("Loaded Items");
+
+		PL2Items.registerMultiparts();
+		logger.info("Loaded Multiparts");
 
 		proxy.registerRenderThings();
 		logger.info("Registered Renderers");
-		if (LogisticsConfig.sapphireOre) {
+		if (PL2Config.sapphireOre) {
 			GameRegistry.registerWorldGenerator(new SapphireOreGen(), 1);
 			logger.info("Registered Sapphire World Generator");
 		} else
 			logger.info("Sapphire Ore Generation is disabled in the config");
 
-		LogisticsASMLoader.init(event);
+		PL2ASMLoader.init(event);
 		LogicInfoRegistry.INSTANCE.init();
 		comparatorRegistry.register();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		logger.info("Breaking into the pentagon");
-		LogisticsCrafting.addRecipes();
+		PL2Crafting.addRecipes();
 		logger.info("Registered Crafting Recipes");
 
-		OreDictionary.registerOre("oreSapphire", LogisticsBlocks.sapphire_ore);
-		OreDictionary.registerOre("gemSapphire", LogisticsItems.sapphire);
-		OreDictionary.registerOre("dustSapphire", LogisticsItems.sapphire_dust);
+		OreDictionary.registerOre("oreSapphire", PL2Blocks.sapphire_ore);
+		OreDictionary.registerOre("gemSapphire", PL2Items.sapphire);
+		OreDictionary.registerOre("dustSapphire", PL2Items.sapphire_dust);
 		logger.info("Registered OreDict");
 
-		MinecraftForge.EVENT_BUS.register(new LogisticsEvents());
+		MinecraftForge.EVENT_BUS.register(new PL2Events());
 		logger.info("Registered Events");
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new LogisticsCommon());
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new PL2Common());
 		logger.info("Registered GUI Handler");
 		proxy.registerTextures();
+		proxy.load(event);
 	}
 
 	@EventHandler
@@ -133,6 +138,7 @@ public class Logistics {
 		
 		if (evt.getSide().isClient())
 			GuidePageRegistry.init();
+		proxy.postLoad(evt);
 	}
 
 	@EventHandler
@@ -152,27 +158,27 @@ public class Logistics {
 
 	// @SideOnly(Side.SERVER)
 	public static NetworkManager getNetworkManager() {
-		return Logistics.instance.networkManager;
+		return PL2.instance.networkManager;
 	}
 
 	// @SideOnly(Side.SERVER)
 	public static CableManager getCableManager() {
-		return Logistics.instance.cableManager;
+		return PL2.instance.cableManager;
 	}
 
 	// @SideOnly(Side.SERVER)
 	public static DisplayManager getDisplayManager() {
-		return Logistics.instance.displayManager;
+		return PL2.instance.displayManager;
 	}
 
 	// @SideOnly(Side.CLIENT)
 	public static ServerInfoManager getServerManager() {
-		return Logistics.instance.serverManager;
+		return PL2.instance.serverManager;
 	}
 
 	// @SideOnly(Side.CLIENT)
 	public static ClientInfoManager getClientManager() {
-		return Logistics.instance.clientManager;
+		return PL2.instance.clientManager;
 	}
 
 	public static IInfoManager getInfoManager(boolean isRemote) {

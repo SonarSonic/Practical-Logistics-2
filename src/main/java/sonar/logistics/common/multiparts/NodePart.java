@@ -18,7 +18,7 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.LogisticsItems;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.connecting.RefreshType;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
@@ -109,6 +109,6 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(LogisticsItems.partNode);
+		return new ItemStack(PL2Items.node);
 	}
 }
