@@ -16,6 +16,7 @@ import sonar.core.common.block.properties.IMetaRenderer;
 import sonar.core.registries.ISonarRegistryBlock;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
+import sonar.logistics.PL2Constants;
 
 public class BlockRenderRegister {
 
@@ -39,7 +40,7 @@ public class BlockRenderRegister {
 							IMetaRenderer meta = (IMetaRenderer) block;
 							variant = "variant=" + meta.getVariant(stack.getItemDamage()).getName();
 						}
-						ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(PL2.MODID + ":" + item.getUnlocalizedName().substring(5), variant));
+						ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(PL2Constants.MODID + ":" + item.getUnlocalizedName().substring(5), variant));
 					}
 				} else {
 					registerBlock(block.getBlock());
@@ -55,7 +56,7 @@ public class BlockRenderRegister {
 				SonarCore.logger.error("Enable to register renderer for " + block);
 				return;
 			}
-			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PL2.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PL2Constants.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 		}
 	}
 

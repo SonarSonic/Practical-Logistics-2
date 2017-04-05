@@ -12,11 +12,11 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncTagTypeList;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.nodes.TransferType;
 
-@NodeFilter(id = OreDictFilter.id, modid = PL2.MODID)
+@NodeFilter(id = OreDictFilter.id, modid = PL2Constants.MODID)
 public class OreDictFilter extends BaseFilter implements IItemFilter {
 
 	public static final String id = "oredict";

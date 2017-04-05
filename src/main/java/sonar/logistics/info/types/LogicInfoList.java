@@ -26,6 +26,7 @@ import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
@@ -44,7 +45,7 @@ import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
-@LogicInfoType(id = LogicInfoList.id, modid = PL2.MODID)
+@LogicInfoType(id = LogicInfoList.id, modid = PL2Constants.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList>, IAdvancedClickableInfo {
 
 	public static final String id = "logiclist";

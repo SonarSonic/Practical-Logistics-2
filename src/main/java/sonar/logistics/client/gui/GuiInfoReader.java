@@ -36,8 +36,8 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 	public void initGui() {
 		super.initGui();
 		overlay.initGui(this);
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 9, guiTop + 7, 32, 96 + 16, "Channels", "button.Channels"));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + xSize - 9 - 16, guiTop + 7, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton.CHANNELS(this, 1, guiLeft + 9, guiTop + 7));
+		this.buttonList.add(new LogisticsButton.HELP(this, 2, guiLeft + xSize - 9 - 16, guiTop + 7));
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -63,7 +63,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
 		FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(String.format("Select the data you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(PL2Translate.INFO_READER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 		overlay.drawOverlay(this, x, y);
 	}
 

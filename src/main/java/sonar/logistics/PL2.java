@@ -35,20 +35,16 @@ import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.logic.comparators.ComparatorRegistry;
 import sonar.logistics.utils.SapphireOreGen;
 
-@Mod(modid = PL2.MODID, name = PL2.NAME, version = PL2.VERSION, dependencies = "required-after:sonarcore")
+@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, version = PL2Constants.VERSION, dependencies = "required-after:sonarcore")
 public class PL2 {
 
 	@SidedProxy(clientSide = "sonar.logistics.PL2Client", serverSide = "sonar.logistics.PL2Common")
 	public static PL2Common proxy;
 
-	public static final String MODID = "practicallogistics2";
-	public static final String NAME = "Practical Logistics 2";
-	public static final String VERSION = "2.0.1";
-
 	public static SimpleNetworkWrapper network;
-	public static Logger logger = (Logger) LogManager.getLogger(MODID);
+	public static Logger logger = (Logger) LogManager.getLogger(PL2Constants.MODID);
 
-	@Instance(MODID)
+	@Instance(PL2Constants.MODID)
 	public static PL2 instance;
 
 	public NetworkManager networkManager = new NetworkManager();
@@ -58,7 +54,7 @@ public class PL2 {
 	public ClientInfoManager clientManager = new ClientInfoManager();
 	public static ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
-	public static CreativeTabs creativeTab = new CreativeTabs("Practical Logistics 2") {
+	public static CreativeTabs creativeTab = new CreativeTabs(PL2Constants.NAME) {
 		@Override
 		public Item getTabIconItem() {
 			return PL2Items.cable;
@@ -77,7 +73,7 @@ public class PL2 {
 		LogisticsAPI.init();
 		logger.info("Initilised API");
 
-		network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+		network = NetworkRegistry.INSTANCE.newSimpleChannel(PL2Constants.MODID);
 		logger.info("Registered Network");
 
 		PL2Common.registerPackets();

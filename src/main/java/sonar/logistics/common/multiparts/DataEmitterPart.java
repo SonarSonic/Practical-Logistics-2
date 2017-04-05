@@ -51,10 +51,11 @@ import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFlexibleGui, IByteBufTile {
 
+	public static final String UNNAMED = "Unnamed Emitter";
 	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
 	public ArrayList<IDataReceiver> receivers = new ArrayList();
 	public LogicMonitorHandler[] validHandlers;
-	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault("Unnamed Emitter");
+	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault(UNNAMED);
 	public SyncUUID playerUUID = new SyncUUID(3);
 	public SyncEnum<DataEmitterSecurity> security = new SyncEnum(DataEmitterSecurity.values(), 5);
 	public static int STATIC_ITEM_ID = -16;

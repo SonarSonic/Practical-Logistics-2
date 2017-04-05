@@ -16,7 +16,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -33,7 +33,7 @@ import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.info.types.BaseInfo;
 
-@LogicInfoType(id = MonitoredItemStack.id, modid = PL2.MODID)
+@LogicInfoType(id = MonitoredItemStack.id, modid = PL2Constants.MODID)
 public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack> {
 
 	public static final String id = "item";

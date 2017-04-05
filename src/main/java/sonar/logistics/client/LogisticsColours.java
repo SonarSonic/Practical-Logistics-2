@@ -2,14 +2,14 @@ package sonar.logistics.client;
 
 import net.minecraft.util.ResourceLocation;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 
 public class LogisticsColours {
 
-	public static final ResourceLocation colourTex1 = new ResourceLocation(PL2.MODID + ":textures/model/" + "progress1.png");
-	public static final ResourceLocation colourTex2 = new ResourceLocation(PL2.MODID + ":textures/model/" + "progress2.png");
-	public static final ResourceLocation colourTex3 = new ResourceLocation(PL2.MODID + ":textures/model/" + "progress3.png");
-	public static final ResourceLocation colourTex4 = new ResourceLocation(PL2.MODID + ":textures/model/" + "progress4.png");
+	public static final ResourceLocation colourTex1 = new ResourceLocation(PL2Constants.MODID + ":textures/model/" + "progress1.png");
+	public static final ResourceLocation colourTex2 = new ResourceLocation(PL2Constants.MODID + ":textures/model/" + "progress2.png");
+	public static final ResourceLocation colourTex3 = new ResourceLocation(PL2Constants.MODID + ":textures/model/" + "progress3.png");
+	public static final ResourceLocation colourTex4 = new ResourceLocation(PL2Constants.MODID + ":textures/model/" + "progress4.png");
 	public static CustomColour backgroundColour = new CustomColour(7, 7, 9);
 	public static CustomColour grey_base = new CustomColour(5, 5, 2);
 	public static CustomColour blue_overlay = new CustomColour(5, 5, 16);

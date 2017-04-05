@@ -11,8 +11,8 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2ASMLoader;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
@@ -21,8 +21,8 @@ import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
 
-@EntityMonitorHandler(handlerID = ItemMonitorHandler.id, modid = PL2.MODID)
-@TileMonitorHandler(handlerID = ItemMonitorHandler.id, modid = PL2.MODID)
+@EntityMonitorHandler(handlerID = ItemMonitorHandler.id, modid = PL2Constants.MODID)
+@TileMonitorHandler(handlerID = ItemMonitorHandler.id, modid = PL2Constants.MODID)
 public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> implements ITileMonitorHandler<MonitoredItemStack>, IEntityMonitorHandler<MonitoredItemStack> {
 
 	public static final String id = "item";

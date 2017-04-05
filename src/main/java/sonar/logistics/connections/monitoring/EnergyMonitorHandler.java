@@ -6,13 +6,13 @@ import net.minecraft.tileentity.TileEntity;
 import sonar.core.SonarCore;
 import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.TileMonitorHandler;
 import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
 
-@TileMonitorHandler(handlerID = EnergyMonitorHandler.id, modid = PL2.MODID)
+@TileMonitorHandler(handlerID = EnergyMonitorHandler.id, modid = PL2Constants.MODID)
 public class EnergyMonitorHandler extends LogicMonitorHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack> {
 
 	public static final String id = "energy";

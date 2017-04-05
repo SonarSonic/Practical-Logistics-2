@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.CustomTileHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.ILogicInfoRegistry;
@@ -20,7 +20,7 @@ import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 
-@CustomTileHandler(handlerID = "normal-fluids", modid = PL2.MODID)
+@CustomTileHandler(handlerID = "normal-fluids", modid = PL2Constants.MODID)
 public class NormalFluidHandler implements ICustomTileHandler {
 
 	@Override

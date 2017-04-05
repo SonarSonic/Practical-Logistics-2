@@ -28,6 +28,8 @@ import sonar.core.network.utils.ByteBufWritable;
 import sonar.core.utils.IWorldPosition;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.FluidReader;
@@ -44,7 +46,7 @@ import sonar.logistics.network.PacketWirelessStorage;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2.MODID + ":textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/sorting_icons.png");
 
 	private SonarTextField searchField;
 	public EntityPlayer player;
@@ -76,13 +78,12 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	public void initButtons() {
 		super.initButtons();
 		int start = 8;
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start, guiTop + 9, 32, 96 + 16, "Select Emitter", "button.Channels"));
-		this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
-		// this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 64 + 32, 16 * part.setting.getObject().ordinal(), "SelectNetwork", ""));
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * sortingOrder.getObject().ordinal(), "Sorting Order", ""));
+		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + start, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 5, guiLeft + start + 18 * 1, guiTop + 9));
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * sortItems.getObject().ordinal(), sortItems.getObject().getClientName(), ""));
-		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, "Dump Player Inventory", ""));
-		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, "Dump Network", ""));
+		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, PL2Translate.BUTTON_DUMP_PLAYER.t(), ""));
+		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, PL2Translate.BUTTON_DUMP_NETWORK.t(), ""));
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -179,7 +180,6 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 		final int usedButton = button;
 		if (!empty) {
 			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
-
 				@Override
 				public void writeToBuf(ByteBuf buf) {
 					MonitoredItemStack selection = (MonitoredItemStack) info;
@@ -191,22 +191,17 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 					}
 					buf.writeInt(usedButton);
 				}
-
 			}));
 
 		} else {
 			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
-
 				@Override
 				public void writeToBuf(ByteBuf buf) {
 					buf.writeBoolean(false);
 					buf.writeInt(usedButton);
 				}
-
 			}));
 		}
-
-		/* if (getSetting() == STACK) { handler.current = selection.item; handler.current.stackSize = 1; Logistics.network.sendToServer(new PacketInventoryReader(tile.xCoord, tile.yCoord, tile.zCoord, handler.current)); } if (getSetting() == POS) { List<StoredItemStack> currentList = (List<StoredItemStack>) ((ArrayList<StoredItemStack>) handler.stacks).clone(); int position = 0; for (StoredItemStack stack : currentList) { if (stack != null) { if (stack.equals(selection)) { String posString = String.valueOf(position); slotField.setText(posString); setPosSlot(posString); } } position++; } } */
 	}
 
 	@Override
@@ -238,7 +233,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				return;
 			}
 			List list = storedStack.item.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
-			list.add(1, "Stored: " + storedStack.stored);
+			list.add(1, PL2Translate.BUTTON_STORED + ": " + storedStack.stored);
 			for (int k = 0; k < list.size(); ++k) {
 				if (k == 0) {
 					list.set(k, storedStack.item.getRarity().rarityColor + (String) list.get(k));

@@ -22,8 +22,8 @@ public class GuiEntityNode extends GuiLogistics {
 
 	public void initGui() {
 		super.initGui();
-		buttonList.add(new GuiButton(0, guiLeft + 6, guiTop + 20, 80, 20, "Target: " + part.entityTarget.getObject()));
-		buttonList.add(new GuiButton(1, guiLeft + 90, guiTop + 20, 80, 20, part.nearest.getObject() ? "Nearest" : "Furthest"));
+		buttonList.add(new GuiButton(0, guiLeft + 6, guiTop + 20, 80, 20, PL2Translate.BUTTON_TARGET + ": " + part.entityTarget.getObject()));
+		buttonList.add(new GuiButton(1, guiLeft + 90, guiTop + 20, 80, 20, part.nearest.getObject() ? PL2Translate.BUTTON_NEAREST.t() : PL2Translate.BUTTON_FURTHEST.t()));
 		buttonList.add(new GuiButton(2, guiLeft + 10, guiTop + 50, 20, 20, "<"));
 		buttonList.add(new GuiButton(3, guiLeft + xSize - 30, guiTop + 50, 20, 20, ">"));
 	}
@@ -56,7 +56,7 @@ public class GuiEntityNode extends GuiLogistics {
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		FontHelper.textCentre(PL2Translate.ENTITY_NODE.t(), xSize, 6, LogisticsColours.white_text.getRGB());
-		FontHelper.textCentre("Entity Range: " + part.entityRange.getObject(), xSize, 56, LogisticsColours.white_text.getRGB());
+		FontHelper.textCentre(PL2Translate.ENTITY_NODE_RANGE.t() + ": " + part.entityRange.getObject(), xSize, 56, LogisticsColours.white_text.getRGB());
 
 	}
 

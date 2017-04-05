@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.ISuffixable;
@@ -19,7 +19,7 @@ import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
-@LogicInfoType(id = ProgressInfo.id, modid = PL2.MODID)
+@LogicInfoType(id = ProgressInfo.id, modid = PL2Constants.MODID)
 public class ProgressInfo implements IMonitorInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable {
 
 	public static final String id = "progress";

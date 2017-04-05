@@ -21,6 +21,7 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -200,7 +201,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 
 	@Override
 	public String getDisplayName() {
-		return FontHelper.translate("item.InventoryReader.name");
+		return PL2Translate.INVENTORY_READER.t();
 	}
 
 	@Override

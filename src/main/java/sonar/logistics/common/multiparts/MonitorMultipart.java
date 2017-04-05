@@ -176,6 +176,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		super.addInfo(info);
 		info.add("Channels Configured: " + !list.hasChannels());
 		info.add("Max Info: " + getMaxInfo());
+		//info.add("UUID: " + getIdentity());
 	}
 
 	//// EVENTS \\\\

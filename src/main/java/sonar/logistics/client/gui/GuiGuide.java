@@ -12,6 +12,7 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
@@ -50,7 +51,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 			scroller.renderScroller = enableListRendering;
 		if (currentPage != null) {
 			currentPage.initGui(this, pagePos);
-			buttonList.add(new LogisticsButton(this, 0, guiLeft + 6, guiTop + 3, 512 - 24, 0, 16, 11, "Back", ""));
+			buttonList.add(new LogisticsButton(this, 0, guiLeft + 6, guiTop + 3, 512 - 24, 0, 16, 11, PL2Translate.BUTTON_BACK.t(), ""));
 			buttonList.add(new GuiButton(-1, guiLeft + 6, guiTop + 140, 20, 20, "<<"));
 			buttonList.add(new GuiButton(-2, guiLeft + 222, guiTop + 140, 20, 20, ">>"));
 			buttonList.add(new GuiButton(-3, guiLeft + 26, guiTop + 140, 20, 20, "<"));
@@ -195,7 +196,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 			FontHelper.textCentre(pagePos + 1 + " / " + currentPage.getPageCount(), xSize, 140, -1);
 			FontHelper.textCentre(currentPos + 1 + " / " + infoList.size(), xSize, 152, -1);
 		} else {
-			FontHelper.textCentre(FontHelper.translate("Practical Logistics Guide"), xSize, 6, -1);
+			FontHelper.textCentre(PL2Translate.GUIDE_TITLE.t(), xSize, 6, -1);
 		}
 		if (coolDown != 0) {
 			coolDown--;

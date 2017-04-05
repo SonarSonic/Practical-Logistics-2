@@ -1,6 +1,5 @@
 package sonar.logistics.api.readers;
 
-import sonar.core.helpers.FontHelper;
 import sonar.core.utils.Localisation;
 import sonar.logistics.PL2Translate;
 

@@ -45,20 +45,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		}
 	}
 
-	public enum ButtonType {
-		EDIT("Edit"), SOURCE("Source");
-
-		String text;
-
-		ButtonType(String text) {
-			this.text = text;
-		}
-
-		public String getText() {
-			return text;
-		}
-	}
-
 	public GuiDisplayScreen(ScreenMultipart part) {
 		super(new ContainerMultipartSync(part), part);
 		this.part = part;
@@ -72,31 +58,30 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		case CREATE:
 			break;
 		case EDIT:
-			this.buttonList.add(new GuiButton(0, guiLeft + 8, guiTop + 5, 40, 20, "Data"));
-			this.buttonList.add(new GuiButton(1, guiLeft + 48, guiTop + 5, 40, 20, "Name"));
-			this.buttonList.add(new GuiButton(2, guiLeft + 88, guiTop + 5, 40, 20, "Prefix"));
-			this.buttonList.add(new GuiButton(3, guiLeft + 128, guiTop + 5, 40, 20, "Suffix"));
-			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 50, 20, "RESET"));
-			this.buttonList.add(new GuiButton(5, guiLeft + 8 + 50, guiTop + 130 + 8, 50, 20, "CLEAR"));
-			this.buttonList.add(new GuiButton(6, guiLeft + 108, guiTop + 130 + 8, 50, 20, "SAVE"));
+			this.buttonList.add(new GuiButton(0, guiLeft + 8, guiTop + 5, 40, 20, PL2Translate.BUTTON_DATA.t()));
+			this.buttonList.add(new GuiButton(1, guiLeft + 48, guiTop + 5, 40, 20, PL2Translate.BUTTON_NAME.t()));
+			this.buttonList.add(new GuiButton(2, guiLeft + 88, guiTop + 5, 40, 20, PL2Translate.BUTTON_PREFIX.t()));
+			this.buttonList.add(new GuiButton(3, guiLeft + 128, guiTop + 5, 40, 20, PL2Translate.BUTTON_SUFFIX.t()));
+			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_RESET.t()));
+			this.buttonList.add(new GuiButton(5, guiLeft + 8 + 50, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_CLEAR.t()));
+			this.buttonList.add(new GuiButton(6, guiLeft + 108, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_SAVE.t()));
 			ArrayList<String> strings = textFields == null ? part.container().getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
 			textFields = new DisplayTextFields(8, 28 + 4, 8);
 			textFields.initFields(strings);
 			break;
 		case LIST:
-			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 127, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), "Layout: " + part.getLayout(), "button.ScreenLayout"));
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 127, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), PL2Translate.BUTTON_LAYOUT.t() + ": " + part.getLayout(), "button.ScreenLayout"));
 			if (part instanceof LargeDisplayScreenPart) {
 				LargeDisplayScreenPart display = (LargeDisplayScreenPart) part;
-				this.buttonList.add(new LogisticsButton(this, -2, guiLeft + 127 + 20, guiTop + 3, 160, display.getDisplayScreen().isLocked.getObject() ? 0 : 16, "Locked: " + display.getDisplayScreen().isLocked.getObject(), "button.LockDisplay"));
+				this.buttonList.add(new LogisticsButton(this, -2, guiLeft + 127 + 20, guiTop + 3, 160, display.getDisplayScreen().isLocked.getObject() ? 0 : 16, PL2Translate.BUTTON_LOCKED.t() + ": " + display.getDisplayScreen().isLocked.getObject(), "button.LockDisplay"));
 
 			}
-			// int width = 162;
 			int height = 20;
 			int left = 7;
 			for (int i = 0; i < part.maxInfo(); i++) {
 				int top = 22 + ((height + 6) * i);
-				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 127, guiTop + top, 32, 256 - 32, "Edit", ""));
-				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 147, guiTop + top, 32, 256 - 16, "Source", ""));
+				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 127, guiTop + top, 32, 256 - 32, PL2Translate.BUTTON_EDIT.t(), ""));
+				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 147, guiTop + top, 32, 256 - 16, PL2Translate.BUTTON_SOURCE.t(), ""));
 			}
 
 			break;
@@ -109,8 +94,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		default:
 			break;
 		}
-		// this.buttonList.add(new DisplayButton(3, ButtonType.EDIT, guiLeft + 130 - 3, guiTop + 20));
-		/* nameField = new GuiTextField(0, this.fontRendererObj, 8, 18, 160, 12); nameField.setMaxStringLength(20); nameField.setText(part.getEmitterName()); */
 	}
 
 	public void drawScreen(int x, int y, float var) {
@@ -167,10 +150,10 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				part.sendByteBufPacket(2);
 				break;
 			}
-			if(button.id==-2){
-				((LargeDisplayScreenPart)part).getDisplayScreen().isLocked.invert();
+			if (button.id == -2) {
+				((LargeDisplayScreenPart) part).getDisplayScreen().isLocked.invert();
 				reset();
-				part.sendByteBufPacket(6);		
+				part.sendByteBufPacket(6);
 				break;
 			}
 			if (button.id >= 100) {
@@ -218,8 +201,8 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			RenderHelper.restoreBlendState();
 			break;
 		case SOURCE:
-			FontHelper.textCentre(FontHelper.translate("Info Selection"), xSize, 6, LogisticsColours.white_text);
-			FontHelper.textCentre(String.format("Select the info you wish to display"), xSize, 18, LogisticsColours.grey_text);
+			FontHelper.textCentre(PL2Translate.SCREEN_INFO_SELECT.t(), xSize, 6, LogisticsColours.white_text);
+			FontHelper.textCentre(PL2Translate.SCREEN_INFO_SELECT_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 			break;
 		default:
 			break;
@@ -235,7 +218,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			textFields.mouseClicked(i - guiLeft, j - guiTop, k);
 		}
 		super.mouseClicked(i, j, k);
-		// nameField.mouseClicked(i - guiLeft, j - guiTop, k);
 	}
 
 	@Override
@@ -250,14 +232,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			changeState(GuiState.LIST, -1);
 			return;
 		}
-
 		super.keyTyped(c, i);
-		/* if (nameField.isFocused()) { if (c == 13 || c == 27) { nameField.setFocused(false); } else { nameField.textboxKeyTyped(c, i); final String text = nameField.getText(); setString((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text); } } else { super.keyTyped(c, i); } */
-	}
-
-	public void setString(String string) {
-		// this.part.emitterName.setObject(string);
-		// part.sendByteBufPacket(2);
 	}
 
 	public void drawInfo(int pos, DisplayInfo info) {
@@ -275,7 +250,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			INameableInfo directInfo = (INameableInfo) monitorInfo;
 			FontHelper.text(directInfo.getClientIdentifier(), 11, top + 6, LogisticsColours.white_text.getRGB());
 		} else {
-			FontHelper.text(!info.getUnformattedStrings().isEmpty() ? "CUSTOM DATA" : "NO DATA", 11, top + 6, LogisticsColours.white_text.getRGB());
+			FontHelper.text(!info.getUnformattedStrings().isEmpty() ? PL2Translate.SCREEN_CUSTOM_DATA.t() : PL2Translate.SCREEN_NO_DATA.t(), 11, top + 6, LogisticsColours.white_text.getRGB());
 		}
 	}
 
@@ -284,10 +259,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		RenderHelper.restoreBlendState();
 	}
-	/* @SideOnly(Side.CLIENT) public class DisplayButton extends AnimatedButton { public int id; public ButtonType type; public DisplayButton(int id, ButtonType type, int x, int y) { super(id, x, y, GuiInventoryReader.sorting_icons, 15, 15); this.id = id; this.type = type; } public void drawButtonForegroundLayer(int x, int y) { drawCreativeTabHoveringText(type.getText(), x, y); }
-	 * @Override public void onClicked() { }
-	 * @Override public int getTextureX() { switch (type) { case EDIT: return 0; case SOURCE: return 16; default: break; } return 0; }
-	 * @Override public int getTextureY() { return 16; } } */
 
 	@Override
 	public int getColour(int i, int type) {
@@ -313,9 +284,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	public boolean isSelectedInfo(Object info) {
-		// if (part.getChannels(infoID).contains(info.syncCoords.getCoords())) {
-		// return true;
-		// }
 		return info instanceof InfoUUID && part.container().getInfoUUID(infoID) != null && part.container().getInfoUUID(infoID).equals(info);
 	}
 
@@ -333,8 +301,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			IInfoProvider monitor = (IInfoProvider) info;
 			InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), monitor.getDisplayName()), yPos + 1, LogisticsColours.white_text.getRGB());
 		}
-		// ILogicMonitor monitor = LogicMonitorManager.getMonitorFromClient(info.uuid.getUUID().hashCode());
-		// InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(info.coords.getCoords(), monitor.getClass().getSimpleName()), yPos + 1, LogisticsColours.white_text.getRGB());
 	}
 
 	@Override

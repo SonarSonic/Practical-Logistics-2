@@ -76,22 +76,22 @@ public class PL2Items extends PL2 {
 	}
 
 	public static void registerMultiparts() {
-		MultipartRegistry.registerPart(DataCablePart.class, PL2.MODID + ":DataCable");
-		MultipartRegistry.registerPart(NodePart.class, PL2.MODID + ":Node");
-		MultipartRegistry.registerPart(EntityNodePart.class, PL2.MODID + ":EntityNode");
-		MultipartRegistry.registerPart(TransferNodePart.class, PL2.MODID + ":TransferNode");
-		MultipartRegistry.registerPart(ArrayPart.class, PL2.MODID + ":Array");
-		MultipartRegistry.registerPart(InventoryReaderPart.class, PL2.MODID + ":InventoryReader");
-		MultipartRegistry.registerPart(FluidReaderPart.class, PL2.MODID + ":FluidReader");
-		MultipartRegistry.registerPart(InfoReaderPart.class, PL2.MODID + ":InfoReader");
-		MultipartRegistry.registerPart(DataEmitterPart.class, PL2.MODID + ":DataEmitter");
-		MultipartRegistry.registerPart(DataReceiverPart.class, PL2.MODID + ":DataReceiver");
-		MultipartRegistry.registerPart(DisplayScreenPart.class, PL2.MODID + ":DisplayScreen");
-		MultipartRegistry.registerPart(HolographicDisplayPart.class, PL2.MODID + ":HolographicDisplay");
-		MultipartRegistry.registerPart(LargeDisplayScreenPart.class, PL2.MODID + ":LargeDisplayScreen");
-		MultipartRegistry.registerPart(EnergyReaderPart.class, PL2.MODID + ":EnergyReader");
-		MultipartRegistry.registerPart(RedstoneSignallerPart.class, PL2.MODID + ":RedstoneSignaller");
-		MultipartRegistry.registerPart(ClockPart.class, PL2.MODID + ":Clock");
+		MultipartRegistry.registerPart(DataCablePart.class, PL2Constants.MODID + ":DataCable");
+		MultipartRegistry.registerPart(NodePart.class, PL2Constants.MODID + ":Node");
+		MultipartRegistry.registerPart(EntityNodePart.class, PL2Constants.MODID + ":EntityNode");
+		MultipartRegistry.registerPart(TransferNodePart.class, PL2Constants.MODID + ":TransferNode");
+		MultipartRegistry.registerPart(ArrayPart.class, PL2Constants.MODID + ":Array");
+		MultipartRegistry.registerPart(InventoryReaderPart.class, PL2Constants.MODID + ":InventoryReader");
+		MultipartRegistry.registerPart(FluidReaderPart.class, PL2Constants.MODID + ":FluidReader");
+		MultipartRegistry.registerPart(InfoReaderPart.class, PL2Constants.MODID + ":InfoReader");
+		MultipartRegistry.registerPart(DataEmitterPart.class, PL2Constants.MODID + ":DataEmitter");
+		MultipartRegistry.registerPart(DataReceiverPart.class, PL2Constants.MODID + ":DataReceiver");
+		MultipartRegistry.registerPart(DisplayScreenPart.class, PL2Constants.MODID + ":DisplayScreen");
+		MultipartRegistry.registerPart(HolographicDisplayPart.class, PL2Constants.MODID + ":HolographicDisplay");
+		MultipartRegistry.registerPart(LargeDisplayScreenPart.class, PL2Constants.MODID + ":LargeDisplayScreen");
+		MultipartRegistry.registerPart(EnergyReaderPart.class, PL2Constants.MODID + ":EnergyReader");
+		MultipartRegistry.registerPart(RedstoneSignallerPart.class, PL2Constants.MODID + ":RedstoneSignaller");
+		MultipartRegistry.registerPart(ClockPart.class, PL2Constants.MODID + ":Clock");
 	}
 
 	public static Item register(SonarRegistryItem register) {

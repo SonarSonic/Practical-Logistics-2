@@ -34,6 +34,8 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.filters.FilterList;
@@ -65,7 +67,7 @@ public class GuiFilterList extends GuiSelectionList {
 	public INodeFilter currentFilter;
 	public EntityPlayer player;
 	public GuiTextField oreDictField;
-	public static final ResourceLocation filterButtons = new ResourceLocation(PL2.MODID + ":textures/gui/filter_buttons.png");
+	public static final ResourceLocation filterButtons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/filter_buttons.png");
 
 	public enum GuiState {
 		LIST(176, 166, 11, true), ITEM_FILTER(100, 100, 16, true), ORE_FILTER(100, 100, 11, true), FLUID_FILTER(100, 100, 16, true);
@@ -113,16 +115,16 @@ public class GuiFilterList extends GuiSelectionList {
 		case LIST:
 			int start = 7;
 			int gap = 18;
-			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start + gap, guiTop + 6, 32, 48, "New Item Filter", "button.ItemFilter"));
-			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + gap * 2, guiTop + 6, 32, 80, "New Ore Dict Filter", "button.OreFilter"));
-			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + gap * 3, guiTop + 6, 32, 64, "New Fluid Filter", "button.FluidFilter"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + gap * 4, guiTop + 6, 32, 0, "Move Up", "button.MoveUpFilter"));
-			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + gap * 5, guiTop + 6, 32, 16, "Move Down", "button.MoveDownFilter"));
-			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + gap * 6, guiTop + 6, 32, 32, "Delete", "button.DeleteFilter"));
-			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + gap * 7, guiTop + 6, 32, 96, "Clear All", "button.ClearAllFilter"));
-			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + gap * 8, guiTop + 6, 32, 96 + 16, "Channels", "button.Channels"));
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start + gap, guiTop + 6, 32, 48, PL2Translate.FILTERS_ITEM_FILTER.t(), "button.ItemFilter"));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + gap * 2, guiTop + 6, 32, 80, PL2Translate.FILTERS_ORE_FILTER.t(), "button.OreFilter"));
+			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + gap * 3, guiTop + 6, 32, 64, PL2Translate.FILTERS_FLUID_FILTER.t(), "button.FluidFilter"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + gap * 4, guiTop + 6, 32, 0, PL2Translate.BUTTON_MOVE_UP.t(), "button.MoveUpFilter"));
+			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + gap * 5, guiTop + 6, 32, 16, PL2Translate.BUTTON_MOVE_DOWN.t(), "button.MoveDownFilter"));
+			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + gap * 6, guiTop + 6, 32, 32, PL2Translate.BUTTON_DELETE.t(), "button.DeleteFilter"));
+			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + gap * 7, guiTop + 6, 32, 96, PL2Translate.BUTTON_CLEAR_ALL.t(), "button.ClearAllFilter"));
+			this.buttonList.add(new LogisticsButton.CHANNELS(this, 7, guiLeft + start + gap * 8, guiTop + 6));
 			if (isTransferTile) {
-				this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start, guiTop + 6, 64 + 16, 16 * transferTile.getTransferMode().ordinal(), "TransferMode: " + transferTile.getTransferMode(), "button.TransferMode"));
+				this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start, guiTop + 6, 64 + 16, 16 * transferTile.getTransferMode().ordinal(), "Transfer Mode: " + transferTile.getTransferMode(), "button.TransferMode"));
 
 				boolean itemTransfer = transferTile.isTransferEnabled(TransferType.ITEMS);
 				this.buttonList.add(new LogisticsButton(this, 8, guiLeft + start + gap * 9, guiTop + 6, itemTransfer ? 16 : 0, 80, "Item Transfer: " + itemTransfer, "button.ItemTransfer"));
@@ -225,7 +227,7 @@ public class GuiFilterList extends GuiSelectionList {
 			if (button instanceof SelectionButton) {
 				return;
 			}
-			NodeTransferMode mode = isTransferTile ?  transferTile.getTransferMode():  NodeTransferMode.ADD_REMOVE;
+			NodeTransferMode mode = isTransferTile ? transferTile.getTransferMode() : NodeTransferMode.ADD_REMOVE;
 			if (isTransferTile) {
 				switch (button.id) {
 				case -1:

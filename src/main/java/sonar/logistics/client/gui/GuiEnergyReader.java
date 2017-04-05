@@ -43,8 +43,8 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
 	public void initButtons() {
 		int start = 8;
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 9, 32, 96 + 16, "Channels", "button.Channels"));
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton.CHANNELS(this, 0, guiLeft + start, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 1, guiLeft + start + 18 * 1, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 18 * 2, guiTop + 9, 64 + 64 + 16, 16 * part.setting.getObject().ordinal(), part.setting.getObject().getName(), part.setting.getObject().getDescription()));
 		if (part.setting.getObject() != Modes.STORAGES)
 			this.buttonList.add(new GuiButton(3, guiLeft + 190, guiTop + 6, 40, 20, part.energyType.getEnergyType().getStorageSuffix()));
@@ -71,7 +71,6 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 				part.sendByteBufPacket(4);
 				reset();
 				break;
-			/* case 0: part.sortingOrder.incrementEnum(); part.sendByteBufPacket(5); initButtons(); break; case 3: Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 3)); break; case 4: Logistics.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 4)); break; */
 			}
 		}
 	}
@@ -116,7 +115,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	public boolean isSelectedInfo(MonitoredEnergyStack info) {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
-		} // X: -468 Y: 4 Z: -975 D: 0
+		}
 		return part.selected.getCoords() != null && part.selected.getCoords().equals(info.coords.getMonitoredInfo().syncCoords.getCoords());
 	}
 
@@ -163,7 +162,6 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}
-		/* ArrayList<IMonitorInfo> selectedInfo = type == 0 ? part.getSelectedInfo() : part.getPairedInfo(); int pos = 0; for (IMonitorInfo selected : selectedInfo) { if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo(selected)) { return LogisticsColours.infoColours[pos].getRGB(); } pos++; } */
 		return LogisticsColours.getDefaultSelection().getRGB();
 	}
 }

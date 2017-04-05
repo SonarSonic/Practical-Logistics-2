@@ -17,6 +17,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
@@ -75,12 +76,12 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			int start = 42;
 			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 48, 0 + 16 * tile.emitterMode().getObject().ordinal(), "Emit If: " + tile.emitterMode().getObject().name(), "button.EmitterMode"));
 			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20 * 1, guiTop + 6, 32, 128, "New Statement", "button.NewStatement"));
-			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 0, "Move Up", "button.MoveUpStatement"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 16, "Move Down", "button.MoveDownStatement"));
-			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 32, "Delete", "button.DeleteStatement"));
-			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 20 * 5, guiTop + 6, 32, 96, "Clear All", "button.ClearAllStatements"));
+			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 0, PL2Translate.BUTTON_MOVE_UP.t(), "button.MoveUpStatement"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 16, PL2Translate.BUTTON_MOVE_DOWN.t(), "button.MoveDownStatement"));
+			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 32, PL2Translate.BUTTON_DELETE.t(), "button.DeleteStatement"));
+			this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 20 * 5, guiTop + 6, 32, 96, PL2Translate.BUTTON_CLEAR_ALL.t(), "button.ClearAllStatements"));
 			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 20 * 6, guiTop + 6, 32, 128 + 16, "Refresh", "button.RedstoneSignallerRefresh"));
-			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 20 * 7, guiTop + 6, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+			this.buttonList.add(new LogisticsButton.HELP(this, 7, guiLeft + start + 20 * 7, guiTop + 6));
 			break;
 		case STATEMENT:
 			this.buttonList.add(new GuiButton(0, guiLeft + xSize / 2 - 60, guiTop + 116, 120, 20, "Input Type: " + currentFilter.getInputType()));

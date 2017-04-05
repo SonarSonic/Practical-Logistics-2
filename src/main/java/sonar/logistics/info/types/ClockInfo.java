@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.network.sync.SyncTagType;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
@@ -19,7 +19,7 @@ import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
-@LogicInfoType(id = ClockInfo.id, modid = PL2.MODID)
+@LogicInfoType(id = ClockInfo.id, modid = PL2Constants.MODID)
 public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<ClockInfo>, INBTSyncable, INameableInfo<ClockInfo>, IComparableInfo<ClockInfo> {
 
 	public static final String id = "clock";

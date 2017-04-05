@@ -65,7 +65,7 @@ public class PL2Client extends PL2Common {
 					PL2.logger.info("NO TRANSLATION FOUND FOR: " + l.o());
 				}
 			});
-			PL2.logger.info(PL2.NAME + " Translations were updated");
+			PL2.logger.info(PL2Constants.NAME + " Translations were updated");
 		}
 	}
 	

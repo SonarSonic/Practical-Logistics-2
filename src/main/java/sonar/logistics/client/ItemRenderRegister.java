@@ -12,6 +12,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import sonar.core.common.block.properties.IMetaRenderer;
 import sonar.core.registries.ISonarRegistryItem;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Items;
 
 public class ItemRenderRegister {
@@ -28,15 +29,15 @@ public class ItemRenderRegister {
 						variant = "variant=" + meta.getVariant(stack.getItemDamage()).getName();
 					}
 
-					ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(PL2.MODID + ":" + "items/" + register.getRegistryName().substring(5), variant));
+					ModelLoader.setCustomModelResourceLocation(item, stack.getItemDamage(), new ModelResourceLocation(PL2Constants.MODID + ":" + "items/" + register.getRegistryName().substring(5), variant));
 
 				}
 			} else {
 				if (item instanceof ItemMultiPart) {
-					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PL2.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
+					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PL2Constants.MODID + ":" + item.getUnlocalizedName().substring(5), "inventory"));
 				} else {
 					//Logistics.logger.info(new ModelResourceLocation(new ResourceLocation(Logistics.MODID, "items/" + item.getUnlocalizedName().substring(5)), "inventory").toString());
-					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(new ResourceLocation(PL2.MODID, item.getUnlocalizedName().substring(5)), "inventory"));
+					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(new ResourceLocation(PL2Constants.MODID, item.getUnlocalizedName().substring(5)), "inventory"));
 				}
 			}
 		}

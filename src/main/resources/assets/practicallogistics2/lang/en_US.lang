@@ -91,6 +91,35 @@ guide.ChannelsEND.name=You can edit the channels by pressing the channel button 
 
 //HELPOVERLAYS//
 
+// GUI BUTTONS
+pl.button.edit=Edit
+pl.button.source=Source
+pl.button.data=Data
+pl.button.name=Name
+pl.button.prefix=Prefix
+pl.button.suffix=Suffix
+pl.button.reset=RESET
+pl.button.delete=Delete
+pl.button.clear=CLEAR
+pl.button.clearall=Clear All
+pl.button.save=SAVE
+pl.button.locked=Locked
+pl.button.layout=Layout
+pl.button.channels=Channels
+pl.button.helpenabled=Help Enabled
+pl.button.target=Target
+pl.button.nearest=Neareset
+pl.button.furthest=Furthest
+pl.button.order=Sorting Order
+pl.button.stored=Stored
+pl.button.back=Back
+pl.button.configurefilters=Configure Filters
+pl.button.dumpPlayer=Dump Player Inventory
+pl.button.dumpNetwork=Dump Network
+pl.button.moveUp=Move Up
+pl.button.moveDown=Move Down
+
+
 //BUTTON HELPS//
 button.ScreenLayout=The layout of how data is displayed on the Display Screen.
 button.TransferMode=The transfer mode of this Node-ADD: Allows adding-REMOVE: Allows removing-ADD/REMOVE: Allows adding/removing, however a filter is required-PASSIVE: No adding/removing can occur 
@@ -119,9 +148,36 @@ button.TileFilters=Add, Remove, and Create the filters for this tile.
 
 /////INFO/////
 
+//filters
+pl.filters.newItem=New Item Filter
+pl.filters.newOreDict=New Ore Dict Filter
+pl.filters.newFluid=New Fluid Filter
+
+// channels
+pl.channels.selection=Channel Selection
+pl.channels.selection.help=Select the channels you wish to monitor
+
+// guide
+pl.guide.title=Practical Logistics Guide
+
 //data emitter
 pl.emitter.public=Public
 pl.emitter.private=Private
+
+//data entity node
+pl.entitynode.range=Entity Range
+
+//data receiver
+pl.receiver.help=Select the emitters you wish to connect to
+
+//display screen
+pl.display.infoselect=Info Selection
+pl.display.infoselect.help=Select the info you wish to display
+pl.display.customdata=CUSTOM DATA
+pl.display.nodata=NO DATA
+
+//info reader
+pl.info.reader.help=Select the data you wish to monitor
 
 //inventory reader
 pl.inv.mode.stack=Stack
@@ -160,6 +216,9 @@ pl.signaller.default=Default
 pl.signaller.override=Override
 pl.signaller.all=Match All
 pl.signaller.one=Match One
+
+//wireless storage reader
+pl.wirelessStorage.emitter=Select the emitter you wish to connect to
 
 //info
 pl.Vec3i.getX=X Coord

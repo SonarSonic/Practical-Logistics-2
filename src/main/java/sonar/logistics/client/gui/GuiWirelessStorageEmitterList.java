@@ -40,7 +40,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
 		FontHelper.textCentre(PL2Translate.WIRELESS_STORAGE_READER.t(), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(String.format("Select the emitter you wish to connect to"), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(PL2Translate.WIRELESS_STORAGE_READER_EMITTER.t(), xSize, 18, LogisticsColours.grey_text);
 	}
 
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, ClientDataEmitter info) {

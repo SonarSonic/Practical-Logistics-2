@@ -14,11 +14,29 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 
 @SideOnly(Side.CLIENT)
 public class LogisticsButton extends AnimatedButton {
-	public static final ResourceLocation logisticsButtons = new ResourceLocation(PL2.MODID + ":textures/gui/filter_buttons.png");
+	
+	public static class CHANNELS extends LogisticsButton{
+
+		public CHANNELS(GuiSonar sonar, int id, int x, int y) {
+			super(sonar, id, x, y, 32, 96 + 16, PL2Translate.BUTTON_CHANNELS.t(), "button.Channels");
+		}
+		
+	}
+	
+	public static class HELP extends LogisticsButton{
+
+		public HELP(GuiSonar sonar, int id, int x, int y) {
+			super(sonar, id, x, y, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), PL2Translate.BUTTON_HELP_ENABLED + ": " + GuiHelpOverlay.enableHelp, "button.HelpButton");
+		}
+		
+	}
+	
+	public static final ResourceLocation logisticsButtons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/filter_buttons.png");
 	public GuiSonar sonar;
 	public String buttonText;
 	public int texX, texY;

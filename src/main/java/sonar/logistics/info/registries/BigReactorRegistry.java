@@ -2,9 +2,7 @@ package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
 
-import appeng.helpers.IPriorityHost;
 import appeng.tile.grindstone.TileGrinder;
-import appeng.tile.misc.TileInscriber;
 import erogenousbeef.bigreactors.common.interfaces.IReactorFuelInfo;
 import erogenousbeef.bigreactors.common.multiblock.MultiblockReactor;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorPartBase;

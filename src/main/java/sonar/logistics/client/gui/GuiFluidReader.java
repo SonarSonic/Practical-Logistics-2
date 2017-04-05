@@ -18,7 +18,8 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.readers.FluidReader.Modes;
 import sonar.logistics.client.LogisticsButton;
@@ -30,8 +31,8 @@ import sonar.logistics.connections.monitoring.MonitoredList;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
-	public static final ResourceLocation stackBGround = new ResourceLocation(PL2.MODID + ":textures/gui/inventoryReader_stack.png");
-	public static final ResourceLocation clearBGround = new ResourceLocation(PL2.MODID + ":textures/gui/inventoryReader_clear.png");
+	public static final ResourceLocation stackBGround = new ResourceLocation(PL2Constants.MODID + ":textures/gui/inventoryReader_stack.png");
+	public static final ResourceLocation clearBGround = new ResourceLocation(PL2Constants.MODID + ":textures/gui/inventoryReader_clear.png");
 
 	public FluidReaderPart part;
 	private SonarTextField slotField;
@@ -73,11 +74,11 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		super.initButtons();
 
 		int start = 8;
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 8, guiTop + 9, 32, 96 + 16, "Channels", "button.Channels"));
-		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + 8, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 3, guiLeft + start + 18 * 1, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 128, 16 * part.setting.getObject().ordinal(), getSetting().getClientName(), getSetting().getDescription()));
 
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), "Sorting Order", ""));
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
 	
 	}
@@ -223,7 +224,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		List list = new ArrayList();
 		list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 		if (fluidStack.stored != 0) {
-			list.add(TextFormatting.GRAY + (String) "Stored: " + fluidStack.stored + " mB");
+			list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
 		}
 		drawHoveringText(list, x, y, fontRendererObj);
 	}

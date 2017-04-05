@@ -33,7 +33,7 @@ public class GuiDataEmitter extends GuiLogistics {
 
 	public void onTextFieldChanged(SonarTextField field) {
 		final String text = field.getText();
-		this.part.emitterName.setObject((text.isEmpty() || text == "" || text == null) ? "Unnamed Emitter" : text);
+		this.part.emitterName.setObject((text.isEmpty() || text == "" || text == null) ? DataEmitterPart.UNNAMED : text);
 		part.sendByteBufPacket(2);
 	}
 

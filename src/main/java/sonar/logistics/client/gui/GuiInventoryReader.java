@@ -20,6 +20,8 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
@@ -37,7 +39,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	// public static final ResourceLocation stackBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_stack.png");
 	// public static final ResourceLocation clearBGround = new ResourceLocation("PracticalLogistics:textures/gui/inventoryReader_clear.png");
 
-	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2.MODID + ":textures/gui/sorting_icons.png");
+	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/sorting_icons.png");
 
 	private InventoryReaderPart part;
 	private SonarTextField slotField;
@@ -80,16 +82,16 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	public void initButtons() {
 		super.initButtons();
 		int start = 8;
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start, guiTop + 9, 32, 96 + 16, "Channels", "button.Channels"));
-		this.buttonList.add(new LogisticsButton(this, 5, guiLeft + start + 18 * 1, guiTop + 9, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), "Help Enabled: " + GuiHelpOverlay.enableHelp, "button.HelpButton"));
+		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + start, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 5, guiLeft + start + 18 * 1, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 64 + 32, 16 * part.setting.getObject().ordinal(), getSettingsString(), ""));
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), "Sorting Order", ""));
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
-		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, "Dump Player Inventory", ""));
-		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, "Dump Network", ""));
+		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, PL2Translate.BUTTON_DUMP_PLAYER.t(), ""));
+		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, PL2Translate.BUTTON_DUMP_NETWORK.t(), ""));
 		if (part.setting.getObject() == Modes.FILTERED) {
-			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 18 * 3, guiTop + 9, 32, 64, "Configure Filters", "button.TileFilters"));
-			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 18 * 4, guiTop + 9, 32, 96, "Clear All", "button.ClearAllFilter"));
+			this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 18 * 3, guiTop + 9, 32, 64, PL2Translate.BUTTON_CONFIGURE_FILTERS.t(), "button.TileFilters"));
+			this.buttonList.add(new LogisticsButton(this, 7, guiLeft + start + 18 * 4, guiTop + 9, 32, 96, PL2Translate.BUTTON_CLEAR_ALL.t(), "button.ClearAllFilter"));
 		}
 	}
 
@@ -193,7 +195,6 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		} else {
 			PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, button));
 		}
-		/* if (getSetting() == STACK) { handler.current = selection.item; handler.current.stackSize = 1; Logistics.network.sendToServer(new PacketInventoryReader(tile.xCoord, tile.yCoord, tile.zCoord, handler.current)); } if (getSetting() == POS) { List<StoredItemStack> currentList = (List<StoredItemStack>) ((ArrayList<StoredItemStack>) handler.stacks).clone(); int position = 0; for (StoredItemStack stack : currentList) { if (stack != null) { if (stack.equals(selection)) { String posString = String.valueOf(position); slotField.setText(posString); setPosSlot(posString); } } position++; } } */
 	}
 
 	@Override
@@ -202,13 +203,6 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	@Override
 	public void renderSelection(MonitoredItemStack selection, int x, int y, int slot) {
-		/*
-		if (part.setting.getObject() == Modes.POS && slot == part.posSlot.getObject()) {
-			RenderHelper.saveBlendState();
-			this.drawTransparentRect(13 + (x * 18), 32 + (y * 18), 13 + (x * 18) + 16, 32 + (y * 18) + 16, LogisticsColours.getDefaultSelection().getRGB());
-			RenderHelper.restoreBlendState();
-		}
-		*/
 		RenderHelper.saveBlendState();
 		StoredItemStack storedStack = selection.getStoredStack();
 		if (storedStack == null) {
@@ -228,7 +222,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			return;
 		}
 		List list = storedStack.item.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
-		list.add(1, "Stored: " + storedStack.stored);
+		list.add(1, PL2Translate.BUTTON_STORED + ": " + storedStack.stored);
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
 				list.set(k, storedStack.item.getRarity().rarityColor + (String) list.get(k));

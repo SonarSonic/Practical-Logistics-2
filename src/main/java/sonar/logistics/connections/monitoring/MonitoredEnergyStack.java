@@ -13,7 +13,7 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
@@ -26,7 +26,7 @@ import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 
-@LogicInfoType(id = MonitoredEnergyStack.id, modid = PL2.MODID)
+@LogicInfoType(id = MonitoredEnergyStack.id, modid = PL2Constants.MODID)
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {
 
 	public static final String id = "energy";

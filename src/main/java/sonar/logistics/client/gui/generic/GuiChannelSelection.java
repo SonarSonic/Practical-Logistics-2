@@ -13,6 +13,7 @@ import sonar.core.client.gui.HelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.client.LogisticsColours;
@@ -110,8 +111,8 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(FontHelper.translate("Channel Selection"), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(String.format("Select the channels you wish to monitor"), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(PL2Translate.CHANNELS_SELECTION.t(), xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre(PL2Translate.CHANNELS_SELECTION_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 		overlay.drawOverlay(this, x, y);
 	}
 

@@ -10,12 +10,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.common.tileentity.TileEntityHammer;
 
 public class RenderHammer extends TileEntitySpecialRenderer {
 
-	public final static String modelFolder = PL2.MODID + ":textures/model/";
+	public final static String modelFolder = PL2Constants.MODID + ":textures/model/";
 	public String texture = modelFolder + "forging_hammer_stone.png";
 	public ModelHammer model = new ModelHammer();
 	public ResourceLocation rope = new ResourceLocation(modelFolder + "rope.png");

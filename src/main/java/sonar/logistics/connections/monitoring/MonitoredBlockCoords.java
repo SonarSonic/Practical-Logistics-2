@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
@@ -16,7 +16,7 @@ import sonar.logistics.api.logistics.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.BaseInfo;
 
-@LogicInfoType(id = MonitoredBlockCoords.id, modid = PL2.MODID)
+@LogicInfoType(id = MonitoredBlockCoords.id, modid = PL2Constants.MODID)
 public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> implements INameableInfo<MonitoredBlockCoords>, IComparableInfo<MonitoredBlockCoords> {
 
 	public static final String id = "coords";

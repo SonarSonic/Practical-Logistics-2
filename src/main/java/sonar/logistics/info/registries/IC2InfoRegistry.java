@@ -6,7 +6,6 @@ import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorChamber;
 import ic2.core.block.reactor.tileentity.TileEntityNuclearReactorElectric;
 import sonar.logistics.api.asm.InfoRegistry;
-import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.ILogicInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
