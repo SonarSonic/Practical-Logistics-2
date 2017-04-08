@@ -2,7 +2,6 @@ package sonar.logistics.common.multiparts;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
@@ -20,29 +19,31 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.utils.LogisticsHelper;
-import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.api.viewers.ViewerTally;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiClock;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.ClockInfo;
 
-public class ClockPart extends SidedMultipart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui, ILogicViewable {
+public class ClockPart extends SidedMultipart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui {
 
-	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
+	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
 	public static final PropertyBool HAND = PropertyBool.create("hand");
 
 	public long lastMillis;// when the movement was started
@@ -61,14 +62,6 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 	public long finalStopTime;
 	{
 		this.syncList.addParts(tickTime);
-	}
-
-	public ClockPart() {
-		super(3 * 0.0625, 0.0625 * 1, 0.0625 * 3);
-	}
-
-	public ClockPart(EnumFacing face) {
-		super(face, 5 * 0.0625, 0.0625 * 1, 0.0625 * 3);
 	}
 
 	@Override
@@ -122,7 +115,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 		}
 
 		if (info != null) {
-			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
+			InfoUUID id = new InfoUUID(getIdentity(), 0);
 			IMonitorInfo oldInfo = PL2.getServerManager().info.get(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				PL2.getServerManager().changeInfo(id, info);
@@ -134,11 +127,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	@Override
 	public IMonitorInfo getMonitorInfo(int pos) {
-		return PL2.getServerManager().getInfoFromUUID(new InfoUUID(getIdentity().hashCode(), 0));
-	}
-
-	public UUID getIdentity() {
-		return getUUID();
+		return PL2.getServerManager().getInfoFromUUID(new InfoUUID(getIdentity(), 0));
 	}
 
 	@Override
@@ -148,24 +137,22 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	//// ILogicViewable \\\\
 
-	public ViewersList getViewersList() {
-		return viewers;
+	public ListenerList<PlayerListener> getListenerList() {
+		return listeners;
 	}
 
 	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
-		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+	public void onListenerAdded(ListenerTally<PlayerListener> tally){
+		SonarMultipartHelper.sendMultipartSyncToPlayer(this, tally.listener.player);
 	}
 
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
-	}
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally){}
 
 	//// STATE \\\\
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing()).withProperty(HAND, false);
+		return state.withProperty(ORIENTATION, getCableFace()).withProperty(HAND, false);
 	}
 
 	public BlockStateContainer createBlockState() {
@@ -176,7 +163,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public void onLoaded() {
 		super.onLoaded();
-		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addInfoProvider(this);
 		if (isServer()) {
 			setClockInfo();
 		}
@@ -184,17 +171,17 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	public void onRemoved() {
 		super.onRemoved();
-		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeInfoProvider(this);
 	}
 
 	public void onUnloaded() {
 		super.onUnloaded();
-		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeInfoProvider(this);
 	}
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addInfoProvider(this);
 	}
 
 	//// SAVING \\\\
@@ -303,28 +290,23 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.clock);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return FontHelper.translate("item.Clock.name");
-	}
-
-	@Override
 	public boolean canConnectRedstone(EnumFacing side) {
-		return side != getFacing().getOpposite();
+		return side != getCableFace().getOpposite();
 	}
 
 	@Override
 	public int getWeakSignal(EnumFacing side) {
-		return (side != getFacing().getOpposite() && powering) ? 15 : 0;
+		return (side != getCableFace().getOpposite() && powering) ? 15 : 0;
 	}
 
 	@Override
 	public int getStrongSignal(EnumFacing side) {
-		return (side != getFacing().getOpposite() && powering) ? 15 : 0;
+		return (side != getCableFace().getOpposite() && powering) ? 15 : 0;
+	}
+
+	@Override
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.CLOCK;
 	}
 
 }

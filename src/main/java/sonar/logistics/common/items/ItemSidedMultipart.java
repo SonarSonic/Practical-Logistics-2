@@ -8,7 +8,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import sonar.logistics.common.multiparts.SidedMultipart;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
 
 public class ItemSidedMultipart extends ItemMultiPart {
 	public final Class<? extends SidedMultipart> type;
@@ -19,8 +19,8 @@ public class ItemSidedMultipart extends ItemMultiPart {
 
 	@Override
 	public IMultipart createPart(World world, BlockPos pos, EnumFacing side, Vec3d hit, ItemStack stack, EntityPlayer player) {
-		try {			
-			return type.getConstructor(EnumFacing.class).newInstance(side);
+		try {
+			return type.newInstance().setCableFace(side);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

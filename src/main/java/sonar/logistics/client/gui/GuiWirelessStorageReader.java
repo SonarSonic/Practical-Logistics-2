@@ -50,7 +50,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 
 	private SonarTextField searchField;
 	public EntityPlayer player;
-	public UUID uuid;
+	public int identity;
 	public int networkID;
 	public ItemStack reader;
 
@@ -59,10 +59,10 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	public static SyncEnum<InventoryReader.SortingType> sortItems = (SyncEnum) new SyncEnum(InventoryReader.SortingType.values(), 0).addSyncType(SyncType.SPECIAL);
 	public SyncEnum<FluidReader.SortingType> sortfluids = (SyncEnum) new SyncEnum(FluidReader.SortingType.values(), 0).addSyncType(SyncType.SPECIAL);
 
-	public GuiWirelessStorageReader(ItemStack reader, UUID uuid, int networkID, EntityPlayer player) {
-		super(new ContainerStorageViewer(uuid, player), (IWorldPosition) null);
+	public GuiWirelessStorageReader(ItemStack reader, int identity, int networkID, EntityPlayer player) {
+		super(new ContainerStorageViewer(identity, player), (IWorldPosition) null);
 		this.reader = reader;
-		this.uuid = uuid;
+		this.identity = identity;
 		this.networkID = networkID;
 		this.player = player;
 	}
@@ -150,7 +150,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	public MonitoredList<IMonitorInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
-			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(uuid.hashCode(), DataEmitterPart.STATIC_ITEM_ID));
+			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, DataEmitterPart.STATIC_ITEM_ID));
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
 
 			MonitoredList<IMonitorInfo> list = MonitoredList.newMonitoredList(networkID);
@@ -168,7 +168,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				return searchList;
 			}
 		} else {
-			return PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(uuid.hashCode(), DataEmitterPart.STATIC_FLUID_ID));
+			return PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, DataEmitterPart.STATIC_FLUID_ID));
 		}
 	}
 

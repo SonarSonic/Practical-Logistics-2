@@ -36,7 +36,6 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	public SyncTagType.LONG usedTypes = new SyncTagType.LONG(4);
 	public SyncTagType.LONG itemCount = new SyncTagType.LONG(5);
 	public SyncTagType.INT driveNum = new SyncTagType.INT(5);
-
 	{
 		syncList.addParts(totalBytes, usedBytes, totalTypes, usedTypes, itemCount, driveNum);
 	}
@@ -103,8 +102,7 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	}
 
 	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		
+	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {		
 		GL11.glPushMatrix();
 		GL11.glPushMatrix();
 		GlStateManager.disableLighting();
@@ -117,7 +115,6 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 		List<String> strings = new ArrayList();
 		strings.add("Bytes: " + usedBytes.getObject() + "/" + totalBytes.getObject());
 		strings.add("Types: " + usedTypes.getObject() + "/" + totalTypes.getObject());
-		//strings.add("Items Stored: " + itemCount.getObject());
 		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, strings);
 		GL11.glPopMatrix();
 	}

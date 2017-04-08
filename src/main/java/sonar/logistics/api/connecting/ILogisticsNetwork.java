@@ -1,38 +1,47 @@
 package sonar.logistics.api.connecting;
 
-import java.util.Map;
+import java.util.ArrayList;
 
-import sonar.logistics.api.displays.IInfoDisplay;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.core.listener.ISonarListenable;
+import sonar.core.listener.ISonarListener;
+import sonar.core.listener.ListenerList;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.readers.IListReader;
-import sonar.logistics.api.readers.INetworkReader;
-import sonar.logistics.api.readers.IdentifiedChannelsList;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.api.readers.IInfoProvider;
+import sonar.logistics.connections.CacheHandler;
+import sonar.logistics.connections.CacheType;
 
-/** implemented on {@link INetworkCache}s which can monitor info, items, fluids etc */
-public interface ILogisticsNetwork extends INetworkCache {
+public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILogisticsNetwork> {
 
-	public RefreshType getLastRefresh();
+	public static final int CONNECTED_NETWORK = 0;
+	public static final int WATCHING_NETWORK = 1;
 
-	/** called when a display is connected to the network */
-	public void addDisplay(IInfoDisplay display);
+	public <T> ArrayList<T> getConnections(CacheHandler<T> handler, CacheType cacheType);
 
-	/** called when a display is disconnected from the network */
-	public void removeDisplay(IInfoDisplay display);
-	
-	/** called when a {@link INetworkReader} is connected to the network */
-	public <T extends IMonitorInfo> void addMonitor(IListReader<T> monitor);
+	public ArrayList<NodeConnection> getChannels(CacheType cacheType);
 
-	/** called when a {@link INetworkReader} is disconnected to the network */
-	public <T extends IMonitorInfo> void removeMonitor(IListReader<T> monitor);
+	public void addConnection(INetworkListener tile);
 
-	/** gets the full monitored list for the Handler type
-	 * @param type the type of handler to get a list for
-	 * @return a full list of data */
-	public <T extends IMonitorInfo> Map<NodeConnection, MonitoredList<?>> getChannels(LogicMonitorHandler<T> type, IdentifiedChannelsList channels);
+	public void removeConnection(INetworkListener tile);
 
-	//public <T extends IMonitorInfo> Map<EntityConnection, MonitoredList<?>> getEntityMonitoredList(LogicMonitorHandler<T> type, IdentifiedChannelsList channels);
+	/** this is the only method a connection should ever call itself!! */
+	public void onConnectionChanged(INetworkListener tile);
+
+	public void markCacheDirty(CacheHandler cache);
+
+	public void onNetworkRemoved();
+
+	public void onNetworkTick();
+
+	public int getNetworkID();
+
+	public boolean isFakeNetwork();
+
+	public void addLocalInfoProvider(IInfoProvider monitor);
+
+	public void removeLocalInfoProvider(IInfoProvider monitor);
+
+	public IInfoProvider getLocalInfoProvider();
+
+	public ArrayList<IInfoProvider> getLocalInfoProviders();
 
 }

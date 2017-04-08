@@ -1,10 +1,11 @@
 package sonar.logistics.api.readers;
 
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.core.listener.PlayerListener;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.viewers.ILogicViewable;
 
-public interface IInfoProvider extends ILogicViewable {
+public interface IInfoProvider extends ILogicViewable<PlayerListener> {
 	
 	public IMonitorInfo getMonitorInfo(int pos);
 	
@@ -12,5 +13,5 @@ public interface IInfoProvider extends ILogicViewable {
 
 	public int getMaxInfo();
 
-	public INetworkCache getNetwork();
+	public ILogisticsNetwork getNetwork();
 }

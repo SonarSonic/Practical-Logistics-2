@@ -31,13 +31,17 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.DisplayConnections;
 import sonar.logistics.api.displays.DisplayType;
@@ -47,9 +51,8 @@ import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.viewers.EmptyViewersList;
-import sonar.logistics.api.viewers.IViewersList;
 import sonar.logistics.client.gui.GuiDisplayScreen;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDisplay {
@@ -207,18 +210,29 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	//// ILogicViewable \\\\
 
+	public ListenerList<PlayerListener> getListenerList() {
+		return getDisplayScreen().getListenerList();
+	}
+
 	@Override
-	public IViewersList getViewersList() {
-		return getDisplayScreen() != null ? getDisplayScreen().getViewersList() : EmptyViewersList.INSTANCE;
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {
+		getDisplayScreen().onListenerAdded(tally);
+	}
+
+	@Override
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {
+		getDisplayScreen().onListenerRemoved(tally);
 	}
 
 	//// NETWORK \\\\
+	public void onNetworkConnect(ILogisticsNetwork network) {
+		super.onNetworkConnect(network);
+		getDisplayScreen().setHasChanged();
+	}
 
-	public void setLocalNetworkCache(INetworkCache network) {
-		super.setLocalNetworkCache(network);
-		if (this.isServer() && getDisplayScreen() != null) {
-			getDisplayScreen().setHasChanged();
-		}
+	public void onNetworkDisconnect(ILogisticsNetwork network) {
+		super.onNetworkDisconnect(network);
+		getDisplayScreen().setHasChanged();
 	}
 
 	@Override
@@ -246,9 +260,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// EVENTS \\\\
-
-	public void onLoaded() {
-	}
+	public void onLoaded() {}
 
 	@Override
 	public void onFirstTick() {
@@ -275,7 +287,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// MULTIPART \\\\
-
 	public void addSelectionBoxes(List<AxisAlignedBB> list) {
 		double p = 0.0625;
 		double height = p * 16, width = 0, length = p * 1;
@@ -306,7 +317,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// STATE \\\\
-
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess w, BlockPos pos) {
 		IBlockState currentState = state;
@@ -373,7 +383,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// SAVE \\\\
-
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		super.readData(nbt, type);
@@ -404,7 +413,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// PACKETS \\\\
-
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
 		ConnectedDisplayScreen screen = this.getDisplayScreen();
@@ -440,7 +448,6 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// GUI \\\\
-
 	public Object getServerElement(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new ContainerMultipartSync(obj) : null;
 	}
@@ -460,9 +467,9 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			break;
 		}
 	}
-
+	
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.large_display_screen);
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.LARGE_DISPLAY_SCREEN;
 	}
 }

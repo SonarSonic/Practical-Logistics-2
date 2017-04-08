@@ -25,8 +25,8 @@ public class EmitterManager {
 	}
 
 	public static void emitterChanged(IDataEmitter emitter) {
-		PL2.getNetworkManager().updateEmitters = true;
 		dirty = true;
+		emitter.getNetwork().onConnectionChanged(emitter);
 	}
 
 	public static List<IDataEmitter> getEmitters(UUID uuid) {
@@ -51,9 +51,9 @@ public class EmitterManager {
 		emitterChanged(emitter);
 	}
 
-	public static IDataEmitter getEmitter(UUID identity) {
+	public static IDataEmitter getEmitter(int identity) {
 		for (IDataEmitter emitter : emitters) {
-			if (emitter.getIdentity().equals(identity)) {
+			if (emitter.getIdentity() == identity) {
 				return emitter;
 			}
 		}

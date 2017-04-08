@@ -10,9 +10,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.SonarMultipartInventory;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
@@ -21,6 +21,7 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.filters.IFilteredTile;
@@ -33,7 +34,7 @@ import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.InventoryReader;
 import sonar.logistics.api.readers.InventoryReader.Modes;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.client.gui.generic.GuiFilterList;
@@ -62,23 +63,17 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	{
 		syncList.addParts(inventory, setting, targetSlot, posSlot, sortingOrder, sortingType, filters);
 	}
-
+	
 	public InventoryReaderPart() {
 		super(ItemMonitorHandler.id);
 	}
 
-	public InventoryReaderPart(EnumFacing face) {
-		super(ItemMonitorHandler.id, face);
-	}
-
 	//// ILogicReader \\\\
-
 	@Override
 	public MonitoredList<MonitoredItemStack> sortMonitoredList(MonitoredList<MonitoredItemStack> updateInfo, int channelID) {		
 		ItemHelper.sortItemList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
 		return updateInfo;
 	}
-
 
 	public boolean canMonitorInfo(MonitoredItemStack info, int infoID, Map<NodeConnection, MonitoredList<?>> channels, ArrayList<NodeConnection> usedChannels) {
 		if(this.setting.getObject()==Modes.FILTERED){
@@ -86,6 +81,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 		}		
 		return true;
 	}
+	
 	@Override
 	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
 		IMonitorInfo info = null;
@@ -138,7 +134,7 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			break;
 		}
 		if (info != null) {
-			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
+			InfoUUID id = new InfoUUID(getIdentity(), 0);
 			IMonitorInfo oldInfo = PL2.getServerManager().info.get(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				PL2.getServerManager().changeInfo(id, info);
@@ -164,9 +160,9 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 
 		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
-			ArrayList<EntityPlayer> players = viewers.getViewers(true, ViewerType.INFO);
-			for (EntityPlayer player : players) {
-				viewers.addViewer(player, ViewerType.TEMPORARY);
+			ArrayList<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
+			for (PlayerListener player : players) {
+				listeners.addListener(player, ListenerType.TEMPORARY);
 			}
 		}
 	}
@@ -200,16 +196,6 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	}
 
 	@Override
-	public String getDisplayName() {
-		return PL2Translate.INVENTORY_READER.t();
-	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.inventory_reader);
-	}
-
-	@Override
 	public boolean allowed(ItemStack stack) {
 		return filters.matches(new StoredItemStack(stack), NodeTransferMode.ADD_REMOVE);
 	}
@@ -217,6 +203,11 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	@Override
 	public SyncFilterList getFilters() {
 		return filters;
+	}
+
+	@Override
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.INVENTORY_READER;
 	}
 
 }

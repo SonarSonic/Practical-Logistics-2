@@ -42,8 +42,10 @@ public class ExampleConfigurations {
 
 		public FurnaceProgress() {
 			super(4);
-			NodePart node = new NodePart(EnumFacing.DOWN);
-			InfoReaderPart reader = new InfoReaderPart(EnumFacing.NORTH);
+			NodePart node = new NodePart();
+			node.setCableFace(EnumFacing.DOWN);
+			InfoReaderPart reader = new InfoReaderPart();
+			reader.setCableFace(EnumFacing.DOWN);
 			DisplayScreenPart screen = new DisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
@@ -65,8 +67,10 @@ public class ExampleConfigurations {
 
 		public InventoryExample() {
 			super(4);
-			NodePart node = new NodePart(EnumFacing.DOWN);
-			InventoryReaderPart reader = new InventoryReaderPart(EnumFacing.NORTH);
+			NodePart node = new NodePart();
+			node.setCableFace(EnumFacing.DOWN);
+			InventoryReaderPart reader = new InventoryReaderPart();
+			reader.setCableFace(EnumFacing.NORTH);
 			DisplayScreenPart screen = new DisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
 
 			screen.container.storedInfo.get(0).cachedInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
@@ -89,18 +93,21 @@ public class ExampleConfigurations {
 			addBlock(Blocks.REDSTONE_WIRE.getDefaultState().withProperty(BlockRedstoneWire.POWER, 15), new BlockPos(1, 0, 0));
 			addBlock(Blocks.LEVER.getDefaultState().withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_Z).withProperty(BlockLever.POWERED, true), new BlockPos(1, 0, -1));
 
-			NodePart node = new NodePart(EnumFacing.NORTH);
+			NodePart node = new NodePart();
+			node.setCableFace(EnumFacing.NORTH);
 			MultipartStateOverride cable = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 					return super.getActualState(state, world, pos).withProperty(DataCablePart.EAST, CableRenderType.INTERNAL).withProperty(DataCablePart.NORTH, CableRenderType.INTERNAL);
 				}
 			};
 			DataEmitterPart emitter = new DataEmitterPart();
-			emitter.face.setObject(EnumFacing.EAST);
+			emitter.setCableFace(EnumFacing.EAST);
 			addMultiparts(Lists.newArrayList(node, cable, emitter), new BlockPos(1, 0, 1));
 
-			InfoReaderPart reader = new InfoReaderPart(EnumFacing.NORTH);
+			InfoReaderPart reader = new InfoReaderPart();
+			reader.setCableFace(EnumFacing.NORTH);
 			DataReceiverPart receiver = new DataReceiverPart();
+			receiver.setCableFace(EnumFacing.NORTH);
 			receiver.face.setObject(EnumFacing.WEST);
 			MultipartStateOverride cable2 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
@@ -109,7 +116,9 @@ public class ExampleConfigurations {
 			};
 
 			addMultiparts(Lists.newArrayList(reader, cable2, receiver), new BlockPos(-1, 0, 1));
-			MultipartStateOverride signaller = new MultipartStateOverride(new RedstoneSignallerPart(EnumFacing.NORTH)) {
+			RedstoneSignallerPart signallerPart =  new RedstoneSignallerPart();
+			signallerPart.setCableFace(EnumFacing.NORTH);
+			MultipartStateOverride signaller = new MultipartStateOverride(signallerPart) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 					return super.getActualState(state, world, pos).withProperty(RedstoneSignallerPart.ACTIVE, true);
 				}
@@ -130,8 +139,10 @@ public class ExampleConfigurations {
 		public MultipleInventory() {
 			super(16);
 
-			NodePart node = new NodePart(EnumFacing.DOWN);
-			InventoryReaderPart reader = new InventoryReaderPart(EnumFacing.NORTH);
+			NodePart node = new NodePart();
+			node.setCableFace(EnumFacing.DOWN);
+			InventoryReaderPart reader = new InventoryReaderPart();
+			reader.setCableFace(EnumFacing.NORTH);
 			ConnectedDisplayScreen fullDisplay = new ConnectedDisplayScreen(-1);
 			fullDisplay.width.setObject(2);
 			fullDisplay.height.setObject(0);

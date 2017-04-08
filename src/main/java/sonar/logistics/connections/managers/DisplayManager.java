@@ -53,10 +53,10 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	}
 
 	public Pair<ConnectableType, Integer> getConnectionType(ILargeDisplay source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
-		IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(new BlockCoords(pos.offset(dir)), source.getFace());
+		IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(new BlockCoords(pos.offset(dir)), source.getCableFace());
 		if (display != null && display instanceof ILargeDisplay) {
 			ILargeDisplay largeDisplay = (ILargeDisplay) display;
-			if (largeDisplay.getFace().equals(source.getFace()) && source.canConnectOnSide(largeDisplay.getRegistryID(), dir.getOpposite()) && largeDisplay.canConnectOnSide(source.getRegistryID(), dir)) {
+			if (largeDisplay.getCableFace().equals(source.getCableFace()) && source.canConnectOnSide(largeDisplay.getRegistryID(), dir.getOpposite()) && largeDisplay.canConnectOnSide(source.getRegistryID(), dir)) {
 				return new Pair(ConnectableType.CONNECTION, largeDisplay.getRegistryID());
 			}
 		}

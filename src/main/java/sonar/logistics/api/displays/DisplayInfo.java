@@ -4,8 +4,11 @@ import java.util.ArrayList;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.IDirtyPart;
@@ -16,11 +19,13 @@ import sonar.core.network.sync.SyncTagTypeList;
 import sonar.core.network.sync.SyncableList;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
+import sonar.logistics.api.asm.MonitoredListEvent;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.info.types.LogicInfoList;
 
 /** default implementation of the Display Info used on displays */
 public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableListener {
@@ -31,11 +36,14 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	public SyncNBTAbstract<InfoUUID> uuid = new SyncNBTAbstract<InfoUUID>(InfoUUID.class, 1);
 	public SyncNBTAbstract<CustomColour> textColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 2), backgroundColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 3);
 	public InfoContainer container;
+	public boolean isList = false;
+
 	public SyncableList syncParts = new SyncableList(this);
 	{
 		textColour.setObject(LogisticsColours.white_text);
 		backgroundColour.setObject(LogisticsColours.grey_base);
 		syncParts.addParts(formatList, uuid, textColour, backgroundColour);
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	public DisplayInfo(InfoContainer container, int id) {
@@ -43,8 +51,11 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		this.container = container;
 	}
 
-	public RenderInfoProperties setRenderInfoProperties(RenderInfoProperties renderInfo) {
+	public RenderInfoProperties setRenderInfoProperties(RenderInfoProperties renderInfo, int pos) {
 		this.renderInfo = renderInfo;
+		if (cachedInfo != null) {
+			cachedInfo.renderSizeChanged(container, this, renderInfo.scaling[0], renderInfo.scaling[1], renderInfo.scaling[2], pos);
+		}
 		return renderInfo;
 	}
 
@@ -58,7 +69,14 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		if (id == null) {
 			return null;
 		}
-		return PL2.getInfoManager(isClient).getInfoList().get(id);
+		return cachedInfo = PL2.getInfoManager(isClient).getInfoList().get(id);
+	}
+
+	@SubscribeEvent
+	public void onMonitoredListChanged(MonitoredListEvent.CHANGED event) {
+		if (this.cachedInfo instanceof LogicInfoList && event.canReadEvent(uuid.getObject(), Side.CLIENT)) {
+			((LogicInfoList) this.cachedInfo).listChanged = true;
+		}
 	}
 
 	@Override

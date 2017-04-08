@@ -10,7 +10,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
@@ -18,6 +17,8 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -46,10 +47,6 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 
 	public EnergyReaderPart() {
 		super(EnergyMonitorHandler.id);
-	}
-
-	public EnergyReaderPart(EnumFacing face) {
-		super(EnergyMonitorHandler.id, face);
 	}
 
 	//// ILogicReader \\\\
@@ -96,7 +93,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 
 		/* switch (setting.getObject()) { case FLUID: break; case POS: break; case STORAGE: break; case TANKS: break; default: break; } */
 		if (info != null) {
-			InfoUUID id = new InfoUUID(getIdentity().hashCode(), 0);
+			InfoUUID id = new InfoUUID(getIdentity(), 0);
 			IMonitorInfo oldInfo = PL2.getServerManager().info.get(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				PL2.getServerManager().changeInfo(id, info);
@@ -157,13 +154,8 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.energy_reader);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return FontHelper.translate("item.EnergyReader.name");
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.ENERGY_READER;
 	}
 
 }

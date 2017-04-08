@@ -20,34 +20,25 @@ public class PL2Events {
 
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
-		if (event.side == Side.CLIENT) {
-			return;
-		}
-		if (event.phase == Phase.END) {
+		if (event.side == Side.SERVER && event.phase == Phase.END) {
 			PL2.getNetworkManager().tick();
 			PL2.getServerManager().onServerTick();
-			PL2.getNetworkManager().updateEmitters = false;
 			EmitterManager.tick(); // this must happen at the end, since the dirty boolean will be changed and will upset tiles
 			PL2.getDisplayManager().tick();
-			ArrayPart.entityChanged=false;
+			ArrayPart.entityChanged = false;
 		}
 	}
+
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
-		if (event.getWorld().isRemote) {
-			return;
-		}
-		if (event.getWorld().provider.getDimension() == saveDimension) {
+		if (!event.getWorld().isRemote && event.getWorld().provider.getDimension() == saveDimension) {
 			LockedDisplayData data = (LockedDisplayData) event.getWorld().getPerWorldStorage().getOrLoadData(LockedDisplayData.class, LockedDisplayData.tag);
 		}
 	}
 
 	@SubscribeEvent
 	public void onWorldSave(WorldEvent.Save event) {
-		if (event.getWorld().isRemote) {
-			return;
-		}
-		if (event.getWorld().provider.getDimension() == saveDimension) {
+		if (!event.getWorld().isRemote && event.getWorld().provider.getDimension() == saveDimension) {
 			MapStorage storage = event.getWorld().getPerWorldStorage();
 			LockedDisplayData data = (LockedDisplayData) storage.getOrLoadData(LockedDisplayData.class, LockedDisplayData.tag);
 			if (data == null && !PL2.getDisplayManager().lockedIDs.isEmpty()) {
@@ -55,6 +46,7 @@ public class PL2Events {
 			}
 		}
 	}
+
 	@SubscribeEvent
 	public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 		PL2.getServerManager().sendFullPacket(event.player);
@@ -76,6 +68,6 @@ public class PL2Events {
 
 	@SubscribeEvent
 	public void onEntityJoin(EntityJoinWorldEvent event) {
-		ArrayPart.entityChanged=true;
+		ArrayPart.entityChanged = true;
 	}
 }

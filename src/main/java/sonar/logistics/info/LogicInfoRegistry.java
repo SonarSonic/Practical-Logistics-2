@@ -230,7 +230,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		ArrayList<Method> methods = cachedMethods.get(obj);
 		if (methods == null) {
 			methods = new ArrayList();
-			LinkedHashMap<Class<?>, ArrayList<Method>> map = infoMethods.getOrDefault(type, new LinkedHashMap());
+			LinkedHashMap<Class<?>, ArrayList<Method>> map = infoMethods.computeIfAbsent(type, m -> new LinkedHashMap());
 			if (type == RegistryType.NONE) {
 				map.putAll(infoMethods.get(RegistryType.NONE));
 			}
@@ -248,7 +248,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		ArrayList<Field> fields = cachedFields.get(obj);
 		if (fields == null) {
 			fields = new ArrayList();
-			LinkedHashMap<Class<?>, ArrayList<Field>> map = infoFields.getOrDefault(type, new LinkedHashMap());
+			LinkedHashMap<Class<?>, ArrayList<Field>> map = infoFields.computeIfAbsent(type, m -> new LinkedHashMap());
 			if (type == RegistryType.NONE) {
 				map.putAll(infoFields.get(RegistryType.NONE));
 			}

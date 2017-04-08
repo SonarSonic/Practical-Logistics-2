@@ -4,36 +4,30 @@ import java.util.ArrayList;
 
 import com.google.common.collect.Lists;
 
-import sonar.core.utils.IWorldPosition;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.IInfoProvider;
+import sonar.logistics.connections.CacheHandler;
+import sonar.logistics.connections.CacheType;
 
-/** an implementation of {@link INetworkCache} that acts as an Empty Network, when working with networks the INSTANCE of this should be returned instead of null */
-public class EmptyNetworkCache implements INetworkCache {
+public class EmptyNetworkCache implements ILogisticsNetwork  {
 
-	public static final EmptyNetworkCache INSTANCE = EmptyNetworkCache.createEmptyCache();
-
-	private EmptyNetworkCache() {
-	}
-
-	public static EmptyNetworkCache createEmptyCache() {
-		return new EmptyNetworkCache();
-	}
-	
-	@Override
-	public ArrayList<NodeConnection> getConnectedChannels(boolean includeChannels) {
-		return Lists.newArrayList();
-	}
+	public static final EmptyNetworkCache INSTANCE = new EmptyNetworkCache();
 
 	@Override
-	public <T extends IWorldPosition> ArrayList<T> getConnections(Class<T> classType, boolean includeChannels) {
-		return Lists.newArrayList();
-	}
+	public void addConnection(INetworkListener tile) {}
 
 	@Override
-	public <T extends IWorldPosition> T getFirstConnection(Class<T> classType) {
-		return null;
-	}
+	public void removeConnection(INetworkListener tile) {}
+
+	@Override
+	public void onConnectionChanged(INetworkListener tile) {}
+
+
+	@Override
+	public void onNetworkRemoved() {}
 
 	@Override
 	public int getNetworkID() {
@@ -41,8 +35,17 @@ public class EmptyNetworkCache implements INetworkCache {
 	}
 
 	@Override
-	public ArrayList<Integer> getConnectedNetworks(ArrayList<Integer> networks) {
-		return networks;
+	public <T> ArrayList<T> getConnections(CacheHandler<T> handler, CacheType cacheType) {
+		return Lists.newArrayList();
+	}
+	
+	@Override
+	public ArrayList<NodeConnection> getChannels(CacheType cacheType) {
+		return Lists.newArrayList();
+	}
+
+	@Override
+	public void onNetworkTick() {		
 	}
 
 	@Override
@@ -51,8 +54,10 @@ public class EmptyNetworkCache implements INetworkCache {
 	}
 
 	@Override
-	public void addLocalInfoProvider(IInfoProvider monitor) {
-	}
+	public void addLocalInfoProvider(IInfoProvider monitor) {}
+
+	@Override
+	public void removeLocalInfoProvider(IInfoProvider monitor) {}
 
 	@Override
 	public IInfoProvider getLocalInfoProvider() {
@@ -60,12 +65,26 @@ public class EmptyNetworkCache implements INetworkCache {
 	}
 
 	@Override
-	public void markDirty(RefreshType type) {
+	public ArrayList<IInfoProvider> getLocalInfoProviders() {
+		return Lists.newArrayList();
 	}
 
 	@Override
-	public ArrayList<IInfoProvider> getLocalInfoProviders() {
-		return new ArrayList();
+	public void markCacheDirty(CacheHandler cache) {}
+
+	@Override
+	public boolean isValid() {
+		return false;
 	}
 
+	@Override
+	public ListenerList<ILogisticsNetwork> getListenerList() {
+		return null;
+	}
+
+	@Override
+	public void onListenerAdded(ListenerTally<ILogisticsNetwork> tally) {}
+
+	@Override
+	public void onListenerRemoved(ListenerTally<ILogisticsNetwork> tally) {}
 }

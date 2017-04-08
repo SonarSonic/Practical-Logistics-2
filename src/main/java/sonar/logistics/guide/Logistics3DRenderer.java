@@ -27,7 +27,7 @@ import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 

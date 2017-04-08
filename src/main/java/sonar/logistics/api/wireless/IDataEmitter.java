@@ -12,7 +12,7 @@ import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
 /** implemented on the Data Emitter */
-public interface IDataEmitter extends ILogicTile, IUUIDIdentity, IListReader<IMonitorInfo> {
+public interface IDataEmitter extends ILogicTile, IListReader<IMonitorInfo> {
 
 	/** can the given player UUID connect to this IDataEmitter */
 	public boolean canPlayerConnect(UUID uuid);
@@ -27,7 +27,7 @@ public interface IDataEmitter extends ILogicTile, IUUIDIdentity, IListReader<IMo
 	public void disconnect(IDataReceiver receiver);
 
 	/** a list of network IDs from all the connected networks. */
-	public ArrayList<Integer> getNetworks();
+	public ArrayList<Integer> getWatchingNetworks();
 
 	public DataEmitterSecurity getSecurity();
 	
@@ -36,7 +36,7 @@ public interface IDataEmitter extends ILogicTile, IUUIDIdentity, IListReader<IMo
 	public MonitoredList<MonitoredFluidStack> getServerFluids();
 
 	public static void addConnectedNetworks(IDataEmitter emitter, int current, ArrayList<Integer> networks) {
-		ArrayList<Integer> connected = emitter.getNetworks();
+		ArrayList<Integer> connected = emitter.getWatchingNetworks();
 		connected.forEach(network -> {
 			if (network != current && !networks.contains(network)) {
 				networks.add(network);

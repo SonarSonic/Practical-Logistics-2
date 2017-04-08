@@ -1,4 +1,4 @@
-package sonar.logistics.common.multiparts;
+package sonar.logistics.common.multiparts.generic;
 
 import java.util.ArrayList;
 
@@ -12,6 +12,7 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.common.multiparts.ReaderMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.LogicInfo;
@@ -32,10 +33,6 @@ public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderM
 
 	public LogisticsReader(String handlerID) {
 		super(handlerID);
-	}
-
-	public LogisticsReader(String handlerID, EnumFacing face) {
-		super(handlerID, face);
 	}
 
 	public ArrayList<IProvidableInfo> getSelectedInfo() {
@@ -85,7 +82,7 @@ public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderM
 		ArrayList<IProvidableInfo> cachedSelected = this.getSelectedInfo();
 		ArrayList<IProvidableInfo> cachedPaired = this.getPairedInfo();
 		for (int i = 0; i < this.getMaxInfo(); i++) {
-			InfoUUID id = new InfoUUID(getIdentity().hashCode(), i);
+			InfoUUID id = new InfoUUID(getIdentity(), i);
 			IProvidableInfo selectedInfo = cachedSelected.get(i);
 			IMonitorInfo lastInfo = PL2.getServerManager().info.get(id);
 			if (selectedInfo != null) {

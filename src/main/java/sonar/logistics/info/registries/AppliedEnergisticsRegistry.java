@@ -14,9 +14,7 @@ import sonar.logistics.api.register.RegistryType;
 @InfoRegistry(modid = "appliedenergistics2")
 public class AppliedEnergisticsRegistry extends IInfoRegistry {
 
-	public void registerBaseReturns(ILogicInfoRegistry registry) {
-		
-	}
+	public void registerBaseReturns(ILogicInfoRegistry registry) {}
 
 	public void registerBaseMethods(ILogicInfoRegistry registry) {
 		registry.registerMethods(TileInscriber.class, RegistryType.TILE, Lists.newArrayList("getMaxProcessingTime", "getProcessingTime"));

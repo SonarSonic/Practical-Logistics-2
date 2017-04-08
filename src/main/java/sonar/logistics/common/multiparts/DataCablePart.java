@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import mcmultipart.MCMultiPartMod;
-import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.ISlotOccludingPart;
 import mcmultipart.multipart.PartSlot;
 import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
@@ -33,13 +32,10 @@ import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
-import sonar.logistics.api.connecting.EmptyNetworkCache;
-import sonar.logistics.api.connecting.INetworkCache;
-import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.helpers.CableHelper;
 
 public class DataCablePart extends SonarMultipart implements ISlotOccludingPart, IDataCable, IOperatorTile, IOperatorProvider {
@@ -52,7 +48,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	public static final PropertyEnum<CableRenderType> UP = PropertyEnum.<CableRenderType>create("up", CableRenderType.class);
 
 	public int registryID = -1;
-	public boolean connection = false;
+	//public boolean connection = false;
 	public boolean wasAdded = false;
 	public boolean[] isBlocked = new boolean[6];
 
@@ -60,47 +56,55 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 		super();
 	}
 
-	public INetworkCache getNetwork() {
+	public ILogisticsNetwork getNetwork() {
 		return LogisticsAPI.getCableHelper().getNetwork(registryID);
 	}
 
 	@Override
+	public void onConnectionAdded(ILogicTile tile, EnumFacing face) {
+		if(!isBlocked(face)){
+			getNetwork().addConnection(tile);
+		}
+	}
+
+	@Override
+	public void onConnectionRemoved(ILogicTile tile, EnumFacing face) {
+		if(!isBlocked(face)){
+			getNetwork().removeConnection(tile);
+		}
+	}
+	
+	/*
+	@Override
 	public void onPartChanged(IMultipart changedPart) {
 		if (!this.getWorld().isRemote) {
-			if (changedPart instanceof SidedMultipart) {
+			boolean wasRemoved = false;
+			if(changedPart instanceof IRemovable){
+				
+			}
+			if (!wasRemoved && changedPart instanceof SidedMultipart) {
 				SidedMultipart sided = (SidedMultipart) changedPart;
 				isBlocked[sided.getFacing().ordinal()] = false;
 				this.sendUpdatePacket(true);
 			}
-			refreshConnections();
+			//refreshConnections();
 			if (changedPart instanceof LogisticsMultipart) {
 				getNetwork().markDirty(RefreshType.FULL);
 			}
 		}
 	}
-
+	*/
+	
 	//// IDataCable \\\\
 
-	@Override
-	public void refreshConnections() {
-		if (isServer()) {
-			PL2.getCableManager().refreshConnections(this);
-		}
-	}
-
-	public void configureConnections(INetworkCache network) {
-		ArrayList<ILogicTile> logicTiles = CableHelper.getConnectedTiles(this);
-		ArrayList<IInfoProvider> logicMonitors = CableHelper.getLocalMonitors(this);
-		logicTiles.forEach(tile -> tile.setLocalNetworkCache(network));
-		logicMonitors.forEach(tile -> network.addLocalInfoProvider(tile));
-		connection = !logicTiles.isEmpty();
-		return;
-	}
-
-	@Override
-	public boolean hasConnections() {
-		return connection;
-	}
+	
+	
+	//@Override
+	//public void refreshConnections() {
+	//	if (isServer()) {
+	//		PL2.getCableManager().refreshConnections(this);
+	//	}
+	//}
 
 	@Override
 	public ConnectableType canRenderConnection(EnumFacing dir) {
@@ -135,14 +139,16 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 
 	public void addToNetwork() {
 		if (isServer()) {
-			PL2.getCableManager().addCable(this);
+			ILogisticsNetwork network = PL2.getCableManager().addCable(this);
+			CableHelper.getConnectedTiles(this).forEach(t -> network.addConnection(t));		
 		}
 	}
 
 	public void removeFromNetwork() {
 		if (isServer()) {
-			PL2.getCableManager().removeConnection(this.getRegistryID(), this);
-			configureConnections(EmptyNetworkCache.INSTANCE);
+			ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(getRegistryID());
+			PL2.getCableManager().removeConnection(this.getRegistryID(), this);			
+			CableHelper.getConnectedTiles(this).forEach(t -> network.removeConnection(t));					
 		}
 	}
 
@@ -189,7 +195,6 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 					}
 					sendUpdatePacket(true);
 					markDirty();
-					PL2.getNetworkManager().updateEmitters = true;
 					return true;
 				}
 			}

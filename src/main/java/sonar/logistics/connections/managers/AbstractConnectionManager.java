@@ -20,13 +20,13 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 
 	protected Map<Integer, ArrayList<T>> connections = new ConcurrentHashMap<Integer, ArrayList<T>>();
 	private NetworkManager NetworkManager;
-	
+
 	public void removeAll() {
 		connections.clear();
 	}
-	
-	public NetworkManager NetworkManager(){
-		if(NetworkManager==null){
+
+	public NetworkManager NetworkManager() {
+		if (NetworkManager == null) {
 			NetworkManager = PL2.instance.networkManager;
 		}
 		return NetworkManager;
@@ -129,18 +129,20 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 			}
 		}
 	}
-	
+
 	public abstract Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType);
 
 	public void connectNetworks(int newID, int secondaryID) {
-		ArrayList<T> oldConnections = connections.getOrDefault(secondaryID, new ArrayList());
+		ArrayList<T> oldConnections = connections.get(secondaryID);
+		if (oldConnections == null) {
+			return;
+		}
 		addConnections(newID, oldConnections);
 		oldConnections.clear();
 		this.onNetworksConnected(newID, secondaryID);
 	}
 
-
-	//public abstract Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType);
+	// public abstract Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType);
 
 	public abstract void onNetworksConnected(int newID, int oldID);
 

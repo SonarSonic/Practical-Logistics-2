@@ -13,19 +13,13 @@ import sonar.logistics.api.register.RegistryType;
 @InfoRegistry(modid = "extrautils2")
 public class ExtraUtilitiesRegistry extends IInfoRegistry {
 
-	public void registerBaseReturns(ILogicInfoRegistry registry) {
-		//registry.registerReturn(TileResonator.ResonatorRecipe.class);
-	}
+	public void registerBaseReturns(ILogicInfoRegistry registry) {}
 
-	public void registerBaseMethods(ILogicInfoRegistry registry) {
-		
-	}
+	public void registerBaseMethods(ILogicInfoRegistry registry) {}
 
 	public void registerAllFields(ILogicInfoRegistry registry) {
 		registry.registerFields(TileMachine.class, RegistryType.TILE, Lists.newArrayList("totalTime", "processTime"));
 		registry.registerFields(TileResonator.class, RegistryType.TILE, Lists.newArrayList("progress", "processTime"));
-		//registry.registerFields(TileResonator.ResonatorRecipe.class, RegistryType.TILE, Lists.newArrayList("energy"));
-		//registry.registerFields(IPower.class, RegistryType.TILE, Lists.newArrayList("energy"));
 	}
 
 	public void registerAdjustments(ILogicInfoRegistry registry) {

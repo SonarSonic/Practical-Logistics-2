@@ -176,4 +176,7 @@ public class ProgressInfo implements IMonitorInfo<ProgressInfo>, INBTSyncable, I
 		return this;
 	}
 
+	@Override
+	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
+
 }

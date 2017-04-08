@@ -1,11 +1,12 @@
 package sonar.logistics.api.cabling;
 
+import sonar.core.listener.PlayerListener;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.readers.IdentifiedChannelsList;
 import sonar.logistics.api.viewers.ILogicViewable;
 
 /**a tile which has channels which can be configured by the operator*/
-public interface IChannelledTile extends ILogicViewable {
+public interface IChannelledTile extends ILogicViewable<PlayerListener> {
 
 	/**the currently selected channels*/
 	public IdentifiedChannelsList getChannels();

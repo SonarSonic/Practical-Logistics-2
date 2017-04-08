@@ -10,7 +10,7 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 
 /** used for storing display info to be used on Screens */
 public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListener {

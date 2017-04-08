@@ -19,7 +19,7 @@ import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 
 public class PacketClickEventClient extends PacketMultipart {
 

@@ -23,7 +23,7 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.helpers.InfoRenderer;
 

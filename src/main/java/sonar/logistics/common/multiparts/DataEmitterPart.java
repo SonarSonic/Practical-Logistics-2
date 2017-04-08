@@ -1,7 +1,7 @@
 package sonar.logistics.common.multiparts;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -19,6 +19,9 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
@@ -27,20 +30,17 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.utils.LogisticsHelper;
-import sonar.logistics.api.viewers.IViewersList;
-import sonar.logistics.api.viewers.ViewerTally;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.DataEmitterSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataEmitter;
+import sonar.logistics.common.multiparts.generic.WirelessPart;
+import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.connections.monitoring.FluidMonitorHandler;
 import sonar.logistics.connections.monitoring.ItemMonitorHandler;
@@ -48,30 +48,21 @@ import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.helpers.LogisticsHelper;
 
-public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFlexibleGui, IByteBufTile {
+public class DataEmitterPart extends WirelessPart implements IDataEmitter, IFlexibleGui, IByteBufTile {
 
+	public static int STATIC_ITEM_ID = -16;
+	public static int STATIC_FLUID_ID = -17;
 	public static final String UNNAMED = "Unnamed Emitter";
-	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
+	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
 	public ArrayList<IDataReceiver> receivers = new ArrayList();
 	public LogicMonitorHandler[] validHandlers;
 	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault(UNNAMED);
-	public SyncUUID playerUUID = new SyncUUID(3);
 	public SyncEnum<DataEmitterSecurity> security = new SyncEnum(DataEmitterSecurity.values(), 5);
-	public static int STATIC_ITEM_ID = -16;
-	public static int STATIC_FLUID_ID = -17;
 
 	{
-		syncList.addParts(emitterName, playerUUID, security);
-	}
-
-	public DataEmitterPart() {
-		super(0.0625 * 5, 0.0625 / 2, 0.0625 * 4);
-	}
-
-	public DataEmitterPart(EntityPlayer player, EnumFacing dir) {
-		super(dir, 0.0625 * 5, 0.0625 / 2, 0.0625 * 4);
-		playerUUID.setObject(player.getGameProfile().getId());
+		syncList.addParts(emitterName, security);
 	}
 
 	@Override
@@ -86,20 +77,21 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 	}
 
 	@Override
-	public ArrayList<Integer> getNetworks() {
+	public ArrayList<Integer> getWatchingNetworks() {
 		ArrayList<Integer> networks = new ArrayList();
-		for (IDataReceiver receiver : receivers) {
-			int id = receiver.getNetworkID();
-			if (!networks.contains(id)) {
-				networks.add(id);
+		Iterator<IDataReceiver> iterator = receivers.iterator();
+		while (iterator.hasNext()) {
+			IDataReceiver receiver = iterator.next();
+			if (!receiver.isValid()) {
+				int id = receiver.getNetworkID();
+				if (!networks.contains(id)) {
+					networks.add(id);
+				}
+			} else {
+				iterator.remove();
 			}
 		}
 		return networks;
-	}
-
-	@Override
-	public UUID getIdentity() {
-		return getUUID();// emitterUUID.getUUID();
 	}
 
 	//// IDataEmitter \\\\
@@ -121,72 +113,30 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 
 	@Override
 	public void connect(IDataReceiver receiver) {
-		receivers.add(receiver);
+		if (!receivers.contains(receiver)) {
+			receivers.add(receiver);
+			network.markCacheDirty(CacheHandler.EMITTERS);
+		}
 	}
 
 	@Override
 	public void disconnect(IDataReceiver receiver) {
-		receivers.remove(receiver);
+		if (receivers.remove(receiver)) {
+			network.markCacheDirty(CacheHandler.EMITTERS);
+		}
 	}
 
 	@Override
 	public MonitoredList<MonitoredItemStack> getServerItems() {
-		return PL2.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity().hashCode(), STATIC_ITEM_ID));
+		return PL2.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity(), STATIC_ITEM_ID));
 	}
 
 	@Override
 	public MonitoredList<MonitoredFluidStack> getServerFluids() {
-		return PL2.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity().hashCode(), STATIC_FLUID_ID));
-	}
-	//// EVENTS \\\\
-
-	public void onLoaded() {
-		super.onLoaded();
-		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
-		if (isServer()) {
-			EmitterManager.addEmitter(this);
-		}
+		return PL2.getServerManager().getMonitoredList(this.getNetworkID(), new InfoUUID(this.getIdentity(), STATIC_FLUID_ID));
 	}
 
-	public void onRemoved() {
-		super.onRemoved();
-		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
-		if (isServer()) {
-			EmitterManager.removeEmitter(this);
-		}
-	}
-
-	public void onUnloaded() {
-		super.onUnloaded();
-		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
-		if (isServer()) {
-			EmitterManager.removeEmitter(this);
-		}
-	}
-
-	public void onFirstTick() {
-		super.onFirstTick();
-		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
-		if (isServer()) {
-			sendByteBufPacket(playerUUID.id);
-			EmitterManager.addEmitter(this);
-		}
-	}
 	//// PACKETS \\\\
-
-	public void setLocalNetworkCache(INetworkCache network) {
-		if (!this.network.isFakeNetwork() && this.network.getNetworkID() != network.getNetworkID()) {
-			((ILogisticsNetwork) this.network).removeMonitor(this);
-		}
-		super.setLocalNetworkCache(network);
-		if (network instanceof ILogisticsNetwork) {
-			ILogisticsNetwork storageCache = (ILogisticsNetwork) network;
-			storageCache.addMonitor(this);
-		}
-		if (network.getNetworkID() != this.getNetworkID())
-			EmitterManager.emitterChanged(this);
-	}
-
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
@@ -226,23 +176,14 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 		}
 	}
 
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.data_emitter);
+	public ListenerList<PlayerListener> getListenerList() {
+		return listeners;
 	}
 
 	@Override
-	public IViewersList getViewersList() {
-		return viewers;
-	}
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
 
-	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> arrayList) {
-	}
-
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> arrayList) {
-	}
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
 
 	@Override
 	public MonitoredList sortMonitoredList(MonitoredList updateInfo, int channelID) {
@@ -270,5 +211,10 @@ public class DataEmitterPart extends SidedMultipart implements IDataEmitter, IFl
 			validHandlers = new LogicMonitorHandler[] { ItemMonitorHandler.instance(), FluidMonitorHandler.instance() };
 		}
 		return validHandlers;
+	}
+
+	@Override
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.DATA_EMITTER;
 	}
 }

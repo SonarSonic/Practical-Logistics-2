@@ -18,6 +18,9 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
@@ -25,24 +28,23 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
+import sonar.core.utils.IUUIDIdentity;
 import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IConnectable;
+import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.cabling.NetworkConnectionType;
-import sonar.logistics.api.connecting.EmptyNetworkCache;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.api.viewers.ViewerTally;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.api.viewers.ListenerType;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
 public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTSyncable, IScaleableDisplay, ISyncPart {
 
-	public ViewersList viewers = new ViewersList(this, Lists.newArrayList(ViewerType.INFO, ViewerType.FULL_INFO));
+	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
 	private int registryID = -1;
 	public ILargeDisplay topLeftScreen = null;
 	public SyncableList syncParts = new SyncableList(this);
@@ -66,7 +68,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 
 	public ConnectedDisplayScreen(ILargeDisplay display) {
 		registryID = display.getRegistryID();
-		face.setObject(display.getFace());
+		face.setObject(display.getCableFace());
 		this.hasChanged = true;
 	}
 
@@ -103,9 +105,9 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	}
 
 	public void sendViewers() {
-		ArrayList<EntityPlayer> players = getViewersList().getViewers(false, ViewerType.INFO, ViewerType.FULL_INFO);
-		if (!players.isEmpty()) {
-			players.forEach(player -> PL2.network.sendTo(new PacketConnectedDisplayScreen(this, registryID), (EntityPlayerMP) player));
+		ArrayList<PlayerListener> listeners = getListenerList().getListeners(ListenerType.INFO, ListenerType.FULL_INFO);
+		if (!listeners.isEmpty()) {
+			listeners.forEach(listener -> PL2.network.sendTo(new PacketConnectedDisplayScreen(this, registryID), listener.player));
 			sendViewers = false;
 		} else {
 			sendViewers = true;
@@ -123,7 +125,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 		int minZ = primaryCoords.getZ();
 		int maxZ = primaryCoords.getZ();
 
-		EnumFacing meta = primary.getFace();
+		EnumFacing meta = primary.getCableFace();
 		boolean north = meta == EnumFacing.NORTH;
 		for (ILargeDisplay display : displays) {
 			BlockCoords coords = display.getCoords();
@@ -264,7 +266,7 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 			topLeftScreen = display;
 			this.topLeftCoords.setCoords(display.getCoords());
 			display.setShouldRender(true);
-			face.setObject(display.getFace());
+			face.setObject(display.getCableFace());
 			if (!display.getCoords().getWorld().isRemote)
 				PL2.getServerManager().addDisplay(display);
 		} else {
@@ -296,8 +298,8 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	}
 
 	@Override
-	public EnumFacing getFace() {
-		return topLeftScreen != null ? topLeftScreen.getFace() : EnumFacing.NORTH;
+	public EnumFacing getCableFace() {
+		return topLeftScreen != null ? topLeftScreen.getCableFace() : EnumFacing.NORTH;
 	}
 
 	@Override
@@ -313,15 +315,6 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	@Override
 	public int getNetworkID() {
 		return topLeftScreen != null ? topLeftScreen.getNetworkID() : -1;
-	}
-
-	@Override
-	public INetworkCache getNetwork() {
-		return topLeftScreen != null ? topLeftScreen.getNetwork() : EmptyNetworkCache.INSTANCE;
-	}
-
-	@Override
-	public void setLocalNetworkCache(INetworkCache network) {
 	}
 
 	@Override
@@ -431,22 +424,13 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 		}
 	}
 
-	@Override
-	public ViewersList getViewersList() {
-		return viewers;
+	public ListenerList<PlayerListener> getListenerList() {
+		return listeners;
 	}
 
 	@Override
-	public UUID getIdentity() {
-		return null;
-	}
-
-	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
-	}
-
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
+	public int getIdentity() {
+		return -1;
 	}
 
 	@Override
@@ -455,7 +439,31 @@ public class ConnectedDisplayScreen implements IInfoDisplay, IConnectable, INBTS
 	}
 
 	@Override
-	public UUID getUUID() {
-		return topLeftScreen != null ? topLeftScreen.getUUID() : null;
+	public ILogisticsNetwork getNetwork() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	@Override
+	public boolean isValid() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onNetworkConnect(ILogisticsNetwork network) {}
+
+	@Override
+	public void onNetworkDisconnect(ILogisticsNetwork network) {}
+
+	@Override
+	public UUID getUUID() {
+		return getTopLeftScreen() == null ? IUUIDIdentity.INVALID_UUID : getTopLeftScreen().getUUID();
+	}
+
+	@Override
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
+
+	@Override
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
 }

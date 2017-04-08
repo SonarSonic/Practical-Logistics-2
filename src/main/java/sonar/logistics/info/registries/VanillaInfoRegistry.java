@@ -84,7 +84,6 @@ public class VanillaInfoRegistry extends IInfoRegistry {
 	public void registerAdjustments(ILogicInfoRegistry registry) {
 		registry.registerInfoAdjustments(Lists.newArrayList("EntityLivingBase.getHealth", "EntityLivingBase.getMaxHealth"), "", "HP");
 		registry.registerInfoAdjustments(Lists.newArrayList("TileEntityFurnace.furnaceBurnTime", "TileEntityFurnace.currentItemBurnTime", "TileEntityFurnace.cookTime", "TileEntityFurnace.totalCookTime"), "", "ticks");
-		// LogicRegistry.registerInfoAdjustments(Lists.newArrayList("Block.getUnlocalizedName"), "", ".name");
 	}
 
 }

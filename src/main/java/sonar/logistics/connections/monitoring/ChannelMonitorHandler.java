@@ -2,7 +2,7 @@ package sonar.logistics.connections.monitoring;
 
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
 
@@ -17,7 +17,7 @@ public class ChannelMonitorHandler extends LogicMonitorHandler<MonitoredBlockCoo
 	}
 
 	@Override
-	public MonitoredList<MonitoredBlockCoords> updateInfo(INetworkCache network, MonitoredList<MonitoredBlockCoords> info, BlockConnection connection) {
+	public MonitoredList<MonitoredBlockCoords> updateInfo(ILogisticsNetwork network, MonitoredList<MonitoredBlockCoords> info, BlockConnection connection) {
 		
 		return info;
 	}

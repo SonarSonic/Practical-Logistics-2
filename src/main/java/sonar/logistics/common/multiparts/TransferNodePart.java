@@ -29,6 +29,9 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
@@ -36,6 +39,7 @@ import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.filters.ITransferFilteredTile;
@@ -48,27 +52,25 @@ import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.readers.IdentifiedChannelsList;
-import sonar.logistics.api.utils.LogisticsHelper;
-import sonar.logistics.api.viewers.IViewersList;
-import sonar.logistics.api.viewers.ViewerTally;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.client.gui.generic.GuiFilterList;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredEntity;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.network.sync.SyncFilterList;
 
 public class TransferNodePart extends SidedMultipart implements IConnectionNode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
 
-	public ViewersList viewers = new ViewersList(this, Lists.newArrayList(ViewerType.FULL_INFO, ViewerType.INFO));
+	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
 	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.<NodeTransferMode>create("transfer", NodeTransferMode.class);
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
 	public SyncEnum<NodeTransferMode> transferMode = new SyncEnum(NodeTransferMode.values(), 2).setDefault(NodeTransferMode.ADD);
 	public SyncFilterList filters = new SyncFilterList(3);
-	public IdentifiedChannelsList list = new IdentifiedChannelsList(this, this.channelType(), 4);
+	public IdentifiedChannelsList list = new IdentifiedChannelsList(getIdentity(), this.channelType(), 4);
 	public SyncTagType.BOOLEAN connection = new SyncTagType.BOOLEAN(5);
 	public SyncTagType.BOOLEAN items = (BOOLEAN) new SyncTagType.BOOLEAN(6).setDefault(true);
 	public SyncTagType.BOOLEAN fluids = (BOOLEAN) new SyncTagType.BOOLEAN(7).setDefault(true);
@@ -80,14 +82,6 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public int ticks = 20;
 	{
 		syncList.addParts(priority, transferMode, filters, list, connection, items, fluids, energy);
-	}
-
-	public TransferNodePart() {
-		super(0.0625 * 8, 0, 0.0625 * 2);
-	}
-
-	public TransferNodePart(EnumFacing face) {
-		super(face, 0.0625 * 8, 0, 0.0625 * 2);
 	}
 
 	@Override
@@ -123,12 +117,9 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	}
 
 	//// IConnectionNode \\\\
-
 	@Override
 	public void addConnections(ArrayList<NodeConnection> connections) {
-		// if (canConnectToNodeConnection()) {
 		connections.add(getConnected());
-		// }
 	}
 
 	@Override
@@ -137,7 +128,6 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	}
 
 	//// IFilteredTile \\\\
-
 	@Override
 	public SyncFilterList getFilters() {
 		return filters;
@@ -192,7 +182,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	@Override
 	public BlockConnection getConnected() {
-		return this.wasRemoved ? null : new BlockConnection(this, new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension()), getFacing());
+		return this.wasRemoved ? null : new BlockConnection(this, new BlockCoords(getPos().offset(getCableFace()), getWorld().provider.getDimension()), getCableFace());
 	}
 
 	@Override
@@ -219,7 +209,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public ChannelType channelType() {
 		return ChannelType.UNLIMITED;
 	}
-	
+
 	@Override
 	public IdentifiedChannelsList getChannels() {
 		return list;
@@ -232,30 +222,22 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 			sendByteBufPacket(-3);
 		}
 		if (info instanceof MonitoredEntity) {
-			lastSelectedUUID.setObject(((MonitoredEntity) info).uuid.getUUID());;
+			lastSelectedUUID.setObject(((MonitoredEntity) info).uuid.getUUID());
+			;
 			sendByteBufPacket(-4);
 		}
 	}
 
 	//// ILogicViewable \\\\
 
-	@Override
-	public IViewersList getViewersList() {
-		return viewers;
+	public ListenerList<PlayerListener> getListenerList() {
+		return listeners;
 	}
 
 	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> arrayList) {
-	}
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
 
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> arrayList) {
-	}
-
-	@Override
-	public UUID getIdentity() {
-		return getUUID();
-	}
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
 
 	//// EVENTS \\\\
 
@@ -269,7 +251,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing()).withProperty(TRANSFER, transferMode.getObject());
+		return state.withProperty(ORIENTATION, getCableFace()).withProperty(TRANSFER, transferMode.getObject());
 	}
 
 	public BlockStateContainer createBlockState() {
@@ -306,12 +288,12 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	public void readPacket(ByteBuf buf, int id) {
 		switch (id) {
 		case -4:
-			lastSelectedUUID.readFromBuf(buf);			
+			lastSelectedUUID.readFromBuf(buf);
 			list.modifyUUID(lastSelectedUUID.getUUID());
-			sendByteBufPacket(1);			
+			sendByteBufPacket(1);
 			break;
 		case -3:
-			lastSelected.readFromBuf(buf);		
+			lastSelected.readFromBuf(buf);
 			list.modifyCoords(lastSelected.getCoords());
 			sendByteBufPacket(1);
 			break;
@@ -371,8 +353,8 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.transfer_node);
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.TRANSFER_NODE;
 	}
 
 }

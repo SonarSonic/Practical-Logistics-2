@@ -19,26 +19,19 @@ import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.client.gui.GuiNode;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
+import sonar.logistics.helpers.LogisticsHelper;
 
 public class NodePart extends SidedMultipart implements IConnectionNode, ISlottedPart, IByteBufTile, IFlexibleGui {
 
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
 	{
 		syncList.addPart(priority);
-	}
-
-	public NodePart() {
-		super(0.875, 0, 0.0625);
-	}
-
-	public NodePart(EnumFacing face) {
-		super(face, 0.875, 0, 0.0625);
 	}
 
 	@Override
@@ -56,8 +49,8 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 
 	@Override
 	public void addConnections(ArrayList<NodeConnection> connections) {
-		BlockCoords tileCoords = new BlockCoords(getPos().offset(getFacing()), getWorld().provider.getDimension());
-		connections.add(new BlockConnection(this, tileCoords, getFacing()));
+		BlockCoords tileCoords = new BlockCoords(getPos().offset(getCableFace()), getWorld().provider.getDimension());
+		connections.add(new BlockConnection(this, tileCoords, getCableFace()));
 	}
 
 	@Override
@@ -81,7 +74,7 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 		switch (id) {
 		case 1:
 			priority.readFromBuf(buf);
-			this.network.markDirty(RefreshType.CONNECTED_BLOCKS);
+			network.onConnectionChanged(this);
 			break;
 		}
 	}
@@ -108,7 +101,7 @@ public class NodePart extends SidedMultipart implements IConnectionNode, ISlotte
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.node);
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.NODE;
 	}
 }

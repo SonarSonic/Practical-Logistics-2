@@ -31,7 +31,7 @@ import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 
@@ -79,11 +79,11 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 				if (part != null && part instanceof IChannelledTile) {
 					if (!world.isRemote) {
 						IChannelledTile tile = (IChannelledTile) part;
-						tile.getViewersList().addViewer(player, ViewerType.CHANNEL);
+						tile.getListenerList().addListener(player, ListenerType.CHANNEL);
 						NBTTagCompound tag = new NBTTagCompound();
 						tag.setBoolean(FlexibleGuiHandler.ITEM, true);
 						tag.setInteger(FlexibleGuiHandler.ID, 0);
-						tag.setInteger("hash", tile.getIdentity().hashCode());
+						tag.setInteger("hash", tile.getIdentity());
 						tag.setInteger("x", tile.getCoords().getX());
 						tag.setInteger("y", tile.getCoords().getY());
 						tag.setInteger("z", tile.getCoords().getZ());
@@ -147,7 +147,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			for (IMultipart part : container.getParts()) {
 				if (part != null && part instanceof IChannelledTile) {
 					IChannelledTile tile = (IChannelledTile) part;
-					if (tile.getIdentity().hashCode() == hash) {
+					if (tile.getIdentity() == hash) {
 						return new ContainerChannelSelection(tile);
 					}
 				}
@@ -166,7 +166,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			for (IMultipart part : container.getParts()) {
 				if (part != null && part instanceof IChannelledTile) {
 					IChannelledTile tile = (IChannelledTile) part;
-					if (tile.getIdentity().hashCode() == hash) {
+					if (tile.getIdentity() == hash) {
 						return new GuiChannelSelection(player, tile, 0);
 					}
 				}

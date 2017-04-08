@@ -7,7 +7,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.cabling.IChannelledTile;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 
 public class ContainerChannelSelection extends ContainerMultipartSync {
 
@@ -26,7 +26,7 @@ public class ContainerChannelSelection extends ContainerMultipartSync {
 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		tile.getViewersList().removeViewer(player, ViewerType.CHANNEL);
+		tile.getListenerList().removeListener(player, ListenerType.CHANNEL);
 	}
 
 	public boolean syncInventory() {

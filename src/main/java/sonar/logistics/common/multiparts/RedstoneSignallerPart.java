@@ -29,16 +29,18 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.logistics.EmitterStatement;
 import sonar.logistics.api.logistics.ILogisticsTile;
 import sonar.logistics.api.logistics.SignallerModes;
-import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.client.gui.generic.GuiStatementList;
 import sonar.logistics.common.containers.ContainerStatementList;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
 import sonar.logistics.helpers.CableHelper;
+import sonar.logistics.helpers.LogisticsHelper;
 
 public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePart, ILogisticsTile, IByteBufTile, IFlexibleGui {
 
@@ -48,14 +50,6 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	public SyncEnum<SignallerModes> mode = new SyncEnum(SignallerModes.values(), 3);
 	{
 		syncList.addParts(isActive, statements, mode);
-	}
-
-	public RedstoneSignallerPart() {
-		super(3 * 0.0625, 0.0625 * 1, 0.0625 * 6);
-	}
-
-	public RedstoneSignallerPart(EnumFacing face) {
-		super(face, 5 * 0.0625, 0.0625 * 1, 0.0625 * 6);
 	}
 
 	@Override
@@ -85,7 +79,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 		HashMap<InfoUUID, IMonitorInfo> infoList = new HashMap();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				ILogicViewable monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
+				ILogicViewable monitor = CableHelper.getMonitorFromIdentity(id.hashCode, false);
 				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
 					IMonitorInfo monitorInfo = PL2.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
@@ -153,11 +147,6 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	}
 
 	@Override
-	public UUID getIdentity() {
-		return this.getUUID();
-	}
-
-	@Override
 	public SyncEnum<SignallerModes> emitterMode() {
 		return mode;
 	}
@@ -187,7 +176,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing()).withProperty(ACTIVE, isActive());
+		return state.withProperty(ORIENTATION, getCableFace()).withProperty(ACTIVE, isActive());
 	}
 
 	public BlockStateContainer createBlockState() {
@@ -279,7 +268,7 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.redstone_signaller);
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.REDSTONE_SIGNALLER;
 	}
 }

@@ -7,9 +7,9 @@ import net.minecraft.item.Item;
 import sonar.core.utils.Localisation;
 
 public class PL2Translate {
-	// blocks
 	public static final ArrayList<Localisation> locals = new ArrayList();
 
+	// ITEMS
 	public static final Localisation GUIDE = i(PL2Items.guide);
 	public static final Localisation OPERATOR = i(PL2Items.operator);
 	public static final Localisation SAPPHIRE = i(PL2Items.sapphire);
@@ -36,6 +36,7 @@ public class PL2Translate {
 	public static final Localisation REDSTONE_SIGNALLER = i(PL2Items.redstone_signaller);
 	public static final Localisation CLOCK = i(PL2Items.clock);
 
+	// BLOCKS
 	public static final Localisation HAMMER = b(PL2Blocks.hammer);
 	public static final Localisation HAMMER_AIR = b(PL2Blocks.hammer_air);
 	public static final Localisation SAPPHIRE_ORE = b(PL2Blocks.sapphire_ore);

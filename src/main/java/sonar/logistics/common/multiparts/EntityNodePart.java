@@ -1,6 +1,6 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.raytrace.PartMOP;
@@ -24,28 +24,22 @@ import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.EntityTarget;
-import sonar.logistics.api.nodes.IEntityNode;
+import sonar.logistics.api.nodes.IConnectionNode;
 import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.utils.LogisticsHelper;
 import sonar.logistics.client.gui.GuiEntityNode;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
+import sonar.logistics.helpers.LogisticsHelper;
 
-public class EntityNodePart extends SidedMultipart implements IEntityNode, IByteBufTile, IFlexibleGui {
+public class EntityNodePart extends SidedMultipart implements IConnectionNode, IByteBufTile, IFlexibleGui {
 
 	public SyncEnum<EntityTarget> entityTarget = new SyncEnum<EntityTarget>(EntityTarget.values(), 1);
 	public SyncTagType.INT entityRange = (INT) new SyncTagType.INT(2).setDefault(10);
 	public SyncTagType.BOOLEAN nearest = (BOOLEAN) new SyncTagType.BOOLEAN(3).setDefault(true);
 	{
 		syncList.addParts(entityTarget, entityRange, nearest);
-	}
-
-	public EntityNodePart() {
-		super(5 * 0.0625, 0.0625 * 1, 0.0625 * 4);
-	}
-
-	public EntityNodePart(EnumFacing face) {
-		super(face, 5 * 0.0625, 0.0625 * 1, 0.0625 * 4);
 	}
 
 	@Override
@@ -75,10 +69,10 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 	}
 
 	@Override
-	public void addEntities(List<NodeConnection> entities) {
+	public void addConnections(ArrayList<NodeConnection> connections) {
 		Entity entity = getEntity();
 		if (entity != null)
-			entities.add(new EntityConnection(this, entity));
+			connections.add(new EntityConnection(this, entity));
 	}
 
 	//// PACKETS \\\\
@@ -137,12 +131,12 @@ public class EntityNodePart extends SidedMultipart implements IEntityNode, IByte
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.entity_node);
+	public int getPriority() {
+		return 0;
 	}
 
 	@Override
-	public int getPriority() {
-		return 0;
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.ENTITY_NODE;
 	}
 }

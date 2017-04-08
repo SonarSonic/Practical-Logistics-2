@@ -6,8 +6,8 @@ import net.minecraft.world.World;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.connecting.INetworkCache;
-import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
+import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.helpers.CableHelper;
 
 public class CableManager extends AbstractConnectionManager<IDataCable> {
@@ -17,24 +17,19 @@ public class CableManager extends AbstractConnectionManager<IDataCable> {
 		return CableHelper.getConnectionType(source, world, pos, dir, cableType);
 	}
 
-	public INetworkCache addCable(IDataCable cable) {
+	public ILogisticsNetwork addCable(IDataCable cable) {
 		return NetworkManager().getOrCreateNetwork(addConnection(cable));
 	}
 
 	@Override
 	public void onNetworksConnected(int newID, int oldID) {
-		NetworkManager().connectNetworks(oldID, newID);
-		
+		NetworkManager().connectNetworks(oldID, newID);		
 	}
 
 	@Override
-	public void onConnectionAdded(int registryID, IDataCable added) {
-		NetworkManager().markNetworkDirty(registryID, RefreshType.FULL);
-		
-	}
+	public void onConnectionAdded(int registryID, IDataCable added) {}
 
 	@Override
 	public void onConnectionRemoved(int registryID, IDataCable added) {}
-	
 
 }

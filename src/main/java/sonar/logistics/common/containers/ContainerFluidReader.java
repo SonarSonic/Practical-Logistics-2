@@ -11,7 +11,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.readers.FluidReader.Modes;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.FluidReaderPart;
 
 public class ContainerFluidReader extends ContainerMultipartSync {
@@ -96,7 +96,7 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		part.getViewersList().removeViewer(player, ViewerType.INFO);
+		part.getListenerList().removeListener(player, ListenerType.INFO);
 	}
 
     public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player){

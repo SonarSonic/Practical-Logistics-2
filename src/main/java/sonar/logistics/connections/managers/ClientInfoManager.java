@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,6 +18,7 @@ import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.ClientViewable;
+import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.connections.monitoring.MonitoredList;
@@ -31,11 +31,11 @@ public class ClientInfoManager implements IInfoManager {
 	// public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = new LinkedHashMap();
 	public LinkedHashMap<InfoUUID, IMonitorInfo> info = new LinkedHashMap();
 
-	public Map<UUID, ArrayList<Object>> sortedLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<Object>>();
-	public Map<UUID, ArrayList<ClientViewable>> clientLogicMonitors = new ConcurrentHashMap<UUID, ArrayList<ClientViewable>>();
+	public Map<Integer, ArrayList<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, ArrayList<Object>>();
+	public Map<Integer, ArrayList<ClientViewable>> clientLogicMonitors = new ConcurrentHashMap<Integer, ArrayList<ClientViewable>>();
 
 	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();
-	public LinkedHashMap<UUID, ILogicViewable> monitors = new LinkedHashMap();
+	public LinkedHashMap<Integer, ILogicViewable> monitors = new LinkedHashMap();
 	public Map<Integer, MonitoredList<IMonitorInfo>> channelMap = new ConcurrentHashMap<Integer, MonitoredList<IMonitorInfo>>();
 
 	// emitters
@@ -72,19 +72,19 @@ public class ClientInfoManager implements IInfoManager {
 		}
 	}
 
-	public void addMonitor(ILogicViewable monitor) {
-		if (monitors.containsValue(monitor)) {
+	public void addInfoProvider(IInfoProvider infoProvider) {
+		if (monitors.containsValue(infoProvider) || infoProvider.getIdentity() == -1) {
 			return;
 		}
-		monitors.put(monitor.getIdentity(), monitor);
+		monitors.put(infoProvider.getIdentity(), infoProvider);
 	}
 
-	public void removeMonitor(ILogicViewable monitor) {
+	public void removeInfoProvider(IInfoProvider monitor) {
 		monitors.remove(monitor.getIdentity());
 	}
 
 	@Override
-	public LinkedHashMap<UUID, ILogicViewable> getMonitors() {
+	public LinkedHashMap<Integer, ILogicViewable> getMonitors() {
 		return monitors;
 	}
 

@@ -20,17 +20,14 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.readers.IReader;
-import sonar.logistics.api.utils.LogisticsHelper;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
+import sonar.logistics.common.multiparts.generic.MonitorMultipart;
+import sonar.logistics.helpers.LogisticsHelper;
 
-public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMultipart<T> implements INetworkReader<T>, ISlottedPart, IReader<T>, IFlexibleGui {
+public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMultipart<T> implements ISlottedPart, IReader<T>, IFlexibleGui {
 
 	public ReaderMultipart(String handlerID) {
-		super(handlerID, 6 * 0.0625, 0.0625 * 1, 0.0625 * 6);
-	}
-
-	public ReaderMultipart(String handlerID, EnumFacing face) {
-		super(handlerID, face, 6 * 0.0625, 0.0625 * 1, 0.0625 * 6);
+		super(handlerID);
 	}
 
 	@Override
@@ -46,12 +43,12 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 
 	@Override
 	public IMonitorInfo getMonitorInfo(int pos) {
-		return PL2.getInfoManager(this.getWorld().isRemote).getInfoList().get(new InfoUUID(getIdentity().hashCode(), pos));
+		return PL2.getInfoManager(this.getWorld().isRemote).getInfoList().get(new InfoUUID(getIdentity(), pos));
 	}
 
 	@Override
 	public NetworkConnectionType canConnect(EnumFacing dir) {
-		return dir != getFacing() ? NetworkConnectionType.NETWORK : NetworkConnectionType.VISUAL;
+		return dir != getCableFace() ? NetworkConnectionType.NETWORK : NetworkConnectionType.VISUAL;
 	}
 
 	//// PACKETS \\\\
@@ -80,7 +77,7 @@ public abstract class ReaderMultipart<T extends IMonitorInfo> extends MonitorMul
 		switch (id) {
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			viewers.addViewer(player, ViewerType.FULL_INFO);
+			listeners.addListener(player, ListenerType.FULL_INFO);
 			break;
 		}
 	}

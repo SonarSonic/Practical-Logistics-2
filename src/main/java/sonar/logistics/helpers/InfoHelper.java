@@ -23,7 +23,7 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.IScaleableDisplay;
@@ -32,7 +32,7 @@ import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.common.multiparts.LogisticsMultipart;
+import sonar.logistics.common.multiparts.generic.LogisticsMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
 
@@ -46,7 +46,7 @@ public class InfoHelper {
 	public static void screenItemStackClicked(StoredItemStack itemstack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
 		if (toRemove.a != 0 && networkID != -1) {
-			INetworkCache cache = PL2.instance.networkManager.getNetwork(networkID);
+			ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(networkID);
 			switch (toRemove.b) {
 			case ADD:
 				if (stack != null) {
@@ -78,7 +78,7 @@ public class InfoHelper {
 
 	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
 		if (networkID != -1) {
-			INetworkCache cache = PL2.instance.networkManager.getNetwork(networkID);
+			ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(networkID);
 			if (type == BlockInteractionType.RIGHT) {
 				LogisticsAPI.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
 			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {

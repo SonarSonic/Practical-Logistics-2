@@ -131,7 +131,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 				FlexibleGuiHandler.changeGui(part, 2, 0, player.getEntityWorld(), player);
 				break;
 			case 7:
-				PL2.network.sendToServer(new PacketNodeFilter(part.getIdentity(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketNodeFilter(part.getUUID(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			}
 		}

@@ -21,7 +21,7 @@ import sonar.logistics.network.PacketConnectedDisplayScreen;
 import sonar.logistics.network.PacketEmitterStatement;
 import sonar.logistics.network.PacketInfoList;
 import sonar.logistics.network.PacketInventoryReader;
-import sonar.logistics.network.PacketMonitorType;
+import sonar.logistics.network.PacketAddListener;
 import sonar.logistics.network.PacketMonitoredList;
 import sonar.logistics.network.PacketNodeFilter;
 import sonar.logistics.network.PacketViewables;
@@ -32,7 +32,7 @@ public class PL2Common implements IGuiHandler {
 	public static void registerPackets() {
 		PL2.network.registerMessage(PacketMonitoredList.Handler.class, PacketMonitoredList.class, 0, Side.CLIENT);
 		PL2.network.registerMessage(PacketChannels.Handler.class, PacketChannels.class, 1, Side.CLIENT);
-		PL2.network.registerMessage(PacketMonitorType.Handler.class, PacketMonitorType.class, 2, Side.SERVER);
+		PL2.network.registerMessage(PacketAddListener.Handler.class, PacketAddListener.class, 2, Side.SERVER);
 		PL2.network.registerMessage(PacketInfoList.Handler.class, PacketInfoList.class, 3, Side.CLIENT);
 		PL2.network.registerMessage(PacketInventoryReader.Handler.class, PacketInventoryReader.class, 4, Side.SERVER);
 		PL2.network.registerMessage(PacketClientEmitters.Handler.class, PacketClientEmitters.class, 5, Side.CLIENT);
@@ -43,7 +43,6 @@ public class PL2Common implements IGuiHandler {
 		PL2.network.registerMessage(PacketNodeFilter.Handler.class, PacketNodeFilter.class, 10, Side.SERVER);
 		PL2.network.registerMessage(PacketEmitterStatement.Handler.class, PacketEmitterStatement.class, 11, Side.SERVER);
 		PL2.network.registerMessage(PacketWirelessStorage.Handler.class, PacketWirelessStorage.class, 12, Side.SERVER);
-		/* Logistics.network.registerMessage(PacketProviders.Handler.class, PacketProviders.class, 0, Side.CLIENT); // Logistics.network.registerMessage(PacketInfoBlock.Handler.class, PacketInfoBlock.class, 1, Side.SERVER); Logistics.network.registerMessage(PacketDataEmitters.Handler.class, PacketDataEmitters.class, 2, Side.CLIENT); Logistics.network.registerMessage(PacketCoordsSelection.Handler.class, PacketCoordsSelection.class, 3, Side.SERVER); // Logistics.network.registerMessage(PacketFluidReader.Handler.class, PacketFluidReader.class, 5, Side.SERVER); Logistics.network.registerMessage(PacketRouterGui.Handler.class, PacketRouterGui.class, 6, Side.SERVER); Logistics.network.registerMessage(PacketGuiChange.Handler.class, PacketGuiChange.class, 7, Side.SERVER); Logistics.network.registerMessage(ItemHandler.class, PacketScreenInteraction.PacketItemStack.class, 8, Side.SERVER); Logistics.network.registerMessage(FluidHandler.class, PacketScreenInteraction.PacketFluidStack.class, 9, Side.SERVER); */
 	}
 
 	@Override
@@ -92,25 +91,12 @@ public class PL2Common implements IGuiHandler {
 		return false;
 	}
 
-	public void setUsingOperator(boolean bool) {
-	}
+	public void setUsingOperator(boolean bool) {}
 
-	public void registerRenderThings() {
-	}
+	public void preInit(FMLPreInitializationEvent event) {}
 
-	public void registerTextures() {
-	}
+	public void load(FMLInitializationEvent event) {}
 
-	public void preInit(FMLPreInitializationEvent event) {
-
-	}
-
-	public void load(FMLInitializationEvent event) {
-
-	}
-
-	public void postLoad(FMLPostInitializationEvent evt) {
-
-	}
+	public void postLoad(FMLPostInitializationEvent evt) {}
 
 }

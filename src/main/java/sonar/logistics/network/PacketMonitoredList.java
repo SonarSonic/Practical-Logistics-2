@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
+import sonar.logistics.api.asm.MonitoredListEvent;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.IListReader;
 import sonar.logistics.api.viewers.ILogicViewable;
@@ -19,17 +21,16 @@ import sonar.logistics.helpers.InfoHelper;
 
 public class PacketMonitoredList implements IMessage {
 
-	public UUID identity;
 	public InfoUUID id;
+	public int identity;
 	public int networkID;
 	public MonitoredList list;
 	public NBTTagCompound listTag;
 	public SyncType type;
 
-	public PacketMonitoredList() {
-	}
+	public PacketMonitoredList() {}
 
-	public PacketMonitoredList(UUID identity, InfoUUID id, int networkID, NBTTagCompound listTag, SyncType type) {
+	public PacketMonitoredList(int identity, InfoUUID id, int networkID, NBTTagCompound listTag, SyncType type) {
 		super();
 		this.identity = identity;
 		this.id = id;
@@ -40,9 +41,7 @@ public class PacketMonitoredList implements IMessage {
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		long msb = buf.readLong();
-		long lsb = buf.readLong();
-		identity = new UUID(msb, lsb);
+		identity = buf.readInt();
 		networkID = buf.readInt();
 		id = InfoUUID.getUUID(buf);
 		type = SyncType.values()[buf.readInt()];
@@ -51,8 +50,7 @@ public class PacketMonitoredList implements IMessage {
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		buf.writeLong(identity.getMostSignificantBits());
-		buf.writeLong(identity.getLeastSignificantBits());
+		buf.writeInt(identity);
 		buf.writeInt(networkID);
 		id.writeToBuf(buf);
 		buf.writeInt(type.ordinal());
@@ -67,11 +65,9 @@ public class PacketMonitoredList implements IMessage {
 				public void run() {
 					if (message.list != null) {
 						ILogicViewable viewable = PL2.getClientManager().monitors.get(message.identity);
-						if (viewable instanceof IListReader) {
-							PL2.getClientManager().monitoredLists.put(message.id, ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID));
-						} else {
-							PL2.getClientManager().monitoredLists.put(message.id, message.list);
-						}
+						MonitoredList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
+						PL2.getClientManager().monitoredLists.put(message.id, list);
+						MinecraftForge.EVENT_BUS.post(new MonitoredListEvent.CHANGED(list, message.id, ctx.side));
 					}
 				}
 			});

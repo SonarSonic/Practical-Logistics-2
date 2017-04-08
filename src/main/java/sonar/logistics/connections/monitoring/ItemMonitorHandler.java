@@ -15,7 +15,7 @@ import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.info.IEntityMonitorHandler;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
@@ -40,7 +40,7 @@ public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> 
 	}
 
 	@Override
-	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, BlockConnection connection) {
+	public MonitoredList<MonitoredItemStack> updateInfo(ILogisticsNetwork network, MonitoredList<MonitoredItemStack> previousList, BlockConnection connection) {
 		MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(network.getNetworkID());
 		List<ISonarInventoryHandler> providers = SonarCore.inventoryHandlers;
 		TileEntity tile = connection.coords.getTileEntity();
@@ -61,7 +61,7 @@ public class ItemMonitorHandler extends LogicMonitorHandler<MonitoredItemStack> 
 	}
 
 	@Override
-	public MonitoredList<MonitoredItemStack> updateInfo(INetworkCache network, MonitoredList<MonitoredItemStack> previousList, EntityConnection connection) {
+	public MonitoredList<MonitoredItemStack> updateInfo(ILogisticsNetwork network, MonitoredList<MonitoredItemStack> previousList, EntityConnection connection) {
 		MonitoredList<MonitoredItemStack> list = MonitoredList.<MonitoredItemStack>newMonitoredList(network.getNetworkID());
 		Entity entity = connection.entity;
 		if (entity instanceof EntityPlayer) {

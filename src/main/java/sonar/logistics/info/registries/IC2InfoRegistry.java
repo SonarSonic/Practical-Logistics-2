@@ -19,8 +19,7 @@ public class IC2InfoRegistry extends IInfoRegistry {
 
 	public void registerBaseMethods(ILogicInfoRegistry registry) {
 		registry.registerMethods(IReactorChamber.class, RegistryType.TILE, Lists.newArrayList("getReactorInstance"));
-		registry.registerMethods(IReactor.class, RegistryType.TILE, Lists.newArrayList("getHeat", "getMaxHeat", "getReactorEUEnergyOutput"));
-		
+		registry.registerMethods(IReactor.class, RegistryType.TILE, Lists.newArrayList("getHeat", "getMaxHeat", "getReactorEUEnergyOutput"));		
 	}
 
 	public void registerAllFields(ILogicInfoRegistry registry) {	

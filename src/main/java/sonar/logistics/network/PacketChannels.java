@@ -30,8 +30,9 @@ public class PacketChannels implements IMessage {
 	public void fromBytes(ByteBuf buf) {
 		registryID = buf.readInt();
 		listTag = ByteBufUtils.readTag(buf);
-		if (listTag != null)
+		if (listTag != null) {
 			list = InfoHelper.readMonitoredList(listTag, PL2.getClientManager().channelMap.getOrDefault(registryID, MonitoredList.newMonitoredList(registryID)).copyInfo(), SyncType.DEFAULT_SYNC);
+		}
 	}
 
 	@Override

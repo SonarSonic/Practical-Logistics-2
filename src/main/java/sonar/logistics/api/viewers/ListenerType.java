@@ -4,8 +4,8 @@ import java.util.List;
 
 import sonar.core.helpers.SonarHelper;
 
-public enum ViewerType {
+public enum ListenerType {
 	INFO, CHANNEL, TEMPORARY, FULL_INFO;
 	
-	public static final List<ViewerType> ALL = SonarHelper.convertArray(ViewerType.values());
+	public static final List<ListenerType> ALL = SonarHelper.convertArray(ListenerType.values());
 }

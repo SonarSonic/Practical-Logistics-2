@@ -25,7 +25,7 @@ import sonar.logistics.api.cabling.IConnectable;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
@@ -34,7 +34,7 @@ import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.viewers.ILogicViewable;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.DataCablePart;
-import sonar.logistics.common.multiparts.SidedMultipart;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
 
 public class CableHelper extends CablingWrapper {
 
@@ -74,7 +74,7 @@ public class CableHelper extends CablingWrapper {
 			if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) {
 				BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos();
 				double[] translation = renderInfo.getTranslation();
-				switch (display.getFace()) {
+				switch (display.getCableFace()) {
 				case DOWN:
 					break;
 				case EAST:
@@ -97,15 +97,13 @@ public class CableHelper extends CablingWrapper {
 
 	public static int getSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
 		double[] pos = CableHelper.getPos(display, renderInfo);
-
 		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
 		int minH = 0;
 		int maxY = (int) Math.ceil(renderInfo.getScaling()[1]);
 		int minY = 0;
 		int hSlots = Math.max(1, (Math.round(maxH - minH) * xSize));
 		int yPos = (int) ((1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
-
-		switch (display.getFace()) {
+		switch (display.getCableFace()) {
 		case DOWN:
 			switch (display.getRotation()) {
 			case EAST:
@@ -181,7 +179,7 @@ public class CableHelper extends CablingWrapper {
 
 		// int yPos = (int) ((1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
 
-		switch (display.getFace()) {
+		switch (display.getCableFace()) {
 		case DOWN:
 			switch (display.getRotation()) {
 			case EAST:
@@ -285,7 +283,7 @@ public class CableHelper extends CablingWrapper {
 		for (IMultipart part : container.getParts()) {
 			if (part != null && part instanceof IInfoDisplay) {
 				IInfoDisplay display = (IInfoDisplay) part;
-				if (display.getFace() == face) {
+				if (display.getCableFace() == face) {
 					return display;
 				}
 			}
@@ -323,7 +321,7 @@ public class CableHelper extends CablingWrapper {
 			if (validate.isValid(part)) {
 				if (part instanceof SidedMultipart) {
 					SidedMultipart sided = (SidedMultipart) part;
-					if (cable.isBlocked(sided.getFacing())) {
+					if (cable.isBlocked(sided.getCableFace())) {
 						continue;
 					}
 				}
@@ -356,11 +354,11 @@ public class CableHelper extends CablingWrapper {
 		return logicTiles;
 	}
 
-	public INetworkCache getNetwork(TileEntity tile, EnumFacing dir) {
+	public ILogisticsNetwork getNetwork(TileEntity tile, EnumFacing dir) {
 		// watch out for this null :P
 		Pair<ConnectableType, Integer> connection = PL2.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTION);
 		if (connection.a != ConnectableType.NONE && connection.b != -1) {
-			INetworkCache cache = PL2.instance.networkManager.getNetwork(connection.b);
+			ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(connection.b);
 			if (cache != null) {
 				return cache;
 			}
@@ -368,13 +366,13 @@ public class CableHelper extends CablingWrapper {
 		return EmptyNetworkCache.INSTANCE;
 	}
 
-	public INetworkCache getNetwork(int registryID) {
+	public ILogisticsNetwork getNetwork(int registryID) {
 		return PL2.instance.networkManager.getNetwork(registryID);
 	}
 
-	public static ILogicViewable getMonitorFromHashCode(int hashCode, boolean isRemote) {
+	public static ILogicViewable getMonitorFromIdentity(int identity, boolean isRemote) {
 		for (ILogicViewable monitor : ((LinkedHashMap<UUID, ILogicViewable>) PL2.getInfoManager(isRemote).getMonitors().clone()).values()) {
-			if (monitor.getIdentity() != null && monitor.getIdentity().hashCode() == hashCode) {
+			if (monitor.getIdentity() != -1 && monitor.getIdentity() == identity) {
 				return monitor;
 			}
 		}

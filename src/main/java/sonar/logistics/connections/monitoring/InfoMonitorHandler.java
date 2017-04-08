@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.info.ICustomEntityHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.IEntityMonitorHandler;
@@ -34,7 +34,7 @@ public class InfoMonitorHandler extends LogicMonitorHandler<IProvidableInfo> imp
 	}
 
 	@Override
-	public MonitoredList<IProvidableInfo> updateInfo(INetworkCache network, MonitoredList<IProvidableInfo> previousList, BlockConnection connection) {
+	public MonitoredList<IProvidableInfo> updateInfo(ILogisticsNetwork network, MonitoredList<IProvidableInfo> previousList, BlockConnection connection) {
 		MonitoredList<IProvidableInfo> list = MonitoredList.<IProvidableInfo>newMonitoredList(network.getNetworkID());
 		EnumFacing face = connection.face.getOpposite();
 		World world = connection.coords.getWorld();
@@ -56,7 +56,7 @@ public class InfoMonitorHandler extends LogicMonitorHandler<IProvidableInfo> imp
 	}
 
 	@Override
-	public MonitoredList<IProvidableInfo> updateInfo(INetworkCache network, MonitoredList<IProvidableInfo> previousList, EntityConnection connection) {
+	public MonitoredList<IProvidableInfo> updateInfo(ILogisticsNetwork network, MonitoredList<IProvidableInfo> previousList, EntityConnection connection) {
 		MonitoredList<IProvidableInfo> list = MonitoredList.<IProvidableInfo>newMonitoredList(network.getNetworkID());
 		Entity entity = connection.entity;
 		World world = entity.getEntityWorld();

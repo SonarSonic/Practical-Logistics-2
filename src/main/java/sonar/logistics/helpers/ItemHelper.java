@@ -28,7 +28,7 @@ import sonar.core.network.PacketInvUpdate;
 import sonar.core.network.PacketStackUpdate;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
@@ -36,6 +36,7 @@ import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.InventoryReader.SortingType;
 import sonar.logistics.api.wrappers.ItemWrapper;
+import sonar.logistics.connections.CacheType;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
@@ -82,8 +83,8 @@ public class ItemHelper extends ItemWrapper {
 
 	}
 
-	public StoredItemStack addItems(StoredItemStack add, INetworkCache network, ActionType action) {
-		ArrayList<NodeConnection> connections = network.getConnectedChannels(true);
+	public StoredItemStack addItems(StoredItemStack add, ILogisticsNetwork network, ActionType action) {
+		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferItem(entry, add, NodeTransferMode.ADD)) {
 				continue;
@@ -108,7 +109,7 @@ public class ItemHelper extends ItemWrapper {
 		return add;
 	}
 
-	public void addItemsFromPlayer(StoredItemStack add, EntityPlayer player, INetworkCache network, ActionType action) {
+	public void addItemsFromPlayer(StoredItemStack add, EntityPlayer player, ILogisticsNetwork network, ActionType action) {
 		IInventory inv = player.inventory;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
@@ -123,8 +124,8 @@ public class ItemHelper extends ItemWrapper {
 		}
 	}
 
-	public StoredItemStack removeItems(StoredItemStack remove, INetworkCache network, ActionType action) {
-		ArrayList<NodeConnection> connections = network.getConnectedChannels(true);
+	public StoredItemStack removeItems(StoredItemStack remove, ILogisticsNetwork network, ActionType action) {
+		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferItem(entry, remove, NodeTransferMode.REMOVE)) {
 				continue;
@@ -270,7 +271,7 @@ public class ItemHelper extends ItemWrapper {
 		return remove;
 	}
 
-	public StoredItemStack removeToPlayerInventory(StoredItemStack stack, long extractSize, INetworkCache network, EntityPlayer player, ActionType type) {
+	public StoredItemStack removeToPlayerInventory(StoredItemStack stack, long extractSize, ILogisticsNetwork network, EntityPlayer player, ActionType type) {
 		StoredItemStack simulate = SonarAPI.getItemHelper().getStackToAdd(extractSize, stack, removeItems(stack.copy().setStackSize(extractSize), network, type));
 		if (simulate == null) {
 			return null;
@@ -279,7 +280,7 @@ public class ItemHelper extends ItemWrapper {
 		return returned;
 	}
 
-	public StoredItemStack addFromPlayerInventory(StoredItemStack stack, long extractSize, INetworkCache network, EntityPlayer player, ActionType type) {
+	public StoredItemStack addFromPlayerInventory(StoredItemStack stack, long extractSize, ILogisticsNetwork network, EntityPlayer player, ActionType type) {
 		StoredItemStack simulate = SonarAPI.getItemHelper().getStackToAdd(extractSize, stack, removeStackFromPlayer(stack.copy().setStackSize(extractSize), player, false, type));
 		if (simulate == null) {
 			return null;
@@ -289,7 +290,7 @@ public class ItemHelper extends ItemWrapper {
 
 	}
 
-	public StoredItemStack extractItem(INetworkCache cache, StoredItemStack stack) {
+	public StoredItemStack extractItem(ILogisticsNetwork cache, StoredItemStack stack) {
 		if (stack != null && stack.stored != 0) {
 			StoredItemStack extract = LogisticsAPI.getItemHelper().removeItems(stack.copy(), cache, ActionType.PERFORM);
 			StoredItemStack toAdd = SonarAPI.getItemHelper().getStackToAdd(stack.getStackSize(), stack, extract);
@@ -298,7 +299,7 @@ public class ItemHelper extends ItemWrapper {
 		return null;
 	}
 
-	public void insertInventoryFromPlayer(EntityPlayer player, INetworkCache cache, int slotID) {
+	public void insertInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slotID) {
 		ItemStack add = null;
 		if (slotID == -1) {
 			add = player.inventory.getItemStack();
@@ -322,7 +323,7 @@ public class ItemHelper extends ItemWrapper {
 		LogisticsAPI.getItemHelper().removeStackFromPlayer(toAdd, player, false, ActionType.PERFORM);
 	}
 
-	public void insertItemFromPlayer(EntityPlayer player, INetworkCache cache, int slot) {
+	public void insertItemFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slot) {
 		ItemStack add = player.inventory.getStackInSlot(slot);
 		if (add == null)
 			return;
@@ -339,7 +340,7 @@ public class ItemHelper extends ItemWrapper {
 		}
 	}
 
-	public void dumpInventoryFromPlayer(EntityPlayer player, INetworkCache cache) {
+	public void dumpInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache) {
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			ItemStack add = player.inventory.getStackInSlot(i);
 			if (add == null)
@@ -356,7 +357,7 @@ public class ItemHelper extends ItemWrapper {
 		}
 	}
 
-	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, INetworkCache cache) {
+	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {
 		for (MonitoredItemStack stack : items) {
 			StoredItemStack returned = removeToPlayerInventory(stack.getStoredStack(), stack.getStored(), cache, player, ActionType.SIMULATE);
 			if (returned != null) {
@@ -415,7 +416,7 @@ public class ItemHelper extends ItemWrapper {
 
 	}
 
-	public static void onNetworkItemInteraction(INetworkCache network, MonitoredList<MonitoredItemStack> items, EntityPlayer player, ItemStack selected, int button) {
+	public static void onNetworkItemInteraction(ILogisticsNetwork network, MonitoredList<MonitoredItemStack> items, EntityPlayer player, ItemStack selected, int button) {
 		if (button == 3) {
 			LogisticsAPI.getItemHelper().dumpInventoryFromPlayer(player, network);
 		} else if (button == 4) {

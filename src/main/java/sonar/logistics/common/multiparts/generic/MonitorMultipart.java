@@ -1,4 +1,4 @@
-package sonar.logistics.common.multiparts;
+package sonar.logistics.common.multiparts.generic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
@@ -28,16 +31,12 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
 import sonar.logistics.api.cabling.ChannelType;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.readers.INetworkReader;
 import sonar.logistics.api.readers.IdentifiedChannelsList;
-import sonar.logistics.api.viewers.ViewerTally;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
 import sonar.logistics.connections.monitoring.MonitoredEntity;
@@ -46,10 +45,10 @@ import sonar.logistics.network.sync.SyncMonitoredType;
 
 public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMultipart implements INetworkReader<T>, IByteBufTile, IFlexibleGui {
 
-	public ViewersList viewers = new ViewersList(this, ViewerType.ALL);
+	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
 
 	public static final PropertyBool hasDisplay = PropertyBool.create("display");
-	protected IdentifiedChannelsList list = new IdentifiedChannelsList(this, this.channelType(), -2);
+	protected IdentifiedChannelsList list = new IdentifiedChannelsList(getIdentity(), this.channelType(), -2);
 	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-4);
 	protected LogicMonitorHandler handler = null;
 	protected String handlerID;
@@ -60,37 +59,11 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	public SyncCoords lastSelected = new SyncCoords(-11);
 	public SyncUUID lastSelectedUUID = new SyncUUID(-10);
 
-	public MonitorMultipart(String handlerID, double width, double heightMin, double heightMax) {
-		super(width, heightMin, heightMax);
+	public MonitorMultipart(String handlerID) {
+		super();
 		this.handlerID = handlerID;
 		this.syncList.addParts(list, hasMonitor);
 		selectedInfo = new SyncMonitoredType<T>(-5);
-	}
-
-	public MonitorMultipart(String handlerID, EnumFacing face, double width, double heightMin, double heightMax) {
-		super(face, width, heightMin, heightMax);
-		this.handlerID = handlerID;
-		this.syncList.addParts(list, hasMonitor);
-		selectedInfo = new SyncMonitoredType<T>(-5);
-	}
-
-	public void updateAllInfo() {
-		for (int i = 0; i < getMaxInfo(); i++) {
-			IMonitorInfo info = getMonitorInfo(i);
-			InfoUUID id = new InfoUUID(getIdentity().hashCode(), i);
-			PL2.getServerManager().changeInfo(id, info);
-		}
-	}
-
-	public void setLocalNetworkCache(INetworkCache network) {
-		if (!this.network.isFakeNetwork() && this.network.getNetworkID() != network.getNetworkID()) {
-			((ILogisticsNetwork) this.network).removeMonitor(this);
-		}
-		super.setLocalNetworkCache(network);
-		if (network instanceof ILogisticsNetwork) {
-			ILogisticsNetwork storageCache = (ILogisticsNetwork) network;
-			storageCache.<T>addMonitor(this);
-		}
 	}
 
 	//// ILogicMonitor \\\\
@@ -125,7 +98,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	}
 
 	public MonitoredList<T> getMonitoredList() {
-		InfoUUID id = new InfoUUID(this.getIdentity().hashCode(), 0);
+		InfoUUID id = new InfoUUID(getIdentity(), 0);
 		return getNetworkID() == -1 ? MonitoredList.newMonitoredList(getNetworkID()) : PL2.getClientManager().getMonitoredList(getNetworkID(), id);
 	}
 
@@ -138,10 +111,6 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	@Override
 	public IdentifiedChannelsList getChannels() {
 		return list;
-	}
-
-	public UUID getIdentity() {
-		return getUUID();
 	}
 
 	public void modifyCoords(IMonitorInfo info, int channelID) {
@@ -157,18 +126,16 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 
 	//// ILogicViewable \\\\
 
-	public ViewersList getViewersList() {
-		return viewers;
+	public ListenerList<PlayerListener> getListenerList() {
+		return listeners;
 	}
 
 	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
-		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+	public void onListenerAdded(ListenerTally<PlayerListener> tally){
+		SonarMultipartHelper.sendMultipartSyncToPlayer(this, tally.listener.player);
 	}
 
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
-	}
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally){}
 
 	//// IOperatorProvider \\\\
 
@@ -183,34 +150,31 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 
 	public void onLoaded() {
 		super.onLoaded();
-		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
-		if (isServer()) {
-			updateAllInfo();
-		}
+		PL2.getInfoManager(this.getWorld().isRemote).addInfoProvider(this);
 	}
 
 	public void onRemoved() {
 		super.onRemoved();
-		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeInfoProvider(this);
 	}
 
 	public void onUnloaded() {
 		super.onUnloaded();
-		PL2.getInfoManager(this.getWorld().isRemote).removeMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).removeInfoProvider(this);
 	}
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		PL2.getInfoManager(this.getWorld().isRemote).addMonitor(this);
+		PL2.getInfoManager(this.getWorld().isRemote).addInfoProvider(this);
 		if (isServer()) {
-			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getFacing()) != null);
+			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getCableFace()) != null);
 		}
 	}
 
 	@Override
 	public boolean rotatePart(EnumFacing axis) {
 		if (super.rotatePart(axis)) {
-			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getFacing()) != null);
+			hasMonitor.setObject(LogisticsAPI.getCableHelper().getDisplayScreen(getCoords(), getCableFace()) != null);
 			sendUpdatePacket(true);
 			return true;
 		}
@@ -221,7 +185,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getFacing()).withProperty(hasDisplay, this.hasMonitor.getObject());
+		return state.withProperty(ORIENTATION, getCableFace()).withProperty(hasDisplay, this.hasMonitor.getObject());
 	}
 
 	public BlockStateContainer createBlockState() {
@@ -237,7 +201,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 		if (!this.getWorld().isRemote) {
 			if (changedPart instanceof ScreenMultipart) {
 				ScreenMultipart screen = (ScreenMultipart) changedPart;
-				if (screen.face == getFacing()) {
+				if (screen.face == getCableFace()) {
 					hasMonitor.setObject(!screen.wasRemoved());
 					sendUpdatePacket(true);
 				}
@@ -290,7 +254,7 @@ public abstract class MonitorMultipart<T extends IMonitorInfo> extends SidedMult
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 1:
-			viewers.addViewer(player, ViewerType.CHANNEL);
+			listeners.addListener(player, ListenerType.CHANNEL);
 			break;
 		}
 	}

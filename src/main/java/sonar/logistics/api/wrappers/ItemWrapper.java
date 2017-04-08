@@ -8,10 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.connections.monitoring.MonitoredList;
 
@@ -36,31 +35,31 @@ public class ItemWrapper {
 
 	/** used for adding Items to the network
 	 * @param add {@link StoredItemStack} to add
-	 * @param network the {@link INetworkCache} to add to
+	 * @param network the {@link ILogisticsNetwork} to add to
 	 * @param action what type of action should be carried out
 	 * @return remaining {@link StoredItemStack} (what wasn't added), can be null */
-	public StoredItemStack addItems(StoredItemStack add, INetworkCache network, ActionType action) {
+	public StoredItemStack addItems(StoredItemStack add, ILogisticsNetwork network, ActionType action) {
 		return add;
 	}
 
-	public void addItemsFromPlayer(StoredItemStack add, EntityPlayer player, INetworkCache network, ActionType action) {}
+	public void addItemsFromPlayer(StoredItemStack add, EntityPlayer player, ILogisticsNetwork network, ActionType action) {}
 	
 	/** used for removing Items from the network
 	 * @param remove {@link StoredItemStack} to remove
-	 * @param network the {@link INetworkCache} to remove from
+	 * @param network the {@link ILogisticsNetwork} to remove from
 	 * @param action what type of action should be carried out
 	 * @return remaining {@link StoredItemStack} (what wasn't removed), can be null */
-	public StoredItemStack removeItems(StoredItemStack remove, INetworkCache network, ActionType action) {
+	public StoredItemStack removeItems(StoredItemStack remove, ILogisticsNetwork network, ActionType action) {
 		return remove;
 	}
 
-	public void removeItemsFromPlayer(StoredItemStack add, EntityPlayer player, INetworkCache network, ActionType action) {}
+	public void removeItemsFromPlayer(StoredItemStack add, EntityPlayer player, ILogisticsNetwork network, ActionType action) {}
 	
 	/** gets the {@link StoredItemStack} in the given slot of the first valid inventory on the network, used by the Inventory Reader
-	 * @param network the {@link INetworkCache} to get the stack from
+	 * @param network the {@link ILogisticsNetwork} to get the stack from
 	 * @param slot id of the slot to look for the stack in
 	 * @return {@link StoredItemStack} of the ItemStack in the slot */
-	public StoredItemStack getStack(INetworkCache network, int slot) {
+	public StoredItemStack getStack(ILogisticsNetwork network, int slot) {
 		return null;
 	}
 
@@ -68,15 +67,15 @@ public class ItemWrapper {
 	 * @param node {@link IEntityNode} to check at
 	 * @param slot id of the slot to look for the stack in
 	 * @return {@link StoredItemStack} of the ItemStack in the slot */
-	public StoredItemStack getEntityStack(IEntityNode node, int slot) {
+	public StoredItemStack getEntityStack(ILogisticsNetwork node, int slot) {
 		return null;
 	}
 
 	/** gets the {@link StoredItemStack} in the given slot of the tile connected to the {@link IConnectionNode}
-	 * @param network the {@link INetworkCache} to get stack from
+	 * @param network the {@link ILogisticsNetwork} to get stack from
 	 * @param slot id of the slot to look for the stack in
 	 * @return {@link StoredItemStack} of the ItemStack in the slot */
-	public StoredItemStack getTileStack(INetworkCache network, int slot) {
+	public StoredItemStack getTileStack(ILogisticsNetwork network, int slot) {
 		return null;
 	}
 
@@ -105,21 +104,21 @@ public class ItemWrapper {
 	/** convenience method, adds the given stack to the player's inventory and returns what was/can be added.
 	 * @param stack
 	 * @param extractSize
-	 * @param network the {@link INetworkCache} to remove from
+	 * @param network the {@link ILogisticsNetwork} to remove from
 	 * @param player
 	 * @return the {@link StoredItemStack} to add to the player */
 	//@Deprecated
-	public StoredItemStack removeToPlayerInventory(StoredItemStack stack, long extractSize, INetworkCache network, EntityPlayer player, ActionType type) {
+	public StoredItemStack removeToPlayerInventory(StoredItemStack stack, long extractSize, ILogisticsNetwork network, EntityPlayer player, ActionType type) {
 		return null;
 	}
 
 	/** convenience method, removes the given stack to the player's inventory and returns what was/can be added.
 	 * @param stack
 	 * @param extractSize
-	 * @param network the {@link INetworkCache} to add to
+	 * @param network the {@link ILogisticsNetwork} to add to
 	 * @param player
 	 * @return the {@link StoredItemStack} to add to the player */
-	public StoredItemStack addFromPlayerInventory(StoredItemStack stack, long extractSize, INetworkCache network, EntityPlayer player, ActionType type) {
+	public StoredItemStack addFromPlayerInventory(StoredItemStack stack, long extractSize, ILogisticsNetwork network, EntityPlayer player, ActionType type) {
 		return null;
 	}
 
@@ -127,7 +126,7 @@ public class ItemWrapper {
 	 * @param cache the network to remove from
 	 * @param stack the stack to remove
 	 * @return the removed stack */
-	public StoredItemStack extractItem(INetworkCache cache, StoredItemStack stack) {
+	public StoredItemStack extractItem(ILogisticsNetwork cache, StoredItemStack stack) {
 		return null;
 	}
 
@@ -135,15 +134,15 @@ public class ItemWrapper {
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
 	 * @param slot the slot of the item to be added */
-	public void insertInventoryFromPlayer(EntityPlayer player, INetworkCache cache, int slotID) {}
+	public void insertInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slotID) {}
 
 	/** inserts an item into the given network from the players inventory from the given slot
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
 	 * @param slot the slot to remove from */
-	public void insertItemFromPlayer(EntityPlayer player, INetworkCache cache, int slot) {}
+	public void insertItemFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slot) {}
 
-	public void dumpInventoryFromPlayer(EntityPlayer player, INetworkCache cache) {}
+	public void dumpInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache) {}
 
-	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, INetworkCache cache) {}
+	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {}
 }

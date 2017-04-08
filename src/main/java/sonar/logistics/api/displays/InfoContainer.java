@@ -29,7 +29,7 @@ import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
@@ -61,7 +61,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 			DisplayInfo info = storedInfo.get(i);
 			double[] scaling = InfoHelper.getScaling(display, display.getLayout(), i);
 			double[] translation = InfoHelper.getTranslation(display, display.getLayout(), i);
-			info.setRenderInfoProperties(new RenderInfoProperties(this, i, scaling, translation));
+			info.setRenderInfoProperties(new RenderInfoProperties(this, i, scaling, translation), i);
 		}
 	}
 

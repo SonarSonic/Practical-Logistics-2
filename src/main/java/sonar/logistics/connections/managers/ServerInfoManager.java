@@ -24,11 +24,12 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.connecting.IInfoManager;
 import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.connecting.INetworkCache;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.IInfoDisplay;
@@ -39,12 +40,12 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.readers.ClientViewable;
 import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.readers.IReader;
 import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.api.viewers.IViewersList;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.LogisticsMultipart;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.LogisticsMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
@@ -55,6 +56,8 @@ public class ServerInfoManager implements IInfoManager {
 
 	public final int UPDATE_RADIUS = 64;
 
+	public int identity;
+
 	// server side
 	public ArrayList<InfoUUID> changedInfo = new ArrayList();
 	public ArrayList<IInfoDisplay> displays = new ArrayList();
@@ -62,11 +65,10 @@ public class ServerInfoManager implements IInfoManager {
 	public ArrayList<EntityPlayer> requireUpdates = new ArrayList();
 	public HashMap<EntityPlayer, ArrayList<IInfoDisplay>> viewables = new HashMap();
 
-	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();
-	public LinkedHashMap<UUID, ILogicViewable> monitors = new LinkedHashMap();
-
 	public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = new LinkedHashMap();
 	public LinkedHashMap<InfoUUID, IMonitorInfo> info = new LinkedHashMap();
+	public LinkedHashMap<InfoUUID, MonitoredList<?>> monitoredLists = new LinkedHashMap();
+	public LinkedHashMap<Integer, ILogicViewable> monitors = new LinkedHashMap();
 
 	public ConcurrentHashMap<Integer, ConnectedDisplayScreen> connectedDisplays = new ConcurrentHashMap<Integer, ConnectedDisplayScreen>();
 
@@ -88,6 +90,11 @@ public class ServerInfoManager implements IInfoManager {
 		clickEvents.clear();
 	}
 
+	public int getNextIdentity() {
+		identity++;
+		return identity;
+	}
+
 	public boolean enableEvents() {
 		return !displays.isEmpty();
 	}
@@ -102,14 +109,14 @@ public class ServerInfoManager implements IInfoManager {
 		return toSet;
 	}
 
-	public void addMonitor(ILogicViewable monitor) {
-		if (monitor.getCoords().getWorld().isRemote) {
+	public void addInfoProvider(IInfoProvider infoProvider) {
+		if (infoProvider.getCoords().getWorld().isRemote) {
 			return;
 		}
-		if (monitors.containsValue(monitor)) {
+		if (monitors.containsValue(infoProvider)) {
 			return;
 		}
-		monitors.put(monitor.getIdentity(), monitor);
+		monitors.put(infoProvider.getIdentity(), infoProvider);
 		updateViewingMonitors = true;
 	}
 
@@ -124,12 +131,12 @@ public class ServerInfoManager implements IInfoManager {
 		updateViewingMonitors = true;
 	}
 
-	public void removeMonitor(ILogicViewable monitor) {
+	public void removeInfoProvider(IInfoProvider monitor) {
 		if (monitor.getCoords().getWorld().isRemote) {
 			// return true;
 		}
-		if (monitor instanceof INetworkReader && !monitor.getNetwork().isFakeNetwork() && monitor.getNetwork() instanceof ILogisticsNetwork) {
-			((ILogisticsNetwork) monitor.getNetwork()).removeMonitor((INetworkReader) monitor);
+		for (int i = 0; i < (monitor instanceof IInfoProvider ? ((IInfoProvider) monitor).getMaxInfo() : 1); i++) {
+			// info.remove(new InfoUUID(monitor.getIdentity().hashCode(), i));
 		}
 		monitors.remove(monitor.getIdentity());
 		updateViewingMonitors = true;
@@ -182,7 +189,7 @@ public class ServerInfoManager implements IInfoManager {
 	public ArrayList<IMonitorInfo> getInfoFromUUIDs(ArrayList<InfoUUID> ids) {
 		ArrayList<IMonitorInfo> infoList = new ArrayList();
 		for (InfoUUID id : ids) {
-			ILogicViewable monitor = CableHelper.getMonitorFromHashCode(id.hashCode, false);
+			ILogicViewable monitor = CableHelper.getMonitorFromIdentity(id.hashCode, false);
 			if (monitor != null && monitor instanceof IInfoProvider) {
 				IMonitorInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
 				if (info != null) {
@@ -238,20 +245,20 @@ public class ServerInfoManager implements IInfoManager {
 	}
 
 	public void onServerTick() {
+
 		if (updateViewingMonitors) {
 			updateViewingMonitors = false;
 			for (ILogicViewable monitor : monitors.values()) {
-				((ILogicViewable) monitor).getViewersList().getConnectedDisplays().clear();
-
+				((ILogicViewable) monitor).getListenerList().clearSubLists();
 			}
 			for (IInfoDisplay display : displays) {
 				for (int i = 0; i < display.container().getMaxCapacity(); i++) {
 					InfoUUID uuid = display.container().getInfoUUID(i);
 					MonitoredList<?> list = monitoredLists.get(uuid);
 					if (list != null) {
-						ILogicViewable monitor = CableHelper.getMonitorFromHashCode(uuid.hashCode, false);
+						ILogicViewable monitor = CableHelper.getMonitorFromIdentity(uuid.hashCode, false);
 						if (monitor != null && monitor instanceof ILogicViewable) {
-							monitor.getViewersList().getConnectedDisplays().add(display);
+							monitor.getListenerList().addSubListenable(display);
 						}
 					}
 				}
@@ -265,8 +272,8 @@ public class ServerInfoManager implements IInfoManager {
 			updateViewers();
 		}
 		if (!changedInfo.isEmpty() && !displays.isEmpty()) {
-			HashMap<EntityPlayer, NBTTagList> savePackets = new HashMap<EntityPlayer, NBTTagList>();
-			HashMap<EntityPlayer, NBTTagList> syncPackets = new HashMap<EntityPlayer, NBTTagList>();
+			HashMap<PlayerListener, NBTTagList> savePackets = new HashMap<PlayerListener, NBTTagList>();
+			HashMap<PlayerListener, NBTTagList> syncPackets = new HashMap<PlayerListener, NBTTagList>();
 
 			for (InfoUUID id : changedInfo) {
 				boolean isSynced = false;
@@ -280,19 +287,19 @@ public class ServerInfoManager implements IInfoManager {
 
 					for (IInfoDisplay display : displays) {
 						if (display.container().monitorsUUID(id)) {
-							IViewersList viewerList = display.getViewersList();
+							ListenerList<PlayerListener> list = display.getListenerList();
 							if (shouldUpdate) {
-								ArrayList<EntityPlayer> viewers = viewerList.getViewers(false, ViewerType.INFO);
+								ArrayList<PlayerListener> listeners = list.getListeners(ListenerType.INFO);
 								updateTag = id.writeData(updateTag, SyncType.SAVE);
-								addPacketsToList(syncPackets, viewers, updateTag, saveTag, false);
+								addPacketsToList(syncPackets, listeners, updateTag, saveTag, false);
 							}
-							ArrayList<EntityPlayer> fullViewers = viewerList.getViewers(false, ViewerType.FULL_INFO);
+							ArrayList<PlayerListener> fullViewers = list.getListeners(ListenerType.FULL_INFO);
 							if (!fullViewers.isEmpty()) {
 								saveTag = id.writeData(saveTag, SyncType.SAVE);
 								addPacketsToList(savePackets, fullViewers, updateTag, saveTag, true);
 								fullViewers.forEach(viewer -> {
-									display.getViewersList().removeViewer(viewer, ViewerType.FULL_INFO);
-									display.getViewersList().addViewer(viewer, ViewerType.INFO);
+									display.getListenerList().removeListener(viewer, ListenerType.FULL_INFO);
+									display.getListenerList().addListener(viewer, ListenerType.INFO);
 								});
 							}
 						}
@@ -313,12 +320,12 @@ public class ServerInfoManager implements IInfoManager {
 
 	}
 
-	public void addPacketsToList(HashMap<EntityPlayer, NBTTagList> playerPackets, ArrayList<EntityPlayer> viewers, NBTTagCompound updateTag, NBTTagCompound saveTag, boolean fullPacket) {
-		for (EntityPlayer player : viewers) {
-			NBTTagList list = playerPackets.get(player);
+	public void addPacketsToList(HashMap<PlayerListener, NBTTagList> listenerPackets, ArrayList<PlayerListener> listeners, NBTTagCompound updateTag, NBTTagCompound saveTag, boolean fullPacket) {
+		for (PlayerListener listener : listeners) {
+			NBTTagList list = listenerPackets.get(listener);
 			if (list == null) {
-				playerPackets.put(player, new NBTTagList());
-				list = playerPackets.get(player);
+				listenerPackets.put(listener, new NBTTagList());
+				list = listenerPackets.get(listener);
 			}
 			list.appendTag(fullPacket ? saveTag.copy() : updateTag.copy());
 		}
@@ -330,19 +337,22 @@ public class ServerInfoManager implements IInfoManager {
 			ArrayList<IInfoDisplay> lastDisplays = viewables.getOrDefault(player, new ArrayList());
 			ArrayList<IInfoDisplay> displays = getViewableDisplays(player, false);
 			displays.forEach(display -> {
-				display.getViewersList().addViewer(player, ViewerType.FULL_INFO);
+				display.getListenerList().addListener(player, ListenerType.FULL_INFO);
 				lastDisplays.remove(display);
 			});
-			lastDisplays.forEach(display -> display.getViewersList().removeViewer(player, ViewerType.INFO));
+			lastDisplays.forEach(display -> display.getListenerList().removeListener(player, ListenerType.INFO));
 			viewables.put(player, (ArrayList<IInfoDisplay>) displays.clone());
 		}
 		requireUpdates.clear();
 	}
 
-	public void sendPlayerPacket(EntityPlayer player, NBTTagList list, SyncType type) {
+	public void sendPlayerPacket(PlayerListener listener, NBTTagList list, SyncType type) {
+		if(list.hasNoTags()){
+			return;
+		}
 		NBTTagCompound packetTag = new NBTTagCompound();
 		packetTag.setTag("infoList", list);
-		PL2.network.sendTo(new PacketInfoList(packetTag, type), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketInfoList(packetTag, type), listener.player);
 	}
 
 	public void changeInfo(InfoUUID id, IMonitorInfo newInfo) {
@@ -352,7 +362,7 @@ public class ServerInfoManager implements IInfoManager {
 	}
 
 	public ArrayList<ILogicViewable> getViewables(ArrayList<ILogicViewable> viewables, ScreenMultipart part) {
-		INetworkCache networkCache = part.getNetwork();
+		ILogisticsNetwork networkCache = part.getNetwork();
 		ISlottedPart connectedPart = part.getContainer().getPartInSlot(PartSlot.getFaceSlot(part.face));
 		if (connectedPart != null && connectedPart instanceof IInfoProvider) {
 			if (!viewables.contains((IInfoProvider) connectedPart))
@@ -368,7 +378,7 @@ public class ServerInfoManager implements IInfoManager {
 
 	public void sendViewablesToClientFromScreen(ScreenMultipart part, EntityPlayer player) {
 		ArrayList<ILogicViewable> viewables = new ArrayList<ILogicViewable>();
-		UUID identity = part.getIdentity();
+		int identity = part.getIdentity();
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplayScreen screen = ((ILargeDisplay) part).getDisplayScreen();
 			if (screen != null && screen.getTopLeftScreen() != null) {
@@ -381,17 +391,17 @@ public class ServerInfoManager implements IInfoManager {
 
 		ArrayList<ClientViewable> clientMonitors = new ArrayList();
 		viewables.forEach(viewable -> {
-			viewable.getViewersList().addViewer(player, ViewerType.TEMPORARY);
+			viewable.getListenerList().addListener(player, ListenerType.TEMPORARY);
 			clientMonitors.add(new ClientViewable(viewable));
 		});
 		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
 	}
 
-	public void sendViewablesToClient(LogisticsMultipart part, UUID identity, EntityPlayer player) {
+	public void sendViewablesToClient(LogisticsMultipart part, int identity, EntityPlayer player) {
 		ArrayList<IInfoProvider> viewables = part.getNetwork().getLocalInfoProviders();
 		ArrayList<ClientViewable> clientMonitors = new ArrayList();
 		viewables.forEach(viewable -> {
-			viewable.getViewersList().addViewer(player, ViewerType.TEMPORARY);
+			viewable.getListenerList().addListener(player, ListenerType.TEMPORARY);
 			clientMonitors.add(new ClientViewable(viewable));
 		});
 		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
@@ -434,7 +444,7 @@ public class ServerInfoManager implements IInfoManager {
 	}
 
 	@Override
-	public LinkedHashMap<UUID, ILogicViewable> getMonitors() {
+	public LinkedHashMap<Integer, ILogicViewable> getMonitors() {
 		return monitors;
 	}
 

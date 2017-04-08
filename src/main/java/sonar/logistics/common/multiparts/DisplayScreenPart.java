@@ -15,20 +15,24 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
 import sonar.logistics.PL2Items;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.viewers.ViewerType;
-import sonar.logistics.api.viewers.ViewersList;
+import sonar.logistics.api.viewers.ListenerType;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 
 public class DisplayScreenPart extends ScreenMultipart {
 
 	public SyncEnum<ScreenLayout> layout = new SyncEnum(ScreenLayout.values(), 1);
-	public ViewersList viewers = new ViewersList(this, Lists.newArrayList(ViewerType.FULL_INFO, ViewerType.INFO));
+	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
 	public InfoContainer container = new InfoContainer(this);
 
 	public DisplayScreenPart() {
@@ -80,9 +84,8 @@ public class DisplayScreenPart extends ScreenMultipart {
 		sendUpdatePacket(true);
 	}
 
-	@Override
-	public ViewersList getViewersList() {
-		return viewers;
+	public ListenerList<PlayerListener> getListenerList() {
+		return listeners;
 	}
 
 	//// MULTIPART \\\\
@@ -148,8 +151,8 @@ public class DisplayScreenPart extends ScreenMultipart {
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.display_screen);
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.DISPLAY_SCREEN;
 	}
 
 }

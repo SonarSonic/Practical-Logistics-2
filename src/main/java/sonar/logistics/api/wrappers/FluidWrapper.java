@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 
 public class FluidWrapper {
 
@@ -14,7 +14,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to add to
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't added), can be null */
-	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action, ITankFilter filter) {
+	public StoredFluidStack addFluids(StoredFluidStack add, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
 		return add;
 	}
 
@@ -23,7 +23,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to remove from
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't removed), can be null */
-	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action, ITankFilter filter) {
+	public StoredFluidStack removeFluids(StoredFluidStack remove, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
 		return remove;
 	}
 
@@ -33,7 +33,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to fill from
 	 * @param action should this action be simulated
 	 * @return the new ItemStack */
-	public ItemStack fillFluidItemStack(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
+	public ItemStack fillFluidItemStack(ItemStack container, StoredFluidStack fill, ILogisticsNetwork network, ActionType action) {
 		return container;
 	}
 
@@ -42,7 +42,7 @@ public class FluidWrapper {
 	 * @param network the {@link INetworkCache} to drain into
 	 * @param action should this action be simulated
 	 * @return the new ItemStack */
-	public ItemStack drainFluidItemStack(ItemStack container, int toDrain, INetworkCache network, ActionType action) {
+	public ItemStack drainFluidItemStack(ItemStack container, int toDrain, ILogisticsNetwork network, ActionType action) {
 		return container;
 	}
 
@@ -50,12 +50,12 @@ public class FluidWrapper {
 	 * @param player the player interacting
 	 * @param cache the network to fill from
 	 * @param toFill the {@link StoredFluidStack} to fill with */
-	public void fillHeldItem(EntityPlayer player, INetworkCache cache, StoredFluidStack toFill) {
+	public void fillHeldItem(EntityPlayer player, ILogisticsNetwork cache, StoredFluidStack toFill) {
 	}
 
 	/** drains the players current item into the network
 	 * @param player the player interacting
 	 * @param cache the network to drain into */
-	public void drainHeldItem(EntityPlayer player, INetworkCache cache, int toDrain) {
+	public void drainHeldItem(EntityPlayer player, ILogisticsNetwork cache, int toDrain) {
 	}
 }

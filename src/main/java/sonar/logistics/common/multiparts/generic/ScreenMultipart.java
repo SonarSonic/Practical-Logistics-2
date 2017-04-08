@@ -1,4 +1,4 @@
-package sonar.logistics.common.multiparts;
+package sonar.logistics.common.multiparts.generic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,24 +26,25 @@ import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.readers.IInfoProvider;
 import sonar.logistics.api.readers.INetworkReader;
-import sonar.logistics.api.utils.LogisticsHelper;
-import sonar.logistics.api.viewers.ViewerTally;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiDisplayScreen;
+import sonar.logistics.helpers.LogisticsHelper;
 
 public abstract class ScreenMultipart extends LogisticsMultipart implements IByteBufTile, INormallyOccludingPart, IInfoDisplay, IOperatorTile, IFlexibleGui<ScreenMultipart> {
 
@@ -90,10 +91,10 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 			ArrayList<IInfoProvider> monitors = PL2.getServerManager().getViewables(new ArrayList(), this);
 			if (!monitors.isEmpty()) {
 				IInfoProvider monitor = monitors.get(0);
-				if (container() != null && monitor != null && monitor.getIdentity() != null) {
+				if (container() != null && monitor != null && monitor.getIdentity() != -1) {
 					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
 						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty())
-							container().setUUID(new InfoUUID(monitor.getIdentity().hashCode(), i), i);
+							container().setUUID(new InfoUUID(monitor.getIdentity(), i), i);
 					}
 					defaultData.setObject(true);
 					sendSyncPacket();
@@ -105,20 +106,9 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	//// ILogicViewable \\\\
 
 	@Override
-	public void onViewerAdded(EntityPlayer player, List<ViewerTally> type) {
-	}
+	public void onListenerAdded(ListenerTally<PlayerListener> tally){}
 
-	@Override
-	public void onViewerRemoved(EntityPlayer player, List<ViewerTally> type) {
-	}
-
-	public UUID getIdentity() {
-		return getUUID();
-	}
-
-	public void setIdentity(UUID identity) {
-
-	}
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally){}
 
 	//// IInfoDisplay \\\\
 
@@ -130,7 +120,7 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	}
 
 	@Override
-	public EnumFacing getFace() {
+	public EnumFacing getCableFace() {
 		return face;
 	}
 
@@ -212,16 +202,16 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 
 	public void markChanged(IDirtyPart part) {
 		super.markChanged(part);
-		ArrayList<EntityPlayer> viewers = getViewersList().getViewers(false, ViewerType.INFO);
-		for (EntityPlayer player : viewers) {
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+		ArrayList<PlayerListener> viewers = getListenerList().getListeners(ListenerType.INFO);
+		for (PlayerListener listener : viewers) {
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, listener.player);
 		}
 	}
 
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
-		if (isServer()) {
-			this.getViewersList().addViewer(player, ViewerType.FULL_INFO);
+		if (isServer()) {			
+			getListenerList().addListener(new PlayerListener(player), ListenerType.FULL_INFO);
 			PL2.getServerManager().sendViewablesToClientFromScreen(this, player);
 		}
 	}
@@ -305,6 +295,6 @@ public abstract class ScreenMultipart extends LogisticsMultipart implements IByt
 	}
 
 	public String getDisplayName() {
-		return FontHelper.translate("item.DisplayScreen.name");
+		return PL2Translate.DISPLAY_SCREEN.t();
 	}
 }

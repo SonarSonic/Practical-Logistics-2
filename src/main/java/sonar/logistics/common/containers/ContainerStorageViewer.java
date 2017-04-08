@@ -10,25 +10,25 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.connections.managers.EmitterManager;
 
 public class ContainerStorageViewer extends Container {
 
 	private static final int INV_START = 1, INV_END = INV_START + 26, HOTBAR_START = INV_END + 1, HOTBAR_END = HOTBAR_START + 8;
-	public UUID uuid;
+	public int identity;
 	public IDataEmitter emitter;
 	public ItemStack lastStack = null;
 
 	public EntityPlayer player;
 
-	public ContainerStorageViewer(UUID uuid, EntityPlayer player) {
+	public ContainerStorageViewer(int identity, EntityPlayer player) {
 		super();
-		this.uuid = uuid;
+		this.identity = identity;
 		this.player = player;
 		if (!player.getEntityWorld().isRemote) {
-			emitter = EmitterManager.getEmitter(uuid);
+			emitter = EmitterManager.getEmitter(identity);
 		}
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
@@ -89,7 +89,7 @@ public class ContainerStorageViewer extends Container {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote && emitter != null) {
-			emitter.getViewersList().removeViewer(player, ViewerType.INFO);
+			emitter.getListenerList().removeListener(player, ListenerType.INFO);
 		}
 	}
 

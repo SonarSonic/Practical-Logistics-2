@@ -7,41 +7,40 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.api.viewers.ViewerType;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.CableHelper;
 
-public class PacketMonitorType implements IMessage {
+public class PacketAddListener implements IMessage {
 
 	public ILogicViewable monitor;
-	public ViewerType type;
+	public ListenerType type;
 
-	public PacketMonitorType() {
-	}
+	public PacketAddListener() {}
 
-	public PacketMonitorType(ILogicViewable monitor, ViewerType type) {
+	public PacketAddListener(ILogicViewable monitor, ListenerType type) {
 		this.monitor = monitor;
 		this.type = type;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		monitor = CableHelper.getMonitorFromHashCode(buf.readInt(), false);
-		type = ViewerType.values()[buf.readInt()];
+		monitor = CableHelper.getMonitorFromIdentity(buf.readInt(), false);
+		type = ListenerType.values()[buf.readInt()];
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		buf.writeInt(monitor.getIdentity().hashCode());
+		buf.writeInt(monitor.getIdentity());
 		buf.writeInt(type.ordinal());
 	}
 
-	public static class Handler implements IMessageHandler<PacketMonitorType, IMessage> {
+	public static class Handler implements IMessageHandler<PacketAddListener, IMessage> {
 
 		@Override
-		public IMessage onMessage(PacketMonitorType message, MessageContext ctx) {
+		public IMessage onMessage(PacketAddListener message, MessageContext ctx) {
 			EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 			if (message.monitor != null && player != null) {
-				message.monitor.getViewersList().addViewer(player, message.type);
+				message.monitor.getListenerList().addListener(player, message.type);
 			}
 			return null;
 		}

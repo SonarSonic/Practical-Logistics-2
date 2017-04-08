@@ -24,12 +24,12 @@ public class IdentifiedChannelsList implements ISyncPart {
 
 	public ArrayList<BlockCoords> coordList = new ArrayList();
 	public ArrayList<UUID> uuidList = new ArrayList();
-	public IUUIDIdentity identity;
+	public int identity;
 	public final int tagID;
 	public ISyncableListener listener;
 	public ChannelType type;
 
-	public IdentifiedChannelsList(IUUIDIdentity identity, ChannelType type, int tagID) {
+	public IdentifiedChannelsList(int identity, ChannelType type, int tagID) {
 		super();
 		this.type = type;
 		this.tagID = tagID;
@@ -41,12 +41,12 @@ public class IdentifiedChannelsList implements ISyncPart {
 		return this;
 	}
 
-	public UUID getIdentity() {
-		return identity.getIdentity();
+	public int getIdentity() {
+		return identity;
 	}
 
 	public boolean equals(Object object) {
-		return object != null && (object instanceof IdentifiedChannelsList) ? ((IdentifiedChannelsList) object).identity.equals(identity) : coordList.equals(object);
+		return object != null && (object instanceof IdentifiedChannelsList) ? ((IdentifiedChannelsList) object).identity == identity : coordList.equals(object);
 	}
 
 	public void modifyCoords(BlockCoords coords) {
@@ -176,7 +176,7 @@ public class IdentifiedChannelsList implements ISyncPart {
 	}
 
 	public int hashCode() {
-		return identity.hashCode();
+		return identity;
 	}
 
 	@Override

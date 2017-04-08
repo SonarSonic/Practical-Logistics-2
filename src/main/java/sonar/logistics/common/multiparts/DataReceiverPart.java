@@ -20,34 +20,24 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.connecting.INetworkCache;
-import sonar.logistics.api.connecting.RefreshType;
-import sonar.logistics.api.utils.LogisticsHelper;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.common.containers.ContainerDataReceiver;
+import sonar.logistics.common.multiparts.generic.WirelessPart;
 import sonar.logistics.connections.managers.EmitterManager;
+import sonar.logistics.helpers.LogisticsHelper;
 
-public class DataReceiverPart extends SidedMultipart implements IDataReceiver, IFlexibleGui, IByteBufTile {
+public class DataReceiverPart extends WirelessPart implements IDataReceiver, IFlexibleGui, IByteBufTile {
 
 	public SyncNBTAbstractList<ClientDataEmitter> clientEmitters = new SyncNBTAbstractList<ClientDataEmitter>(ClientDataEmitter.class, 2);
-	public SyncUUID playerUUID = new SyncUUID(3);
 	public SyncNBTAbstract<ClientDataEmitter> selectedEmitter = new SyncNBTAbstract<ClientDataEmitter>(ClientDataEmitter.class, 4);
-	// public ArrayList<IDataEmitter> emitters = new ArrayList();
 	public ArrayList<Integer> networks = new ArrayList();
+
 	{
-		syncList.addParts(clientEmitters, playerUUID, selectedEmitter);
-	}
-
-	public DataReceiverPart() {
-		super(0.0625 * 5, 0.0625 / 2, 0.0625 * 4);
-	}
-
-	public DataReceiverPart(EntityPlayer player, EnumFacing dir) {
-		super(dir, 0.0625 * 5, 0.0625 / 2, 0.0625 * 4);
-		playerUUID.setObject(player.getGameProfile().getId());
+		syncList.addParts(clientEmitters, selectedEmitter);
 	}
 
 	@Override
@@ -60,8 +50,8 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 		}
 		return false;
 	}
-	
-	public void addEmitterFromClient(ClientDataEmitter emitter){		
+
+	public void addEmitterFromClient(ClientDataEmitter emitter) {
 		ArrayList<ClientDataEmitter> emitters = (ArrayList<ClientDataEmitter>) clientEmitters.getObjects().clone();
 		Iterator<ClientDataEmitter> iterator = emitters.iterator();
 		boolean found = false;
@@ -83,23 +73,17 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 
 		clientEmitters.setObjects(emitters);
 		networks = getNetworks();
-		network.markDirty(RefreshType.FULL);
+		network.onConnectionChanged(this);
 		sendSyncPacket();
 	}
-	
-	//// NETWORK \\\\
 
-	public void setLocalNetworkCache(INetworkCache network) {
-		super.setLocalNetworkCache(network);
-		if (isServer())
-			network.markDirty(RefreshType.FULL);
-	}
+	//// NETWORK \\\\
 
 	@Override
 	public ArrayList<Integer> getConnectedNetworks() {
 		return networks;
-	}	
-	
+	}
+
 	public void refreshConnectedNetworks() {
 		networks = getNetworks();
 	}
@@ -126,23 +110,14 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 		}
 		return emitters;
 	}
-	
-	//// EVENTS \\\\
 
-	@Override
-	public void onFirstTick() {
-		super.onFirstTick();
-		if (this.isServer()) {
-			PL2.getNetworkManager().updateEmitters = true;
-			network.markDirty(RefreshType.FULL);
-		}
-	}
+	//// EVENTS \\\\
 
 	public void onRemoved() {
 		getEmitters().forEach(emitter -> emitter.disconnect(this));
 		super.onRemoved();
 	}
-	
+
 	//// PACKETS \\\\
 
 	@Override
@@ -163,7 +138,7 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 			break;
 		}
 	}
-	
+
 	//// GUI \\\\
 
 	@Override
@@ -187,7 +162,7 @@ public class DataReceiverPart extends SidedMultipart implements IDataReceiver, I
 	}
 
 	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.data_receiver);
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.DATA_RECEIVER;
 	}
 }

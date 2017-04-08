@@ -1,12 +1,13 @@
 package sonar.logistics.api.displays;
 
 import net.minecraft.util.EnumFacing;
+import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.viewers.ILogicViewable;
 
 /** implemented by any Display Screen TileEntity */
-public interface IInfoDisplay extends ILogicTile, ILogicViewable, ISyncableListener {	
+public interface IInfoDisplay extends ILogicTile, ILogicViewable<PlayerListener>, ISyncableListener {	
 	
 	/**the IInfoContainer holding all the current Display Info*/
 	public IInfoContainer container();
@@ -21,7 +22,7 @@ public interface IInfoDisplay extends ILogicTile, ILogicViewable, ISyncableListe
 	public int maxInfo();
 	
 	/**which face the Display is facing, used for checking if LargeDisplayScreens can connect*/
-	public EnumFacing getFace();
+	public EnumFacing getCableFace();
 	
 	/**which face the Display is rotated*/
 	public EnumFacing getRotation();

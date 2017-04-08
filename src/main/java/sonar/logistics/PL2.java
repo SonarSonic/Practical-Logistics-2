@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -29,7 +30,6 @@ import sonar.logistics.connections.managers.DisplayManager;
 import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.connections.managers.NetworkManager;
 import sonar.logistics.connections.managers.ServerInfoManager;
-import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.logic.comparators.ComparatorRegistry;
@@ -91,8 +91,6 @@ public class PL2 {
 		PL2Items.registerMultiparts();
 		logger.info("Loaded Multiparts");
 
-		proxy.registerRenderThings();
-		logger.info("Registered Renderers");
 		if (PL2Config.sapphireOre) {
 			GameRegistry.registerWorldGenerator(new SapphireOreGen(), 1);
 			logger.info("Registered Sapphire World Generator");
@@ -120,7 +118,6 @@ public class PL2 {
 		logger.info("Registered Events");
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new PL2Common());
 		logger.info("Registered GUI Handler");
-		proxy.registerTextures();
 		proxy.load(event);
 	}
 
@@ -130,10 +127,7 @@ public class PL2 {
 		if (Loader.isModLoaded("MineTweaker3") || Loader.isModLoaded("MineTweaker3".toLowerCase())) {
 			MineTweakerIntegration.init();
 			logger.info("'Mine Tweaker' integration was loaded");
-		}
-		
-		if (evt.getSide().isClient())
-			GuidePageRegistry.init();
+		}		
 		proxy.postLoad(evt);
 	}
 
@@ -143,6 +137,10 @@ public class PL2 {
 	}
 
 	@EventHandler
+	public void serverLoad(FMLServerStartedEvent event) {
+		
+	}
+	@EventHandler
 	public void serverClose(FMLServerStoppingEvent event) {
 		EmitterManager.removeAll();
 		getNetworkManager().removeAll();
@@ -151,32 +149,27 @@ public class PL2 {
 		getClientManager().removeAll();
 		getServerManager().removeAll();
 	}
-
-	// @SideOnly(Side.SERVER)
+	
 	public static NetworkManager getNetworkManager() {
 		return PL2.instance.networkManager;
 	}
 
-	// @SideOnly(Side.SERVER)
 	public static CableManager getCableManager() {
 		return PL2.instance.cableManager;
 	}
 
-	// @SideOnly(Side.SERVER)
 	public static DisplayManager getDisplayManager() {
 		return PL2.instance.displayManager;
 	}
 
-	// @SideOnly(Side.CLIENT)
 	public static ServerInfoManager getServerManager() {
 		return PL2.instance.serverManager;
 	}
 
-	// @SideOnly(Side.CLIENT)
 	public static ClientInfoManager getClientManager() {
 		return PL2.instance.clientManager;
 	}
-
+	
 	public static IInfoManager getInfoManager(boolean isRemote) {
 		return !isRemote ? getServerManager() : getClientManager();
 	}

@@ -32,7 +32,7 @@ public class ClockRenderer extends MultipartSpecialRenderer<ClockPart> {
 			GlStateManager.enableDepth();
 			GlStateManager.depthMask(true);
 			VertexBuffer wr = Tessellator.getInstance().getBuffer();
-			switch (part.getFacing()) {
+			switch (part.getCableFace()) {
 			case UP:
 			case DOWN:
 				GlStateManager.translate(0.5, 0, 0.5);

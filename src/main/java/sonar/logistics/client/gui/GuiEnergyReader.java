@@ -20,7 +20,7 @@ import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.common.multiparts.EnergyReaderPart;
-import sonar.logistics.common.multiparts.MonitorMultipart;
+import sonar.logistics.common.multiparts.generic.MonitorMultipart;
 import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {

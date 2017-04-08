@@ -6,7 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 
 public class ScreenInteractionEvent {
 

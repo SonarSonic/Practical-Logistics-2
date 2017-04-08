@@ -129,21 +129,21 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				break;
 			case 2:
 				if (currentFilter != null) {
-					PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
 				}
 				break;
 			case 3:
 				if (currentFilter != null) {
-					PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
 				}
 				break;
 			case 4:
 				if (currentFilter != null) {
-					PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
 				}
 				break;
 			case 5:
-				PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			case 6:
 				tile.requestSyncPacket();
@@ -186,7 +186,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				this.reset();
 				break;
 			case 6:
-				PL2.network.sendToServer(new PacketEmitterStatement(tile.getIdentity(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
+				PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
 				this.changeState(GuiState.LIST);
 				break;
 			case 7:
@@ -246,7 +246,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 			if (uuid1 != null) {
 				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
-				if (monitorInfo != null) {
+				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList()), currentFilter.key1.getObject());
 					if (obj != null) {
@@ -258,7 +258,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			if (currentFilter.getInputType().usesInfo()) {
 				if (uuid2 != null) {
 					IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid2);
-					if (monitorInfo != null) {
+					if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList()), currentFilter.key2.getObject());
 						if (obj != null) {

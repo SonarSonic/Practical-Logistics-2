@@ -8,7 +8,7 @@ import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.TileMonitorHandler;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.info.ITileMonitorHandler;
 import sonar.logistics.api.nodes.BlockConnection;
 
@@ -23,7 +23,7 @@ public class EnergyMonitorHandler extends LogicMonitorHandler<MonitoredEnergySta
 	}
 
 	@Override
-	public MonitoredList<MonitoredEnergyStack> updateInfo(INetworkCache network, MonitoredList<MonitoredEnergyStack> previousList, BlockConnection connection) {
+	public MonitoredList<MonitoredEnergyStack> updateInfo(ILogisticsNetwork network, MonitoredList<MonitoredEnergyStack> previousList, BlockConnection connection) {
 		MonitoredList<MonitoredEnergyStack> list = MonitoredList.<MonitoredEnergyStack>newMonitoredList(network.getNetworkID());
 		List<ISonarEnergyHandler> providers = SonarCore.energyHandlers;
 		StoredEnergyStack maxEnergy = null;

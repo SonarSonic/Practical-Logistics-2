@@ -10,6 +10,8 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.BlockRenderRegister;
@@ -26,6 +28,7 @@ import sonar.logistics.common.multiparts.DisplayScreenPart;
 import sonar.logistics.common.multiparts.HolographicDisplayPart;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
 import sonar.logistics.common.tileentity.TileEntityHammer;
+import sonar.logistics.guide.GuidePageRegistry;
 
 public class PL2Client extends PL2Common {
 
@@ -42,8 +45,10 @@ public class PL2Client extends PL2Common {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	public void registerTextures() {
-		// Minecraft.getMinecraft().getTextureMapBlocks().registerSprite(InfoContainer.progressGreen);
+	public void preInit(FMLPreInitializationEvent event) {
+		super.preInit(event);
+		registerRenderThings();
+		PL2.logger.info("Registered Renderers");
 	}
 
 	public void load(FMLInitializationEvent event) {
@@ -52,6 +57,11 @@ public class PL2Client extends PL2Common {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
 			manager.registerReloadListener(new PL2TranslationLoader());
 		}
+	}
+
+	public void postLoad(FMLPostInitializationEvent evt) {
+		super.postLoad(evt);
+		GuidePageRegistry.init();
 	}
 
 	public static class PL2TranslationLoader implements IResourceManagerReloadListener {

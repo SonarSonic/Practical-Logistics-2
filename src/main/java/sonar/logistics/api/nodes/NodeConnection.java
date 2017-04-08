@@ -56,7 +56,7 @@ public abstract class NodeConnection<T extends IMonitorInfo> {
 		return true;
 	}
 	
-	public static ArrayList<? extends NodeConnection> sortConnections(ArrayList<? extends NodeConnection> connections){
+	public static ArrayList<NodeConnection> sortConnections(ArrayList<NodeConnection> connections){
 		Collections.sort(connections, new Comparator<NodeConnection>() {
 			public int compare(NodeConnection str1, NodeConnection str2) {
 				return Integer.compare(str2.priority, str1.priority);

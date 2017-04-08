@@ -6,7 +6,7 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.ILogicTile;
 import sonar.logistics.api.connecting.EmptyNetworkCache;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.displays.IInfoDisplay;
 import sonar.logistics.api.displays.ILargeDisplay;
 
@@ -28,11 +28,11 @@ public class CablingWrapper {
 		return null;
 	}
 
-	public INetworkCache getNetwork(TileEntity tile, EnumFacing dir) {
+	public ILogisticsNetwork getNetwork(TileEntity tile, EnumFacing dir) {
 		return EmptyNetworkCache.INSTANCE;
 	}
 
-	public INetworkCache getNetwork(int registryID) {
+	public ILogisticsNetwork getNetwork(int registryID) {
 		return EmptyNetworkCache.INSTANCE;
 	}
 }

@@ -37,5 +37,8 @@ public interface IMonitorInfo<T extends IMonitorInfo> extends INBTSyncable{
 	
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos);
 	
+	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos);
+	
 	public void identifyChanges(T newInfo);
+	
 }

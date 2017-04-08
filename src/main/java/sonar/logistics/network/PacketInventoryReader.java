@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.helpers.ItemHelper;
 
@@ -62,7 +62,7 @@ public class PacketInventoryReader extends PacketMultipart {
 				return null;
 			}
 			InventoryReaderPart reader = (InventoryReaderPart) part;
-			INetworkCache network = reader.getNetwork();
+			ILogisticsNetwork network = reader.getNetwork();
 			ItemHelper.onNetworkItemInteraction(network, reader.getMonitoredList(), player, message.selected, message.button);
 			return null;
 		}

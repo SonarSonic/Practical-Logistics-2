@@ -18,22 +18,23 @@ import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.INetworkCache;
+import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.nodes.NodeTransferMode;
 import sonar.logistics.api.readers.FluidReader.SortingType;
 import sonar.logistics.api.wrappers.FluidWrapper;
+import sonar.logistics.connections.CacheType;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.helpers.ItemHelper.ConnectionFilters;
 
 public class FluidHelper extends FluidWrapper {
 
-	public StoredFluidStack addFluids(StoredFluidStack add, INetworkCache network, ActionType action, ITankFilter filter) {
+	public StoredFluidStack addFluids(StoredFluidStack add, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
 		if (add.stored == 0) {
 			return add;
 		}
-		ArrayList<NodeConnection> connections = network.getConnectedChannels(true);
+		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferFluid(entry, add, NodeTransferMode.ADD)) {
 				continue;
@@ -52,11 +53,11 @@ public class FluidHelper extends FluidWrapper {
 		return add;
 	}
 
-	public StoredFluidStack removeFluids(StoredFluidStack remove, INetworkCache network, ActionType action, ITankFilter filter) {
+	public StoredFluidStack removeFluids(StoredFluidStack remove, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
 		if (remove.stored == 0) {
 			return remove;
 		}
-		ArrayList<NodeConnection> connections = network.getConnectedChannels(true);
+		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferFluid(entry, remove, NodeTransferMode.REMOVE)) {
 				continue;
@@ -75,7 +76,7 @@ public class FluidHelper extends FluidWrapper {
 		return remove;
 	}
 
-	public int fillCapabilityStack(ItemStack container, StoredFluidStack fill, INetworkCache network, ActionType action) {
+	public int fillCapabilityStack(ItemStack container, StoredFluidStack fill, ILogisticsNetwork network, ActionType action) {
 		if (container.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
 			return container.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).fill(fill.getFullStack(), !action.shouldSimulate());
 		}
@@ -83,7 +84,7 @@ public class FluidHelper extends FluidWrapper {
 	}
 
 	/** if simulating your expected to pass copies of both the container and stack to fill with */
-	public FluidStack drainCapabilityStack(ItemStack container, int toDrain, INetworkCache network, ActionType action) {
+	public FluidStack drainCapabilityStack(ItemStack container, int toDrain, ILogisticsNetwork network, ActionType action) {
 		if (container.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
 			IFluidHandler handler = container.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
 
@@ -100,7 +101,7 @@ public class FluidHelper extends FluidWrapper {
 		return null;
 	}
 
-	public void fillHeldItem(EntityPlayer player, INetworkCache cache, StoredFluidStack toFill) {
+	public void fillHeldItem(EntityPlayer player, ILogisticsNetwork cache, StoredFluidStack toFill) {
 		ItemStack heldItem = player.getHeldItemMainhand();
 		if (heldItem == null || toFill == null) {
 			return;
@@ -127,7 +128,7 @@ public class FluidHelper extends FluidWrapper {
 		}
 	}
 
-	public void drainHeldItem(EntityPlayer player, INetworkCache cache, int toDrain) {
+	public void drainHeldItem(EntityPlayer player, ILogisticsNetwork cache, int toDrain) {
 		ItemStack heldItem = player.getHeldItemMainhand();
 		if (heldItem == null || toDrain <= 0) {
 			return;

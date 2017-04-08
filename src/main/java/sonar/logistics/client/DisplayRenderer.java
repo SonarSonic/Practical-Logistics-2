@@ -10,7 +10,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.ConnectedDisplayScreen;
 import sonar.logistics.api.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.HolographicDisplayPart;
-import sonar.logistics.common.multiparts.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.ScreenMultipart;
 import sonar.logistics.helpers.InfoRenderer;
 
 //TWEAKED FAST MSR

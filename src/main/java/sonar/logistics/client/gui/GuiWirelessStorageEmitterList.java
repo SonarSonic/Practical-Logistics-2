@@ -47,13 +47,12 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 		if (buttonID == 1) {
 			RenderBlockSelection.addPosition(info.coords.getCoords(), false);
 		} else {
-			final UUID usedUUID = info.uuid.getUUID();
+			final int identity = info.getIdentity();
 			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 1, new ByteBufWritable(false) {
 
 				@Override
 				public void writeToBuf(ByteBuf buf) {
-					buf.writeLong(usedUUID.getMostSignificantBits());
-					buf.writeLong(usedUUID.getLeastSignificantBits());
+					buf.writeInt(identity);
 				}
 
 			}));
@@ -78,8 +77,8 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	public boolean isSelectedInfo(ClientDataEmitter info) {
 		ItemStack current = player.getHeldItemMainhand();
 		if(current!=null && current.hasTagCompound()){
-			UUID uuid = current.getTagCompound().getUniqueId(WirelessStorageReader.EMITTER_UUID);
-			if(uuid.equals(info.uuid.getUUID())){
+			int uuid = current.getTagCompound().getInteger(WirelessStorageReader.EMITTER_UUID);
+			if(uuid == info.getIdentity()){
 				return true;
 			}
 		}

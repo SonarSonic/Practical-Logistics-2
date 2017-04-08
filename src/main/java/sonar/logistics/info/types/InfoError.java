@@ -95,4 +95,7 @@ public class InfoError implements IMonitorInfo<InfoError> {
 		return this;
 	}
 
+	@Override
+	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
+
 }

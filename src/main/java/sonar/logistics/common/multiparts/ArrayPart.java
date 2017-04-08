@@ -12,35 +12,37 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarMultipartInventory;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.utils.IGuiTile;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.connecting.RefreshType;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.nodes.BlockConnection;
 import sonar.logistics.api.nodes.EntityConnection;
 import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.IEntityNode;
 import sonar.logistics.api.nodes.NodeConnection;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
 import sonar.logistics.api.wireless.ITransceiver;
 import sonar.logistics.client.gui.GuiArray;
 import sonar.logistics.common.containers.ContainerArray;
+import sonar.logistics.common.multiparts.generic.SidedMultipart;
+import sonar.logistics.connections.CacheHandler;
+import sonar.logistics.helpers.LogisticsHelper;
 
-public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnectionNode, IEntityNode, IGuiTile {
+public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnectionNode, IFlexibleGui {
+
+	public ArrayList<NodeConnection> channels = Lists.newArrayList();
+	public static boolean entityChanged = true;
 
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
-	public ArrayList<BlockConnection> coordList = Lists.newArrayList();
-	public ArrayList<EntityConnection> entityList = Lists.newArrayList();
-	public static boolean entityChanged = true;
-	{
-		syncList.addPart(priority);
-	}
 	public SonarMultipartInventory inventory = new SonarMultipartInventory(this, 8) {
 		@Override
 		public void markDirty() {
@@ -53,23 +55,16 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 		}
 	};
 
-	public ArrayPart() {
-		super(0.625, 0.0625 * 1, 0.0625 * 4);
-		syncList.addPart(inventory);
-	}
-
-	public ArrayPart(EnumFacing face) {
-		super(face, 0.625, 0.0625 * 1, 0.0625 * 4);
-		syncList.addPart(inventory);
+	{
+		syncList.addParts(priority, inventory);
 	}
 
 	@Override
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack heldItem, PartMOP hit) {
-		if (!this.getWorld().isRemote) {
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			openGui(player, PL2.instance);
+		if (isServer()) {
+			openFlexibleGui(player, 0);
 		}
-		return false;
+		return true;
 	}
 
 	public void update() {
@@ -80,49 +75,34 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	}
 
 	public void updateConnectionLists() {
-		ArrayList<BlockConnection> coordList = Lists.newArrayList();
-		ArrayList<EntityConnection> entityList = Lists.newArrayList();
+		ArrayList<NodeConnection> channels = Lists.newArrayList();
 		for (int i = 0; i < 8; i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (stack != null && stack.hasTagCompound()) {
-				if (stack.getItem() instanceof ITileTransceiver) {
-					ITileTransceiver trans = (ITileTransceiver) stack.getItem();
-					coordList.add(new BlockConnection(this, trans.getCoords(stack), trans.getDirection(stack)));
-				}
-				if (stack.getItem() instanceof IEntityTransceiver) {
-					IEntityTransceiver trans = (IEntityTransceiver) stack.getItem();
-					UUID uuid = trans.getEntityUUID(stack);
-					if (uuid != null) {
-						for (Entity entity : getWorld().getLoadedEntityList()) {
-							if (entity.getPersistentID().equals(uuid)) {
-								entityList.add(new EntityConnection(this, entity));
-								break;
-							}
-						}
-					}
+			if (stack != null && stack.getItem() instanceof ITransceiver && stack.hasTagCompound()) {
+				NodeConnection connect = LogisticsHelper.getTransceiverNode(this, stack);
+				if (!channels.contains(connect)) {
+					channels.add(connect);
 				}
 			}
 		}
-		this.coordList = coordList;
-		this.entityList = entityList;
-		network.markDirty(RefreshType.FULL);
+		this.channels = channels;
+		network.markCacheDirty(CacheHandler.NODES);
 	}
-	
+
 	@Override
 	public List<ItemStack> getDrops() {
 		List<ItemStack> stacks = Lists.newArrayList();
-		stacks.add(getItemStack());		
+		stacks.add(getItemStack());
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			ItemStack itemstack = inventory.getStackInSlot(i);
 			if (itemstack != null) {
 				stacks.add(itemstack);
 			}
-		}		
+		}
 		return stacks;
 	}
 
 	//// IConnectionNode \\\\
-
 	@Override
 	public int getPriority() {
 		return priority.getObject();
@@ -130,37 +110,34 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 
 	@Override
 	public void addConnections(ArrayList<NodeConnection> connections) {
-		connections.addAll(coordList);
-	}
-
-	//// IEntityNode \\\\
-
-	@Override
-	public void addEntities(List<NodeConnection> entities) {
-		entities.addAll(entityList);
-	}
-
-	@Override
-	public ItemStack getItemStack() {
-		return new ItemStack(PL2Items.array);
+		connections.addAll(channels);
 	}
 
 	//// EVENTS \\\\
-
 	public void onFirstTick() {
 		super.onFirstTick();
 		this.updateConnectionLists();
 	}
 
 	//// GUI \\\\
-
 	@Override
-	public Object getGuiContainer(EntityPlayer player) {
-		return new ContainerArray(player, this);
+	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		if (id == 0)
+			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 	}
 
 	@Override
-	public Object getGuiScreen(EntityPlayer player) {
-		return new GuiArray(player, this);
+	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		return id == 0 ? new ContainerArray(player, this) : null;
+	}
+
+	@Override
+	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		return id == 0 ? new GuiArray(player, this) : null;
+	}
+
+	@Override
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.ARRAY;
 	}
 }
