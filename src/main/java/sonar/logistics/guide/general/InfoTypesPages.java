@@ -1,6 +1,6 @@
 package sonar.logistics.guide.general;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.gui.GuiGuide;
@@ -22,7 +22,7 @@ public class InfoTypesPages extends BaseInfoPage {
 	}
 
 	@Override
-	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo) {
+	public List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo) {
 		
 		return pageInfo;
 	}

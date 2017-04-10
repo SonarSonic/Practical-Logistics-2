@@ -2,6 +2,7 @@ package sonar.logistics.helpers;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -18,15 +19,15 @@ import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.readers.FluidReader.SortingType;
+import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
+import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.wrappers.FluidWrapper;
-import sonar.logistics.connections.CacheType;
-import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 import sonar.logistics.helpers.ItemHelper.ConnectionFilters;
+import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class FluidHelper extends FluidWrapper {
 
@@ -34,7 +35,7 @@ public class FluidHelper extends FluidWrapper {
 		if (add.stored == 0) {
 			return add;
 		}
-		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferFluid(entry, add, NodeTransferMode.ADD)) {
 				continue;
@@ -57,7 +58,7 @@ public class FluidHelper extends FluidWrapper {
 		if (remove.stored == 0) {
 			return remove;
 		}
-		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferFluid(entry, remove, NodeTransferMode.REMOVE)) {
 				continue;

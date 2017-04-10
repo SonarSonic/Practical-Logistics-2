@@ -2,10 +2,10 @@ package sonar.logistics.api.info;
 
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
 
 /**for your info to be registered you must use {@link LogicInfoType} implement this for all types of info*/
 public interface IMonitorInfo<T extends IMonitorInfo> extends INBTSyncable{
@@ -24,7 +24,7 @@ public interface IMonitorInfo<T extends IMonitorInfo> extends INBTSyncable{
 
 	public boolean isHeader();
 	
-	public LogicMonitorHandler<T> getHandler();
+	public INetworkHandler getHandler();
 	
 	public boolean isValid();
 	

@@ -18,9 +18,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.core.network.sync.SyncNBTAbstractList;
-import sonar.logistics.api.filters.ListPacket;
-import sonar.logistics.api.logistics.EmitterStatement;
-import sonar.logistics.api.logistics.ILogisticsTile;
+import sonar.logistics.api.tiles.signaller.EmitterStatement;
+import sonar.logistics.api.tiles.signaller.ILogisticsTile;
+import sonar.logistics.api.utils.ListPacket;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketEmitterStatement extends PacketMultipart {

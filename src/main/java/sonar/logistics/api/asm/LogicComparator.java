@@ -5,9 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import sonar.logistics.api.info.ICustomTileHandler;
+import sonar.logistics.api.info.handlers.ITileInfoProvider;
 
-/**use this with {@link ICustomTileHandler}*/
+/**use this with {@link ITileInfoProvider}*/
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface LogicComparator {

@@ -10,9 +10,10 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.common.multiparts.ArrayPart;
-import sonar.logistics.connections.managers.EmitterManager;
-import sonar.logistics.connections.managers.LockedDisplayData;
+import sonar.logistics.managers.WirelessManager;
+import sonar.logistics.managers.LockedDisplayData;
 
 public class PL2Events {
 
@@ -23,7 +24,7 @@ public class PL2Events {
 		if (event.side == Side.SERVER && event.phase == Phase.END) {
 			PL2.getNetworkManager().tick();
 			PL2.getServerManager().onServerTick();
-			EmitterManager.tick(); // this must happen at the end, since the dirty boolean will be changed and will upset tiles
+			WirelessManager.tick();
 			PL2.getDisplayManager().tick();
 			ArrayPart.entityChanged = false;
 		}

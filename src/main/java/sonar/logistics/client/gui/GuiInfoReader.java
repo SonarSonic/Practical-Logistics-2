@@ -1,7 +1,7 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,13 +10,13 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.HelpOverlays;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.InfoReaderPart;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
@@ -93,7 +93,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
-		ArrayList<IProvidableInfo> selectedInfo = part.getSelectedInfo();
+		List<IProvidableInfo> selectedInfo = part.getSelectedInfo();
 		for (IProvidableInfo selected : selectedInfo) {
 			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((IProvidableInfo) selected)) {
 				return true;
@@ -107,7 +107,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
-		ArrayList<IProvidableInfo> pairedInfo = part.getPairedInfo();
+		List<IProvidableInfo> pairedInfo = part.getPairedInfo();
 		for (IProvidableInfo selected : pairedInfo) {
 			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((IProvidableInfo) selected)) {
 				return true;
@@ -127,7 +127,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}
-		ArrayList<IProvidableInfo> selectedInfo = type == 0 ? part.getSelectedInfo() : part.getPairedInfo();
+		List<IProvidableInfo> selectedInfo = type == 0 ? part.getSelectedInfo() : part.getPairedInfo();
 		int pos = 0;
 		for (IProvidableInfo selected : selectedInfo) {
 			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo(selected)) {

@@ -1,6 +1,7 @@
 package sonar.logistics.guide;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import sonar.logistics.PL2Blocks;
@@ -14,7 +15,7 @@ import sonar.logistics.guide.pages.TransferNodePage;
 
 public class GuidePageRegistry {
 
-	public static ArrayList<IGuidePage> pages = new ArrayList<IGuidePage>();
+	public static List<IGuidePage> pages = new ArrayList<IGuidePage>();
 
 	public static void init() {
 		// addGuidePage(new Welcome(0));

@@ -1,7 +1,7 @@
 package sonar.logistics.api.render;
 
 import net.minecraft.util.EnumFacing;
-import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.tiles.cable.ConnectableType;
 
 /**used by tiles which render cables, this includes Cables themselves*/
 public interface ICableRenderer {

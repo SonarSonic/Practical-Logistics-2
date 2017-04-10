@@ -1,10 +1,12 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -23,13 +25,13 @@ public abstract class BaseInfoPage implements IGuidePage {
 	public int pageID;
 	public int pageCount = 1;
 	public int currentSubPage = 0;
-	public HashMap<String, ElementInfoFormatted> pageInfo = new HashMap();
-	public List<ElementLink> currentLinks = new ArrayList();
-	public List<ElementInfoFormatted> currentData = new ArrayList();
-	public ArrayList<IGuidePageElement> elements = new ArrayList();
+	public Map<String, ElementInfoFormatted> pageInfo = Maps.newHashMap();
+	public List<ElementLink> currentLinks = Lists.newArrayList();
+	public List<ElementInfoFormatted> currentData = Lists.newArrayList();
+	public List<IGuidePageElement> elements = Lists.newArrayList();
 	private GuiButton selectedButton;
-	public List<GuiButton> guideButtons = new ArrayList();
-	// public Pair<List<String>, List<PageLink>> current = new Pair(new ArrayList(), new ArrayList());
+	public List<GuiButton> guideButtons = Lists.newArrayList();
+	// public Pair<List<String>, List<PageLink>> current = new Pair(Lists.newArrayList(), Lists.newArrayList());
 
 	public BaseInfoPage(int pageID) {
 		this.pageID = pageID;
@@ -47,7 +49,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 	
 	//// CREATE \\\\
 
-	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements) {
+	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements) {
 		return elements;
 	}
 	
@@ -55,13 +57,13 @@ public abstract class BaseInfoPage implements IGuidePage {
 		currentSubPage = subPage;
 		pageInfo.clear();
 		guideButtons.clear();
-		elements = getElements(gui, new ArrayList());
-		List<ElementLink> newLinks = new ArrayList();
-		List<ElementInfoFormatted> newData = new ArrayList();
+		elements = getElements(gui, Lists.newArrayList());
+		List<ElementLink> newLinks = Lists.newArrayList();
+		List<ElementInfoFormatted> newData = Lists.newArrayList();
 		boolean newPage = false;
 		int ordinal = 0;
 		int lineTally = 0;
-		ArrayList<ElementInfo> pgInfo = getPageInfo(gui, new ArrayList());
+		List<ElementInfo> pgInfo = getPageInfo(gui, Lists.newArrayList());
 		int currentInfoPos = 0;
 
 		for (ElementInfo info : pgInfo) {
@@ -77,8 +79,8 @@ public abstract class BaseInfoPage implements IGuidePage {
 				newPage = false;
 			}
 
-			ArrayList<ElementLink> links = new ArrayList();
-			ArrayList<String> lines = GuidePageHelper.getLines(this, ordinal, lineTally, info, links);
+			List<ElementLink> links = Lists.newArrayList();
+			List<String> lines = GuidePageHelper.getLines(this, ordinal, lineTally, info, links);
 
 			int numPagesNeeded = ((lines.size() + lineTally) / GuidePageHelper.maxLinesPerPage) + 1;
 			int currentPages = numPagesNeeded;
@@ -88,7 +90,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				from = Math.min(GuidePageHelper.maxLinesPerPage * (numPagesNeeded - currentPages), to);
 				to = Math.min((GuidePageHelper.maxLinesPerPage * ((numPagesNeeded + 1) - currentPages)) - lineTally, lines.size());
 
-				ArrayList<ElementLink> pageLinks = new ArrayList();
+				List<ElementLink> pageLinks = Lists.newArrayList();
 				for (ElementLink link : links) {
 					if (link.lineNum >= from && link.lineNum <= to) {
 						int linePos = lineTally + link.lineNum - 1;

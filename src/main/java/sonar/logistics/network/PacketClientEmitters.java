@@ -1,6 +1,8 @@
 package sonar.logistics.network;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,19 +20,19 @@ import sonar.logistics.api.wireless.ClientDataEmitter;
 
 public class PacketClientEmitters implements IMessage {
 
-	public ArrayList<ClientDataEmitter> emitters;
+	public List<ClientDataEmitter> emitters;
 
 	public PacketClientEmitters() {
 	}
 
-	public PacketClientEmitters(ArrayList<ClientDataEmitter> emitters) {
+	public PacketClientEmitters(List<ClientDataEmitter> emitters) {
 		this.emitters = emitters;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		NBTTagCompound tag = ByteBufUtils.readTag(buf);
-		emitters = new ArrayList();
+		emitters = Lists.newArrayList();
 		if (tag.hasKey("emitters")) {
 			NBTTagList tagList = tag.getTagList("emitters", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {

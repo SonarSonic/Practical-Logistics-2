@@ -1,8 +1,10 @@
 package sonar.logistics.client;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +15,7 @@ import sonar.core.utils.Pair;
 
 public class RenderBlockSelection {
 
-	public static HashMap<BlockCoords, Pair<Long, Boolean>> positions = new HashMap();
+	public static Map<BlockCoords, Pair<Long, Boolean>> positions = Maps.newHashMap();
 	public static int displayTime = 8000;
 
 	public static void tick(RenderWorldLastEvent evt) {

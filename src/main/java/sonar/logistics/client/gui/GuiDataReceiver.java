@@ -1,6 +1,6 @@
 package sonar.logistics.client.gui;
 
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
@@ -40,7 +40,7 @@ public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {
 	}
 
 	public void setInfo() {
-		infoList = (ArrayList<ClientDataEmitter>) PL2.getClientManager().clientEmitters.clone();
+		infoList = Lists.newArrayList(PL2.getClientManager().clientEmitters);
 	}
 
 	@Override

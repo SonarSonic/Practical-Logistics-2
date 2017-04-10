@@ -5,8 +5,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
 
 /** implemented on info which can be clicked by the player */
 public interface IBasicClickableInfo{

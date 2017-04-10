@@ -1,6 +1,6 @@
 package sonar.logistics.info.types;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -10,13 +10,14 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.logistics.ComparableObject;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = ClockInfo.id, modid = PL2Constants.MODID)
@@ -79,8 +80,8 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<Clock
 	}
 
 	@Override
-	public LogicMonitorHandler<ClockInfo> getHandler() {
-		return null;
+	public INetworkHandler getHandler() {
+		return InfoNetworkHandler.INSTANCE;
 	}
 
 	@Override
@@ -115,7 +116,7 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IMonitorInfo<Clock
 	}
 
 	@Override
-	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		objects.add(new ComparableObject(this, "isEmitting", firstNum.getObject()==secondNum.getObject()));
 		return objects;
 	}

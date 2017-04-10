@@ -20,14 +20,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
 import sonar.core.client.gui.MultipartStateOverride;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.DisplayInfo;
-import sonar.logistics.api.displays.DisplayType;
-import sonar.logistics.api.displays.ILargeDisplay;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.common.multiparts.generic.ScreenMultipart;
+import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.common.multiparts.generic.DisplayMultipart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 
@@ -59,9 +59,9 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) {
 			BlockPos pos = entry.getKey();
 			for (MultipartStateOverride part : entry.getValue()) {
-				if (part.part instanceof ScreenMultipart) {
+				if (part.part instanceof DisplayMultipart) {
 					try {
-						renderScreenAt((ScreenMultipart) part.part, pos, 0);
+						renderScreenAt((DisplayMultipart) part.part, pos, 0);
 					} catch (Throwable t) {
 
 					}
@@ -71,7 +71,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
-	public void renderScreenAt(ScreenMultipart part, BlockPos pos, float partialTicks) {
+	public void renderScreenAt(DisplayMultipart part, BlockPos pos, float partialTicks) {
 		if(part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()){
 			return;
 		}
@@ -79,7 +79,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		GlStateManager.pushAttrib();
 		translate(pos.getX() - 0.5, pos.getY(), pos.getZ() - 0.5);
 		if (part instanceof ILargeDisplay) {
-			ConnectedDisplayScreen screen = ((ILargeDisplay) part).getDisplayScreen();
+			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
 			InfoRenderer.rotateDisplayRendering(part.face, EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject());
 		} else {
 			InfoRenderer.rotateDisplayRendering(part.face, EnumFacing.NORTH, 0, 0);
@@ -89,7 +89,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		if (part.getDisplayType() == DisplayType.LARGE) {
 			GL11.glTranslated(0, -0.0625 * 4, 0);
 		}
-		ScreenLayout layout = part.getLayout();
+		DisplayLayout layout = part.getLayout();
 		DisplayType type = part.getDisplayType();
 		for (int dataPos = 0; dataPos < layout.maxInfo; dataPos++) {
 			DisplayInfo info = part.container().getDisplayInfo(dataPos);

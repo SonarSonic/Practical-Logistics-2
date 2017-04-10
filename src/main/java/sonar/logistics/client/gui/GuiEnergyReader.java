@@ -13,7 +13,7 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.readers.EnergyReader.Modes;
+import sonar.logistics.api.tiles.readers.EnergyReader.Modes;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
@@ -21,7 +21,7 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.common.multiparts.EnergyReaderPart;
 import sonar.logistics.common.multiparts.generic.MonitorMultipart;
-import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
+import sonar.logistics.info.types.MonitoredEnergyStack;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 

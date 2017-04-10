@@ -5,7 +5,7 @@ import java.util.UUID;
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
-import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 
 public abstract class BaseFilter extends BaseSyncListPart implements INodeFilter {
 

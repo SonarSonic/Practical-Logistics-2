@@ -1,7 +1,5 @@
 package sonar.logistics.common.items;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,15 +14,15 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.api.readers.IWirelessStorageReader;
+import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.client.gui.GuiWirelessStorageEmitterList;
 import sonar.logistics.client.gui.GuiWirelessStorageReader;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.containers.ContainerStorageViewer;
-import sonar.logistics.connections.managers.EmitterManager;
 import sonar.logistics.helpers.ItemHelper;
+import sonar.logistics.managers.WirelessManager;
 
 public class WirelessStorageReader extends SonarItem implements IWirelessStorageReader, IFlexibleGui<ItemStack> {
 
@@ -33,7 +31,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 
 	@Override
 	public int getEmitterIdentity(ItemStack stack) {
-		if (stack.hasTagCompound() && stack.getTagCompound().hasUniqueId(EMITTER_UUID)) {
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey(EMITTER_UUID)) {
 			return stack.getTagCompound().getInteger(EMITTER_UUID);
 		}
 		return -1;
@@ -54,7 +52,8 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			if (nbt == null) {
 				nbt = new NBTTagCompound();
 			}
-			IDataEmitter emitter = EmitterManager.getEmitter(getEmitterIdentity(stack));			
+			Integer identity = getEmitterIdentity(stack);
+			IDataEmitter emitter = WirelessManager.getEmitter(identity);			
 			if (emitter != null) {
 				if(!emitter.getCoords().isChunkLoaded()){
 					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);					
@@ -76,11 +75,11 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 	public void onGuiOpened(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			IDataEmitter emitter = EmitterManager.getEmitter(getEmitterIdentity(obj));
+			IDataEmitter emitter = WirelessManager.getEmitter(getEmitterIdentity(obj));
 			emitter.getListenerList().addListener(player, ListenerType.FULL_INFO);
 			break;
 		case 1:
-			EmitterManager.addViewer(player);
+			WirelessManager.addViewer(player);
 			break;
 		}
 	}
@@ -115,8 +114,8 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			if (buf.readBoolean()) {
 				selected = ByteBufUtils.readItemStack(buf);
 			}
-			IDataEmitter emitter = EmitterManager.getEmitter(getEmitterIdentity(stack));
-			ItemHelper.onNetworkItemInteraction(emitter.getNetwork(), emitter.getServerItems(), player, selected, buf.readInt());
+			IDataEmitter emitter = WirelessManager.getEmitter(getEmitterIdentity(stack));
+			ItemHelper.onNetworkItemInteraction(emitter, emitter.getNetwork(), emitter.getServerItems(), player, selected, buf.readInt());
 			
 			break;
 		case 1:

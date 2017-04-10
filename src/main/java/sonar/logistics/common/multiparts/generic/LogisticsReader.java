@@ -1,19 +1,17 @@
 package sonar.logistics.common.multiparts.generic;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.EnumFacing;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.common.multiparts.ReaderMultipart;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.ProgressInfo;
@@ -21,7 +19,7 @@ import sonar.logistics.network.sync.SyncMonitoredType;
 
 public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderMultipart<T> {
 
-	private ArrayList<SyncMonitoredType<T>> selected = Lists.newArrayListWithCapacity(getMaxInfo()), paired = Lists.newArrayListWithCapacity(getMaxInfo());
+	private List<SyncMonitoredType<T>> selected = Lists.newArrayListWithCapacity(getMaxInfo()), paired = Lists.newArrayListWithCapacity(getMaxInfo());
 	{
 		for (int i = 0; i < getMaxInfo(); i++) {
 			selected.add(i, new SyncMonitoredType<T>(i + 10));
@@ -30,26 +28,22 @@ public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderM
 		syncList.addParts(selected);
 		syncList.addParts(paired);
 	}
-
-	public LogisticsReader(String handlerID) {
-		super(handlerID);
-	}
-
-	public ArrayList<IProvidableInfo> getSelectedInfo() {
-		ArrayList<IProvidableInfo> cachedSelected = Lists.<IProvidableInfo>newArrayList();
+	
+	public List<IProvidableInfo> getSelectedInfo() {
+		List<IProvidableInfo> cachedSelected = Lists.<IProvidableInfo>newArrayList();
 		selected.forEach(info -> cachedSelected.add(info.getMonitoredInfo()));
 		return cachedSelected;
 	}
 
-	public ArrayList<IProvidableInfo> getPairedInfo() {
-		ArrayList<IProvidableInfo> cachedPaired = Lists.<IProvidableInfo>newArrayList();
+	public List<IProvidableInfo> getPairedInfo() {
+		List<IProvidableInfo> cachedPaired = Lists.<IProvidableInfo>newArrayList();
 		paired.forEach(info -> cachedPaired.add(info.getMonitoredInfo()));
 		return cachedPaired;
 	}
 
 	// this is kind of messy, could be made better for sure
 	public void addInfo(T info, int type, int newPos) {
-		ArrayList<SyncMonitoredType<T>> syncInfo = type == 0 ? selected : paired;
+		List<SyncMonitoredType<T>> syncInfo = type == 0 ? selected : paired;
 		if (newPos == -1) {
 			int pos = 0;
 			for (SyncMonitoredType<T> sync : syncInfo) {
@@ -75,12 +69,11 @@ public abstract class LogisticsReader<T extends IProvidableInfo> extends ReaderM
 		// sendByteBufPacket(100);
 	}
 	
-	//// ILogicMonitor \\\\
-	
+	//// ILogicMonitor \\\\ TODO FIX THIS ew	
 	@Override
-	public void setMonitoredInfo(MonitoredList<T> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
-		ArrayList<IProvidableInfo> cachedSelected = this.getSelectedInfo();
-		ArrayList<IProvidableInfo> cachedPaired = this.getPairedInfo();
+	public void setMonitoredInfo(MonitoredList<T> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid) {
+		List<IProvidableInfo> cachedSelected = this.getSelectedInfo();
+		List<IProvidableInfo> cachedPaired = this.getPairedInfo();
 		for (int i = 0; i < this.getMaxInfo(); i++) {
 			InfoUUID id = new InfoUUID(getIdentity(), i);
 			IProvidableInfo selectedInfo = cachedSelected.get(i);

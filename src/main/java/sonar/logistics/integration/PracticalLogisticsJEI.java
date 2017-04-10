@@ -1,6 +1,6 @@
 package sonar.logistics.integration;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
@@ -96,7 +96,7 @@ public class PracticalLogisticsJEI extends BlankModPlugin {
 			return helper;
 		}
 
-		public ArrayList<JEIRecipeV2> getJEIRecipes() {
+		public List<JEIRecipeV2> getJEIRecipes() {
 			return JEIHelper.getJEIRecipes(helper, recipeClass);
 		}
 

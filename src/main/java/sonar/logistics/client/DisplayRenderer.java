@@ -7,26 +7,26 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.HolographicDisplayPart;
-import sonar.logistics.common.multiparts.generic.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.DisplayMultipart;
 import sonar.logistics.helpers.InfoRenderer;
 
 //TWEAKED FAST MSR
-public class DisplayRenderer extends MultipartSpecialRenderer<ScreenMultipart> {
+public class DisplayRenderer extends MultipartSpecialRenderer<DisplayMultipart> {
 
 	public ResourceLocation hologram = new ResourceLocation(RenderHammer.modelFolder + "hologram.png");
 
 	@Override
-	public void renderMultipartAt(ScreenMultipart part, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void renderMultipartAt(DisplayMultipart part, double x, double y, double z, float partialTicks, int destroyStage) {
 		if (part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()) {
 			return;
 		}
 		RenderHelper.offsetRendering(part.getPos(), partialTicks);
 
 		if (part instanceof ILargeDisplay) {
-			ConnectedDisplayScreen screen = ((ILargeDisplay) part).getDisplayScreen();
+			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
 			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, screen.width.getObject(), screen.height.getObject());
 		} else {
 			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, 0, 0);

@@ -1,6 +1,8 @@
 package sonar.logistics.network.sync;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,22 +17,22 @@ import sonar.logistics.api.filters.FilterList;
 import sonar.logistics.api.filters.IFluidFilter;
 import sonar.logistics.api.filters.IItemFilter;
 import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.helpers.InfoHelper;
 
 public class SyncFilterList extends SyncPart {
 
-	public ArrayList<INodeFilter> objs = new ArrayList();
+	public List<INodeFilter> objs = Lists.newArrayList();
 
 	public SyncFilterList(int id) {
 		super(id);
 	}
 
-	public ArrayList<INodeFilter> getObjects() {
+	public List<INodeFilter> getObjects() {
 		return objs;
 	}
 
-	public void setObjects(ArrayList<INodeFilter> list) {
+	public void setObjects(List<INodeFilter> list) {
 		objs = list;
 		markChanged();
 	}
@@ -102,14 +104,14 @@ public class SyncFilterList extends SyncPart {
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		if (nbt.hasKey(getTagName())) {
-			ArrayList newObjs = new ArrayList();
+			List newObjs = Lists.newArrayList();
 			NBTTagList tagList = nbt.getTagList(getTagName(), Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
 				newObjs.add(InfoHelper.readFilterFromNBT(tagList.getCompoundTagAt(i)));
 			}
 			objs = newObjs;
 		} else if (nbt.getBoolean(getTagName() + "E")) {
-			objs = new ArrayList();
+			objs = Lists.newArrayList();
 		}
 	}
 

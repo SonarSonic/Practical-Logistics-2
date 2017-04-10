@@ -1,7 +1,7 @@
 package sonar.logistics.api.wireless;
 
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 
@@ -13,13 +13,11 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncUUID;
-import sonar.core.utils.IUUIDIdentity;
 
 /** used when syncing Data Emitters for display in the Data Receiver with the client, since some may not be loaded on client side. */
 public class ClientDataEmitter implements INBTSyncable {
 
-	public ArrayList<ISyncPart> syncParts = new ArrayList<ISyncPart>();
+	public List<ISyncPart> syncParts = new ArrayList<ISyncPart>();
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
 	public SyncCoords coords = new SyncCoords(1);
 	public SyncTagType.STRING name = new SyncTagType.STRING(2);

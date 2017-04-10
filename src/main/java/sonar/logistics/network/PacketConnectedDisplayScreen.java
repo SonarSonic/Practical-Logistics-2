@@ -6,19 +6,19 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.logistics.PL2;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.ILargeDisplay;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
 
 public class PacketConnectedDisplayScreen implements IMessage {
 
 	public ByteBuf savedBuf;
-	public ConnectedDisplayScreen screen;
+	public ConnectedDisplay screen;
 	public int registryID;
 
 	public PacketConnectedDisplayScreen() {
 	}
 
-	public PacketConnectedDisplayScreen(ConnectedDisplayScreen screen, int registryID) {
+	public PacketConnectedDisplayScreen(ConnectedDisplay screen, int registryID) {
 		super();
 		this.screen = screen;
 		this.registryID = registryID;
@@ -44,7 +44,7 @@ public class PacketConnectedDisplayScreen implements IMessage {
 		public IMessage onMessage(PacketConnectedDisplayScreen message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 				if (message.screen == null) {
-					message.screen = new ConnectedDisplayScreen(message.registryID);
+					message.screen = new ConnectedDisplay(message.registryID);
 				}
 				message.screen.readFromBuf(message.savedBuf);
 				PL2.getClientManager().connectedDisplays.put(message.registryID, message.screen);

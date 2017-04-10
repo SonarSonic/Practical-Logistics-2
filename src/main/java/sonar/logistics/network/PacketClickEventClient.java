@@ -14,22 +14,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.common.multiparts.generic.ScreenMultipart;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
+import sonar.logistics.common.multiparts.generic.DisplayMultipart;
 
 public class PacketClickEventClient extends PacketMultipart {
 
-	public ScreenInteractionEvent eventTag;
+	public DisplayInteractionEvent eventTag;
 	public ByteBuf buf;
 
 	public PacketClickEventClient() {
 	}
 
-	public PacketClickEventClient(UUID partUUID, BlockPos pos, ScreenInteractionEvent eventTag) {
+	public PacketClickEventClient(UUID partUUID, BlockPos pos, DisplayInteractionEvent eventTag) {
 		super(partUUID, pos);
 		this.eventTag = eventTag;
 	}
@@ -52,12 +52,12 @@ public class PacketClickEventClient extends PacketMultipart {
 		public IMessage processMessage(PacketClickEventClient message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null && part instanceof ScreenMultipart) {
-					ScreenInteractionEvent event = ScreenInteractionEvent.readFromBuf(message.buf, player, (ScreenMultipart) part);
-					if(event.hit==null){
+				if (player != null && part instanceof DisplayMultipart) {
+					DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (DisplayMultipart) part);
+					if (event.hit == null) {
 						return null;
 					}
-					InfoContainer container = (InfoContainer) ((ScreenMultipart) part).container();
+					InfoContainer container = (InfoContainer) ((DisplayMultipart) part).container();
 					if (container != null) {
 						IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
 						IMonitorInfo info = displayInfo.getSidedCachedInfo(true);

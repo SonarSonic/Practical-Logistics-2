@@ -1,10 +1,10 @@
 package sonar.logistics.logic.comparators;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import sonar.logistics.api.asm.LogicComparator;
-import sonar.logistics.api.logistics.LogicOperator;
-import sonar.logistics.api.logistics.LogicState;
+import sonar.logistics.api.tiles.signaller.LogicOperator;
+import sonar.logistics.api.tiles.signaller.LogicState;
 
 @LogicComparator(handlingClass = Number.class)
 public class NumberComparator implements ILogicComparator<Number> {
@@ -15,7 +15,7 @@ public class NumberComparator implements ILogicComparator<Number> {
 	}
 
 	@Override
-	public ArrayList<LogicOperator> getValidOperators() {
+	public List<LogicOperator> getValidOperators() {
 		return LogicOperator.numOperators;
 	}
 

@@ -1,28 +1,42 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.listener.ListenerList;
+import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
-import sonar.logistics.api.cabling.ILogicTile;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorTool;
+import sonar.logistics.api.tiles.INetworkTile;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
+import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.tiles.readers.INetworkReader;
+import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
-import sonar.logistics.api.wireless.ITransceiver;
 import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.network.PacketChannels;
+import sonar.logistics.network.PacketMonitoredList;
 
 public class LogisticsHelper {
 
@@ -34,18 +48,18 @@ public class LogisticsHelper {
 	}
 
 	public static List<ILogisticsNetwork> getNetworks(List<Integer> ids) {
-		List<ILogisticsNetwork> networks = new ArrayList();
+		List<ILogisticsNetwork> networks = Lists.newArrayList();
 		ids.forEach(id -> PL2.getNetworkManager().getNetwork(id));
 		return networks;
 	}
 
-	public static HashMap<CacheHandler, ArrayList> getCachesMap() {
-		HashMap<CacheHandler, ArrayList> connections = new HashMap();
-		CacheHandler.handlers.forEach(classType -> connections.put(classType, new ArrayList()));
+	public static Map<CacheHandler, List> getCachesMap() {
+		Map<CacheHandler, List> connections = Maps.newHashMap();
+		CacheHandler.handlers.forEach(classType -> connections.put(classType, Lists.newArrayList()));
 		return connections;
 	}
 
-	public static NodeConnection getTransceiverNode(ILogicTile source, ItemStack stack) {
+	public static NodeConnection getTransceiverNode(INetworkTile source, ItemStack stack) {
 		if (stack.getItem() instanceof ITileTransceiver) {
 			ITileTransceiver trans = (ITileTransceiver) stack.getItem();
 			return new BlockConnection(source, trans.getCoords(stack), trans.getDirection(stack));
@@ -66,16 +80,16 @@ public class LogisticsHelper {
 	}
 
 	public static void addConnectedNetworks(ILogisticsNetwork main, IDataReceiver receiver) {
-		ArrayList<Integer> connected = receiver.getConnectedNetworks();
+		List<Integer> connected = receiver.getConnectedNetworks();
 		connected.iterator().forEachRemaining(networkID -> {
 			ILogisticsNetwork sub = PL2.getNetworkManager().getNetwork(networkID);
-			if (!sub.isFakeNetwork()) {
+			if (sub.getNetworkID()!= main.getNetworkID() && sub.isValid()) {
 				sub.getListenerList().addListener(main, ILogisticsNetwork.WATCHING_NETWORK);
 			}
 		});
 	}
 
-	public static ArrayList<NodeConnection> sortNodeConnections(ArrayList<NodeConnection> channels, List<IConnectionNode> nodes) {
+	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {
 		nodes.forEach(n -> {
 			if (n.isValid())
 				n.addConnections(channels);
@@ -83,4 +97,85 @@ public class LogisticsHelper {
 		return NodeConnection.sortConnections(channels);
 	}
 
+	public static void sendNormalProviderInfo(IInfoProvider monitor) {
+		LogisticsHelper.sendPacketsToListeners(monitor, null, null, new InfoUUID(monitor.getIdentity(), 0));
+	}
+
+	public static void sendFullInfo(List<PlayerListener> listeners, ILogicListenable monitor, MonitoredList saveList, InfoUUID uuid) {
+		NBTTagCompound saveTag = saveList != null ? InfoHelper.writeMonitoredList(new NBTTagCompound(), true, saveList, SyncType.DEFAULT_SYNC) : null;
+		if (saveTag.hasNoTags())
+			return;
+		listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), uuid, monitor.getNetworkID(), saveTag, SyncType.DEFAULT_SYNC), listener.player));
+	}
+
+	public static void sendPacketsToListeners(ILogicListenable reader, MonitoredList saveList, MonitoredList lastList, InfoUUID uuid) {
+		ListenerList<PlayerListener> list = reader.getListenerList();
+		for (ListenerType type : ListenerType.ALL) {
+			List<PlayerListener> listeners = list.getListeners(type);
+			if (listeners.isEmpty()) {
+				continue;
+			}
+			switch (type) {
+			case CHANNEL:
+				MonitoredList<IMonitorInfo> coords = reader.getNetwork().createChannelList(CacheType.ALL);
+				NBTTagCompound channelTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC);
+				if (channelTag.hasNoTags())
+					continue;
+				listeners.forEach(listener -> {
+					PL2.network.sendTo(new PacketChannels(reader.getNetworkID(), channelTag), listener.player);
+					list.removeListener(listener, ListenerType.CHANNEL);
+				});
+				break;
+			case FULL_INFO:
+				NBTTagCompound saveTag = saveList != null ? InfoHelper.writeMonitoredList(new NBTTagCompound(), true, saveList, SyncType.DEFAULT_SYNC) : null;
+				if (saveTag ==null || saveTag.hasNoTags())
+					break;
+				listeners.forEach(listener -> {
+					if (saveList != null)
+						PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), saveTag, SyncType.DEFAULT_SYNC), listener.player);
+					if (listeners instanceof ListenerList) {
+						list.removeListener(listener, ListenerType.FULL_INFO);
+						list.addListener(listener, ListenerType.INFO);
+					}
+				});
+				break;
+			case INFO:
+				if (saveList == null) {
+					continue;
+				}
+				NBTTagCompound tag = InfoHelper.writeMonitoredList(new NBTTagCompound(), lastList.isEmpty(), saveList, SyncType.SPECIAL);
+				if (tag.hasNoTags() || (saveList.changed.isEmpty() && saveList.removed.isEmpty())) {
+					continue;
+				}
+				listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), tag, SyncType.SPECIAL), listener.player));
+				break;
+			case TEMPORARY:
+				saveTag = saveList != null ? InfoHelper.writeMonitoredList(new NBTTagCompound(), lastList.isEmpty(), saveList, SyncType.DEFAULT_SYNC) : null;
+				NBTTagList tagList = new NBTTagList();
+				if (reader instanceof INetworkReader) {
+					INetworkReader r = (INetworkReader) reader;
+					for (int i = 0; i < r.getMaxInfo(); i++) {
+						InfoUUID infoID = new InfoUUID(reader.getIdentity(), i);
+						IMonitorInfo info = PL2.getServerManager().info.get(infoID);
+						if (info != null) {
+							NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
+							nbt = infoID.writeData(nbt, SyncType.SAVE);
+							tagList.appendTag(nbt);
+						}
+					}
+				}
+				listeners.forEach(listener -> {
+					if (saveList != null)
+						PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), listener.player);
+					list.removeListener(listener, ListenerType.TEMPORARY);
+					PL2.getServerManager().sendPlayerPacket(listener, tagList, SyncType.SAVE);
+				});
+
+				break;
+			default:
+				break;
+
+			}
+		}
+	}
 }

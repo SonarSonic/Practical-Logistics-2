@@ -1,9 +1,10 @@
 package sonar.logistics.info.types;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import appeng.api.storage.ICellInventory;
 import appeng.api.storage.ICellInventoryHandler;
@@ -12,23 +13,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.connections.monitoring.InfoMonitorHandler;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.connections.handlers.DefaultNetworkHandler;
+import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = AE2DriveInfo.id, modid = "appliedenergistics2")
 public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableInfo<AE2DriveInfo>,INameableInfo<AE2DriveInfo>, IComparableInfo<AE2DriveInfo> {
 
-	public static final LogicMonitorHandler handler = LogicMonitorHandler.instance(InfoMonitorHandler.id);
 	public static final String id = "ae2-drive-info";
 	public SyncTagType.LONG totalBytes = new SyncTagType.LONG(1);
 	public SyncTagType.LONG usedBytes = new SyncTagType.LONG(2);
@@ -84,8 +85,8 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	}
 
 	@Override
-	public LogicMonitorHandler<AE2DriveInfo> getHandler() {
-		return handler;
+	public INetworkHandler getHandler() {
+		return InfoNetworkHandler.INSTANCE;
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 		GlStateManager.enableLighting();
 		GL11.glTranslated(0, 0, -0.001);
 		GL11.glPopMatrix();
-		List<String> strings = new ArrayList();
+		List<String> strings = Lists.newArrayList();
 		strings.add("Bytes: " + usedBytes.getObject() + "/" + totalBytes.getObject());
 		strings.add("Types: " + usedTypes.getObject() + "/" + totalTypes.getObject());
 		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, strings);
@@ -120,7 +121,7 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	}
 
 	@Override
-	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		objects.add(new ComparableObject(this, "total bytes", totalBytes.getObject()));
 		objects.add(new ComparableObject(this, "used bytes", usedBytes.getObject()));
 		objects.add(new ComparableObject(this, "total types", totalTypes.getObject()));

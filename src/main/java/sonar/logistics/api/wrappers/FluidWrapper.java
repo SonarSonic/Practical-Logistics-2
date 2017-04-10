@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 
 public class FluidWrapper {
 

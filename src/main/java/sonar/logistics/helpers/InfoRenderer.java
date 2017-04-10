@@ -1,5 +1,22 @@
 package sonar.logistics.helpers;
 
+import static net.minecraft.client.renderer.GlStateManager.alphaFunc;
+import static net.minecraft.client.renderer.GlStateManager.blendFunc;
+import static net.minecraft.client.renderer.GlStateManager.color;
+import static net.minecraft.client.renderer.GlStateManager.depthMask;
+import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.disableBlend;
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
+import static net.minecraft.client.renderer.GlStateManager.disableRescaleNormal;
+import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.enableBlend;
+import static net.minecraft.client.renderer.GlStateManager.enableRescaleNormal;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+import static net.minecraft.client.renderer.GlStateManager.rotate;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
+
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -7,17 +24,26 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.ForgeHooksClient;
+import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.logistics.api.displays.DisplayType;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
+import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.info.types.MonitoredItemStack;
 
 public class InfoRenderer {
 
@@ -181,5 +207,78 @@ public class InfoRenderer {
 			MonitoredBlockCoords directInfo = (MonitoredBlockCoords) info;
 			FontHelper.text(directInfo.syncCoords.toString(), identifierLeft, yPos, colour);
 		}
+	}
+
+	public static final double ITEM_SPACING = 22.7;
+	public static final double FLUID_DIMENSION = (14 * 0.0625);
+
+	public static void renderInventory(MonitoredList<MonitoredItemStack> stacks, int start, int stop, int xSlots, int ySlots) {
+		pushMatrix();
+		RenderHelper.saveBlendState();
+		color(1.0F, 1.0F, 1.0F, 1.0F);
+		translate(-1 + (0.0625 * 1.3), -1 + 0.0625 * 5, 0.00);
+		rotate(180, 0, 1, 0);
+		scale(-0.022, 0.022, 0.01);
+		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+		blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		enableRescaleNormal();
+		enableAlpha();
+		alphaFunc(516, 0.1F);
+		enableBlend();
+		pushMatrix();
+		for (int i = start; i < stop; i++) {
+			MonitoredItemStack stack = stacks.get(i);
+			int current = i - start;
+			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
+			int yLevel = (int) (Math.floor((current / xSlots)));
+			pushMatrix();
+			GL11.glTranslated(xLevel * ITEM_SPACING, yLevel * ITEM_SPACING, 0);
+			scale(1, 1, 0.04);
+			disableLighting();
+			renderItemModelIntoGUI(stack.getItemStack(), 0, 0);
+			popMatrix();
+		}
+		popMatrix();
+		disableAlpha();
+		disableRescaleNormal();
+		disableLighting();
+		disableBlend();
+		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+
+		translate(0, 0, 1);
+		depthMask(false);
+		pushMatrix();
+		final float scaleFactor = 0.5F;
+		final float inverseScaleFactor = 1.0f / scaleFactor;
+		scale(scaleFactor, scaleFactor, scaleFactor);
+		for (int i = start; i < stop; i++) {
+			MonitoredItemStack stack = stacks.get(i);
+			int current = i - start;
+			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
+			int yLevel = (int) (Math.floor((current / xSlots)));
+			pushMatrix();
+			translate((xLevel * ITEM_SPACING) * inverseScaleFactor, (yLevel * ITEM_SPACING) * inverseScaleFactor, 0);
+			String s = "" + stack.getStored();
+			final int X = (int) (((float) 0 + 15.0f - RenderHelper.fontRenderer.getStringWidth(s) * scaleFactor) * inverseScaleFactor);
+			final int Y = (int) (((float) 0 + 15.0f - 7.0f * scaleFactor) * inverseScaleFactor);
+			RenderHelper.fontRenderer.drawStringWithShadow(s, X, Y, 16777215);
+			popMatrix();
+		}
+
+		popMatrix();
+		depthMask(true);
+		RenderHelper.restoreBlendState();
+		popMatrix();
+	}
+
+	public static void renderItemModelIntoGUI(ItemStack stack, int x, int y) {
+		renderItemModelIntoGUI(stack, x, y, BlockModelsCache.INSTANCE.getOrLoadModel(stack));
+	}
+
+	public static void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel) {
+		RenderHelper.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		RenderHelper.setupGuiTransform(x, y, bakedmodel.isGui3d());
+		bakedmodel = ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
+		RenderHelper.itemRender.renderItem(stack, bakedmodel);
 	}
 }

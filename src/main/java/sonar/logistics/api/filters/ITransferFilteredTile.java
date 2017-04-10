@@ -1,12 +1,12 @@
 package sonar.logistics.api.filters;
 
 import sonar.core.helpers.FluidHelper.ITankFilter;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.nodes.TransferType;
 
-public interface ITransferFilteredTile extends IFilteredTile, IConnectionNode, ITankFilter {
+public interface ITransferFilteredTile extends IFilteredTile, INode, ITankFilter {
 
 	public NodeTransferMode getTransferMode();
 	

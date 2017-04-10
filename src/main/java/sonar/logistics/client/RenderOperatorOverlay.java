@@ -1,8 +1,10 @@
 package sonar.logistics.client;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.IMultipartContainer;
@@ -64,7 +66,7 @@ public class RenderOperatorOverlay {
 				if (part != null && part instanceof IOperatorProvider) {					
 					IOperatorProvider provider = (IOperatorProvider) part;					
 					if(requestPacket)provider.updateOperatorInfo();					
-					ArrayList<String> infoList = new ArrayList();
+					List<String> infoList = Lists.newArrayList();
 					provider.addInfo(infoList);
 					if (infoList.isEmpty()) {
 						return;

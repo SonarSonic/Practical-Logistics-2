@@ -1,7 +1,9 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.raytrace.PartMOP;
@@ -9,17 +11,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncNBTAbstractList;
-import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.IDataEmitter;
@@ -27,14 +25,15 @@ import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.common.containers.ContainerDataReceiver;
 import sonar.logistics.common.multiparts.generic.WirelessPart;
-import sonar.logistics.connections.managers.EmitterManager;
+import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.managers.WirelessManager;
 
 public class DataReceiverPart extends WirelessPart implements IDataReceiver, IFlexibleGui, IByteBufTile {
 
 	public SyncNBTAbstractList<ClientDataEmitter> clientEmitters = new SyncNBTAbstractList<ClientDataEmitter>(ClientDataEmitter.class, 2);
 	public SyncNBTAbstract<ClientDataEmitter> selectedEmitter = new SyncNBTAbstract<ClientDataEmitter>(ClientDataEmitter.class, 4);
-	public ArrayList<Integer> networks = new ArrayList();
+	public List<Integer> networks = Lists.newArrayList();
 
 	{
 		syncList.addParts(clientEmitters, selectedEmitter);
@@ -51,36 +50,33 @@ public class DataReceiverPart extends WirelessPart implements IDataReceiver, IFl
 		return false;
 	}
 
-	public void addEmitterFromClient(ClientDataEmitter emitter) {
-		ArrayList<ClientDataEmitter> emitters = (ArrayList<ClientDataEmitter>) clientEmitters.getObjects().clone();
+	public void addEmitterFromClient(ClientDataEmitter emitter) {		
+		List<ClientDataEmitter> emitters = Lists.newArrayList(clientEmitters.getObjects());
 		Iterator<ClientDataEmitter> iterator = emitters.iterator();
 		boolean found = false;
 		while (iterator.hasNext()) {
 			ClientDataEmitter entry = iterator.next();
 			if (entry.equals(emitter)) {// FIXME what's going on here then
-				IDataEmitter tile = EmitterManager.getEmitter(entry.getIdentity());
-				tile.disconnect(this);
+				IDataEmitter tile = WirelessManager.getEmitter(entry.getIdentity());
 				iterator.remove();
 				found = true;
 				break;
 			}
 		}
 		if (!found) {
-			IDataEmitter tile = EmitterManager.getEmitter(emitter.getIdentity());
-			tile.connect(this);
+			IDataEmitter tile = WirelessManager.getEmitter(emitter.getIdentity());
 			emitters.add(emitter);
 		}
-
 		clientEmitters.setObjects(emitters);
 		networks = getNetworks();
-		network.onConnectionChanged(this);
+		WirelessManager.receiverChanged(this);
 		sendSyncPacket();
 	}
 
 	//// NETWORK \\\\
 
 	@Override
-	public ArrayList<Integer> getConnectedNetworks() {
+	public List<Integer> getConnectedNetworks() {
 		return networks;
 	}
 
@@ -88,9 +84,9 @@ public class DataReceiverPart extends WirelessPart implements IDataReceiver, IFl
 		networks = getNetworks();
 	}
 
-	public ArrayList<Integer> getNetworks() {
-		ArrayList<Integer> networks = new ArrayList();
-		ArrayList<IDataEmitter> emitters = getEmitters();
+	public List<Integer> getNetworks() {
+		List<Integer> networks = Lists.newArrayList();
+		List<IDataEmitter> emitters = getEmitters();
 		for (IDataEmitter emitter : emitters) {
 			if (emitter.getNetworkID() != -1) {
 				networks.add(emitter.getNetworkID());
@@ -99,23 +95,15 @@ public class DataReceiverPart extends WirelessPart implements IDataReceiver, IFl
 		return networks;
 	}
 
-	public ArrayList<IDataEmitter> getEmitters() {
-		ArrayList<IDataEmitter> emitters = new ArrayList();
+	public List<IDataEmitter> getEmitters() {
+		List<IDataEmitter> emitters = Lists.newArrayList();
 		for (ClientDataEmitter dataEmitter : clientEmitters.getObjects()) {
-			IDataEmitter emitter = EmitterManager.getEmitter(dataEmitter.getIdentity());
+			IDataEmitter emitter = WirelessManager.getEmitter(dataEmitter.getIdentity());
 			if (emitter != null && emitter.canPlayerConnect(playerUUID.getUUID())) {
 				emitters.add(emitter);
-				emitter.connect(this);
 			}
 		}
 		return emitters;
-	}
-
-	//// EVENTS \\\\
-
-	public void onRemoved() {
-		getEmitters().forEach(emitter -> emitter.disconnect(this));
-		super.onRemoved();
 	}
 
 	//// PACKETS \\\\
@@ -156,7 +144,7 @@ public class DataReceiverPart extends WirelessPart implements IDataReceiver, IFl
 		switch (id) {
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			EmitterManager.addViewer(player);
+			WirelessManager.addViewer(player);
 			break;
 		}
 	}

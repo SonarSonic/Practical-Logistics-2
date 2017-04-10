@@ -1,6 +1,5 @@
 package sonar.logistics.guide.elements;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ElementInfoFormatted {
@@ -8,10 +7,10 @@ public class ElementInfoFormatted {
 	public int order;
 	public ElementInfo source;
 	public List<String> formattedList;
-	public ArrayList<ElementLink> links;
+	public List<ElementLink> links;
 	public int displayX, displayY;
 
-	public ElementInfoFormatted(int order, ElementInfo source, List<String> formattedList, ArrayList<ElementLink> links) {
+	public ElementInfoFormatted(int order, ElementInfo source, List<String> formattedList, List<ElementLink> links) {
 		this.order = order;
 		this.source = source;
 		this.formattedList = formattedList;

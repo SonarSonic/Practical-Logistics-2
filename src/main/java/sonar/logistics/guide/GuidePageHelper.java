@@ -1,8 +1,9 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,7 +29,7 @@ public class GuidePageHelper {
 	public static int maxLinesPerPage = 13;
 
 	/**this formats the {@link ElementInfo} to add any page links, formatting, or object inserts prior to splitting the lines with 'createLines'*/
-	public static ArrayList<String> getLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, ArrayList<ElementLink> links) {
+	public static List<String> getLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, List<ElementLink> links) {
 		String value = FontHelper.translate(info.key);
 		for (String add : info.additionals) {
 			value = value.replaceFirst(OBJ, add);
@@ -38,7 +39,7 @@ public class GuidePageHelper {
 		}
 
 		int index = 0;
-		ArrayList<Integer> pageIDs = new ArrayList();
+		List<Integer> pageIDs = Lists.newArrayList();
 		while ((index = value.indexOf(PAGE_LINK)) != -1) {
 			String toTest = value.substring(index + 1);
 			int side = toTest.indexOf(PAGE_LINK);
@@ -64,10 +65,10 @@ public class GuidePageHelper {
 			}
 		}
 
-		return GuidePageHelper.createLines(current, ordinal, lineTally, info, new ArrayList(), ((ArrayList<Integer>) pageIDs.clone()).iterator(), links, value);
+		return GuidePageHelper.createLines(current, ordinal, lineTally, info, Lists.newArrayList(), Lists.newArrayList(pageIDs).iterator(), links, value);
 	}
 	/**splits the {@link ElementInfo} info individual page lines to be rendered, it also adds and {@link ElementLink}s to the list */
-	public static ArrayList<String> createLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, ArrayList<String> lines, Iterator<Integer> pageNums, ArrayList<ElementLink> pageLinks, String str) throws StackOverflowError {
+	public static List<String> createLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, List<String> lines, Iterator<Integer> pageNums, List<ElementLink> pageLinks, String str) throws StackOverflowError {
 		FontRenderer render = Minecraft.getMinecraft().fontRendererObj;
 		String[] split = str.split("-");
 
@@ -88,7 +89,7 @@ public class GuidePageHelper {
 		return lines;
 	}
 
-	public static void addNewLine(String line, ArrayList<String> lines, Iterator<Integer> iterator, ArrayList<ElementLink> pageLinks) {
+	public static void addNewLine(String line, List<String> lines, Iterator<Integer> iterator, List<ElementLink> pageLinks) {
 		int index = 0;
 		while ((index = line.indexOf(PAGE_LINK_PLACEHOLDER)) != -1 && iterator.hasNext()) {
 			int link = iterator.next();

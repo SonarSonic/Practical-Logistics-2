@@ -1,10 +1,7 @@
 package sonar.logistics.network;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -12,11 +9,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.asm.MonitoredListEvent;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.IListReader;
-import sonar.logistics.api.viewers.ILogicViewable;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.api.tiles.readers.IListReader;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.helpers.InfoHelper;
 
 public class PacketMonitoredList implements IMessage {
@@ -64,10 +60,10 @@ public class PacketMonitoredList implements IMessage {
 			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 				public void run() {
 					if (message.list != null) {
-						ILogicViewable viewable = PL2.getClientManager().monitors.get(message.identity);
+						ILogicListenable viewable = PL2.getClientManager().monitors.get(message.identity);
 						MonitoredList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
 						PL2.getClientManager().monitoredLists.put(message.id, list);
-						MinecraftForge.EVENT_BUS.post(new MonitoredListEvent.CHANGED(list, message.id, ctx.side));
+						PL2.getClientManager().onMonitoredListChanged(message.id);
 					}
 				}
 			});

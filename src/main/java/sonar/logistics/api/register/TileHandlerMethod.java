@@ -1,12 +1,12 @@
 package sonar.logistics.api.register;
 
-import sonar.logistics.api.info.ICustomTileHandler;
+import sonar.logistics.api.info.handlers.ITileInfoProvider;
 
 public class TileHandlerMethod {
-	public ICustomTileHandler handler;
+	public ITileInfoProvider handler;
 	public Integer bitCode = 0;
 
-	public TileHandlerMethod(ICustomTileHandler handler) {
+	public TileHandlerMethod(ITileInfoProvider handler) {
 		this.handler = handler;
 	}
 

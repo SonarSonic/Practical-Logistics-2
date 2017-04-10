@@ -1,6 +1,6 @@
 package sonar.logistics.info.registries;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,27 +27,27 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.InfoRegistry;
-import sonar.logistics.api.info.IInfoRegistry;
-import sonar.logistics.api.info.ILogicInfoRegistry;
+import sonar.logistics.api.info.register.IInfoRegistry;
+import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = PL2Constants.MODID)
 public class VanillaInfoRegistry extends IInfoRegistry {
 
 	@Override
-	public void registerBaseReturns(ILogicInfoRegistry registry) {
-		registry.registerReturn(WorldInfo.class);
-		registry.registerReturn(WorldProvider.class);
-		registry.registerReturn(DimensionType.class);
-		registry.registerReturn(Fluid.class);
-		registry.registerReturn(FoodStats.class);
-		registry.registerReturn(Team.class);
-		registry.registerReturn(NBTTagCompound.class);
-		registry.registerReturn(BlockPos.class);
+	public void registerBaseReturns(IMasterInfoRegistry registry) {
+		registry.registerValidReturn(WorldInfo.class);
+		registry.registerValidReturn(WorldProvider.class);
+		registry.registerValidReturn(DimensionType.class);
+		registry.registerValidReturn(Fluid.class);
+		registry.registerValidReturn(FoodStats.class);
+		registry.registerValidReturn(Team.class);
+		registry.registerValidReturn(NBTTagCompound.class);
+		registry.registerValidReturn(BlockPos.class);
 	}
 
 	@Override
-	public void registerBaseMethods(ILogicInfoRegistry registry) {
+	public void registerBaseMethods(IMasterInfoRegistry registry) {
 		registry.registerMethods(Block.class, RegistryType.BLOCK, Lists.newArrayList("getUnlocalizedName", "getMetaFromState", "getHarvestLevel", "isFoliage", "isWood", "canSustainLeaves"));
 		registry.registerMethods(Block.class, RegistryType.BLOCK, Lists.newArrayList("getWeakPower", "getStrongPower", "isSideSolid", "getBlockHardness"));
 		registry.registerMethods(BlockFluidBase.class, RegistryType.BLOCK, Lists.newArrayList("getFluid"));
@@ -69,8 +69,8 @@ public class VanillaInfoRegistry extends IInfoRegistry {
 	}
 
 	@Override
-	public void registerAllFields(ILogicInfoRegistry registry) {
-		HashMap<String, Integer> furnaceFields = Maps.<String, Integer>newHashMap();
+	public void registerAllFields(IMasterInfoRegistry registry) {
+		Map<String, Integer> furnaceFields = Maps.newHashMap();
 		furnaceFields.put("furnaceBurnTime", 0);
 		furnaceFields.put("currentItemBurnTime", 1);
 		furnaceFields.put("cookTime", 2);
@@ -81,7 +81,7 @@ public class VanillaInfoRegistry extends IInfoRegistry {
 	}
 
 	@Override
-	public void registerAdjustments(ILogicInfoRegistry registry) {
+	public void registerAdjustments(IMasterInfoRegistry registry) {
 		registry.registerInfoAdjustments(Lists.newArrayList("EntityLivingBase.getHealth", "EntityLivingBase.getMaxHealth"), "", "HP");
 		registry.registerInfoAdjustments(Lists.newArrayList("TileEntityFurnace.furnaceBurnTime", "TileEntityFurnace.currentItemBurnTime", "TileEntityFurnace.cookTime", "TileEntityFurnace.totalCookTime"), "", "ticks");
 	}

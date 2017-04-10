@@ -1,6 +1,6 @@
 package sonar.logistics.guide.pages;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import sonar.logistics.PL2Items;
@@ -15,7 +15,7 @@ public class FluidReaderPage extends BaseItemPage implements IGuidePage {
 		super(pageID, new ItemStack(PL2Items.fluid_reader));
 	}
 
-	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo) {
+	public List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo) {
 		pageInfo.add(new ElementInfo("guide." + unlocalizedName.substring(5) + ".name", new String[0]));
 		pageInfo.add(new ElementInfo("guide." + "ChannelsSTART" + ".name", new String[0]));
 		pageInfo.add(new ElementInfo("guide." + "ChannelsUNLIMITED" + ".name", new String[0]));

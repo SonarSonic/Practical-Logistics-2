@@ -1,6 +1,8 @@
 package sonar.logistics;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import sonar.core.SonarCore;
@@ -13,7 +15,7 @@ import sonar.logistics.common.tileentity.TileEntityHammer;
 
 public class PL2Blocks extends PL2 {
 
-	public static ArrayList<ISonarRegistryBlock> registeredBlocks = new ArrayList();
+	public static List<ISonarRegistryBlock> registeredBlocks = Lists.newArrayList();
 
 	public static Block sapphire_ore, hammer, hammer_air;
 

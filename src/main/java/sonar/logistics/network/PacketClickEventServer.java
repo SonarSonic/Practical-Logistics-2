@@ -10,12 +10,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.IInfoDisplay;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
+import sonar.logistics.api.tiles.displays.IDisplay;
 
 public class PacketClickEventServer implements IMessage {
 
@@ -51,9 +51,9 @@ public class PacketClickEventServer implements IMessage {
 					public void run() {
 						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 						if (player != null) {
-							ScreenInteractionEvent event = PL2.getServerManager().clickEvents.get(message.hashCode);
-							if (event != null && event.hit.partHit instanceof IInfoDisplay) {
-								InfoContainer container = (InfoContainer) ((IInfoDisplay) event.hit.partHit).container();
+							DisplayInteractionEvent event = PL2.getServerManager().clickEvents.get(message.hashCode);
+							if (event != null && event.hit.partHit instanceof IDisplay) {
+								InfoContainer container = (InfoContainer) ((IDisplay) event.hit.partHit).container();
 								IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
 								IMonitorInfo info = displayInfo.getSidedCachedInfo(false);
 								if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {

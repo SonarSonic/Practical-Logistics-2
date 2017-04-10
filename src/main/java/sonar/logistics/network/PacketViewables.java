@@ -1,8 +1,9 @@
 package sonar.logistics.network;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,20 +17,20 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.ClientViewable;
-import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.api.tiles.readers.ClientViewable;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.viewers.ILogicListenable;
 
 public class PacketViewables implements IMessage {
 
-	public ArrayList<ClientViewable> viewables;
+	public List<ClientViewable> viewables;
 	public int screenIdentity;
 
 	public PacketViewables() {
 	}
 
-	public PacketViewables(ArrayList<ClientViewable> viewables, int screenIdentity) {
+	public PacketViewables(List<ClientViewable> viewables, int screenIdentity) {
 		this.viewables = viewables;
 		this.screenIdentity = screenIdentity;
 	}
@@ -38,7 +39,7 @@ public class PacketViewables implements IMessage {
 	public void fromBytes(ByteBuf buf) {
 		screenIdentity = buf.readInt();
 		NBTTagCompound tag = ByteBufUtils.readTag(buf);
-		viewables = new ArrayList();
+		viewables = Lists.newArrayList();
 		if (tag.hasKey("monitors")) {
 			NBTTagList tagList = tag.getTagList("monitors", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
@@ -64,16 +65,16 @@ public class PacketViewables implements IMessage {
 		@Override
 		public IMessage onMessage(PacketViewables message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				Map<Integer, ArrayList<ClientViewable>> monitors = PL2.getClientManager().clientLogicMonitors;
+				Map<Integer, List<ClientViewable>> monitors = PL2.getClientManager().clientLogicMonitors;
 				if (monitors.get(message.screenIdentity) == null) {
 					monitors.put(message.screenIdentity, message.viewables);
 				} else {
 					monitors.get(message.screenIdentity).clear();
 					monitors.get(message.screenIdentity).addAll(message.viewables);
 				}
-				ArrayList<Object> cache = new ArrayList();
+				List<Object> cache = Lists.newArrayList();
 				for (ClientViewable clientMonitor : message.viewables) {
-					ILogicViewable monitor = clientMonitor.getViewable();					
+					ILogicListenable monitor = clientMonitor.getViewable();					
 					if (monitor != null && monitor instanceof IInfoProvider) {
 						int hashCode = monitor.getIdentity();
 						cache.add(monitor);
@@ -83,7 +84,7 @@ public class PacketViewables implements IMessage {
 					}
 				}
 
-				Map<Integer, ArrayList<Object>> sortedMonitors = PL2.getClientManager().sortedLogicMonitors;
+				Map<Integer, List<Object>> sortedMonitors = PL2.getClientManager().sortedLogicMonitors;
 				if (sortedMonitors.get(message.screenIdentity) == null) {
 					sortedMonitors.put(message.screenIdentity, cache);
 				} else {

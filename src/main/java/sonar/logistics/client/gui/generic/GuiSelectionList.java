@@ -1,7 +1,7 @@
 package sonar.logistics.client.gui.generic;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -35,7 +35,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public int listHeight = 12;
 	public int start, finish;
 	private GuiButton rselectButton;
-	public ArrayList<T> infoList = new ArrayList();
+	public List<T> infoList = Lists.newArrayList();
 
 	@Override
 	public void initGui() {
@@ -69,8 +69,8 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 
 	public abstract int getColour(int i, int type);
 
-	public ArrayList<ArrayList<Integer>> getListTypes() {
-		ArrayList<Integer> categories = new ArrayList(), data = new ArrayList(), paired = new ArrayList();
+	public List<List<Integer>> getListTypes() {
+		List<Integer> categories = Lists.newArrayList(), data = Lists.newArrayList(), paired = Lists.newArrayList();
 		if (infoList != null) {
 			for (int i = start; i < finish; i++) {
 				T info = infoList.get(i);
@@ -200,7 +200,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 			int width = 225;
 			int left = guiLeft + 7;
 
-			ArrayList<ArrayList<Integer>> data = getListTypes();
+			List<List<Integer>> data = getListTypes();
 			for (int i = 0; i < size; i++) {
 				int top = guiTop + 29 + (listHeight * i);
 				if (!data.get(2).contains(i)) {
@@ -213,7 +213,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		RenderHelper.restoreBlendState();
 	}
 
-	public void drawInfoBackground(ArrayList<ArrayList<Integer>> data, int width, int height, int left, int top, int i) {
+	public void drawInfoBackground(List<List<Integer>> data, int width, int height, int left, int top, int i) {
 		int mainColour = data.get(0).contains(i) ? LogisticsColours.category.getRGB() : (data.get(1).contains(i)) ? getColour(i, 0) : LogisticsColours.layers[1].getRGB();
 		drawRect(left + 1, top + 1, left - 1 + width, top - 1 + height, mainColour);
 		drawRect(left, top, left + width, top + height, LogisticsColours.layers[2].getRGB());

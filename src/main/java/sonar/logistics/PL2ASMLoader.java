@@ -2,93 +2,91 @@ package sonar.logistics;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.Maps;
+
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import sonar.core.helpers.ASMLoader;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.asm.CustomEntityHandler;
-import sonar.logistics.api.asm.CustomTileHandler;
+import sonar.logistics.api.asm.EntityInfoProvider;
 import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.asm.NodeFilter;
-import sonar.logistics.api.asm.TileMonitorHandler;
+import sonar.logistics.api.asm.TileInfoProvider;
+import sonar.logistics.api.asm.NetworkHandler;
+import sonar.logistics.api.asm.NetworkHandlerField;
 import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.info.ICustomEntityHandler;
-import sonar.logistics.api.info.ICustomTileHandler;
-import sonar.logistics.api.info.IEntityMonitorHandler;
-import sonar.logistics.api.info.IInfoRegistry;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.ITileMonitorHandler;
+import sonar.logistics.api.info.handlers.IEntityInfoProvider;
+import sonar.logistics.api.info.handlers.ITileInfoProvider;
+import sonar.logistics.api.info.register.IInfoRegistry;
+import sonar.logistics.api.networks.IEntityMonitorHandler;
+import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
 public class PL2ASMLoader {
 
-	public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap();
-	public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap();
-	public static LinkedHashMap<String, Class<? extends IMonitorInfo>> infoClasses = new LinkedHashMap();
+	public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, Class<? extends IMonitorInfo>> infoClasses = Maps.newLinkedHashMap();
 
-	//public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap();
-	//public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap();
-	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = new LinkedHashMap();
-	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = new LinkedHashMap();
-	
-	public static LinkedHashMap<String, ITileMonitorHandler> tileMonitorHandlers = new LinkedHashMap();
-	public static LinkedHashMap<String, IEntityMonitorHandler> entityMonitorHandlers = new LinkedHashMap();
+	// public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
+	// public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
 
-	private PL2ASMLoader() {}
-	
-	public static void init(FMLPreInitializationEvent event){
+	public static LinkedHashMap<String, INetworkHandler> networkHandlers = Maps.newLinkedHashMap();
+
+	private PL2ASMLoader() {
+	}
+
+	public static void init(FMLPreInitializationEvent event) {
 		ASMDataTable asmDataTable = event.getAsmData();
 		PL2ASMLoader.loadInfoTypes(asmDataTable);
-		PL2ASMLoader.loadTileMonitorHandlers(asmDataTable);
-		PL2ASMLoader.loadEntityMonitorHandlers(asmDataTable);
+		PL2ASMLoader.loadNetworkHandlers(asmDataTable);
 		PL2ASMLoader.loadNodeFilters(asmDataTable);
 		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
-		LogicInfoRegistry.INSTANCE.customTileHandlers.addAll(PL2ASMLoader.getCustomTileHandlers(asmDataTable));
-		LogicInfoRegistry.INSTANCE.customEntityHandlers.addAll(PL2ASMLoader.getCustomEntityHandlers(asmDataTable));
+		LogicInfoRegistry.INSTANCE.tileProviders.addAll(PL2ASMLoader.getTileProviders(asmDataTable));
+		LogicInfoRegistry.INSTANCE.entityProviders.addAll(PL2ASMLoader.getEntityProviders(asmDataTable));
 	}
 
 	public static List<IInfoRegistry> getInfoRegistries(@Nonnull ASMDataTable asmDataTable) {
 		return ASMLoader.getInstances(asmDataTable, InfoRegistry.class, IInfoRegistry.class, true, false);
 	}
 
-	public static List<ICustomTileHandler> getCustomTileHandlers(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(asmDataTable, CustomTileHandler.class, ICustomTileHandler.class, true, false);
+	public static List<ITileInfoProvider> getTileProviders(@Nonnull ASMDataTable asmDataTable) {
+		return ASMLoader.getInstances(asmDataTable, TileInfoProvider.class, ITileInfoProvider.class, true, false);
 	}
 
-	public static List<ICustomEntityHandler> getCustomEntityHandlers(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(asmDataTable, CustomEntityHandler.class, ICustomEntityHandler.class, true, false);
+	public static List<IEntityInfoProvider> getEntityProviders(@Nonnull ASMDataTable asmDataTable) {
+		return ASMLoader.getInstances(asmDataTable, EntityInfoProvider.class, IEntityInfoProvider.class, true, false);
 	}
 
-	public static void loadTileMonitorHandlers(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends ITileMonitorHandler>>> infoTypes = ASMLoader.getClasses(asmDataTable, TileMonitorHandler.class, ITileMonitorHandler.class, true);
-		for (Pair<ASMDataTable.ASMData, Class<? extends ITileMonitorHandler>> info : infoTypes) {
+	public static void loadNetworkHandlers(@Nonnull ASMDataTable asmDataTable) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends INetworkHandler>>> infoTypes = ASMLoader.getClasses(asmDataTable, NetworkHandler.class, INetworkHandler.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends INetworkHandler>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("handlerID");
 			try {
-				tileMonitorHandlers.put(name, info.b.newInstance());
+				networkHandlers.put(name, info.b.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
-				PL2.logger.error("FAILED: To Load Tile Monitor Handler - " + name);
+				PL2.logger.error("FAILED: To Load Network Handler - " + name);
 			}
 		}
-		PL2.logger.info("Loaded: " + tileMonitorHandlers.size() + " Tile Monitor Handlers");
-	}
+		PL2.logger.info("Loaded: " + networkHandlers.size() + " Network Handlers");
 
-	public static void loadEntityMonitorHandlers(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IEntityMonitorHandler>>> infoTypes = ASMLoader.getClasses(asmDataTable, EntityMonitorHandler.class, IEntityMonitorHandler.class, true);
-		for (Pair<ASMDataTable.ASMData, Class<? extends IEntityMonitorHandler>> info : infoTypes) {
-			String name = (String) info.a.getAnnotationInfo().get("handlerID");
-			try {
-				entityMonitorHandlers.put(name, info.b.newInstance());
-			} catch (InstantiationException | IllegalAccessException e) {
-				PL2.logger.error("FAILED: To Load Entity Monitor Handler - " + name);
-			}
-		}
-		PL2.logger.info("Loaded: " + entityMonitorHandlers.size() + " Entity Monitor Handlers");
+		ASMLoader.injectInstances(asmDataTable, NetworkHandlerField.class, INetworkHandler.class, asm -> {
+			String name = (String) asm.getAnnotationInfo().get("handlerID");
+			return networkHandlers.get(name);
+		});
+
 	}
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
@@ -110,6 +108,6 @@ public class PL2ASMLoader {
 			filterClasses.put(name, info.b);
 		}
 		PL2.logger.info("Loaded: " + filterClasses.size() + " Filters");
-	}	
-	
+	}
+
 }

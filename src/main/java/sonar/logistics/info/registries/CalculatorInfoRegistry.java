@@ -10,15 +10,15 @@ import sonar.calculator.mod.api.nutrition.IHungerProcessor;
 import sonar.core.api.machines.IProcessMachine;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
-import sonar.logistics.api.info.IInfoRegistry;
-import sonar.logistics.api.info.ILogicInfoRegistry;
+import sonar.logistics.api.info.register.IInfoRegistry;
+import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = "calculator")
 public class CalculatorInfoRegistry extends IInfoRegistry {
 
 	@Override
-	public void registerBaseMethods(ILogicInfoRegistry registry) {
+	public void registerBaseMethods(IMasterInfoRegistry registry) {
 		registry.registerMethods(IHealthProcessor.class, RegistryType.TILE);
 		registry.registerMethods(IHungerProcessor.class, RegistryType.TILE);
 		registry.registerMethods(IProcessMachine.class, RegistryType.TILE);
@@ -29,7 +29,7 @@ public class CalculatorInfoRegistry extends IInfoRegistry {
 	}
 
 	@Override
-	public void registerAdjustments(ILogicInfoRegistry registry) {
+	public void registerAdjustments(IMasterInfoRegistry registry) {
 		registry.registerInfoAdjustments(Lists.newArrayList("IHealthProcessor.getHealthPoints", "IHungerProcessor.getHungerPoints"), "", "points");
 		registry.registerInfoAdjustments(Lists.newArrayList("IProcessMachine.getCurrentProcessTime", "IProcessMachine.getProcessTime", "IProcessMachine.getBaseProcessTime"), "", ClientNameConstants.TICKS);
 		registry.registerClientNames(ClientNameConstants.PROCESS_TIME, Lists.newArrayList("IProcessMachine.getProcessTime"));

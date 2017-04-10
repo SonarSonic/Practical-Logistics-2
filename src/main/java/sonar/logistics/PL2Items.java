@@ -1,6 +1,8 @@
 package sonar.logistics;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import mcmultipart.multipart.MultipartRegistry;
 import net.minecraft.item.Item;
@@ -35,7 +37,7 @@ import sonar.logistics.common.multiparts.TransferNodePart;
 
 public class PL2Items extends PL2 {
 
-	public static ArrayList<ISonarRegistryItem> registeredItems = new ArrayList();
+	public static List<ISonarRegistryItem> registeredItems = Lists.newArrayList();
 
 	public static Item guide, operator, sapphire, sapphire_dust, stone_plate, etched_plate;
 	public static Item cable, node, entity_node, array, transfer_node, transceiver, entity_transceiver, wireless_storage_reader;

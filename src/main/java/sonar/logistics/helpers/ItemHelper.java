@@ -1,8 +1,9 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,21 +29,24 @@ import sonar.core.network.PacketInvUpdate;
 import sonar.core.network.PacketStackUpdate;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
 import sonar.logistics.api.filters.ITransferFilteredTile;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.readers.InventoryReader.SortingType;
+import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.readers.IListReader;
+import sonar.logistics.api.tiles.readers.InventoryReader.SortingType;
+import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wrappers.ItemWrapper;
-import sonar.logistics.connections.CacheType;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.connections.channels.ListNetworkChannels;
+import sonar.logistics.connections.handlers.ItemNetworkHandler;
+import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemHelper extends ItemWrapper {
 
-	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, ArrayList<BlockConnection> connections) {
+	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, List<BlockConnection> connections) {
 		for (BlockConnection entry : connections) {
 			storage = getTileInventory(storedStacks, storage, entry);
 		}
@@ -84,7 +88,7 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack addItems(StoredItemStack add, ILogisticsNetwork network, ActionType action) {
-		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferItem(entry, add, NodeTransferMode.ADD)) {
 				continue;
@@ -125,7 +129,7 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack removeItems(StoredItemStack remove, ILogisticsNetwork network, ActionType action) {
-		ArrayList<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferItem(entry, remove, NodeTransferMode.REMOVE)) {
 				continue;
@@ -195,7 +199,7 @@ public class ItemHelper extends ItemWrapper {
 		if (inv == null || size == 0) {
 			return add;
 		}
-		List<Integer> empty = new ArrayList();
+		List<Integer> empty = Lists.newArrayList();
 		for (int i = 0; i < size; i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack != null) {
@@ -310,7 +314,7 @@ public class ItemHelper extends ItemWrapper {
 		}
 		StoredItemStack stack = new StoredItemStack(add).setStackSize(0);
 		IInventory inv = player.inventory;
-		ArrayList<Integer> slots = new ArrayList();
+		List<Integer> slots = Lists.newArrayList();
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if (stack.equalStack(item)) {
@@ -416,7 +420,8 @@ public class ItemHelper extends ItemWrapper {
 
 	}
 
-	public static void onNetworkItemInteraction(ILogisticsNetwork network, MonitoredList<MonitoredItemStack> items, EntityPlayer player, ItemStack selected, int button) {
+	// TODO clean up this mess
+	public static void onNetworkItemInteraction(IListReader reader, ILogisticsNetwork network, MonitoredList<MonitoredItemStack> items, EntityPlayer player, ItemStack selected, int button) {
 		if (button == 3) {
 			LogisticsAPI.getItemHelper().dumpInventoryFromPlayer(player, network);
 		} else if (button == 4) {
@@ -456,9 +461,12 @@ public class ItemHelper extends ItemWrapper {
 			}
 
 		}
+		ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+		if (channels != null) //TODO shouldn't have to ever do this.
+			channels.sendLocalRapidUpdate(reader, player);
 	}
 
-	public static void sortItemList(ArrayList<MonitoredItemStack> info, final SortingDirection dir, SortingType type) {
+	public static void sortItemList(List<MonitoredItemStack> info, final SortingDirection dir, SortingType type) {
 		info.sort(new Comparator<MonitoredItemStack>() {
 			public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
 				StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();

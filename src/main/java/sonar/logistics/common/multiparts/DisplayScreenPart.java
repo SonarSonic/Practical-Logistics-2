@@ -2,11 +2,8 @@ package sonar.logistics.common.multiparts;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
@@ -15,24 +12,23 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerList;
-import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.displays.DisplayType;
-import sonar.logistics.api.displays.IInfoContainer;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenLayout;
+import sonar.logistics.api.info.render.IInfoContainer;
+import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.generic.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.DisplayMultipart;
 
-public class DisplayScreenPart extends ScreenMultipart {
+public class DisplayScreenPart extends DisplayMultipart {
 
-	public SyncEnum<ScreenLayout> layout = new SyncEnum(ScreenLayout.values(), 1);
-	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
+	public SyncEnum<DisplayLayout> layout = new SyncEnum(DisplayLayout.values(), 1);
+	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	public InfoContainer container = new InfoContainer(this);
 
 	public DisplayScreenPart() {
@@ -60,7 +56,7 @@ public class DisplayScreenPart extends ScreenMultipart {
 	}
 
 	@Override
-	public ScreenLayout getLayout() {
+	public DisplayLayout getLayout() {
 		return layout.getObject();
 	}
 
@@ -84,7 +80,7 @@ public class DisplayScreenPart extends ScreenMultipart {
 		sendUpdatePacket(true);
 	}
 
-	public ListenerList<PlayerListener> getListenerList() {
+	public ListenableList<PlayerListener> getListenerList() {
 		return listeners;
 	}
 

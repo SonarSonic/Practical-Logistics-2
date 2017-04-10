@@ -1,10 +1,10 @@
 package sonar.logistics.logic.comparators;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import sonar.logistics.api.asm.LogicComparator;
-import sonar.logistics.api.logistics.LogicOperator;
-import sonar.logistics.api.logistics.LogicState;
+import sonar.logistics.api.tiles.signaller.LogicOperator;
+import sonar.logistics.api.tiles.signaller.LogicState;
 
 @LogicComparator(handlingClass = Object.class)
 public class ObjectComparator implements ILogicComparator<Object> {
@@ -22,7 +22,7 @@ public class ObjectComparator implements ILogicComparator<Object> {
 	}
 
 	@Override
-	public ArrayList<LogicOperator> getValidOperators() {
+	public List<LogicOperator> getValidOperators() {
 		return LogicOperator.switchOperators;
 	}
 

@@ -15,11 +15,13 @@ import net.minecraft.world.IBlockAccess;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.MultipartStateOverride;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.DisplayConnections;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.tiles.cable.PL2Properties;
+import sonar.logistics.api.tiles.cable.CableRenderType;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.DisplayConnections;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.common.multiparts.DataEmitterPart;
 import sonar.logistics.common.multiparts.DataReceiverPart;
@@ -29,10 +31,9 @@ import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
 import sonar.logistics.common.multiparts.NodePart;
 import sonar.logistics.common.multiparts.RedstoneSignallerPart;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
 
 public class ExampleConfigurations {
@@ -53,7 +54,7 @@ public class ExampleConfigurations {
 
 			MultipartStateOverride cable = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL);
 				}
 			};
 			addMultiparts(Lists.newArrayList(node, reader, screen, cable), new BlockPos(0, 0, 0));
@@ -77,7 +78,7 @@ public class ExampleConfigurations {
 
 			MultipartStateOverride cable = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL);
 				}
 			};
 			addMultiparts(Lists.newArrayList(node, reader, screen, cable), new BlockPos(0, 0, 0));
@@ -97,7 +98,7 @@ public class ExampleConfigurations {
 			node.setCableFace(EnumFacing.NORTH);
 			MultipartStateOverride cable = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.EAST, CableRenderType.INTERNAL).withProperty(DataCablePart.NORTH, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.EAST, CableRenderType.INTERNAL).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL);
 				}
 			};
 			DataEmitterPart emitter = new DataEmitterPart();
@@ -111,7 +112,7 @@ public class ExampleConfigurations {
 			receiver.face.setObject(EnumFacing.WEST);
 			MultipartStateOverride cable2 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.WEST, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.WEST, CableRenderType.INTERNAL);
 				}
 			};
 
@@ -126,7 +127,7 @@ public class ExampleConfigurations {
 
 			MultipartStateOverride cable3 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.NORTH, CableRenderType.HALF).withProperty(DataCablePart.SOUTH, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.NORTH, CableRenderType.HALF).withProperty(PL2Properties.SOUTH, CableRenderType.INTERNAL);
 				}
 			};
 			addMultiparts(Lists.newArrayList(signaller, cable3), new BlockPos(-1, 0, 0));
@@ -143,7 +144,7 @@ public class ExampleConfigurations {
 			node.setCableFace(EnumFacing.DOWN);
 			InventoryReaderPart reader = new InventoryReaderPart();
 			reader.setCableFace(EnumFacing.NORTH);
-			ConnectedDisplayScreen fullDisplay = new ConnectedDisplayScreen(-1);
+			ConnectedDisplay fullDisplay = new ConnectedDisplay(-1);
 			fullDisplay.width.setObject(2);
 			fullDisplay.height.setObject(0);
 			LargeDisplayScreenPart screen1 = new LargeDisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
@@ -209,19 +210,19 @@ public class ExampleConfigurations {
 
 			MultipartStateOverride cable1 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL).withProperty(DataCablePart.WEST, CableRenderType.CABLE).withProperty(DataCablePart.NORTH, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.WEST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL);
 				}
 			};
 
 			MultipartStateOverride cable2 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL).withProperty(DataCablePart.EAST, CableRenderType.CABLE).withProperty(DataCablePart.WEST, CableRenderType.CABLE);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.EAST, CableRenderType.CABLE).withProperty(PL2Properties.WEST, CableRenderType.CABLE);
 				}
 			};
 
 			MultipartStateOverride cable3 = new MultipartStateOverride(new DataCablePart()) {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-					return super.getActualState(state, world, pos).withProperty(DataCablePart.DOWN, CableRenderType.INTERNAL).withProperty(DataCablePart.EAST, CableRenderType.CABLE).withProperty(DataCablePart.NORTH, CableRenderType.INTERNAL);
+					return super.getActualState(state, world, pos).withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.EAST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL);
 				}
 			};
 

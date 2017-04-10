@@ -1,6 +1,6 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.raytrace.PartMOP;
@@ -11,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
@@ -23,17 +22,16 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.EntityTarget;
-import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
+import sonar.logistics.api.tiles.nodes.EntityTarget;
+import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.client.gui.GuiEntityNode;
 import sonar.logistics.common.multiparts.generic.SidedMultipart;
 import sonar.logistics.helpers.LogisticsHelper;
 
-public class EntityNodePart extends SidedMultipart implements IConnectionNode, IByteBufTile, IFlexibleGui {
+public class EntityNodePart extends SidedMultipart implements INode, IByteBufTile, IFlexibleGui {
 
 	public SyncEnum<EntityTarget> entityTarget = new SyncEnum<EntityTarget>(EntityTarget.values(), 1);
 	public SyncTagType.INT entityRange = (INT) new SyncTagType.INT(2).setDefault(10);
@@ -69,7 +67,7 @@ public class EntityNodePart extends SidedMultipart implements IConnectionNode, I
 	}
 
 	@Override
-	public void addConnections(ArrayList<NodeConnection> connections) {
+	public void addConnections(List<NodeConnection> connections) {
 		Entity entity = getEntity();
 		if (entity != null)
 			connections.add(new EntityConnection(this, entity));

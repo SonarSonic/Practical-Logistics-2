@@ -1,18 +1,20 @@
 package sonar.logistics.common.containers;
 
-import java.util.UUID;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
+import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.connections.managers.EmitterManager;
+import sonar.logistics.connections.channels.ListNetworkChannels;
+import sonar.logistics.connections.handlers.ItemNetworkHandler;
+import sonar.logistics.managers.WirelessManager;
 
 public class ContainerStorageViewer extends Container {
 
@@ -28,7 +30,7 @@ public class ContainerStorageViewer extends Container {
 		this.identity = identity;
 		this.player = player;
 		if (!player.getEntityWorld().isRemote) {
-			emitter = EmitterManager.getEmitter(identity);
+			emitter = WirelessManager.getEmitter(identity);
 		}
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
@@ -49,36 +51,40 @@ public class ContainerStorageViewer extends Container {
 			itemstack = itemstack1.copy();
 			if (id < 36) {
 				if (!player.getEntityWorld().isRemote) {
+					ILogisticsNetwork network = emitter.getNetwork();
+					
 					StoredItemStack stack = new StoredItemStack(itemstack1);
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						LogisticsAPI.getItemHelper().addItemsFromPlayer(stack, player, emitter.getNetwork(), ActionType.PERFORM);
+						LogisticsAPI.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
 					} else {
-						StoredItemStack perform = LogisticsAPI.getItemHelper().addItems(stack, emitter.getNetwork(), ActionType.PERFORM);
+						StoredItemStack perform = LogisticsAPI.getItemHelper().addItems(stack, network, ActionType.PERFORM);
 						lastStack = itemstack1;
-
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();
 					}
+					ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+					if (channels != null) //TODO shouldn't have to ever do this.
+						channels.sendLocalRapidUpdate(emitter, player);					
 					this.detectAndSendChanges();
 				}
 			} else if (id < 27) {
 				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			} else if (id >= 27 && id < 36) {
 				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			}
 
 			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
+				slot.putStack(InventoryHelper.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 
 			if (itemstack1.stackSize == itemstack.stackSize) {
-				return null;
+				return InventoryHelper.EMPTY;
 			}
 
 			slot.onPickupFromSlot(player, itemstack1);

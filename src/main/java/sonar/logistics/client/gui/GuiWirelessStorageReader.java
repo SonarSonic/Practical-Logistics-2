@@ -1,9 +1,7 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.lwjgl.input.Keyboard;
 
@@ -31,17 +29,17 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.FluidReader;
-import sonar.logistics.api.readers.IWirelessStorageReader;
-import sonar.logistics.api.readers.InventoryReader;
+import sonar.logistics.api.tiles.readers.FluidReader;
+import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
+import sonar.logistics.api.tiles.readers.InventoryReader;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerStorageViewer;
 import sonar.logistics.common.multiparts.DataEmitterPart;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.ItemHelper;
+import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketWirelessStorage;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
@@ -159,7 +157,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				return list;
 			} else {
 				MonitoredList<IMonitorInfo> searchList = MonitoredList.newMonitoredList(networkID);
-				for (MonitoredItemStack stack : (ArrayList<MonitoredItemStack>) currentList.clone()) {
+				for (MonitoredItemStack stack : (List<MonitoredItemStack>) currentList.clone()) {
 					StoredItemStack item = stack.getStoredStack();
 					if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 						searchList.add(stack);

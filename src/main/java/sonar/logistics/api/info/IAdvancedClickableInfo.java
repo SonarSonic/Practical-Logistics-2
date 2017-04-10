@@ -3,9 +3,9 @@ package sonar.logistics.api.info;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenInteractionEvent;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 
 /** implemented on info which can be clicked by the player */
 public interface IAdvancedClickableInfo{
@@ -17,9 +17,9 @@ public interface IAdvancedClickableInfo{
 	 * @param stack players held item
 	 * @param container the displays container
 	 * @return if the screen was clicked */
-	public NBTTagCompound onClientClick(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container);
+	public NBTTagCompound onClientClick(DisplayInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container);
 		
 	/**called on server side after the screen has been clicked client side*/
-	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, ScreenInteractionEvent event, NBTTagCompound tag);
+	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, DisplayInteractionEvent event, NBTTagCompound tag);
 		
 }

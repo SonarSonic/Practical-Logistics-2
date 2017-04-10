@@ -11,10 +11,13 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.readers.InventoryReader;
-import sonar.logistics.api.readers.InventoryReader.Modes;
+import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.readers.InventoryReader;
+import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.connections.channels.ListNetworkChannels;
+import sonar.logistics.connections.handlers.ItemNetworkHandler;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
 
@@ -58,16 +61,18 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 			itemstack = itemstack1.copy();
 			if (id < 36) {
 				if (!part.getWorld().isRemote) {
+					ILogisticsNetwork network = part.getNetwork();
 					StoredItemStack stack = new StoredItemStack(itemstack1);
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						LogisticsAPI.getItemHelper().addItemsFromPlayer(stack, player, part.network, ActionType.PERFORM);
+						LogisticsAPI.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
 					} else {
-						StoredItemStack perform = LogisticsAPI.getItemHelper().addItems(stack, part.network, ActionType.PERFORM);
+						StoredItemStack perform = LogisticsAPI.getItemHelper().addItems(stack, network, ActionType.PERFORM);
 						lastStack = itemstack1;
-
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();
 					}
+					ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+					if (channels != null)channels.sendLocalRapidUpdate(part, player);		
 					this.detectAndSendChanges();
 				}
 			} else if (id < 27) {

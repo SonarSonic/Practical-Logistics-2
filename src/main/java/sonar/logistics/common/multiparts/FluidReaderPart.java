@@ -1,15 +1,12 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
@@ -18,26 +15,25 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.readers.FluidReader;
 import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.readers.FluidReader;
+import sonar.logistics.api.utils.ChannelType;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiFluidReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.connections.monitoring.FluidMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredFluidStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.common.multiparts.generic.ReaderMultipart;
+import sonar.logistics.connections.handlers.FluidNetworkHandler;
 import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 
@@ -53,8 +49,9 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 		syncList.addParts(setting, targetSlot, posSlot, sortingOrder, sortingType, selected);
 	}
 
-	public FluidReaderPart() {
-		super(FluidMonitorHandler.id);
+	@Override
+	public void addHandlerIDs(List<String> ids) {
+		ids.add(FluidNetworkHandler.id);
 	}
 
 	//// ILogicReader \\\\
@@ -66,7 +63,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredFluidStack> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case SELECTED:
@@ -111,7 +108,7 @@ public class FluidReaderPart extends ReaderMultipart<MonitoredFluidStack> implem
 		super.readPacket(buf, id);
 		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
-			ArrayList<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
+			List<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
 			for (PlayerListener player : players) {
 				listeners.addListener(player, ListenerType.TEMPORARY);
 			}

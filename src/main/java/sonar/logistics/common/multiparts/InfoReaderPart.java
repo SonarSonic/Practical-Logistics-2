@@ -1,29 +1,28 @@
 package sonar.logistics.common.multiparts;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.utils.ChannelType;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.generic.LogisticsReader;
-import sonar.logistics.connections.monitoring.InfoMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoHelper;
 
 public class InfoReaderPart extends LogisticsReader<IProvidableInfo> implements IByteBufTile {
 
-	public InfoReaderPart() {
-		super(InfoMonitorHandler.id);
+	@Override
+	public void addHandlerIDs(List<String> ids) {
+		ids.add(InfoNetworkHandler.id);
 	}
 
 	//// ILogicReader \\\\

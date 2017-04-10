@@ -1,6 +1,6 @@
 package sonar.logistics.guide.general;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
@@ -28,7 +28,7 @@ public class ExamplesPages extends BaseInfoPage {
 	//// CREATE \\\\
 
 	@Override
-	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo) {
+	public List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo) {
 		pageInfo.add(new ElementInfo("guide.FurnaceProgress.name", new String[0]));
 		pageInfo.add(new ElementInfo("guide.ChestMonitoring.name", new String[0]).setRequiresNewPage());
 		pageInfo.add(new ElementInfo("guide.WirelessRedstone.name", new String[0]).setRequiresNewPage());
@@ -36,7 +36,7 @@ public class ExamplesPages extends BaseInfoPage {
 		return pageInfo;
 	}
 
-	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements) {
+	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements) {
 		elements.add(new Element3DRenderer(FurnaceProgress.instance2, 0, 48, 4, 16, 80, 120));
 		elements.add(new Element3DRenderer(new InventoryExample(), 1, 48, 4, 16, 80, 120));
 		elements.add(new Element3DRenderer(new ExampleConfigurations.WirelessRedstone(), 2, 32, 4, 16, 120, 120));

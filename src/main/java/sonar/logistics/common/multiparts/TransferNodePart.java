@@ -1,10 +1,6 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
@@ -29,6 +25,8 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.listener.ISonarListenable;
+import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
@@ -38,39 +36,39 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.cabling.ChannelType;
-import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.nodes.TransferType;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.readers.IdentifiedChannelsList;
+import sonar.logistics.api.tiles.IChannelledTile;
+import sonar.logistics.api.tiles.cable.PL2Properties;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.nodes.TransferType;
+import sonar.logistics.api.tiles.readers.ChannelList;
+import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.client.gui.generic.GuiFilterList;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.common.multiparts.generic.SidedMultipart;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
-import sonar.logistics.connections.monitoring.MonitoredEntity;
 import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.network.sync.SyncFilterList;
 
-public class TransferNodePart extends SidedMultipart implements IConnectionNode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
+public class TransferNodePart extends SidedMultipart implements INode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
 
-	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
+	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.<NodeTransferMode>create("transfer", NodeTransferMode.class);
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
 	public SyncEnum<NodeTransferMode> transferMode = new SyncEnum(NodeTransferMode.values(), 2).setDefault(NodeTransferMode.ADD);
 	public SyncFilterList filters = new SyncFilterList(3);
-	public IdentifiedChannelsList list = new IdentifiedChannelsList(getIdentity(), this.channelType(), 4);
+	public ChannelList list = new ChannelList(getIdentity(), this.channelType(), 4);
 	public SyncTagType.BOOLEAN connection = new SyncTagType.BOOLEAN(5);
 	public SyncTagType.BOOLEAN items = (BOOLEAN) new SyncTagType.BOOLEAN(6).setDefault(true);
 	public SyncTagType.BOOLEAN fluids = (BOOLEAN) new SyncTagType.BOOLEAN(7).setDefault(true);
@@ -118,7 +116,7 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	//// IConnectionNode \\\\
 	@Override
-	public void addConnections(ArrayList<NodeConnection> connections) {
+	public void addConnections(List<NodeConnection> connections) {
 		connections.add(getConnected());
 	}
 
@@ -211,38 +209,32 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 	}
 
 	@Override
-	public IdentifiedChannelsList getChannels() {
+	public ChannelList getChannels() {
 		return list;
 	}
 
 	@Override
-	public void modifyCoords(IMonitorInfo info, int channelID) {
+	public void sendCoordsToServer(IMonitorInfo info, int channelID) {
 		if (info instanceof MonitoredBlockCoords) {
 			lastSelected.setCoords(((MonitoredBlockCoords) info).syncCoords.getCoords());
 			sendByteBufPacket(-3);
 		}
 		if (info instanceof MonitoredEntity) {
 			lastSelectedUUID.setObject(((MonitoredEntity) info).uuid.getUUID());
-			;
 			sendByteBufPacket(-4);
 		}
 	}
 
 	//// ILogicViewable \\\\
 
-	public ListenerList<PlayerListener> getListenerList() {
+	public ListenableList<PlayerListener> getListenerList() {
 		return listeners;
 	}
 
-	@Override
-	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
-
-	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
-
 	//// EVENTS \\\\
 
-	public void onFirstTick() {
-		super.onFirstTick();
+	public void validate() {
+		super.validate();
 		if (isClient())
 			this.requestSyncPacket();
 	}
@@ -251,11 +243,11 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getCableFace()).withProperty(TRANSFER, transferMode.getObject());
+		return state.withProperty(PL2Properties.ORIENTATION, getCableFace()).withProperty(TRANSFER, transferMode.getObject());
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, TRANSFER });
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { PL2Properties.ORIENTATION, TRANSFER });
 	}
 
 	//// PACKETS \\\\
@@ -289,12 +281,12 @@ public class TransferNodePart extends SidedMultipart implements IConnectionNode,
 		switch (id) {
 		case -4:
 			lastSelectedUUID.readFromBuf(buf);
-			list.modifyUUID(lastSelectedUUID.getUUID());
+			list.give(lastSelectedUUID.getUUID());
 			sendByteBufPacket(1);
 			break;
 		case -3:
 			lastSelected.readFromBuf(buf);
-			list.modifyCoords(lastSelected.getCoords());
+			list.give(lastSelected.getCoords());
 			sendByteBufPacket(1);
 			break;
 		case 1:

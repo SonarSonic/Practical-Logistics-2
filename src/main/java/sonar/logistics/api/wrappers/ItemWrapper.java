@@ -1,6 +1,5 @@
 package sonar.logistics.api.wrappers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -8,20 +7,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemWrapper {
 	
-	/** used for getting the full list of Items at a given {@link IConnectionNode}
+	/** used for getting the full list of Items at a given {@link INode}
 	 * @param storedStacks current list of {@link StoredItemStack} to be added to
 	 * @param storage currentStorageSize
-	 * @param node {@link IConnectionNode} to check from
+	 * @param node {@link INode} to check from
 	 * @return list of {@link StoredItemStack} on the network */
-	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, ArrayList<BlockConnection> connections) {
+	public StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, List<BlockConnection> connections) {
 		return storage;
 	}
 
@@ -71,7 +70,7 @@ public class ItemWrapper {
 		return null;
 	}
 
-	/** gets the {@link StoredItemStack} in the given slot of the tile connected to the {@link IConnectionNode}
+	/** gets the {@link StoredItemStack} in the given slot of the tile connected to the {@link INode}
 	 * @param network the {@link ILogisticsNetwork} to get stack from
 	 * @param slot id of the slot to look for the stack in
 	 * @return {@link StoredItemStack} of the ItemStack in the slot */

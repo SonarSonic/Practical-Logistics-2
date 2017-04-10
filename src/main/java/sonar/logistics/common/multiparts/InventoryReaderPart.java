@@ -1,13 +1,12 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -20,20 +19,23 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.readers.InventoryReader;
-import sonar.logistics.api.readers.InventoryReader.Modes;
+import sonar.logistics.api.networks.INetworkChannels;
+import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networks.INetworkListChannels;
+import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.readers.InventoryReader;
+import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
+import sonar.logistics.api.utils.ChannelType;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiInventoryReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -41,12 +43,13 @@ import sonar.logistics.client.gui.generic.GuiFilterList;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.common.containers.ContainerInventoryReader;
-import sonar.logistics.connections.monitoring.ItemMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.common.multiparts.generic.ReaderMultipart;
+import sonar.logistics.connections.channels.ListNetworkChannels;
+import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncFilterList;
 
@@ -59,31 +62,32 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 5).addSyncType(SyncType.SPECIAL);
 	public SyncEnum<InventoryReader.SortingType> sortingType = (SyncEnum) new SyncEnum(InventoryReader.SortingType.values(), 6).addSyncType(SyncType.SPECIAL);
 	public SyncFilterList filters = new SyncFilterList(9);
-	
+
 	{
 		syncList.addParts(inventory, setting, targetSlot, posSlot, sortingOrder, sortingType, filters);
 	}
-	
-	public InventoryReaderPart() {
-		super(ItemMonitorHandler.id);
+
+	@Override
+	public void addHandlerIDs(List<String> ids) {
+		ids.add(ItemNetworkHandler.id);
 	}
 
 	//// ILogicReader \\\\
 	@Override
-	public MonitoredList<MonitoredItemStack> sortMonitoredList(MonitoredList<MonitoredItemStack> updateInfo, int channelID) {		
+	public MonitoredList<MonitoredItemStack> sortMonitoredList(MonitoredList<MonitoredItemStack> updateInfo, int channelID) {
 		ItemHelper.sortItemList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
 		return updateInfo;
 	}
 
-	public boolean canMonitorInfo(MonitoredItemStack info, int infoID, Map<NodeConnection, MonitoredList<?>> channels, ArrayList<NodeConnection> usedChannels) {
-		if(this.setting.getObject()==Modes.FILTERED){
+	public boolean canMonitorInfo(MonitoredItemStack info, int infoID, Map<NodeConnection, MonitoredList<?>> channels, List<NodeConnection> usedChannels) {
+		if (this.setting.getObject() == Modes.FILTERED) {
 			return filters.matches(info.getStoredStack(), NodeTransferMode.ADD_REMOVE);
-		}		
+		}
 		return true;
 	}
-	
+
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredItemStack> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case INVENTORIES:
@@ -92,8 +96,11 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 			break;
 		case POS:
 			int pos = posSlot.getObject();
-			if (pos < updateInfo.size())
-				info = updateInfo.get(posSlot.getObject());
+			if (pos < updateInfo.size()){
+				MonitoredItemStack posItem = updateInfo.get(posSlot.getObject()).copy();
+				posItem.networkID.setObject(network.getNetworkID());
+				info = posItem;
+			}
 			break;
 		case SLOT:
 			StoredItemStack slotStack = null;
@@ -157,12 +164,12 @@ public class InventoryReaderPart extends ReaderMultipart<MonitoredItemStack> imp
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
-
 		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
-			ArrayList<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
-			for (PlayerListener player : players) {
-				listeners.addListener(player, ListenerType.TEMPORARY);
+			INetworkChannels list = network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+			if (list != null && list instanceof ListNetworkChannels) {
+				List<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
+				players.forEach(player -> ((ListNetworkChannels) list).sendLocalRapidUpdate(this, player.player));
 			}
 		}
 	}

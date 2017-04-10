@@ -2,6 +2,9 @@ package sonar.logistics.api.filters;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +17,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncTagTypeList;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NodeFilter;
-import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.tiles.nodes.TransferType;
 
 @NodeFilter(id = OreDictFilter.id, modid = PL2Constants.MODID)
 public class OreDictFilter extends BaseFilter implements IItemFilter {
@@ -32,7 +35,7 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 		return id;
 	}
 
-	public ArrayList<String> getOreIDs() {
+	public List<String> getOreIDs() {
 		return oreDict.objs;
 	}
 
@@ -47,7 +50,7 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 	}
 
 	public void removeOreDict(String oreName) {
-		ArrayList<String> toRemove = new ArrayList();
+		ArrayList<String> toRemove = Lists.newArrayList();
 		for (String string : oreDict.getObjects()) {
 			if (string.equals(oreName)) {
 				toRemove.add(string);
@@ -83,7 +86,7 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 
 	public ArrayList<Integer> getOres() {
 		if (ints == null) {
-			ArrayList ores = new ArrayList();
+			ArrayList ores = Lists.newArrayList();
 			for (String string : oreDict.objs) {
 				int id = OreDictionary.getOreID(string);
 				if (!ores.contains(id)) {

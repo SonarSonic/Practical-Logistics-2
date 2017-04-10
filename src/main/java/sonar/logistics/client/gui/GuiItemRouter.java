@@ -164,7 +164,7 @@ public class GuiItemRouter extends GuiSonar {
 						if (filter instanceof ItemStackFilter) {
 							ItemStackFilter stackFilter = (ItemStackFilter) filter;
 							if (stackFilter.getFilters().get(0) != null) {
-								List list = new ArrayList();
+								List list = Lists.newArrayList();
 								List itemTip = stackFilter.getFilters().get(0).getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
 								if (itemTip != null && itemTip.size() != 0)
 									list.add(0, stackFilter.getFilters().get(0).getRarity().rarityColor + (String) itemTip.get(0));
@@ -181,7 +181,7 @@ public class GuiItemRouter extends GuiSonar {
 						if (filter instanceof OreDictionaryFilter) {
 							OreDictionaryFilter oreFilter = (OreDictionaryFilter) filter;
 							if (oreFilter.getFilters() != null && !oreFilter.getFilters().isEmpty() && oreFilter.getFilters().get(0) != null) {
-								List list = new ArrayList();
+								List list = Lists.newArrayList();
 								list.add(0, (TextFormatting.WHITE) + "Ore String: " + (TextFormatting.AQUA) + oreFilter.oreDict);
 								drawSpecialToolTip(list, x, y, null);
 							}

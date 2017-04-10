@@ -1,7 +1,6 @@
 package sonar.logistics.common.multiparts;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
@@ -22,19 +21,20 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.listener.ISonarListenable;
+import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.api.cabling.NetworkConnectionType;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.IInfoProvider;
+import sonar.logistics.api.tiles.cable.NetworkConnectionType;
+import sonar.logistics.api.tiles.cable.PL2Properties;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiClock;
 import sonar.logistics.common.multiparts.generic.SidedMultipart;
@@ -43,7 +43,7 @@ import sonar.logistics.info.types.ClockInfo;
 
 public class ClockPart extends SidedMultipart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui {
 
-	public ListenerList<PlayerListener> listeners = new ListenerList(this, ListenerType.ALL.size());
+	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	public static final PropertyBool HAND = PropertyBool.create("hand");
 
 	public long lastMillis;// when the movement was started
@@ -137,7 +137,7 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 
 	//// ILogicViewable \\\\
 
-	public ListenerList<PlayerListener> getListenerList() {
+	public ListenableList<PlayerListener> getListenerList() {
 		return listeners;
 	}
 
@@ -145,43 +145,31 @@ public class ClockPart extends SidedMultipart implements IInfoProvider, IRedston
 	public void onListenerAdded(ListenerTally<PlayerListener> tally){
 		SonarMultipartHelper.sendMultipartSyncToPlayer(this, tally.listener.player);
 	}
-
-	public void onListenerRemoved(ListenerTally<PlayerListener> tally){}
-
+	
 	//// STATE \\\\
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getCableFace()).withProperty(HAND, false);
+		return state.withProperty(PL2Properties.ORIENTATION, getCableFace()).withProperty(HAND, false);
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, HAND });
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { PL2Properties.ORIENTATION, HAND });
 	}
 
 	//// EVENTS \\\\
 
-	public void onLoaded() {
-		super.onLoaded();
-		PL2.getInfoManager(this.getWorld().isRemote).addInfoProvider(this);
+	public void validate() {
+		super.validate();
+		PL2.getInfoManager(this.getWorld().isRemote).addIdentityTile(this);
 		if (isServer()) {
 			setClockInfo();
 		}
 	}
-
-	public void onRemoved() {
-		super.onRemoved();
-		PL2.getInfoManager(this.getWorld().isRemote).removeInfoProvider(this);
-	}
-
-	public void onUnloaded() {
-		super.onUnloaded();
-		PL2.getInfoManager(this.getWorld().isRemote).removeInfoProvider(this);
-	}
-
-	public void onFirstTick() {
-		super.onFirstTick();
-		PL2.getInfoManager(this.getWorld().isRemote).addInfoProvider(this);
+	
+	public void invalidate() {
+		super.invalidate();
+		PL2.getInfoManager(this.getWorld().isRemote).removeIdentityTile(this);
 	}
 
 	//// SAVING \\\\

@@ -21,18 +21,18 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.IInfoManager;
 import sonar.logistics.commands.CommandResetInfoRegistry;
-import sonar.logistics.connections.managers.CableManager;
-import sonar.logistics.connections.managers.ClientInfoManager;
-import sonar.logistics.connections.managers.DisplayManager;
-import sonar.logistics.connections.managers.EmitterManager;
-import sonar.logistics.connections.managers.NetworkManager;
-import sonar.logistics.connections.managers.ServerInfoManager;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.logic.comparators.ComparatorRegistry;
+import sonar.logistics.managers.CableManager;
+import sonar.logistics.managers.ClientInfoManager;
+import sonar.logistics.managers.DisplayManager;
+import sonar.logistics.managers.WirelessManager;
+import sonar.logistics.managers.NetworkManager;
+import sonar.logistics.managers.ServerInfoManager;
 import sonar.logistics.utils.SapphireOreGen;
 
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, version = PL2Constants.VERSION, dependencies = "required-after:sonarcore")
@@ -142,7 +142,7 @@ public class PL2 {
 	}
 	@EventHandler
 	public void serverClose(FMLServerStoppingEvent event) {
-		EmitterManager.removeAll();
+		WirelessManager.removeAll();
 		getNetworkManager().removeAll();
 		getCableManager().removeAll();
 		getDisplayManager().removeAll();

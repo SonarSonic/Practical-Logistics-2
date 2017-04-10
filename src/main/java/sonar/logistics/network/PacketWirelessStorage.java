@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.network.utils.ByteBufWritable;
-import sonar.logistics.api.readers.IWirelessStorageReader;
+import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketWirelessStorage implements IMessage {

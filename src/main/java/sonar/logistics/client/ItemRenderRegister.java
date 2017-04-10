@@ -1,7 +1,8 @@
 package sonar.logistics.client;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import mcmultipart.item.ItemMultiPart;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -20,7 +21,7 @@ public class ItemRenderRegister {
 		for (ISonarRegistryItem register : PL2Items.registeredItems) {
 			Item item = register.getItem();
 			if (item.getHasSubtypes()) {
-				List<ItemStack> stacks = new ArrayList();
+				List<ItemStack> stacks = Lists.newArrayList();
 				item.getSubItems(item, PL2.creativeTab, stacks);
 				for (ItemStack stack : stacks) {
 					String variant = "variant=meta" + stack.getItemDamage();

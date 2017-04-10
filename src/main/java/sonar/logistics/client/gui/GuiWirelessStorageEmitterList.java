@@ -1,8 +1,8 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiButton;
@@ -14,7 +14,7 @@ import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.core.network.utils.ByteBufWritable;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.readers.IWirelessStorageReader;
+import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
@@ -60,7 +60,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	}
 
 	public void setInfo() {
-		infoList = (ArrayList<ClientDataEmitter>) PL2.getClientManager().clientEmitters.clone();
+		infoList = Lists.newArrayList(PL2.getClientManager().clientEmitters);
 	}
 
 	@Override

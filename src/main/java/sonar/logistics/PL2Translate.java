@@ -1,13 +1,15 @@
 package sonar.logistics;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import sonar.core.utils.Localisation;
 
 public class PL2Translate {
-	public static final ArrayList<Localisation> locals = new ArrayList();
+	public static final List<Localisation> locals = Lists.newArrayList();
 
 	// ITEMS
 	public static final Localisation GUIDE = i(PL2Items.guide);

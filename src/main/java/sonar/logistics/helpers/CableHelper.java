@@ -1,8 +1,9 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.UUID;
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.IMultipartContainer;
@@ -19,19 +20,19 @@ import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
 import sonar.logistics.PL2;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.IConnectable;
-import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.cabling.ILogicTile;
-import sonar.logistics.api.connecting.EmptyNetworkCache;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.IInfoDisplay;
-import sonar.logistics.api.displays.ILargeDisplay;
-import sonar.logistics.api.readers.IInfoProvider;
+import sonar.logistics.api.networks.EmptyNetworkCache;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.api.tiles.IConnectable;
+import sonar.logistics.api.tiles.INetworkTile;
+import sonar.logistics.api.tiles.cable.CableRenderType;
+import sonar.logistics.api.tiles.cable.ConnectableType;
+import sonar.logistics.api.tiles.cable.IDataCable;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.DataCablePart;
 import sonar.logistics.common.multiparts.generic.SidedMultipart;
@@ -47,30 +48,30 @@ public class CableHelper extends CablingWrapper {
 			IMultipart part = container.getPartInSlot(PartSlot.getFaceSlot(dir));
 			if (part == null)
 				part = (IMultipart) LogisticsAPI.getCableHelper().getDisplayScreen(cable.getCoords(), dir);
-			if (part != null && part instanceof ILogicTile) {
+			if (part != null && part instanceof INetworkTile) {
 				if (part instanceof SidedMultipart) {
 					SidedMultipart sided = (SidedMultipart) part;
-					if (sided.heightMax == 0.0625 * 6) {
+					if (sided.getMultipart().heightMax == 0.0625 * 6) {
 						return CableRenderType.NONE;
-					} else if (sided.heightMax == 0.0625 * 4) {
+					} else if (sided.getMultipart().heightMax == 0.0625 * 4) {
 						return CableRenderType.HALF;
 					}
 				}
-				ILogicTile tile = (ILogicTile) part;
+				INetworkTile tile = (INetworkTile) part;
 				if (tile.canConnect(dir.getOpposite()).canShowConnection()) {
 					return CableRenderType.INTERNAL;
 				}
 			}
 
-			Pair<ConnectableType, Integer> connection = CableHelper.getConnectionType(cable, container.getWorldIn(), container.getPosIn(), dir, cable.getCableType());
-			return !cable.canConnectOnSide(cable.registryID, dir) || !connection.a.canConnect(cable.getCableType()) ? CableRenderType.NONE : CableRenderType.CABLE;
+			Pair<ConnectableType, Integer> connection = CableHelper.getConnectionType(cable, container.getWorldIn(), container.getPosIn(), dir, cable.getConnectableType());
+			return !cable.canConnectOnSide(cable.registryID, dir, false) || !connection.a.canConnect(cable.getConnectableType()) ? CableRenderType.NONE : CableRenderType.CABLE;
 		}
 		return CableRenderType.NONE;
 	}
 
-	public static double[] getPos(IInfoDisplay display, RenderInfoProperties renderInfo) {
-		if (display instanceof ConnectedDisplayScreen) {
-			ConnectedDisplayScreen connected = (ConnectedDisplayScreen) display;
+	public static double[] getPos(IDisplay display, RenderInfoProperties renderInfo) {
+		if (display instanceof ConnectedDisplay) {
+			ConnectedDisplay connected = (ConnectedDisplay) display;
 			if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) {
 				BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos();
 				double[] translation = renderInfo.getTranslation();
@@ -95,7 +96,7 @@ public class CableHelper extends CablingWrapper {
 		return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() };
 	}
 
-	public static int getSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
+	public static int getSlot(IDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
 		double[] pos = CableHelper.getPos(display, renderInfo);
 		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
 		int minH = 0;
@@ -167,7 +168,7 @@ public class CableHelper extends CablingWrapper {
 		return -1;
 	}
 
-	public static int getListSlot(IInfoDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, double elementSize, double spacing, int maxPageSize) {
+	public static int getListSlot(IDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, double elementSize, double spacing, int maxPageSize) {
 		double[] pos = CableHelper.getPos(display, renderInfo);
 
 		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
@@ -246,20 +247,20 @@ public class CableHelper extends CablingWrapper {
 		return null;
 	}
 
-	public ILogicTile getMultipart(BlockCoords coords, EnumFacing face) {
+	public INetworkTile getMultipart(BlockCoords coords, EnumFacing face) {
 		if (coords.getWorld() != null) {
 			IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
 			if (container != null) {
 				ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(face));
-				if (part instanceof ILogicTile) {
-					return (ILogicTile) part;
+				if (part instanceof INetworkTile) {
+					return (INetworkTile) part;
 				}
 			}
 		}
 		return null;
 	}
 
-	public IInfoDisplay getDisplayScreen(BlockCoords coords, EnumFacing face) {
+	public IDisplay getDisplayScreen(BlockCoords coords, EnumFacing face) {
 		if (coords.getWorld() != null) {
 			IMultipartContainer container = MultipartHelper.getPartContainer(coords.getWorld(), coords.getBlockPos());
 			if (container != null) {
@@ -279,10 +280,10 @@ public class CableHelper extends CablingWrapper {
 		return null;
 	}
 
-	public IInfoDisplay getDisplayScreen(IMultipartContainer container, EnumFacing face) {
+	public IDisplay getDisplayScreen(IMultipartContainer container, EnumFacing face) {
 		for (IMultipart part : container.getParts()) {
-			if (part != null && part instanceof IInfoDisplay) {
-				IInfoDisplay display = (IInfoDisplay) part;
+			if (part != null && part instanceof IDisplay) {
+				IDisplay display = (IDisplay) part;
 				if (display.getCableFace() == face) {
 					return display;
 				}
@@ -303,25 +304,25 @@ public class CableHelper extends CablingWrapper {
 		return null;
 	}
 
-	public static ArrayList<ILogicTile> getConnectedTiles(DataCablePart cable) {
-		return getConnectedTiles(cable, new SonarValidation.CLASS(ILogicTile.class));
+	public static List<INetworkTile> getConnectedTiles(DataCablePart cable) {
+		return getConnectedTiles(cable, new SonarValidation.CLASS(INetworkTile.class));
 	}
 
-	public static <T> ArrayList<T> getConnectedTiles(DataCablePart cable, Class<T> type) {
+	public static <T> List<T> getConnectedTiles(DataCablePart cable, Class<T> type) {
 		return getConnectedTiles(cable, new SonarValidation.CLASS(type));
 	}
 
-	public static ArrayList getConnectedTilesOfTypes(DataCablePart cable, Class... type) {
+	public static List getConnectedTilesOfTypes(DataCablePart cable, Class... type) {
 		return getConnectedTiles(cable, new SonarValidation.CLASSLIST(type));
 	}
 
-	public static <T> ArrayList<T> getConnectedTiles(DataCablePart cable, SonarValidation validate) {
-		ArrayList<T> logicTiles = new ArrayList();
+	public static <T> List<T> getConnectedTiles(DataCablePart cable, SonarValidation validate) {
+		List<T> logicTiles = Lists.newArrayList();
 		for (IMultipart part : cable.getContainer().getParts()) {
 			if (validate.isValid(part)) {
 				if (part instanceof SidedMultipart) {
 					SidedMultipart sided = (SidedMultipart) part;
-					if (cable.isBlocked(sided.getCableFace())) {
+					if (!cable.canConnectOnSide(sided.getNetworkID(), sided.getCableFace(), true)) {
 						continue;
 					}
 				}
@@ -329,9 +330,9 @@ public class CableHelper extends CablingWrapper {
 			}
 		}
 		for (EnumFacing face : EnumFacing.values()) {
-			if (cable.canConnectOnSide(cable.registryID, face)) {
+			if (cable.canConnectOnSide(cable.registryID, face, false)) {
 				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-				ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
+				INetworkTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
 				if (validate.isValid(tile) && tile.canConnect(face).canConnect()) {
 					logicTiles.add((T) tile);
 				}
@@ -340,12 +341,12 @@ public class CableHelper extends CablingWrapper {
 		return logicTiles;
 	}
 
-	public static ArrayList<IInfoProvider> getLocalMonitors(DataCablePart cable) {
-		ArrayList<IInfoProvider> logicTiles = new ArrayList();
+	public static List<IInfoProvider> getLocalMonitors(DataCablePart cable) {
+		List<IInfoProvider> logicTiles = Lists.newArrayList();
 		for (EnumFacing face : EnumFacing.values()) {
-			if (!cable.isBlocked(face.getOpposite())) {
+			if (cable.canConnectOnSide(cable.getRegistryID(), face.getOpposite(), false)) {
 				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-				ILogicTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
+				INetworkTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
 				if (tile instanceof IInfoProvider) {
 					logicTiles.add((IInfoProvider) tile);
 				}
@@ -356,7 +357,7 @@ public class CableHelper extends CablingWrapper {
 
 	public ILogisticsNetwork getNetwork(TileEntity tile, EnumFacing dir) {
 		// watch out for this null :P
-		Pair<ConnectableType, Integer> connection = PL2.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTION);
+		Pair<ConnectableType, Integer> connection = PL2.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTABLE);
 		if (connection.a != ConnectableType.NONE && connection.b != -1) {
 			ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(connection.b);
 			if (cache != null) {
@@ -370,8 +371,8 @@ public class CableHelper extends CablingWrapper {
 		return PL2.instance.networkManager.getNetwork(registryID);
 	}
 
-	public static ILogicViewable getMonitorFromIdentity(int identity, boolean isRemote) {
-		for (ILogicViewable monitor : ((LinkedHashMap<UUID, ILogicViewable>) PL2.getInfoManager(isRemote).getMonitors().clone()).values()) {
+	public static ILogicListenable getMonitorFromIdentity(int identity, boolean isRemote) {		
+		for (ILogicListenable monitor : Maps.newHashMap(PL2.getInfoManager(isRemote).getMonitors()).values()) {
 			if (monitor.getIdentity() != -1 && monitor.getIdentity() == identity) {
 				return monitor;
 			}
@@ -410,11 +411,11 @@ public class CableHelper extends CablingWrapper {
 	public static <T extends IConnectable> Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType) {
 		if (connection instanceof IDataCable) {
 			IDataCable cable = (IDataCable) connection;
-			if (cable.getCableType().canConnect(cableType)) {
-				return cable.canConnectOnSide(cable.getRegistryID(), dir.getOpposite()) ? new Pair(cable.getCableType(), cable.getRegistryID()) : new Pair(ConnectableType.NONE, -1);
+			if (cable.getConnectableType().canConnect(cableType)) {
+				return cable.canConnectOnSide(cable.getRegistryID(), dir.getOpposite(), false) ? new Pair(cable.getConnectableType(), cable.getRegistryID()) : new Pair(ConnectableType.NONE, -1);
 			}
-		} else if (connection instanceof ILogicTile) {
-			return ((ILogicTile) connection).canConnect(dir.getOpposite()).canShowConnection() ? new Pair(ConnectableType.BLOCK_CONNECTION, -1) : new Pair(ConnectableType.NONE, -1);
+		} else if (connection instanceof INetworkTile) {
+			return ((INetworkTile) connection).canConnect(dir.getOpposite()).canShowConnection() ? new Pair(ConnectableType.TILE, -1) : new Pair(ConnectableType.NONE, -1);
 		}
 		return new Pair(ConnectableType.NONE, -1);
 	}

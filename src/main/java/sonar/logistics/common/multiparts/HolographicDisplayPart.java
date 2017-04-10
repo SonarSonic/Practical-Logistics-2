@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.displays.DisplayType;
+import sonar.logistics.api.tiles.displays.DisplayType;
 
 public class HolographicDisplayPart extends DisplayScreenPart {
 

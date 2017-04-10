@@ -1,9 +1,10 @@
 package sonar.logistics.client.gui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -20,14 +21,14 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.readers.FluidReader;
-import sonar.logistics.api.readers.FluidReader.Modes;
+import sonar.logistics.api.tiles.readers.FluidReader;
+import sonar.logistics.api.tiles.readers.FluidReader.Modes;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.common.multiparts.FluidReaderPart;
-import sonar.logistics.connections.monitoring.MonitoredFluidStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
@@ -127,7 +128,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			return part.getMonitoredList();
 		else {
 			MonitoredList<MonitoredFluidStack> searchList = MonitoredList.<MonitoredFluidStack>newMonitoredList(part.getNetworkID());
-			for (MonitoredFluidStack stack : (ArrayList<MonitoredFluidStack>) part.getMonitoredList().clone()) {
+			for (MonitoredFluidStack stack : (List<MonitoredFluidStack>) part.getMonitoredList().clone()) {
 				StoredFluidStack fluidStack = stack.getStoredStack();
 				if (stack != null && fluidStack.fluid != null && fluidStack.fluid.getLocalizedName().toLowerCase().contains(searchField.getText().toLowerCase())) {
 					searchList.add(stack);
@@ -147,7 +148,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			part.sendByteBufPacket(1);
 		}
 		if (getSetting() == Modes.POS) {
-			ArrayList<MonitoredFluidStack> currentList = (ArrayList<MonitoredFluidStack>) this.getGridList().clone();
+			List<MonitoredFluidStack> currentList = (List<MonitoredFluidStack>) this.getGridList().clone();
 			int position = 0;
 			for (MonitoredFluidStack stack : currentList) {
 				if (stack != null) {
@@ -221,7 +222,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	@Override
 	public void renderToolTip(MonitoredFluidStack selection, int x, int y) {
 		StoredFluidStack fluidStack = selection.getStoredStack();
-		List list = new ArrayList();
+		List list = Lists.newArrayList();
 		list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 		if (fluidStack.stored != 0) {
 			list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");

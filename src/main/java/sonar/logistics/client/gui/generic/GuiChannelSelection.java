@@ -2,7 +2,7 @@ package sonar.logistics.client.gui.generic;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,15 +14,15 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.cabling.IChannelledTile;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.tiles.IChannelledTile;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
-import sonar.logistics.connections.monitoring.MonitoredEntity;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.info.types.MonitoredEntity;
 
 public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 
@@ -77,7 +77,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	public void setInfo() {
-		infoList = (ArrayList<IMonitorInfo>) PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IMonitorInfo>newMonitoredList(tile.getNetworkID())).clone();
+		infoList = (List<IMonitorInfo>) PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IMonitorInfo>newMonitoredList(tile.getNetworkID())).clone();
 	}
 
 	/// INTERACTION \\\
@@ -90,7 +90,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, IMonitorInfo info) {
 		if (buttonID == 0) {
-			tile.modifyCoords(info, channelID);
+			tile.sendCoordsToServer(info, channelID);
 		} else {
 			if (info instanceof MonitoredBlockCoords)
 				RenderBlockSelection.addPosition(((MonitoredBlockCoords) info).syncCoords.getCoords(), false);

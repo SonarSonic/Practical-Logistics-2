@@ -1,9 +1,11 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.raytrace.PartMOP;
@@ -23,18 +25,24 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.displays.DisplayType;
-import sonar.logistics.api.displays.IInfoDisplay;
-import sonar.logistics.api.displays.IScaleableDisplay;
-import sonar.logistics.api.displays.ScreenLayout;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
+import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.displays.IScaleableDisplay;
+import sonar.logistics.api.tiles.readers.IListReader;
+import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.generic.LogisticsMultipart;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.connections.channels.ListNetworkChannels;
+import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.MonitoredFluidStack;
+import sonar.logistics.info.types.MonitoredItemStack;
 
 public class InfoHelper {
 
@@ -43,10 +51,13 @@ public class InfoHelper {
 	public static final String REMOVED = "rem";
 	public static final String SPECIAL = "spe";
 
-	public static void screenItemStackClicked(StoredItemStack itemstack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+	public static void screenItemStackClicked(StoredItemStack itemstack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
-		if (toRemove.a != 0 && networkID != -1) {
-			ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(networkID);
+		if (toRemove.a != 0 && network != -1) {
+			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
+			if(!cache.isValid()){
+				return;
+			}
 			switch (toRemove.b) {
 			case ADD:
 				if (stack != null) {
@@ -73,12 +84,18 @@ public class InfoHelper {
 			default:
 				break;
 			}
+			ListNetworkChannels channels = (ListNetworkChannels) cache.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+			if (channels != null) // TODO shouldn't have to ever do this.
+				channels.sendFullRapidUpdate();
 		}
 	}
 
-	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int networkID, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
-		if (networkID != -1) {
-			ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(networkID);
+	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+		if (network != -1) {
+			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
+			if(!cache.isValid()){
+				return;
+			}
 			if (type == BlockInteractionType.RIGHT) {
 				LogisticsAPI.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
 			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
@@ -86,6 +103,11 @@ public class InfoHelper {
 			} else if (fluidStack != null && type == BlockInteractionType.SHIFT_LEFT) {
 				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack);
 			}
+
+			ListNetworkChannels channels = (ListNetworkChannels) cache.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+			if (channels != null) // TODO shouldn't have to ever do this.
+				channels.sendFullRapidUpdate();
+
 		}
 	}
 
@@ -103,8 +125,8 @@ public class InfoHelper {
 				tag.setTag(SYNC, list);
 				return tag;
 			} else {
-				//if (!lastWasNull)
-					tag.setBoolean(DELETE, true);
+				// if (!lastWasNull)
+				tag.setBoolean(DELETE, true);
 				return tag;
 			}
 		} else if (type.isType(SyncType.SPECIAL)) {
@@ -117,7 +139,7 @@ public class InfoHelper {
 				}
 				NBTTagList list = new NBTTagList();
 				for (int listType = 0; listType < 2; listType++) {
-					ArrayList<T> stackList = listType == 0 ? stacks.changed : stacks.removed;
+					List<T> stackList = listType == 0 ? stacks.changed : stacks.removed;
 					for (int i = 0; i < stackList.size(); i++) {
 						T info = stackList.get(i);
 						if (info != null && info.isValid()) {
@@ -176,16 +198,16 @@ public class InfoHelper {
 		return stacks;
 	}
 
-	public static ArrayList<IProvidableInfo> sortInfoList(ArrayList<IProvidableInfo> oldInfo) {
-		ArrayList<IProvidableInfo> providerInfo = (ArrayList<IProvidableInfo>) oldInfo.clone();
+	public static List<IProvidableInfo> sortInfoList(List<IProvidableInfo> oldInfo) {
+		List<IProvidableInfo> providerInfo = Lists.newArrayList(oldInfo);
 		Collections.sort(providerInfo, new Comparator<IProvidableInfo>() {
 			public int compare(IProvidableInfo str1, IProvidableInfo str2) {
 				return Integer.compare(str1.getRegistryType().sortOrder, str2.getRegistryType().sortOrder);
 			}
 		});
-		ArrayList<IProvidableInfo> sortedInfo = new ArrayList();
+		List<IProvidableInfo> sortedInfo = Lists.newArrayList();
 		IProvidableInfo lastInfo = null;
-		for (IProvidableInfo blockInfo : (ArrayList<IProvidableInfo>) providerInfo.clone()) {
+		for (IProvidableInfo blockInfo : Lists.newArrayList(providerInfo)) {
 			if (blockInfo != null && !blockInfo.isHeader()) {
 				if (lastInfo == null || (!lastInfo.isHeader() && !lastInfo.getRegistryType().equals(blockInfo.getRegistryType()))) {
 					sortedInfo.add(LogicInfo.buildCategoryInfo(blockInfo.getRegistryType()));
@@ -197,7 +219,7 @@ public class InfoHelper {
 		return sortedInfo;
 	}
 
-	public static double[] getScaling(IInfoDisplay display, ScreenLayout layout, int pos) {
+	public static double[] getScaling(IDisplay display, DisplayLayout layout, int pos) {
 		DisplayType type = display.getDisplayType();
 		double width = type.width, height = type.height, scale = type.scale;
 		if (display instanceof IScaleableDisplay) {
@@ -219,7 +241,7 @@ public class InfoHelper {
 		}
 	}
 
-	public static double[] getTranslation(IInfoDisplay display, ScreenLayout layout, int pos) {
+	public static double[] getTranslation(IDisplay display, DisplayLayout layout, int pos) {
 		DisplayType type = display.getDisplayType();
 		double width = type.width, height = type.height, scale = type.scale;
 		if (display instanceof IScaleableDisplay) {
@@ -241,7 +263,7 @@ public class InfoHelper {
 		}
 	}
 
-	public static double[] getIntersect(IInfoDisplay display, ScreenLayout layout, int pos) {
+	public static double[] getIntersect(IDisplay display, DisplayLayout layout, int pos) {
 		DisplayType type = display.getDisplayType();
 		double width = type.width, height = type.height, scale = type.scale;
 		if (display instanceof IScaleableDisplay) {
@@ -268,7 +290,7 @@ public class InfoHelper {
 		if (renderInfo.container.getMaxCapacity() == 1) {
 			return true;
 		}
-		IInfoDisplay display = renderInfo.container.getDisplay();
+		IDisplay display = renderInfo.container.getDisplay();
 		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.infoPos);
 		BlockPos pos = hit.getBlockPos();
 		double x = hit.hitVec.xCoord - pos.getX();

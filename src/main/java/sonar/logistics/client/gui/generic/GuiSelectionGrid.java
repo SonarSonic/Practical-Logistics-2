@@ -12,9 +12,9 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
-import sonar.logistics.connections.monitoring.MonitoredList;
 
 public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogistics {
 

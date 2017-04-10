@@ -2,8 +2,11 @@ package sonar.logistics.client.gui.generic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,25 +21,25 @@ import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.logistics.ComparableObject;
-import sonar.logistics.api.logistics.EmitterStatement;
-import sonar.logistics.api.logistics.InputTypes;
-import sonar.logistics.api.logistics.LogicOperator;
-import sonar.logistics.api.readers.IInfoProvider;
-import sonar.logistics.api.readers.INetworkReader;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.tiles.readers.INetworkReader;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.api.tiles.signaller.EmitterStatement;
+import sonar.logistics.api.tiles.signaller.InputTypes;
+import sonar.logistics.api.tiles.signaller.LogicOperator;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.common.multiparts.RedstoneSignallerPart;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketEmitterStatement;
 
 public class GuiStatementList extends GuiSelectionList<Object> {
@@ -248,7 +251,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
-					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList()), currentFilter.key1.getObject());
+					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList()), currentFilter.key1.getObject());
 					if (obj != null) {
 						has1 = true;
 						obj1 = currentFilter.key1.getObject() + " - " + obj.object.toString();
@@ -260,7 +263,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 					IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid2);
 					if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
-						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList()), currentFilter.key2.getObject());
+						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList()), currentFilter.key2.getObject());
 						if (obj != null) {
 							has2 = true;
 							obj2 = currentFilter.key2.getObject() + " - " + obj.object.toString();
@@ -467,7 +470,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			infoType = monitorInfo != null ? monitorInfo.toString() : "INFO 1";
 		}
 		if (monitorInfo instanceof IComparableInfo && key != null) {
-			ArrayList<ComparableObject> infoList = ((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList());
+			List<ComparableObject> infoList = ((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList());
 			ComparableObject obj = ComparableObject.getComparableObject(infoList, key);
 			if (obj != null && obj.object != null) {
 				infoObj = obj.object.toString();
@@ -524,12 +527,12 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	public void setInfo() {
 		switch (state) {
 		case LIST:
-			infoList = (ArrayList<Object>) tile.getStatements().getObjects().clone();
+			infoList = Lists.newArrayList(tile.getStatements().getObjects());
 			break;
 		case STATEMENT:
 			break;
 		case CHANNELS:
-			infoList = (ArrayList<Object>) PL2.getClientManager().sortedLogicMonitors.getOrDefault(tile.getIdentity(), new ArrayList()).clone();
+			infoList = Lists.newArrayList(PL2.getClientManager().sortedLogicMonitors.getOrDefault(tile.getIdentity(), Lists.newArrayList()));
 			break;
 		case STRING:
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
@@ -537,13 +540,13 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid);
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;
-					ArrayList<ComparableObject> objects = new ArrayList();
+					List objects = new ArrayList<ComparableObject>();
 					comparable.getComparableObjects(objects);
-					infoList = (ArrayList<Object>) objects.clone();
+					infoList = objects;
 					break;
 				}
 			}
-			infoList = new ArrayList();
+			infoList = Lists.newArrayList();
 			break;
 		default:
 			break;

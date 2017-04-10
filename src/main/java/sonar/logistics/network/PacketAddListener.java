@@ -6,18 +6,18 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
-import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.CableHelper;
 
 public class PacketAddListener implements IMessage {
 
-	public ILogicViewable monitor;
+	public ILogicListenable monitor;
 	public ListenerType type;
 
 	public PacketAddListener() {}
 
-	public PacketAddListener(ILogicViewable monitor, ListenerType type) {
+	public PacketAddListener(ILogicListenable monitor, ListenerType type) {
 		this.monitor = monitor;
 		this.type = type;
 	}

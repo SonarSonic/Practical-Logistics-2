@@ -2,6 +2,9 @@ package sonar.logistics.api.filters;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -14,7 +17,7 @@ import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NodeFilter;
-import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.tiles.nodes.TransferType;
 
 @NodeFilter(id = ItemFilter.id, modid = PL2Constants.MODID)
 public class ItemFilter extends BaseFilter implements IItemFilter {
@@ -32,7 +35,7 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 		return id;
 	}
 
-	public ArrayList<StoredItemStack> getItemFilters() {
+	public List<StoredItemStack> getItemFilters() {
 		return list.objs;
 	}
 
@@ -46,7 +49,7 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 	}
 
 	public void removeItem(StoredItemStack stack) {
-		ArrayList<StoredItemStack> toRemove = new ArrayList();
+		ArrayList<StoredItemStack> toRemove = Lists.newArrayList();
 		for (StoredItemStack item : list.objs) {
 			if (item.equalStack(stack.item)) {
 				toRemove.add(item);

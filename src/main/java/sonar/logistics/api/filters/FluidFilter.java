@@ -2,6 +2,9 @@ package sonar.logistics.api.filters;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +16,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NodeFilter;
-import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.tiles.nodes.TransferType;
 
 @NodeFilter(id = FluidFilter.id, modid = PL2Constants.MODID)
 public class FluidFilter extends BaseFilter implements IFluidFilter {
@@ -30,7 +33,7 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 		return id;
 	}
 
-	public ArrayList<StoredFluidStack> getFluidFilters() {
+	public List<StoredFluidStack> getFluidFilters() {
 		return list.objs;
 	}
 
@@ -44,7 +47,7 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 	}
 
 	public void removeFluid(StoredFluidStack stack) {
-		ArrayList<StoredFluidStack> toRemove = new ArrayList();
+		ArrayList<StoredFluidStack> toRemove = Lists.newArrayList();
 		for (StoredFluidStack fluid : list.objs) {
 			if (fluid.equalStack(stack.fluid)) {
 				toRemove.add(fluid);

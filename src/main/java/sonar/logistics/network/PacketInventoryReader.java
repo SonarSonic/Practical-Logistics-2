@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
 import sonar.logistics.helpers.ItemHelper;
 
@@ -24,8 +24,7 @@ public class PacketInventoryReader extends PacketMultipart {
 	public ItemStack selected;
 	public int button;
 
-	public PacketInventoryReader() {
-	}
+	public PacketInventoryReader() {}
 
 	public PacketInventoryReader(UUID partUUID, BlockPos pos, ItemStack selected, int button) {
 		super(partUUID, pos);
@@ -57,13 +56,19 @@ public class PacketInventoryReader extends PacketMultipart {
 	public static class Handler extends PacketMultipartHandler<PacketInventoryReader> {
 		@Override
 		public IMessage processMessage(PacketInventoryReader message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
-			EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-			if (player == null || player.getEntityWorld().isRemote || !(part instanceof InventoryReaderPart)) {
-				return null;
-			}
-			InventoryReaderPart reader = (InventoryReaderPart) part;
-			ILogisticsNetwork network = reader.getNetwork();
-			ItemHelper.onNetworkItemInteraction(network, reader.getMonitoredList(), player, message.selected, message.button);
+			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				@Override
+				public void run() {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (player == null || player.getEntityWorld().isRemote || !(part instanceof InventoryReaderPart)) {
+						return;
+					}
+					InventoryReaderPart reader = (InventoryReaderPart) part;
+					ILogisticsNetwork network = reader.getNetwork();
+					if (network.isValid())
+						ItemHelper.onNetworkItemInteraction(reader, network, reader.getMonitoredList(), player, message.selected, message.button);
+				}
+			});
 			return null;
 		}
 	}

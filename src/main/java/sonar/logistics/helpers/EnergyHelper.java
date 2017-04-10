@@ -1,8 +1,9 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import sonar.core.SonarCore;
 import sonar.core.api.energy.EnergyType;
@@ -10,14 +11,14 @@ import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.api.readers.EnergyReader.SortingType;
+import sonar.logistics.api.tiles.readers.EnergyReader.SortingType;
 import sonar.logistics.api.wrappers.EnergyWrapper;
-import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
+import sonar.logistics.info.types.MonitoredEnergyStack;
 
 public class EnergyHelper extends EnergyWrapper {
 
-	public ArrayList<ISonarEnergyHandler> getProviders(EnergyType type) {
-		ArrayList<ISonarEnergyHandler> providers = new ArrayList();
+	public List<ISonarEnergyHandler> getProviders(EnergyType type) {
+		List<ISonarEnergyHandler> providers = Lists.newArrayList();
 		List<ISonarEnergyHandler> handlers = SonarCore.energyHandlers;
 		for (ISonarEnergyHandler provider : handlers) {
 			if (provider.getProvidedType().getName().equals(type.getName())) {
@@ -27,7 +28,7 @@ public class EnergyHelper extends EnergyWrapper {
 		return providers;
 	}
 
-	public static void sortEnergyList(ArrayList<MonitoredEnergyStack> info, final SortingDirection dir, SortingType type) {
+	public static void sortEnergyList(List<MonitoredEnergyStack> info, final SortingDirection dir, SortingType type) {
 		info.sort(new Comparator<MonitoredEnergyStack>() {
 			public int compare(MonitoredEnergyStack str1, MonitoredEnergyStack str2) {
 				StoredEnergyStack item1 = str1.energyStack.getObject(), item2 = str2.energyStack.getObject();

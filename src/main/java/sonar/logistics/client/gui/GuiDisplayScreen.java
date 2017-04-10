@@ -1,7 +1,9 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -11,24 +13,24 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.displays.DisplayConstants;
-import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.readers.IInfoProvider;
+import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.tiles.displays.DisplayConstants;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.client.DisplayTextFields;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.generic.ScreenMultipart;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
+import sonar.logistics.common.multiparts.generic.DisplayMultipart;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
-	public ScreenMultipart part;
+	public DisplayMultipart part;
 	public DisplayTextFields textFields;
 	private GuiState state = GuiState.LIST;
 	private int left = 7;
@@ -45,7 +47,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		}
 	}
 
-	public GuiDisplayScreen(ScreenMultipart part) {
+	public GuiDisplayScreen(DisplayMultipart part) {
 		super(new ContainerMultipartSync(part), part);
 		this.part = part;
 		this.ySize = 20 + part.maxInfo() * 26;
@@ -65,7 +67,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_RESET.t()));
 			this.buttonList.add(new GuiButton(5, guiLeft + 8 + 50, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_CLEAR.t()));
 			this.buttonList.add(new GuiButton(6, guiLeft + 108, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_SAVE.t()));
-			ArrayList<String> strings = textFields == null ? part.container().getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
+			List<String> strings = textFields == null ? part.container().getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
 			textFields = new DisplayTextFields(8, 28 + 4, 8);
 			textFields.initFields(strings);
 			break;
@@ -133,7 +135,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				textFields.initFields(part.container().getDisplayInfo(infoID).getUnformattedStrings());
 				break;
 			case 5:
-				textFields.initFields(new ArrayList());
+				textFields.initFields(Lists.newArrayList());
 				break;
 			case 6:
 				part.container().getDisplayInfo(infoID).setFormatStrings(textFields.textList());
@@ -316,7 +318,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	public void setInfo() {
-		infoList = (ArrayList<Object>) PL2.getClientManager().sortedLogicMonitors.getOrDefault(part.getIdentity(), new ArrayList()).clone();
+		infoList = Lists.newArrayList(PL2.getClientManager().sortedLogicMonitors.getOrDefault(part.getIdentity(), Lists.newArrayList()));
 	}
 
 }

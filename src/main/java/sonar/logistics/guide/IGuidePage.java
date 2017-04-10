@@ -1,6 +1,6 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementInfo;
@@ -27,8 +27,8 @@ public interface IGuidePage {
 	
 	public String getDisplayName();
 	
-	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo);
+	public List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo);
 
-	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements);	
+	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements);	
 	
 }

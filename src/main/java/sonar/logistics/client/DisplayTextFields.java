@@ -1,6 +1,7 @@
 package sonar.logistics.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
@@ -21,7 +22,7 @@ public class DisplayTextFields extends Gui {
 		this.size = size;
 	}
 
-	public void initFields(ArrayList<String> textList) {
+	public void initFields(List<String> textList) {
 		Keyboard.enableRepeatEvents(true);
 		this.fields = new GuiTextField[size];
 		FontRenderer render = Minecraft.getMinecraft().fontRendererObj;

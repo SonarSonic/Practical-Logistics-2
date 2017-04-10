@@ -1,6 +1,6 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.gui.GuiGuide;
@@ -22,7 +22,7 @@ public class GeneralPage extends BaseInfoPage {
 	}
 
 	@Override
-	public ArrayList<ElementInfo> getPageInfo(GuiGuide gui, ArrayList<ElementInfo> pageInfo) {
+	public List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo) {
 		for (String desc : descKey)
 			pageInfo.add(new ElementInfo(desc, new String[0]));
 		return pageInfo;

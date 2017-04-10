@@ -1,6 +1,6 @@
 package sonar.logistics.info.types;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.ObjectType;
@@ -12,18 +12,19 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.ISuffixable;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.info.ISuffixable;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.connections.monitoring.InfoMonitorHandler;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.connections.handlers.DefaultNetworkHandler;
+import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.LogicInfoRegistry;
 
@@ -32,7 +33,6 @@ import sonar.logistics.info.LogicInfoRegistry;
 public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<LogicInfo>, INameableInfo<LogicInfo>, ISuffixable, IComparableInfo<LogicInfo> {
 
 	public static final String id = "logic";
-	public static final LogicMonitorHandler handler = LogicMonitorHandler.instance(InfoMonitorHandler.id);
 	private String suffix, prefix;
 	public SyncTagType.STRING iden = new SyncTagType.STRING(1);
 	public SyncTagType.INT idenNum = (INT) new SyncTagType.INT(2).setDefault(-1);
@@ -73,8 +73,8 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 	}
 
 	@Override
-	public LogicMonitorHandler<LogicInfo> getHandler() {
-		return handler;
+	public INetworkHandler getHandler() {
+		return InfoNetworkHandler.INSTANCE;
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 	}
 
 	public String getClientIdentifier() {
-		String newMethod = LogicInfoRegistry.INSTANCE.clientNameAdjustments.get(iden.getObject());
+		String newMethod = LogicInfoRegistry.INSTANCE.clientAdjustments.get(iden.getObject());
 		if (newMethod != null) {
 			return FontHelper.translate("pl." + newMethod);
 		}
@@ -194,7 +194,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 	}
 
 	@Override
-	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects) {
+	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		objects.add(new ComparableObject(this, "raw info", obj.get()));
 		objects.add(new ComparableObject(this, "object type", obj.objType));
 		objects.add(new ComparableObject(this, "identifier", iden.getObject()));

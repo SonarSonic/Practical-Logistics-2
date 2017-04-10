@@ -1,8 +1,10 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.item.ItemStack;
 import sonar.core.helpers.FontHelper;
@@ -17,7 +19,7 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 
 	public String unlocalizedName;
 	public ItemStack stack;
-	public ArrayList<ElementLink> links = new ArrayList();
+	public List<ElementLink> links = Lists.newArrayList();
 	public double rotate = 0;
 
 	public BaseItemPage(int pageID, ItemStack stack) {
@@ -40,7 +42,7 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 
 	//// CREATE \\\\
 	
-	public ArrayList<IGuidePageElement> getElements(GuiGuide gui, ArrayList<IGuidePageElement> elements) {
+	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements) {
 		super.getElements(gui, elements);
 		elements.add(new ElementItem(0, stack, 4, 15));
 		ElementCraftingRecipe recipe = new ElementCraftingRecipe(0, gui.mc.thePlayer, stack, 4, 74);

@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import sonar.logistics.api.info.IInfoRegistry;
+import sonar.logistics.api.info.register.IInfoRegistry;
 
 /**use this with {@link IInfoRegistry}*/
 @Retention(RetentionPolicy.RUNTIME)

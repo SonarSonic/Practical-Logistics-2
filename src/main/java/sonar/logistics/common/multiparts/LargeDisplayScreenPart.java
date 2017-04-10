@@ -1,7 +1,8 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
@@ -31,36 +32,38 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.listener.ISonarListenable;
+import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.connecting.ILogisticsNetwork;
-import sonar.logistics.api.displays.ConnectedDisplayScreen;
-import sonar.logistics.api.displays.DisplayConnections;
-import sonar.logistics.api.displays.DisplayType;
-import sonar.logistics.api.displays.IInfoDisplay;
-import sonar.logistics.api.displays.ILargeDisplay;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenLayout;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.tiles.cable.ConnectableType;
+import sonar.logistics.api.tiles.cable.PL2Properties;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.DisplayConnections;
+import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.client.gui.GuiDisplayScreen;
-import sonar.logistics.common.multiparts.generic.ScreenMultipart;
+import sonar.logistics.common.multiparts.generic.DisplayMultipart;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
-public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDisplay {
+public class LargeDisplayScreenPart extends DisplayMultipart implements ILargeDisplay {
 
 	public int registryID = -1;
 	public boolean wasAdded = false;
 	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.<DisplayConnections>create("type", DisplayConnections.class);
-	public ConnectedDisplayScreen overrideDisplay = null;
+	public ConnectedDisplay overrideDisplay = null;
 	public NBTTagCompound savedTag = null;
 	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // set default info
 	public SyncTagType.BOOLEAN wasLocked = (BOOLEAN) new SyncTagType.BOOLEAN(4);
@@ -130,9 +133,9 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	@Override
-	public ScreenLayout getLayout() {
-		ConnectedDisplayScreen screen = getDisplayScreen();
-		return screen == null ? ScreenLayout.ONE : screen.getLayout();
+	public DisplayLayout getLayout() {
+		ConnectedDisplay screen = getDisplayScreen();
+		return screen == null ? DisplayLayout.ONE : screen.getLayout();
 	}
 
 	@Override
@@ -156,8 +159,8 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	@Override
-	public ConnectableType getCableType() {
-		return ConnectableType.CONNECTION;
+	public ConnectableType getConnectableType() {
+		return ConnectableType.CONNECTABLE;
 	}
 
 	//// ILargeDisplay \\\\
@@ -169,18 +172,16 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	@Override
 	public void setRegistryID(int id) {
-		if (!this.getWorld().isRemote) {
-			registryID = id;
-		}
+		registryID = id;
 	}
 
 	@Override
-	public ConnectedDisplayScreen getDisplayScreen() {
+	public ConnectedDisplay getDisplayScreen() {
 		return overrideDisplay != null ? overrideDisplay : PL2.getInfoManager(isClient()).getOrCreateDisplayScreen(getWorld(), this, registryID);
 	}
 
 	@Override
-	public void setConnectedDisplay(ConnectedDisplayScreen connectedDisplay) {
+	public void setConnectedDisplay(ConnectedDisplay connectedDisplay) {
 		if (isServer() && shouldRender()) {
 			if (this.savedTag != null && !savedTag.hasNoTags()) {
 				connectedDisplay.readData(savedTag, SyncType.SAVE);
@@ -210,7 +211,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 
 	//// ILogicViewable \\\\
 
-	public ListenerList<PlayerListener> getListenerList() {
+	public ListenableList<PlayerListener> getListenerList() {
 		return getDisplayScreen().getListenerList();
 	}
 
@@ -223,6 +224,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {
 		getDisplayScreen().onListenerRemoved(tally);
 	}
+	
 
 	//// NETWORK \\\\
 	public void onNetworkConnect(ILogisticsNetwork network) {
@@ -236,7 +238,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	@Override
-	public boolean canConnectOnSide(int connectingID, EnumFacing dir) {
+	public boolean canConnectOnSide(int connectingID, EnumFacing dir, boolean internal) {
 		return (dir != face && dir != face.getOpposite()) && (connectingID == registryID || !(wasLocked.getObject() || getDisplayScreen().isLocked.getObject()));
 	}
 
@@ -247,25 +249,24 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 		info.add("Should Render " + this.shouldRender.getObject());
 	}
 
-	public void addToNetwork() {
+	public void addConnection() {
 		if (isServer()) {
 			PL2.getDisplayManager().addConnection(this);
 		}
 	}
 
-	public void removeFromNetwork() {
+	public void removeConnection() {
 		if (isServer()) {
-			PL2.getDisplayManager().removeConnection(this.getRegistryID(), this);
+			PL2.getDisplayManager().removeConnection(this);
 		}
 	}
 
 	//// EVENTS \\\\
-	public void onLoaded() {}
-
 	@Override
-	public void onFirstTick() {
+	public void validate() {
+		super.validate();
 		if (isServer() && !wasAdded) {
-			addToNetwork();
+			addConnection();
 			wasAdded = true;
 		} else {
 			this.requestSyncPacket();
@@ -273,17 +274,11 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	@Override
-	public void onRemoved() {
+	public void invalidate() {
+		super.invalidate();
 		wasRemoved = true;
-		this.onUnloaded();
-	}
-
-	@Override
-	public void onUnloaded() {
-		if (isServer()) {
-			this.removeFromNetwork();
-			wasAdded = false;
-		}
+		wasAdded = false;
+		this.removeConnection();
 	}
 
 	//// MULTIPART \\\\
@@ -320,13 +315,13 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess w, BlockPos pos) {
 		IBlockState currentState = state;
-		List<EnumFacing> faces = new ArrayList();
+		List<EnumFacing> faces = Lists.newArrayList();
 		for (EnumFacing face : EnumFacing.VALUES) {
 			if (face == this.face || face == this.face.getOpposite()) {
 				continue;
 			}
 			if (this.getWorld() != null) {
-				IInfoDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(getCoords(), face), this.face);
+				IDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(getCoords(), face), this.face);
 				if (display != null && display.getDisplayType() == DisplayType.LARGE && ((ILargeDisplay) display).getRegistryID() == registryID) {
 					switch (this.face) {
 					case DOWN:
@@ -368,12 +363,12 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			}
 		}
 		DisplayConnections type = DisplayConnections.getType(faces);
-		return currentState.withProperty(ORIENTATION, face).withProperty(ROTATION, EnumFacing.NORTH).withProperty(TYPE, type);
+		return currentState.withProperty(PL2Properties.ORIENTATION, face).withProperty(PL2Properties.ROTATION, EnumFacing.NORTH).withProperty(TYPE, type);
 	}
 
 	@Override
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, ROTATION, TYPE });
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { PL2Properties.ORIENTATION, PL2Properties.ROTATION, TYPE });
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -415,7 +410,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	//// PACKETS \\\\
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
-		ConnectedDisplayScreen screen = this.getDisplayScreen();
+		ConnectedDisplay screen = this.getDisplayScreen();
 		if (screen != null)
 			PL2.network.sendTo(new PacketConnectedDisplayScreen(screen, registryID), (EntityPlayerMP) player);
 	}
@@ -448,16 +443,16 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 	}
 
 	//// GUI \\\\
-	public Object getServerElement(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	public Object getServerElement(DisplayMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new ContainerMultipartSync(obj) : null;
 	}
 
-	public Object getClientElement(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	public Object getClientElement(DisplayMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new GuiDisplayScreen(obj) : null;
 	}
 
 	@Override
-	public void onGuiOpened(ScreenMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	public void onGuiOpened(DisplayMultipart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
@@ -467,7 +462,7 @@ public class LargeDisplayScreenPart extends ScreenMultipart implements ILargeDis
 			break;
 		}
 	}
-	
+
 	@Override
 	public PL2Multiparts getMultipart() {
 		return PL2Multiparts.LARGE_DISPLAY_SCREEN;

@@ -2,11 +2,12 @@ package sonar.logistics.client.gui.generic;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -36,7 +37,6 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.filters.FilterList;
 import sonar.logistics.api.filters.FluidFilter;
@@ -44,12 +44,13 @@ import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.filters.ItemFilter;
-import sonar.logistics.api.filters.ListPacket;
 import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.nodes.NodeTransferMode;
-import sonar.logistics.api.nodes.TransferType;
+import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.nodes.TransferType;
+import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerFilterList;
@@ -152,7 +153,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 	protected void renderToolTip(ItemStack stack, int x, int y) {
 		List<String> list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
-		List<String> newList = new ArrayList();
+		List<String> newList = Lists.newArrayList();
 		boolean matches = tile.allowed(stack);
 		for (int i = 0; i < list.size(); ++i) {
 
@@ -354,7 +355,7 @@ public class GuiFilterList extends GuiSelectionList {
 			// GL11.glEnable(GL11.GL_DEPTH_TEST);
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			renderStrings(x, y);
-			ArrayList list = (ArrayList) getGridList().clone();
+			List list = Lists.newArrayList(getGridList());
 			if (list != null && !list.isEmpty()) {
 				int start = (int) (getGridSize(list) / 12 * scroller.getCurrentScroll());
 				int i = start * 12;
@@ -454,9 +455,9 @@ public class GuiFilterList extends GuiSelectionList {
 
 	public void setInfo() {
 		if (state == GuiState.LIST)
-			infoList = (ArrayList<INodeFilter>) tile.getFilters().objs.clone();
+			infoList = tile.getFilters().objs;
 		if (state == GuiState.ORE_FILTER)
-			infoList = (ArrayList) ((OreDictFilter) currentFilter).getOreIDs().clone();
+			infoList = ((OreDictFilter) currentFilter).getOreIDs();
 	}
 
 	@Override
@@ -519,14 +520,14 @@ public class GuiFilterList extends GuiSelectionList {
 		}
 		if (state == GuiState.ITEM_FILTER || state == GuiState.FLUID_FILTER) {
 			if (button == 0 || button == 1) {
-				ArrayList list = (ArrayList) getGridList().clone();
+				List list = getGridList();
 				if (x - guiLeft >= 13 && x - guiLeft <= 13 + (12 * 18) && y - guiTop >= 32 && y - guiTop <= 32 + (7 * 18)) {
 					int start = (int) (getGridSize(list) / 12 * scroller.getCurrentScroll());
 					int X = (x - guiLeft - 13) / 18;
 					int Y = (y - guiTop - 32) / 18;
 					int i = (start * 12) + (12 * Y) + X;
-					if (i < getGridList().size()) {
-						Object storedStack = getGridList().get(i);
+					if (i < list.size()) {
+						Object storedStack = list.get(i);
 						if (storedStack != null) {
 							onGridClicked(storedStack, i, button, false);
 							return;
@@ -672,7 +673,7 @@ public class GuiFilterList extends GuiSelectionList {
 	public void renderToolTip(Object selection, int x, int y) {
 	}
 
-	public ArrayList getGridList() {
+	public List getGridList() {
 		if (state == GuiState.ITEM_FILTER) {
 			return ((ItemFilter) currentFilter).list.objs;
 		}
@@ -691,11 +692,11 @@ public class GuiFilterList extends GuiSelectionList {
 	}
 
 	// grid
-	public int getGridSize(ArrayList list) {
+	public int getGridSize(List list) {
 		return getGridList() == null ? 0 : list.size();
 	}
 
-	private boolean needsScrollBars(ArrayList list) {
+	private boolean needsScrollBars(List list) {
 		if (getGridSize(list) <= (12 * 7))
 			return false;
 		return true;

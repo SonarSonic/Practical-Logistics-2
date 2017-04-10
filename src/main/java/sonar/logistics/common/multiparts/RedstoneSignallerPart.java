@@ -1,8 +1,10 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
@@ -28,14 +30,14 @@ import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.logistics.EmitterStatement;
-import sonar.logistics.api.logistics.ILogisticsTile;
-import sonar.logistics.api.logistics.SignallerModes;
-import sonar.logistics.api.viewers.ILogicViewable;
+import sonar.logistics.api.tiles.cable.PL2Properties;
+import sonar.logistics.api.tiles.signaller.EmitterStatement;
+import sonar.logistics.api.tiles.signaller.ILogisticsTile;
+import sonar.logistics.api.tiles.signaller.SignallerModes;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.client.gui.generic.GuiStatementList;
 import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.common.multiparts.generic.SidedMultipart;
@@ -72,14 +74,14 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 			isActive.setObject(false);
 			return;
 		}
-		ArrayList<InfoUUID> ids = new ArrayList();
+		List<InfoUUID> ids = Lists.newArrayList();
 		for (EmitterStatement statement : statements.getObjects()) {
 			statement.addRequiredUUIDs(ids);
 		}
-		HashMap<InfoUUID, IMonitorInfo> infoList = new HashMap();
+		Map<InfoUUID, IMonitorInfo> infoList = Maps.newHashMap();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				ILogicViewable monitor = CableHelper.getMonitorFromIdentity(id.hashCode, false);
+				ILogicListenable monitor = CableHelper.getMonitorFromIdentity(id.getIdentity(), false);
 				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
 					IMonitorInfo monitorInfo = PL2.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
@@ -176,11 +178,11 @@ public class RedstoneSignallerPart extends SidedMultipart implements IRedstonePa
 
 	@Override
 	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(ORIENTATION, getCableFace()).withProperty(ACTIVE, isActive());
+		return state.withProperty(PL2Properties.ORIENTATION, getCableFace()).withProperty(ACTIVE, isActive());
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { ORIENTATION, ACTIVE });
+		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { PL2Properties.ORIENTATION, ACTIVE });
 	}	
 	
 	//// PACKETS \\\\

@@ -1,35 +1,24 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
 import mcmultipart.multipart.ISlottedPart;
 import mcmultipart.raytrace.PartMOP;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarMultipartInventory;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.utils.IGuiTile;
-import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.IConnectionNode;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.wireless.IEntityTransceiver;
-import sonar.logistics.api.wireless.ITileTransceiver;
+import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.wireless.ITransceiver;
 import sonar.logistics.client.gui.GuiArray;
 import sonar.logistics.common.containers.ContainerArray;
@@ -37,9 +26,9 @@ import sonar.logistics.common.multiparts.generic.SidedMultipart;
 import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.helpers.LogisticsHelper;
 
-public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnectionNode, IFlexibleGui {
+public class ArrayPart extends SidedMultipart implements ISlottedPart, INode, IFlexibleGui {
 
-	public ArrayList<NodeConnection> channels = Lists.newArrayList();
+	public List<NodeConnection> channels = Lists.newArrayList();
 	public static boolean entityChanged = true;
 
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
@@ -75,7 +64,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	}
 
 	public void updateConnectionLists() {
-		ArrayList<NodeConnection> channels = Lists.newArrayList();
+		List<NodeConnection> channels = Lists.newArrayList();
 		for (int i = 0; i < 8; i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if (stack != null && stack.getItem() instanceof ITransceiver && stack.hasTagCompound()) {
@@ -86,7 +75,7 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 			}
 		}
 		this.channels = channels;
-		network.markCacheDirty(CacheHandler.NODES);
+		network.onCacheChanged(CacheHandler.NODES);
 	}
 
 	@Override
@@ -109,13 +98,13 @@ public class ArrayPart extends SidedMultipart implements ISlottedPart, IConnecti
 	}
 
 	@Override
-	public void addConnections(ArrayList<NodeConnection> connections) {
+	public void addConnections(List<NodeConnection> connections) {
 		connections.addAll(channels);
 	}
 
 	//// EVENTS \\\\
-	public void onFirstTick() {
-		super.onFirstTick();
+	public void validate() {
+		super.validate();
 		this.updateConnectionLists();
 	}
 

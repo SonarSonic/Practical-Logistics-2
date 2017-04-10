@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.UUID;
-
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
@@ -23,25 +21,21 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.core.network.sync.SyncUUID;
 import sonar.core.utils.CustomColour;
 import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.ScreenInteractionEvent;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.connections.monitoring.LogicMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
-import sonar.logistics.connections.monitoring.MonitoredFluidStack;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
@@ -60,8 +54,6 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public int xSlots, ySlots, perPage;
 
 	// client rendering
-	public static final double ITEM_SPACING = 22.7;
-	public static final double FLUID_DIMENSION = (14 * 0.0625);
 	public Type type = Type.ITEM;
 
 	public enum Type {
@@ -104,7 +96,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 	@Override
 	public boolean isIdenticalInfo(LogicInfoList info) {
-		return identity == info.identity;
+		return identity.getObject() == info.identity.getObject();
 	}
 
 	@Override
@@ -118,7 +110,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	@Override
-	public LogicMonitorHandler<LogicInfoList> getHandler() {
+	public INetworkHandler getHandler() {
 		return null;
 	}
 
@@ -143,6 +135,10 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			}
 		}
 		return cachedList;
+	}
+
+	public void setCachedList(MonitoredList list, InfoUUID id) {
+		cachedList = list;
 	}
 
 	@Override
@@ -172,39 +168,13 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		super.renderInfo(container, displayInfo, width, height, scale, infoPos);
-		//SimpleProfiler.start("render");
+		SimpleProfiler.start("render");
 		MonitoredList<?> list = getCachedList(displayInfo.getInfoUUID());
 		if (list.isEmpty())
 			return;
 		switch (type) {
 		case ITEM:
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glPushMatrix();
-			GL11.glTranslated(-1 + (0.0625 * 1.3), -1 + 0.0625 * 5, 0.00);
-			GL11.glRotated(180, 0, 1, 0);
-			GL11.glScaled(-1, 1, 1);
-			MonitoredList<MonitoredItemStack> stacks = (MonitoredList<MonitoredItemStack>) list;
-			for (int i = perPage * pageCount; i < Math.min(perPage + perPage * pageCount, stacks.size()); i++) {
-				MonitoredItemStack stack = stacks.get(i);
-				if (stack.isValid()) {
-					StoredItemStack item = stack.getStoredStack();
-					int current = i - perPage * pageCount;
-					int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
-					int yLevel = (int) (Math.floor((current / xSlots)));
-					GL11.glPushMatrix();
-					GL11.glScaled(0.022, 0.022, 0.01);
-					GL11.glTranslated(xLevel * ITEM_SPACING, yLevel * ITEM_SPACING, 0);
-					GlStateManager.disableLighting();
-					RenderHelper.renderItemIntoGUI(item.item, 0, 0);
-					
-					GlStateManager.translate(0, 0, 1);
-					GlStateManager.depthMask(false);
-					RenderHelper.renderStoredItemStackOverlay(item.item, 0, 0, 0, "" + item.stored, false);
-					GlStateManager.depthMask(true);					 
-					GL11.glPopMatrix();
-				}
-			}
-			GL11.glPopMatrix();
+			InfoRenderer.renderInventory((MonitoredList<MonitoredItemStack>) list, perPage * pageCount, Math.min(perPage + perPage * pageCount, list.size()), xSlots, ySlots);
 			break;
 		case FLUID:
 			MonitoredList<MonitoredFluidStack> fluids = (MonitoredList<MonitoredFluidStack>) list;
@@ -223,11 +193,11 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 					GL11.glTranslated(-1, -0.0625 * 12, +0.004);
 					TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(stack.getFluid().getStill().toString());
 					Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-					InfoRenderer.renderProgressBarWithSprite(sprite, FLUID_DIMENSION, FLUID_DIMENSION, 0.012, fluid.getStored(), fluid.getStoredStack().capacity);
+					InfoRenderer.renderProgressBarWithSprite(sprite, InfoRenderer.FLUID_DIMENSION, InfoRenderer.FLUID_DIMENSION, 0.012, fluid.getStored(), fluid.getStoredStack().capacity);
 					GlStateManager.enableLighting();
 					GL11.glTranslated(0, 0, -0.001);
 					GL11.glPopMatrix();
-					InfoRenderer.renderNormalInfo(container.display.getDisplayType(), FLUID_DIMENSION, FLUID_DIMENSION + 0.0625, 0.012, fluid.getClientIdentifier(), fluid.getClientObject());
+					InfoRenderer.renderNormalInfo(container.display.getDisplayType(), InfoRenderer.FLUID_DIMENSION, InfoRenderer.FLUID_DIMENSION + 0.0625, 0.012, fluid.getClientIdentifier(), fluid.getClientObject());
 					GL11.glPopMatrix();
 					GL11.glPopMatrix();
 				}
@@ -269,12 +239,12 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			break;
 
 		}
-		//System.out.println(SimpleProfiler.finish("render") / 10000.0);
+		System.out.println(SimpleProfiler.finish("render") / 10000.0);
 
 	}
 
 	@Override
-	public NBTTagCompound onClientClick(ScreenInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
+	public NBTTagCompound onClientClick(DisplayInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
 		NBTTagCompound clickTag = new NBTTagCompound();
 		if (event.type == BlockInteractionType.SHIFT_RIGHT) {
 			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
@@ -330,7 +300,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	@Override
-	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, ScreenInteractionEvent event, NBTTagCompound clickTag) {
+	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, DisplayInteractionEvent event, NBTTagCompound clickTag) {
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			MonitoredItemStack clicked = NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag);
 			InfoHelper.screenItemStackClicked(clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);

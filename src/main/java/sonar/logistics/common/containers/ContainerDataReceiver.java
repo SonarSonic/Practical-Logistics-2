@@ -5,7 +5,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.common.multiparts.DataReceiverPart;
-import sonar.logistics.connections.managers.EmitterManager;
+import sonar.logistics.managers.WirelessManager;
 
 public class ContainerDataReceiver extends ContainerMultipartSync {
 
@@ -21,7 +21,7 @@ public class ContainerDataReceiver extends ContainerMultipartSync {
 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		EmitterManager.removeViewer(player);
+		WirelessManager.removeViewer(player);
 	}
 
 	@Override

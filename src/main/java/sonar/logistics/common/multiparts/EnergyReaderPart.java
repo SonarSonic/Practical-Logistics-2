@@ -1,38 +1,35 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncCoords;
+import sonar.core.network.sync.SyncEnergyType;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Items;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.api.cabling.ChannelType;
 import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.nodes.NodeConnection;
-import sonar.logistics.api.readers.EnergyReader;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.readers.EnergyReader;
+import sonar.logistics.api.utils.ChannelType;
+import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.gui.GuiEnergyReader;
 import sonar.logistics.common.containers.ContainerEnergyReader;
-import sonar.logistics.connections.monitoring.EnergyMonitorHandler;
-import sonar.logistics.connections.monitoring.MonitoredBlockCoords;
-import sonar.logistics.connections.monitoring.MonitoredEnergyStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.common.multiparts.generic.ReaderMultipart;
+import sonar.logistics.connections.handlers.EnergyNetworkHandler;
 import sonar.logistics.helpers.EnergyHelper;
 import sonar.logistics.info.types.LogicInfoList;
-import sonar.logistics.network.sync.SyncEnergyType;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.info.types.MonitoredEnergyStack;
 
 public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> implements IByteBufTile {
 
@@ -45,8 +42,9 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 		syncList.addParts(selected, sortingOrder, setting, energyType);
 	}
 
-	public EnergyReaderPart() {
-		super(EnergyMonitorHandler.id);
+	@Override
+	public void addHandlerIDs(List<String> ids) {
+		ids.add(EnergyNetworkHandler.id);
 	}
 
 	//// ILogicReader \\\\
@@ -58,7 +56,7 @@ public class EnergyReaderPart extends ReaderMultipart<MonitoredEnergyStack> impl
 	}
 
 	@Override
-	public void setMonitoredInfo(MonitoredList<MonitoredEnergyStack> updateInfo, ArrayList<NodeConnection> usedChannels, int channelID) {
+	public void setMonitoredInfo(MonitoredList<MonitoredEnergyStack> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid) {
 		IMonitorInfo info = null;
 		switch (setting.getObject()) {
 		case STORAGE:

@@ -1,7 +1,6 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -22,15 +21,15 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.filters.ListPacket;
-import sonar.logistics.api.readers.InventoryReader;
-import sonar.logistics.api.readers.InventoryReader.Modes;
+import sonar.logistics.api.tiles.readers.InventoryReader;
+import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
+import sonar.logistics.api.utils.ListPacket;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerInventoryReader;
 import sonar.logistics.common.multiparts.InventoryReaderPart;
-import sonar.logistics.connections.monitoring.MonitoredItemStack;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketInventoryReader;
 import sonar.logistics.network.PacketNodeFilter;
 
@@ -175,7 +174,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			return part.getMonitoredList();
 		} else {
 			MonitoredList<MonitoredItemStack> searchList = MonitoredList.newMonitoredList(part.getNetworkID());
-			for (MonitoredItemStack stack : (ArrayList<MonitoredItemStack>) part.getMonitoredList().clone()) {
+			for (MonitoredItemStack stack : (List<MonitoredItemStack>) part.getMonitoredList().clone()) {
 				StoredItemStack item = stack.getStoredStack();
 				if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 					searchList.add(stack);

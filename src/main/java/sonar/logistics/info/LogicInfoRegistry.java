@@ -3,13 +3,12 @@ package sonar.logistics.info;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -24,51 +23,51 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.ICustomEntityHandler;
-import sonar.logistics.api.info.ICustomTileHandler;
-import sonar.logistics.api.info.IInfoRegistry;
-import sonar.logistics.api.info.ILogicInfoRegistry;
 import sonar.logistics.api.info.IMonitorInfo;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.nodes.BlockConnection;
-import sonar.logistics.api.nodes.EntityConnection;
-import sonar.logistics.api.nodes.NodeConnection;
+import sonar.logistics.api.info.handlers.IEntityInfoProvider;
+import sonar.logistics.api.info.handlers.ITileInfoProvider;
+import sonar.logistics.api.info.register.IInfoRegistry;
+import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.CapabilityMethod;
 import sonar.logistics.api.register.InvField;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.register.TileHandlerMethod;
-import sonar.logistics.connections.monitoring.MonitoredList;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
+import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
 
 /** where all the registering for LogicInfo happens */
-public class LogicInfoRegistry implements ILogicInfoRegistry {
+public class LogicInfoRegistry implements IMasterInfoRegistry {
 
 	public static LogicInfoRegistry INSTANCE = new LogicInfoRegistry();
 
 	/** the cache of methods/fields applicable to a given tile. */
-	public LinkedHashMap<Class<?>, ArrayList<Method>> cachedMethods = new LinkedHashMap();
-	public LinkedHashMap<Class<?>, ArrayList<Field>> cachedFields = new LinkedHashMap();
+	public Map<Class<?>, List<Method>> cachedMethods = Maps.newLinkedHashMap();
+	public Map<Class<?>, List<Field>> cachedFields = Maps.newLinkedHashMap();
 
 	/** all the registries which can provide valid returns, methods and fields */
-	public ArrayList<IInfoRegistry> infoRegistries = new ArrayList();
+	public List<IInfoRegistry> infoRegistries = Lists.newArrayList();
 
 	/** all custom handlers which can provide custom info on blocks for tricky situations */
-	public ArrayList<ICustomTileHandler> customTileHandlers = new ArrayList();
-	public ArrayList<ICustomEntityHandler> customEntityHandlers = new ArrayList();
+	public List<ITileInfoProvider> tileProviders = Lists.newArrayList();
+	public List<IEntityInfoProvider> entityProviders = Lists.newArrayList();
 
 	/** all the register validated returns, methods and fields from the registries */
-	public ArrayList<Class<?>> registeredReturnTypes = Lists.newArrayList();
-	public ArrayList<Capability> registeredCapabilities = Lists.newArrayList();
-	public LinkedHashMap<RegistryType, LinkedHashMap<Class<?>, ArrayList<Method>>> infoMethods = new LinkedHashMap();
-	public LinkedHashMap<RegistryType, LinkedHashMap<Class<?>, ArrayList<Field>>> infoFields = new LinkedHashMap();
-	public LinkedHashMap<Class<?>, Map<String, Integer>> invFields = new LinkedHashMap();
-	public LinkedHashMap<String, Pair<String, String>> infoAdjustments = new LinkedHashMap();
-	public LinkedHashMap<String, String> clientNameAdjustments = new LinkedHashMap(); // to give other methods the lang id of others
+	public List<Class<?>> validReturns = Lists.newArrayList();
+	public List<Capability> validCapabilities = Lists.newArrayList();
+	public Map<RegistryType, Map<Class<?>, List<Method>>> validMethods = Maps.newLinkedHashMap();
+	public Map<RegistryType, Map<Class<?>, List<Field>>> validFields = Maps.newLinkedHashMap();
+	public Map<Class<?>, Map<String, Integer>> validInvFields = Maps.newLinkedHashMap();
+	public Map<String, Pair<String, String>> infoAdjustments = Maps.newLinkedHashMap();
+	public Map<String, String> clientAdjustments = Maps.newLinkedHashMap(); // to give other methods the lang id of others
 
 	/** the default accepted returns */
-	public ArrayList<Class<?>> acceptedTypes = RegistryType.buildArrayList();
-	public ArrayList<Class<?>> defaultReturnTypes = Lists.newArrayList(String.class);
+	public List<Class<?>> acceptedReturns = RegistryType.buildList();
+	public List<Class<?>> defaultReturns = Lists.newArrayList(String.class);
 
 	public void init() {
 
@@ -103,12 +102,12 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 	}
 
 	public void reload() {
-		registeredReturnTypes.clear();
-		infoMethods.clear();
-		infoFields.clear();
-		invFields.clear();
+		validReturns.clear();
+		validMethods.clear();
+		validFields.clear();
+		validInvFields.clear();
 		infoAdjustments.clear();
-		clientNameAdjustments.clear();
+		clientAdjustments.clear();
 
 		init();
 
@@ -123,31 +122,31 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 	}
 
 	public void registerCapability(Capability capability) {
-		registeredCapabilities.add(capability);
+		validCapabilities.add(capability);
 	}
 
-	public void registerReturn(Class<?> classType) {
-		registeredReturnTypes.add(classType);
+	public void registerValidReturn(Class<?> classType) {
+		validReturns.add(classType);
 	}
 
 	public void registerMethods(Class<?> classType, RegistryType type) {
 		registerMethods(classType, type, Lists.newArrayList(), true);
 	}
 
-	public void registerMethods(Class<?> classType, RegistryType type, ArrayList<String> methodNames) {
+	public void registerMethods(Class<?> classType, RegistryType type, List<String> methodNames) {
 		registerMethods(classType, type, methodNames, false);
 	}
 
-	public void registerMethods(Class<?> classType, RegistryType type, ArrayList<String> methodNames, boolean exclude) {
-		infoMethods.putIfAbsent(type, new LinkedHashMap());
-		infoMethods.get(type).putIfAbsent(classType, new ArrayList());
-		ArrayList<String> used = new ArrayList();
+	public void registerMethods(Class<?> classType, RegistryType type, List<String> methodNames, boolean exclude) {
+		validMethods.putIfAbsent(type, Maps.newLinkedHashMap());
+		validMethods.get(type).putIfAbsent(classType, Lists.newArrayList());
+		List<String> used = Lists.newArrayList();
 		Method[] methods = classType.getMethods();
 		for (Method method : methods) {
 			if (!used.contains(method.getName()) && (methodNames.isEmpty() || (exclude ? !methodNames.contains(method.getName()) : methodNames.contains(method.getName())))) {
 				boolean validParams = validateParameters(method.getParameterTypes()), validReturns = isValidReturnType(method.getReturnType());
 				if (validParams && validReturns) {
-					infoMethods.get(type).get(classType).add(method);
+					validMethods.get(type).get(classType).add(method);
 					used.add(method.getName());
 				} else {
 					PL2.logger.error(String.format("Failed to load method: %s, Valid Parameters: %s, Valid Returns %s,", method.toString(), validParams, validReturns));
@@ -156,9 +155,9 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		}
 	}
 
-	public void registerClientNames(String fieldName, ArrayList<String> fieldNames) {
+	public void registerClientNames(String fieldName, List<String> fieldNames) {
 		for (String name : fieldNames) {
-			clientNameAdjustments.put(name, fieldName);
+			clientAdjustments.put(name, fieldName);
 		}
 	}
 
@@ -166,13 +165,13 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		registerFields(classType, type, Lists.newArrayList(), true);
 	}
 
-	public void registerFields(Class<?> classType, RegistryType type, ArrayList<String> fieldNames) {
+	public void registerFields(Class<?> classType, RegistryType type, List<String> fieldNames) {
 		registerFields(classType, type, fieldNames, false);
 	}
 
-	public void registerFields(Class<?> classType, RegistryType type, ArrayList<String> fieldNames, boolean exclude) {
-		infoFields.putIfAbsent(type, new LinkedHashMap());
-		infoFields.get(type).putIfAbsent(classType, new ArrayList());
+	public void registerFields(Class<?> classType, RegistryType type, List<String> fieldNames, boolean exclude) {
+		validFields.putIfAbsent(type, Maps.newLinkedHashMap());
+		validFields.get(type).putIfAbsent(classType, Lists.newArrayList());
 		Field[] fields = classType.getDeclaredFields();
 		for (Field field : fields) {
 			if ((fieldNames.isEmpty() || (exclude ? !fieldNames.contains(field.getName()) : fieldNames.contains(field.getName())))) {
@@ -180,7 +179,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 					field.setAccessible(true);
 				boolean validReturns = isValidReturnType(field.getType());
 				if (validReturns) {
-					infoFields.get(type).get(classType).add(field);
+					validFields.get(type).get(classType).add(field);
 				} else {
 					PL2.logger.error(String.format("Failed to load field: %s, Valid Returns: %s,", field.toString(), validReturns));
 				}
@@ -190,10 +189,10 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 	}
 
 	public void registerInvFields(Class<?> inventoryClass, Map<String, Integer> fields) {
-		invFields.put(inventoryClass, fields);
+		validInvFields.put(inventoryClass, fields);
 	}
 
-	public void registerInfoAdjustments(ArrayList<String> identifiers, String prefix, String suffix) {
+	public void registerInfoAdjustments(List<String> identifiers, String prefix, String suffix) {
 		identifiers.forEach(identifier -> infoAdjustments.put(identifier, new Pair(prefix, suffix)));
 	}
 
@@ -201,7 +200,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		infoAdjustments.put(identifier, new Pair(prefix, suffix));
 	}
 
-	public boolean containsAssignableType(Class<?> toCheck, ArrayList<Class<?>> classes) {
+	public boolean containsAssignableType(Class<?> toCheck, List<Class<?>> classes) {
 		for (Class<?> cls : classes) {
 			if (cls.isAssignableFrom(toCheck) || toCheck.isAssignableFrom(cls)) {
 				return true;
@@ -211,7 +210,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 	}
 
 	public boolean isValidReturnType(Class<?> returnType) {
-		return returnType.isPrimitive() || containsAssignableType(returnType, defaultReturnTypes) || containsAssignableType(returnType, registeredReturnTypes) || containsAssignableType(returnType, acceptedTypes);
+		return returnType.isPrimitive() || containsAssignableType(returnType, defaultReturns) || containsAssignableType(returnType, validReturns) || containsAssignableType(returnType, acceptedReturns);
 	}
 
 	public boolean validateParameters(Class<?>[] parameters) {
@@ -219,22 +218,22 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 			return true;
 		}
 		for (Class<?> param : parameters) {
-			if (!containsAssignableType(param, acceptedTypes)) {
+			if (!containsAssignableType(param, acceptedReturns)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public ArrayList<Method> getAssignableMethods(Class<?> obj, RegistryType type) {
-		ArrayList<Method> methods = cachedMethods.get(obj);
+	public List<Method> getAssignableMethods(Class<?> obj, RegistryType type) {
+		List<Method> methods = cachedMethods.get(obj);
 		if (methods == null) {
-			methods = new ArrayList();
-			LinkedHashMap<Class<?>, ArrayList<Method>> map = infoMethods.computeIfAbsent(type, m -> new LinkedHashMap());
+			methods = Lists.newArrayList();
+			Map<Class<?>, List<Method>> map = validMethods.computeIfAbsent(type, m -> Maps.newLinkedHashMap());
 			if (type == RegistryType.NONE) {
-				map.putAll(infoMethods.get(RegistryType.NONE));
+				map.putAll(validMethods.get(RegistryType.NONE));
 			}
-			for (Entry<Class<?>, ArrayList<Method>> classTypes : map.entrySet()) {
+			for (Entry<Class<?>, List<Method>> classTypes : map.entrySet()) {
 				if (classTypes.getKey().isAssignableFrom(obj) || obj.isAssignableFrom(classTypes.getKey())) {
 					methods.addAll(classTypes.getValue());
 				}
@@ -244,15 +243,15 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		return methods;
 	}
 
-	public ArrayList<Field> getAccessibleFields(Class<?> obj, RegistryType type) {
-		ArrayList<Field> fields = cachedFields.get(obj);
+	public List<Field> getAccessibleFields(Class<?> obj, RegistryType type) {
+		List<Field> fields = cachedFields.get(obj);
 		if (fields == null) {
-			fields = new ArrayList();
-			LinkedHashMap<Class<?>, ArrayList<Field>> map = infoFields.computeIfAbsent(type, m -> new LinkedHashMap());
+			fields = Lists.newArrayList();
+			Map<Class<?>, List<Field>> map = validFields.computeIfAbsent(type, m -> Maps.newLinkedHashMap());
 			if (type == RegistryType.NONE) {
-				map.putAll(infoFields.get(RegistryType.NONE));
+				map.putAll(validFields.get(RegistryType.NONE));
 			}
-			for (Entry<Class<?>, ArrayList<Field>> classTypes : map.entrySet()) {
+			for (Entry<Class<?>, List<Field>> classTypes : map.entrySet()) {
 				if (classTypes.getKey().isAssignableFrom(obj)) {
 					fields.addAll(classTypes.getValue());
 				}
@@ -295,7 +294,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		Class<?> returnedClass = returned.getClass();
 		currentPath.addObject(method);
 
-		if (!returnedClass.isPrimitive() && !containsAssignableType(returnedClass, defaultReturnTypes) && containsAssignableType(returnedClass, registeredReturnTypes)) {
+		if (!returnedClass.isPrimitive() && !containsAssignableType(returnedClass, defaultReturns) && containsAssignableType(returnedClass, validReturns)) {
 			getAssignableMethods(returnedClass, type).forEach(returnMethod -> getClassInfo(infoList, currentPath.dupe(), type, returned, returnMethod, available));
 		} else {
 			buildInfo(infoList, currentPath, getValidClassName(method.getDeclaringClass(), obj), method.getName(), type, returned);
@@ -314,7 +313,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		Class<?> returnedClass = fieldObj.getClass();
 		currentPath.addObject(field);
 
-		if (!returnedClass.isPrimitive() && !containsAssignableType(returnedClass, defaultReturnTypes) && containsAssignableType(returnedClass, registeredReturnTypes)) {
+		if (!returnedClass.isPrimitive() && !containsAssignableType(returnedClass, defaultReturns) && containsAssignableType(returnedClass, validReturns)) {
 			getAssignableMethods(returnedClass, type).forEach(returnMethod -> getClassInfo(infoList, currentPath.dupe(), type, fieldObj, returnMethod, available));
 			getAccessibleFields(returnedClass, type).forEach(subField -> getFieldInfo(infoList, currentPath.dupe(), type, fieldObj, subField, available));
 		} else {
@@ -357,7 +356,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 
 	public List<IProvidableInfo> getEntityInfo(final List<IProvidableInfo> infoList, Entity entity) {
 		Class<?> argClass;
-		if (entity != null && containsAssignableType(argClass = entity.getClass(), acceptedTypes)) {
+		if (entity != null && containsAssignableType(argClass = entity.getClass(), acceptedReturns)) {
 			LogicPath logicPath = new LogicPath();
 			logicPath.setStart(entity);
 			EnumFacing currentFace = null;
@@ -376,14 +375,14 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		for (Object arg : available) {
 
 			Class<?> argClass;
-			if (arg != null && containsAssignableType(argClass = arg.getClass(), acceptedTypes)) {
+			if (arg != null && containsAssignableType(argClass = arg.getClass(), acceptedReturns)) {
 				LogicPath currentPath = new LogicPath();
 				currentPath.setStart(arg);
 				RegistryType type = RegistryType.getRegistryType(argClass);
 				getAssignableMethods(argClass, type).forEach(method -> getClassInfo(infoList, currentPath.dupe(), type, arg, method, available));
 				getAccessibleFields(argClass, type).forEach(field -> getFieldInfo(infoList, currentPath.dupe(), type, arg, field));
 				if (arg instanceof IInventory) {
-					Map<String, Integer> fields = invFields.get(argClass);
+					Map<String, Integer> fields = validInvFields.get(argClass);
 					if (fields != null && !fields.isEmpty()) {
 						fields.entrySet().forEach(field -> {
 							LogicPath invPath = currentPath.dupe();
@@ -400,10 +399,10 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 	}
 
 	public void addCapabilities(final List<IProvidableInfo> infoList, LogicPath path, Object obj, EnumFacing currentFace, Object... available) {
-		if (obj instanceof ICapabilityProvider && !registeredCapabilities.isEmpty()) {
+		if (obj instanceof ICapabilityProvider && !validCapabilities.isEmpty()) {
 			ICapabilityProvider provider = (ICapabilityProvider) obj;
-			ArrayList<Capability> capabilities = new ArrayList();
-			for (Capability cap : registeredCapabilities) {
+			List<Capability> capabilities = Lists.newArrayList();
+			for (Capability cap : validCapabilities) {
 				if (provider.hasCapability(cap, currentFace)) {
 					Capability providedCap = (Capability) provider.getCapability(cap, currentFace);
 					if (providedCap != null) {
@@ -420,7 +419,7 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		}
 	}
 
-	public Pair<Boolean, IProvidableInfo> getLatestInfo(MonitoredList updateInfo, ArrayList<NodeConnection> connections, IMonitorInfo monitorInfo) {
+	public Pair<Boolean, IProvidableInfo> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, IMonitorInfo monitorInfo) {
 		Pair<Boolean, IProvidableInfo> newPaired = null;
 		if (monitorInfo instanceof IProvidableInfo && !connections.isEmpty()) {
 			IProvidableInfo info = (IProvidableInfo) monitorInfo;
@@ -474,8 +473,8 @@ public class LogicInfoRegistry implements ILogicInfoRegistry {
 		if (returned.equals(TileHandlerMethod.class)) {
 			TileHandlerMethod method = (TileHandlerMethod) logicPath.startObj;
 			LogicPath path = logicPath.dupe();
-			ArrayList<IProvidableInfo> infolist = new ArrayList();
-			method.handler.addInfo(this, infolist, path, method.bitCode, (World) available[0], (IBlockState) available[1], (BlockPos) available[2], (EnumFacing) available[3], (Block) available[4], (TileEntity) available[5]);
+			List<IProvidableInfo> infolist = Lists.newArrayList();
+			method.handler.provide(this, infolist, path, method.bitCode, (World) available[0], (IBlockState) available[1], (BlockPos) available[2], (EnumFacing) available[3], (Block) available[4], (TileEntity) available[5]);
 			for (IProvidableInfo logicInfo : infolist) {
 				if (logicInfo.isValid() && logicInfo.isMatchingType(info) && logicInfo.isMatchingInfo(info)) {
 					return logicInfo; // should fix to use paths given in info if possible :P

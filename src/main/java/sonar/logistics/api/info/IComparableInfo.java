@@ -1,11 +1,11 @@
 package sonar.logistics.api.info;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import sonar.logistics.api.logistics.ComparableObject;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
 
 public interface IComparableInfo<T extends IMonitorInfo> extends IMonitorInfo<T> {
 
-	public ArrayList<ComparableObject> getComparableObjects(ArrayList<ComparableObject> objects);
+	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects);
 
 }
