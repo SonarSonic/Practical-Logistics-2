@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
-import sonar.logistics.common.tileentity.TileEntityHammer;
+import sonar.logistics.common.hammer.TileEntityHammer;
 
 public class RenderHammer extends TileEntitySpecialRenderer {
 

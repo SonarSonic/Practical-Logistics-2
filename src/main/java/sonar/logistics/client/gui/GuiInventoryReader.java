@@ -28,7 +28,7 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerInventoryReader;
-import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketInventoryReader;
 import sonar.logistics.network.PacketNodeFilter;
@@ -197,8 +197,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {
-	}
+	public void renderStrings(int x, int y) {}
 
 	@Override
 	public void renderSelection(MonitoredItemStack selection, int x, int y, int slot) {

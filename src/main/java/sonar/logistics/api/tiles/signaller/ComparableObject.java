@@ -2,15 +2,15 @@ package sonar.logistics.api.tiles.signaller;
 
 import java.util.List;
 
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 
 public class ComparableObject {
 
-	public IMonitorInfo source;
+	public IInfo source;
 	public String string;
 	public Object object;
 
-	public ComparableObject(IMonitorInfo source, String string, Object object) {
+	public ComparableObject(IInfo source, String string, Object object) {
 		this.source = source;
 		this.string = string;
 		this.object = object;

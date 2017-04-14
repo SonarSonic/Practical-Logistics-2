@@ -18,7 +18,7 @@ import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -122,7 +122,7 @@ public class FluidHelper extends FluidWrapper {
 			int fill = fillCapabilityStack(toAdd, removed, cache, ActionType.PERFORM);
 			if (player.getHeldItemMainhand().stackSize != 1) {
 				player.inventory.decrStackSize(player.inventory.currentItem, 1);
-				LogisticsAPI.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
+				PL2API.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
 			} else {
 				player.inventory.setInventorySlotContents(player.inventory.currentItem, toAdd);
 			}
@@ -140,7 +140,7 @@ public class FluidHelper extends FluidWrapper {
 			addFluids(new StoredFluidStack(drainCapabilityStack(toAdd, toDrain, cache, ActionType.PERFORM)), cache, ActionType.PERFORM, null);
 			if (heldItem.stackSize != 1) {
 				player.inventory.decrStackSize(player.inventory.currentItem, 1);
-				LogisticsAPI.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
+				PL2API.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
 			} else {
 				player.inventory.setInventorySlotContents(player.inventory.currentItem, toAdd);
 			}

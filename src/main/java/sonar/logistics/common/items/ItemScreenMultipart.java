@@ -8,12 +8,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
 
 public class ItemScreenMultipart extends ItemMultiPart {
-	public final Class<? extends DisplayMultipart> type;
+	public final Class<? extends AbstractDisplayPart> type;
 
-	public ItemScreenMultipart(Class<? extends DisplayMultipart> type) {
+	public ItemScreenMultipart(Class<? extends AbstractDisplayPart> type) {
 		this.type = type;
 	}
 

@@ -9,10 +9,10 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncableListener;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
 
 /** used for storing display info to be used on Screens */
 public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListener {
@@ -33,12 +33,12 @@ public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListe
 	public int getMaxCapacity();
 
 	/** called when a display associated with this Container is clicked */
-	public boolean onClicked(DisplayMultipart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit);
+	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit);
 
 	/** gets the display this InfoContainer is connected to */
 	public IDisplay getDisplay();
 
 	public DisplayInfo getDisplayInfo(int pos);
 	
-	public void onMonitoredListChanged(MonitoredList list, InfoUUID uuid);
+	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list);
 }

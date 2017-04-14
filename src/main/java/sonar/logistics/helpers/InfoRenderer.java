@@ -36,7 +36,7 @@ import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.utils.MonitoredList;
@@ -190,7 +190,7 @@ public class InfoRenderer {
 	public static int objectLeft = (int) ((1.0 / 0.75) * (10 + 92));
 	public static int kindLeft = (int) ((1.0 / 0.75) * (10 + 92 + 92));
 
-	public static void renderMonitorInfoInGUI(IMonitorInfo info, int yPos, int colour) {
+	public static void renderMonitorInfoInGUI(IInfo info, int yPos, int colour) {
 		if (info instanceof INameableInfo) {
 			INameableInfo directInfo = (INameableInfo) info;
 			if (!directInfo.isHeader() && directInfo.isValid()) {

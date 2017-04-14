@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import sonar.logistics.api.filters.ITransferFilteredTile;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.networks.INetworkListHandler;
@@ -26,14 +26,15 @@ import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.helpers.ItemHelper;
 
-public class TransferNetworkChannels<M extends IMonitorInfo, H extends INetworkHandler> extends DefaultNetworkChannels<H> {
+//TODO make it possible to have one without a handler that is linked some other wayy
+public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler> extends DefaultNetworkChannels<H> {
 
 	private List<ITransferFilteredTile> nodes = Lists.newArrayList();
 	private Iterator<ITransferFilteredTile> nodeIterator;
 	private int nodesPerTick = 0;
 
 	public TransferNetworkChannels(H handler, ILogisticsNetwork network) {
-		super(handler, network, CacheHandler.READER);
+		super(handler, network, CacheHandler.TRANSFER_NODES);
 	}
 
 	@Override

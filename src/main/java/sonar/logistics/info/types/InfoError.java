@@ -5,7 +5,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
@@ -14,19 +14,19 @@ import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = InfoError.id, modid = PL2Constants.MODID)
-public class InfoError implements IMonitorInfo<InfoError> {
+public class InfoError implements IInfo<InfoError> {
 
 	public static final InfoError noData = new InfoError("NO DATA");
 	public static final InfoError noMonitor = new InfoError("NO MONITOR");
 	public static final InfoError noItem = new InfoError("NO ITEMSTACK");
-	
+
 	public static final String id = "error";
 	public String error;
 
-	public InfoError(){}
-	
+	public InfoError() {}
+
 	public InfoError(String error) {
-		this.error = FontHelper.translate(error);
+		this.error = FontHelper.translate(error == null ? "" : error);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class InfoError implements IMonitorInfo<InfoError> {
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof InfoError;
 	}
 

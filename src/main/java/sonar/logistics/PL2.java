@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
@@ -52,7 +52,7 @@ public class PL2 {
 	public DisplayManager displayManager = new DisplayManager();
 	public ServerInfoManager serverManager = new ServerInfoManager();
 	public ClientInfoManager clientManager = new ClientInfoManager();
-	public static ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
+	public ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
 	public static CreativeTabs creativeTab = new CreativeTabs(PL2Constants.NAME) {
 		@Override
@@ -70,7 +70,7 @@ public class PL2 {
 			logger.info("Successfully loaded with Sonar Core");
 		}
 
-		LogisticsAPI.init();
+		PL2API.init();
 		logger.info("Initilised API");
 
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(PL2Constants.MODID);
@@ -148,6 +148,7 @@ public class PL2 {
 		getDisplayManager().removeAll();
 		getClientManager().removeAll();
 		getServerManager().removeAll();
+		getComparatorRegistry().removeAll();
 	}
 	
 	public static NetworkManager getNetworkManager() {
@@ -172,5 +173,9 @@ public class PL2 {
 	
 	public static IInfoManager getInfoManager(boolean isRemote) {
 		return !isRemote ? getServerManager() : getClientManager();
+	}
+
+	public static ComparatorRegistry getComparatorRegistry() {
+		return PL2.instance.comparatorRegistry;
 	}
 }

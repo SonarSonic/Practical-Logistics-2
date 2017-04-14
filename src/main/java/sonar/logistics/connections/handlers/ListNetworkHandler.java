@@ -10,41 +10,38 @@ import com.google.common.collect.Maps;
 
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.IEntityMonitorHandler;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.nodes.NodeConnectionType;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.api.utils.NodeConnectionType;
 import sonar.logistics.connections.channels.ListNetworkChannels;
 import sonar.logistics.helpers.LogisticsHelper;
 
-public abstract class ListNetworkHandler<I extends IMonitorInfo> extends DefaultNetworkHandler implements INetworkListHandler<I> {
+public abstract class ListNetworkHandler<I extends IInfo> extends DefaultNetworkHandler implements INetworkListHandler<I> {
 
 	Boolean tiles, entities;
-
-	public @Nullable ChannelList getChannelsList(ILogisticsNetwork network, List<IListReader<I>> readers) {
-		return null;
-	}
 
 	public int getReaderID(IListReader reader) {
 		return 0;
 	}
 
 	@Override
-	public INetworkChannels instance(ILogisticsNetwork network) {
+	public INetworkListChannels instance(ILogisticsNetwork network) {
 		return new ListNetworkChannels(this, network);
 	}
 
@@ -75,8 +72,8 @@ public abstract class ListNetworkHandler<I extends IMonitorInfo> extends Default
 	}
 
 	public Map<NodeConnection, MonitoredList<I>> getAllChannels(Map<NodeConnection, MonitoredList<I>> compiling, ILogisticsNetwork network) {
-		for (NodeConnection connection : network.getChannels(CacheType.ALL)) {// TODO check this is working pls
-			if (network.validateTile(connection.source) && canHandle(connection) && !compiling.containsKey(connection)) {
+		for (NodeConnection connection : network.getChannels(CacheType.ALL)) {
+			if (connection!=null && network.validateTile(connection.source) && canHandle(connection) && !compiling.containsKey(connection)) {
 				MonitoredList<I> list = compiling.getOrDefault(connection, MonitoredList.newMonitoredList(network.getNetworkID()));
 				compiling.put(connection, list);
 			}
@@ -84,16 +81,16 @@ public abstract class ListNetworkHandler<I extends IMonitorInfo> extends Default
 		return compiling;
 	}
 
-	public MonitoredList<I> updateConnection(MonitoredList<I> newList, MonitoredList<I> oldList, NodeConnection c, ChannelList channels) {
+	public MonitoredList<I> updateConnection(INetworkListChannels channels, MonitoredList<I> newList, MonitoredList<I> oldList, NodeConnection c) {
 		if (c instanceof BlockConnection) {
 			BlockConnection connection = (BlockConnection) c;
-			if (channels == null || channels.isCoordsMonitored(connection.coords)) { // TODO check this in the INetworkChannels
-				return ((ITileMonitorHandler) this).updateInfo(newList, oldList, connection);
+			if (channels.isCoordsMonitored(connection)) {
+				return ((ITileMonitorHandler) this).updateInfo(channels, newList, oldList, connection);
 			}
 		} else if (c instanceof EntityConnection) {
 			EntityConnection connection = (EntityConnection) c;
-			if (channels == null || channels.isEntityMonitored(connection.entity.getPersistentID())) {
-				return ((IEntityMonitorHandler) this).updateInfo(newList, oldList, connection);
+			if (channels.isEntityMonitored(connection)) {
+				return ((IEntityMonitorHandler) this).updateInfo(channels, newList, oldList, connection);
 			}
 		}
 		return oldList;

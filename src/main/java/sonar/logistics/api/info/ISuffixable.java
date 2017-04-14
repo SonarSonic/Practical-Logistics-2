@@ -1,6 +1,6 @@
 package sonar.logistics.api.info;
 
-/**implemented on {@link IMonitorInfo} which can have adjustments added to the info*/
+/**implemented on {@link IInfo} which can have adjustments added to the info*/
 public interface ISuffixable {
 
 	/**gets the suffix for the info*/

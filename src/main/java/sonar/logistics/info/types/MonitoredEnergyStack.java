@@ -17,7 +17,7 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IJoinableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
@@ -72,7 +72,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof MonitoredEnergyStack;
 	}
 

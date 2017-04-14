@@ -1,19 +1,16 @@
 package sonar.logistics;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.storage.MapStorage;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.utils.SimpleProfiler;
-import sonar.logistics.common.multiparts.ArrayPart;
-import sonar.logistics.managers.WirelessManager;
+import sonar.logistics.common.multiparts.nodes.ArrayPart;
 import sonar.logistics.managers.LockedDisplayData;
+import sonar.logistics.managers.WirelessManager;
 
 public class PL2Events {
 
@@ -48,6 +45,19 @@ public class PL2Events {
 		}
 	}
 
+	//server only
+	@SubscribeEvent
+	public void watchChunk(ChunkWatchEvent.Watch event) {
+		PL2.getServerManager().addListener(event.getChunk(), event.getPlayer());		
+	}
+
+	//server only
+	@SubscribeEvent
+	public void unWatchChunk(ChunkWatchEvent.UnWatch event) {
+		PL2.getServerManager().removeListener(event.getChunk(), event.getPlayer());	
+	}
+
+	/*
 	@SubscribeEvent
 	public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 		PL2.getServerManager().sendFullPacket(event.player);
@@ -59,14 +69,9 @@ public class PL2Events {
 		PL2.getServerManager().sendFullPacket(event.player);
 		PL2.getServerManager().requireUpdates.add((EntityPlayer) event.player);
 	}
+	*/
 
-	@SubscribeEvent
-	public void onLoggedIn(EntityEvent.EnteringChunk event) {
-		if (event.getEntity() != null && !event.getEntity().getEntityWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
-			PL2.getServerManager().requireUpdates.add((EntityPlayer) event.getEntity());
-		}
-	}
-
+	
 	@SubscribeEvent
 	public void onEntityJoin(EntityJoinWorldEvent event) {
 		ArrayPart.entityChanged = true;

@@ -5,13 +5,13 @@ import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
 
 public class DisplayInteractionEvent {
 
 	public int hashCode;
-	public IMonitorInfo currentInfo;
+	public IInfo currentInfo;
 	public int infoPos;
 	public EntityPlayer player;
 	public BlockInteractionType type;
@@ -22,7 +22,7 @@ public class DisplayInteractionEvent {
 	public DisplayInteractionEvent() {
 	}
 
-	public DisplayInteractionEvent(int hashCode, IMonitorInfo currentInfo, int infoPos, EntityPlayer player, BlockInteractionType type, boolean doubleClick, EnumHand hand, PartMOP hit) {
+	public DisplayInteractionEvent(int hashCode, IInfo currentInfo, int infoPos, EntityPlayer player, BlockInteractionType type, boolean doubleClick, EnumHand hand, PartMOP hit) {
 		this.hashCode = hashCode;
 		this.currentInfo = currentInfo;
 		this.infoPos = infoPos;
@@ -41,7 +41,7 @@ public class DisplayInteractionEvent {
 		buf.writeBoolean(doubleClick);
 	}
 
-	public static DisplayInteractionEvent readFromBuf(ByteBuf buf, EntityPlayer player, DisplayMultipart part) {
+	public static DisplayInteractionEvent readFromBuf(ByteBuf buf, EntityPlayer player, AbstractDisplayPart part) {
 		DisplayInteractionEvent event = new DisplayInteractionEvent();
 		event.hashCode = buf.readInt();
 		event.infoPos = buf.readInt();

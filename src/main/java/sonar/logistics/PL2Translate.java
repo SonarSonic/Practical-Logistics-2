@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import sonar.core.utils.Localisation;
+import sonar.core.translate.Localisation;
 
 public class PL2Translate {
 	public static final List<Localisation> locals = Lists.newArrayList();

@@ -14,7 +14,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.IChannelledTile;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
@@ -24,7 +24,7 @@ import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 
-public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
+public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 
 	public EntityPlayer player;
 	public IChannelledTile tile;
@@ -77,7 +77,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	public void setInfo() {
-		infoList = (List<IMonitorInfo>) PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IMonitorInfo>newMonitoredList(tile.getNetworkID())).clone();
+		infoList = (List<IInfo>) PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IInfo>newMonitoredList(tile.getNetworkID())).clone();
 	}
 
 	/// INTERACTION \\\
@@ -88,7 +88,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 		overlay.mouseClicked(this, x, y, button);
 	}
 
-	public void selectionPressed(GuiButton button, int infoPos, int buttonID, IMonitorInfo info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, IInfo info) {
 		if (buttonID == 0) {
 			tile.sendCoordsToServer(info, channelID);
 		} else {
@@ -117,7 +117,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	@Override
-	public void renderInfo(IMonitorInfo info, int yPos) {
+	public void renderInfo(IInfo info, int yPos) {
 		InfoRenderer.renderMonitorInfoInGUI(info, yPos + 1, LogisticsColours.white_text.getRGB());
 	}
 
@@ -129,7 +129,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	@Override
-	public boolean isCategoryHeader(IMonitorInfo info) {
+	public boolean isCategoryHeader(IInfo info) {
 		if (info instanceof MonitoredBlockCoords) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
 				if (RenderBlockSelection.isPositionRenderered(((MonitoredBlockCoords) info).syncCoords.getCoords())) {
@@ -141,7 +141,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	@Override
-	public boolean isSelectedInfo(IMonitorInfo info) {
+	public boolean isSelectedInfo(IInfo info) {
 		if (info instanceof MonitoredBlockCoords) {
 			if (info.isValid() && !info.isHeader() && tile.getChannels().coordList.contains(((MonitoredBlockCoords) info).syncCoords.getCoords())) {
 				return true;
@@ -156,7 +156,7 @@ public class GuiChannelSelection extends GuiSelectionList<IMonitorInfo> {
 	}
 
 	@Override
-	public boolean isPairedInfo(IMonitorInfo info) {
+	public boolean isPairedInfo(IInfo info) {
 		return false;
 	}
 }

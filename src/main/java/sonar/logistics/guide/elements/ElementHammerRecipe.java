@@ -12,10 +12,11 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
+import sonar.logistics.common.hammer.HammerRecipes;
 import sonar.logistics.guide.IGuidePageElement;
-import sonar.logistics.utils.HammerRecipes;
 
 public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements IGuidePageElement {
 
@@ -27,7 +28,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 
 	@Override
 	public int[] getSizing() {
-		return new int[] { x, y, 54, +18 };
+		return new int[] { x, y, 80, +18 };
 	}
 
 	@Override
@@ -37,9 +38,10 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			GlStateManager.pushMatrix();
 			GlStateManager.pushAttrib();
-			
+
+			FontHelper.textCentre(PL2Translate.HAMMER.t(), x + 84, y + 26, LogisticsColours.white_text.getRGB());
+			GL11.glScaled(1 / 0.75, 1 / 0.75, 1 / 0.75);
 			GL11.glScaled(0.5, 0.5, 0.5);
-			FontHelper.textCentre("Forging Hammer", (int)(56*2) + x + 2, (int)(y*2) + 2, LogisticsColours.white_text.getRGB());
 			gui.mc.getTextureManager().bindTexture(recipeB);
 			gui.drawTexturedModalRect(x * 2, y * 2 + 18, 0, 0, 116, 18 * 2);
 			GlStateManager.scale(1 / 0.5, 1 / 0.5, 1 / 0.5);
@@ -52,7 +54,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 				if (!list.isEmpty()) {
 					Integer cyclePos = positions.get(i);
 					ItemStack stack = list.get(cyclePos);
-					IGuidePageElement.renderItem(gui, stack, x + 1 + xy[0], y + 9 + 1 + xy[1]);
+					IGuidePageElement.renderItem(gui, stack, x + 1 + (int)(xy[0]*0.75), y + 9 + 1 + (int)(xy[1]*0.75));
 				}
 			}
 			GlStateManager.popAttrib();
@@ -63,20 +65,20 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
 		RenderHelper.saveBlendState();
-		gui.drawTransparentRect(x, y, x + 54, y + 27, LogisticsColours.blue_overlay.getRGB());
+		gui.drawTransparentRect(x, y + 24, x + 80, y + 64, LogisticsColours.blue_overlay.getRGB());
 		RenderHelper.restoreBlendState();
 	}
 
 	@Override
 	public ISonarRecipe getRecipe() {
-		//ISonarRecipe recipe = HammerRecipes.instance().getRecipeFromOutputs(player, new Object[] { stack });
-		for(ISonarRecipe recipe : HammerRecipes.instance().getRecipes()){
-			if(recipe.outputs().get(0).getJEIValue().get(0).isItemEqual(stack)){
+		// ISonarRecipe recipe = HammerRecipes.instance().getRecipeFromOutputs(player, new Object[] { stack });
+		for (ISonarRecipe recipe : HammerRecipes.instance().getRecipes()) {
+			if (recipe.outputs().get(0).getJEIValue().get(0).isItemEqual(stack)) {
 				this.recipe = recipe;
 			}
 		}
-		
-		if(recipe!=null){
+
+		if (recipe != null) {
 			stacks.set(0, recipe.inputs().get(0).getJEIValue());
 			stacks.set(1, recipe.outputs().get(0).getJEIValue());
 		}
@@ -85,7 +87,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 
 	@Override
 	public int[][] setSlots() {
-		return new int[][] { new int[] { 0, 0 }, new int[] { 36, 0 } };
+		return new int[][] { new int[] { 0, 0 }, new int[] { this.slotSize*2, 0 } };
 	}
 
 	@Override

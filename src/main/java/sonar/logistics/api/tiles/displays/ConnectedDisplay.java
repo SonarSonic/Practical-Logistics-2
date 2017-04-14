@@ -29,16 +29,18 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
 import sonar.core.utils.IUUIDIdentity;
 import sonar.logistics.PL2;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.IConnectable;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
@@ -76,15 +78,15 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 		this.registryID = registryID;
 		this.hasChanged = true;
 	}
-	
-	public void lock(){
+
+	public void lock() {
 		isLocked.setObject(true);
 		PL2.getDisplayManager().lockedIDs.add(registryID);
 	}
-	
-	public void unlock(){
+
+	public void unlock() {
 		isLocked.setObject(false);
-		PL2.getDisplayManager().lockedIDs.remove(registryID);		
+		PL2.getDisplayManager().lockedIDs.remove(registryID);
 	}
 
 	public void update(int registryID) {
@@ -230,7 +232,7 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 			for (int y = Math.min(minY, maxY); y <= Math.max(minY, maxY); y++) {
 				for (int z = Math.min(minZ, maxZ); z <= Math.max(minZ, maxZ); z++) {
 					BlockCoords coords = new BlockCoords(x, y, z);
-					IDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(coords, meta);
+					IDisplay display = PL2API.getCableHelper().getDisplayScreen(coords, meta);
 					if (display == null || !(display instanceof ILargeDisplay)) {
 						this.canBeRendered.setObject(false);
 						return;
@@ -250,8 +252,8 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 	public List<ILogicListenable> getLogicMonitors(List<ILogicListenable> monitors) {
 		displays = PL2.getDisplayManager().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
-			if (display instanceof DisplayMultipart) {
-				monitors = PL2.getServerManager().getViewables(monitors, (DisplayMultipart) display);
+			if (display instanceof AbstractDisplayPart) {
+				monitors = PL2.getServerManager().getViewables(monitors, (AbstractDisplayPart) display);
 			}
 		}
 		return monitors;
@@ -323,12 +325,10 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 	}
 
 	@Override
-	public void addConnection() {
-	}
+	public void addConnection() {}
 
 	@Override
-	public void removeConnection() {
-	}
+	public void removeConnection() {}
 
 	@Override
 	public int getRegistryID() {
@@ -367,7 +367,7 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 
 	public ILargeDisplay getTopLeftScreen() {
 		if (topLeftCoords.getCoords() != null) {
-			IDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(topLeftCoords.getCoords(), face.getObject());
+			IDisplay display = PL2API.getCableHelper().getDisplayScreen(topLeftCoords.getCoords(), face.getObject());
 			if (display instanceof ILargeDisplay)
 				this.topLeftScreen = (ILargeDisplay) display;
 		}
@@ -423,16 +423,17 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 			this.getTopLeftScreen().markChanged(this);
 		}
 	}
-	@Override
-	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
-
-	@Override
-	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
 
 	@Override
 	public ListenableList<PlayerListener> getListenerList() {
 		return listeners;
 	}
+
+	@Override
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
+
+	@Override
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
 
 	@Override
 	public void onSubListenableAdded(ISonarListenable<PlayerListener> listen) {}
@@ -452,14 +453,12 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 
 	@Override
 	public ILogisticsNetwork getNetwork() {
-		// TODO Auto-generated method stub
-		return null;
+		return getTopLeftScreen() == null ? EmptyLogisticsNetwork.INSTANCE : getTopLeftScreen().getNetwork();
 	}
 
 	@Override
 	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -471,6 +470,11 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 	@Override
 	public UUID getUUID() {
 		return getTopLeftScreen() == null ? IUUIDIdentity.INVALID_UUID : getTopLeftScreen().getUUID();
+	}
+
+	@Override
+	public TileMessage[] getValidMessages() {
+		return new TileMessage[0];
 	}
 
 }

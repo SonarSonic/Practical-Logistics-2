@@ -11,7 +11,7 @@ import sonar.core.registries.SonarRegistryBlock;
 import sonar.logistics.common.blocks.BlockHammer;
 import sonar.logistics.common.blocks.BlockHammerAir;
 import sonar.logistics.common.blocks.BlockSapphireOre;
-import sonar.logistics.common.tileentity.TileEntityHammer;
+import sonar.logistics.common.hammer.TileEntityHammer;
 
 public class PL2Blocks extends PL2 {
 

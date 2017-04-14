@@ -13,7 +13,7 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.ISuffixable;
@@ -149,7 +149,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof LogicInfo;
 	}
 
@@ -165,7 +165,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 
 	@Override
 	public LogicInfo copy() {
-		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get()).setPath(this.getPath().dupe());
+		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get()).setPath(getPath()!=null ? getPath().dupe() : null);
 	}
 
 	@Override

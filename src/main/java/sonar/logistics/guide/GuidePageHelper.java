@@ -26,7 +26,7 @@ public class GuidePageHelper {
 	public static String PAGE_LINK_ERROR = TextFormatting.RED + "PAGE NOT FOUND";
 	public static String CURRENT = "CURRENT";
 
-	public static int maxLinesPerPage = 13;
+	public static int maxLinesPerPage = 17;
 
 	/**this formats the {@link ElementInfo} to add any page links, formatting, or object inserts prior to splitting the lines with 'createLines'*/
 	public static List<String> getLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, List<ElementLink> links) {
@@ -95,7 +95,7 @@ public class GuidePageHelper {
 			int link = iterator.next();
 			IGuidePage linked = GuidePageRegistry.getGuidePage(link);
 			String before = line.substring(0, index);
-			pageLinks.add(new ElementLink(link, (int) ((RenderHelper.fontRenderer.getStringWidth(linked != null ? linked.getDisplayName() : PAGE_LINK_ERROR)) * 0.75), lines.size(), (int) (RenderHelper.fontRenderer.getStringWidth(before) * 0.75)));
+			pageLinks.add(new ElementLink(link, (int) ((RenderHelper.fontRenderer.getStringWidth(linked != null ? linked.getDisplayName() : PAGE_LINK_ERROR))), lines.size(), (int) (RenderHelper.fontRenderer.getStringWidth(before))));
 
 			line = before + line.substring(index + 1);
 		}

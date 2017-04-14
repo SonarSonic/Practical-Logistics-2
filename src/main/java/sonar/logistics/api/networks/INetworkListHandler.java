@@ -6,18 +6,18 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import sonar.core.utils.Pair;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 
-public interface INetworkListHandler<I extends IMonitorInfo> extends INetworkHandler {
+public interface INetworkListHandler<I extends IInfo> extends INetworkHandler {
 	
-	public @Nullable ChannelList getChannelsList(ILogisticsNetwork network, List<IListReader<I>> readers);
+	public INetworkListChannels instance(ILogisticsNetwork network);
 
-	public MonitoredList<I> updateConnection(MonitoredList<I> newList, MonitoredList<I> oldList, NodeConnection c, ChannelList channels);
+	public MonitoredList<I> updateConnection(INetworkListChannels channels, MonitoredList<I> newList, MonitoredList<I> oldList, NodeConnection c);
 	
 	public Map<NodeConnection, MonitoredList<I>> getAllChannels(Map<NodeConnection, MonitoredList<I>> compiling, ILogisticsNetwork network);
 

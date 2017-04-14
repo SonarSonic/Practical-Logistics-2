@@ -28,7 +28,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 
 	@Override
 	public int[] getSizing() {
-		return new int[] { x, y, (int) ((54) * 1 / 0.75), (int) ((60) * 1 / 0.75) + 24 };
+		return new int[] { x, y, 80, 80 + 16 };
 	}
 
 	@Override
@@ -38,13 +38,15 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			GlStateManager.pushMatrix();
 			GlStateManager.pushAttrib();
+			FontHelper.textCentre("Crafting Table", x + 84, y + 2, LogisticsColours.white_text.getRGB());
+			GL11.glScaled(1 / 0.75, 1 / 0.75, 1 / 0.75);
 			GL11.glScaled(0.5, 0.5, 0.5);
-			FontHelper.textCentre("Crafting Table", (int)(56*2) + x + 3, (int)(y*2) + 2, LogisticsColours.white_text.getRGB());
 			gui.mc.getTextureManager().bindTexture(recipeB);
-			gui.drawTexturedModalRect(x * 2, 12 + y * 2, 0, 0, 116, 54 * 2);
+			gui.drawTexturedModalRect(x + 8, y + 72, 0, 0, 120, 120);
 			GlStateManager.scale(1 / 0.5, 1 / 0.5, 1 / 0.5);
+
 			RenderHelper.saveBlendState();
-			gui.drawTransparentRect(x, y, x + 54, y + 60, LogisticsColours.blue_overlay.getRGB());
+			// gui.drawTransparentRect(x, y, x + (int)(80*0.75), y + (int)((80+24)*0.75), LogisticsColours.blue_overlay.getRGB());
 			RenderHelper.restoreBlendState();
 
 			int pos = 0;
@@ -55,7 +57,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 				if (!list.isEmpty()) {
 					Integer cyclePos = positions.get(i);
 					ItemStack stack = list.get(cyclePos);
-					IGuidePageElement.renderItem(gui, stack, x + 1 + xy[0], 6 + y + 1 + xy[1]);
+					IGuidePageElement.renderItem(gui, stack, x + (int)(xy[0]*0.75), y + (int)(xy[1]*0.75));
 				}
 			}
 			GlStateManager.popAttrib();
@@ -66,7 +68,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
 		RenderHelper.saveBlendState();
-		gui.drawTransparentRect(x, y, x + 54, y + 60, LogisticsColours.blue_overlay.getRGB());
+		gui.drawTransparentRect(x, y, x + 80, y + 80 + 16, LogisticsColours.blue_overlay.getRGB());
 		RenderHelper.restoreBlendState();
 	}
 
@@ -82,7 +84,9 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 
 	@Override
 	public int[][] setSlots() {
-		return new int[][] { new int[] { 0, 0 }, new int[] { 18, 0 }, new int[] { 36, 0 }, new int[] { 0, 18 }, new int[] { 18, 18 }, new int[] { 36, 18 }, new int[] { 0, 36 }, new int[] { 18, 36 }, new int[] { 36, 36 } };
+		int xOffset = 4;
+		int yOffset = -20;
+		return new int[][] { new int[] { xOffset, yOffset }, new int[] { slotSize + xOffset, yOffset }, new int[] { slotSize * 2 + xOffset, yOffset }, new int[] { 0 + xOffset, slotSize + yOffset }, new int[] { slotSize + xOffset, slotSize + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize + yOffset }, new int[] { 0 + xOffset, slotSize*2 + yOffset }, new int[] { slotSize + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize * 2 + yOffset } };
 
 	}
 

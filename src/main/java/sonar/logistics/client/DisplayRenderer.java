@@ -9,17 +9,17 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.common.multiparts.HolographicDisplayPart;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts.displays.HolographicDisplayPart;
 import sonar.logistics.helpers.InfoRenderer;
 
 //TWEAKED FAST MSR
-public class DisplayRenderer extends MultipartSpecialRenderer<DisplayMultipart> {
+public class DisplayRenderer extends MultipartSpecialRenderer<AbstractDisplayPart> {
 
 	public ResourceLocation hologram = new ResourceLocation(RenderHammer.modelFolder + "hologram.png");
 
 	@Override
-	public void renderMultipartAt(DisplayMultipart part, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void renderMultipartAt(AbstractDisplayPart part, double x, double y, double z, float partialTicks, int destroyStage) {
 		if (part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()) {
 			return;
 		}

@@ -12,7 +12,7 @@ import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.tiles.readers.FluidReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.FluidReaderPart;
+import sonar.logistics.common.multiparts.readers.FluidReaderPart;
 
 public class ContainerFluidReader extends ContainerMultipartSync {
 
@@ -52,17 +52,17 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 			if (stackMode && par2 >= INV_START) {
 				if (!part.getWorld().isRemote) {
 					ItemStack copy = itemstack1.copy();
-					//FIXME
+					// FIXME
 					if (copy != null && copy.getItem() instanceof IFluidContainerItem) {
 						IFluidContainerItem container = (IFluidContainerItem) copy.getItem();
 						FluidStack stack = container.getFluid(copy);
 						if (stack != null) {
-							//part.current = stack;
+							// part.current = stack;
 						}
 					} else if (copy != null) {
 						FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(copy);
 						if (fluid != null) {
-							//part.current = fluid;
+							// part.current = fluid;
 						}
 					}
 				}
@@ -96,10 +96,11 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		part.getListenerList().removeListener(player, ListenerType.INFO);
+		if (!player.getEntityWorld().isRemote)
+			part.getListenerList().removeListener(player, ListenerType.INFO);
 	}
 
-    public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player){
+	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
 		Slot targetSlot = slotID < 0 ? null : (Slot) this.inventorySlots.get(slotID);
 		if ((targetSlot instanceof SlotList)) {
 			if (drag == 2) {

@@ -18,21 +18,28 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerChunkMap;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockCoords;
+import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.SonarHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
@@ -41,15 +48,15 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientViewable;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
-import sonar.logistics.common.multiparts.generic.LogisticsMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts.LogisticsPart;
+import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.info.types.InfoError;
 import sonar.logistics.network.PacketInfoList;
 import sonar.logistics.network.PacketViewables;
 
@@ -63,11 +70,10 @@ public class ServerInfoManager implements IInfoManager {
 	public List<InfoUUID> changedInfo = Lists.newArrayList();
 	public List<IDisplay> displays = Lists.newArrayList();
 	public boolean markDisplaysDirty = true;
-	public List<EntityPlayer> requireUpdates = Lists.newArrayList();
-	public Map<EntityPlayer, ArrayList<IDisplay>> viewables = Maps.newHashMap();
+	// public List<EntityPlayer> requireUpdates = Lists.newArrayList();
+	// public Map<EntityPlayer, ArrayList<IDisplay>> viewables = Maps.newHashMap();
 
-	public Map<InfoUUID, IMonitorInfo> lastInfo = Maps.newLinkedHashMap();
-	public Map<InfoUUID, IMonitorInfo> info = Maps.newLinkedHashMap();
+	public Map<InfoUUID, IInfo> info = Maps.newLinkedHashMap();
 	public Map<InfoUUID, MonitoredList<?>> monitoredLists = Maps.newLinkedHashMap();
 	public Map<Integer, ILogicListenable> identityTiles = Maps.newLinkedHashMap();
 
@@ -75,20 +81,23 @@ public class ServerInfoManager implements IInfoManager {
 
 	public Map<Integer, DisplayInteractionEvent> clickEvents = Maps.newHashMap();
 
+	public Map<Integer, List<ChunkPos>> chunksToUpdate = Maps.newHashMap();
+	public boolean newChunks = false;
+
 	public int ticks;
 	public boolean updateViewingMonitors;
 
 	public void removeAll() {
 		changedInfo.clear();
 		displays.clear();
-		requireUpdates.clear();
-		viewables.clear();
+		// requireUpdates.clear();
+		// viewables.clear();
 		monitoredLists.clear();
 		identityTiles.clear();
-		lastInfo.clear();
 		info.clear();
 		connectedDisplays.clear();
 		clickEvents.clear();
+		chunksToUpdate.clear();
 	}
 
 	public int getNextIdentity() {
@@ -118,24 +127,70 @@ public class ServerInfoManager implements IInfoManager {
 		updateViewingMonitors = true;
 	}
 
-	public void addDisplay(IDisplay display) {
-		if (!displays.contains(display) && displays.add(display)) {
-			updateViewingMonitors = true;
-		}
-	}
-
-	public void removeDisplay(IDisplay display) {
-		if(displays.remove(display)){
-			updateViewingMonitors = true;			
-		}
-	}
-
 	public void removeIdentityTile(ILogicListenable monitor) {
 		for (int i = 0; i < (monitor instanceof IInfoProvider ? ((IInfoProvider) monitor).getMaxInfo() : 1); i++) {
 			info.remove(new InfoUUID(monitor.getIdentity(), i));
 		}
 		identityTiles.remove(monitor.getIdentity());
 		updateViewingMonitors = true;
+	}
+
+	public ILogicListenable getIdentityTile(int iden) {
+		return identityTiles.get(iden);
+	}
+
+	public void addDisplay(IDisplay display) {
+		if (!displays.contains(display) && displays.add(display)) {
+			addChunkFromDisplay(display);
+			updateViewingMonitors = true;
+		}
+	}
+
+	public void removeDisplay(IDisplay display) {
+		if (displays.remove(display)) {
+			removeListenersFromDisplay(display);
+			updateViewingMonitors = true;
+		}
+	}
+
+	public void addListener(ChunkPos chunkPos, EntityPlayerMP player) {
+		List<IDisplay> displays = getDisplaysInChunk(player.dimension, chunkPos);
+		displays.forEach(d -> d.getListenerList().addListener(player, ListenerType.TEMPORARY, ListenerType.FULL_INFO));
+	}
+
+	public void removeListener(ChunkPos chunkPos, EntityPlayerMP player) {
+		List<IDisplay> displays = getDisplaysInChunk(player.dimension, chunkPos);
+		displays.forEach(d -> d.getListenerList().removeListener(player, ListenerType.INFO));
+	}
+
+	public void addChunkFromDisplay(IDisplay display) {
+		BlockCoords coords = display.getCoords();
+		WorldServer world = (WorldServer) coords.getWorld();
+		addChangedChunk(coords.getDimension(), SonarHelper.getChunkFromPos(coords.getX(), coords.getZ()));
+	}
+
+	public void removeListenersFromDisplay(IDisplay display) {
+		List<PlayerListener> listeners = display.getListenerList().getListeners(ListenerType.INFO);
+		listeners.forEach(pl -> display.getListenerList().removeListener(pl, ListenerType.INFO));
+	}
+
+	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
+		List<ChunkPos> chunks = chunksToUpdate.computeIfAbsent(dimension, FunctionHelper.ARRAY);
+		if (!chunks.contains(chunkPos)) {
+			chunks.add(chunkPos);
+			newChunks = true;
+		}
+	}
+
+	public List<IDisplay> getDisplaysInChunk(int dim, ChunkPos pos) {
+		List<IDisplay> inChunk = Lists.newArrayList();
+		for (IDisplay display : displays) {
+			BlockCoords coords = display.getCoords();
+			if (coords.getDimension() == dim && coords.insideChunk(pos)) {
+				inChunk.add(display);
+			}
+		}
+		return inChunk;
 	}
 
 	public List<IDisplay> getViewableDisplays(EntityPlayer player, boolean sendSyncPackets) {
@@ -156,12 +211,12 @@ public class ServerInfoManager implements IInfoManager {
 
 	public void sendFullPacket(EntityPlayer player) {
 		if (player != null) {
-			List<IMonitorInfo> infoList = getInfoFromUUIDs(getUUIDsToSync(getViewableDisplays(player, true)));
+			List<IInfo> infoList = getInfoFromUUIDs(getUUIDsToSync(getViewableDisplays(player, true)));
 			if (infoList.isEmpty()) {
 				return;
 			}
 			NBTTagList packetList = new NBTTagList();
-			for (IMonitorInfo info : infoList) {
+			for (IInfo info : infoList) {
 				if (info != null && info.isValid() && !info.isHeader()) {
 					packetList.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE));
 				}
@@ -174,12 +229,12 @@ public class ServerInfoManager implements IInfoManager {
 		}
 	}
 
-	public List<IMonitorInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
-		List<IMonitorInfo> infoList = Lists.newArrayList();
+	public List<IInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
+		List<IInfo> infoList = Lists.newArrayList();
 		for (InfoUUID id : ids) {
 			ILogicListenable monitor = CableHelper.getMonitorFromIdentity(id.getIdentity(), false);
 			if (monitor != null && monitor instanceof IInfoProvider) {
-				IMonitorInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
+				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
 				if (info != null) {
 					infoList.add(info);
 				}
@@ -202,7 +257,7 @@ public class ServerInfoManager implements IInfoManager {
 		return ids;
 	}
 
-	public IMonitorInfo getInfoFromUUID(InfoUUID uuid) {
+	public IInfo getInfoFromUUID(InfoUUID uuid) {
 		return info.get(uuid);
 	}
 
@@ -221,7 +276,7 @@ public class ServerInfoManager implements IInfoManager {
 		return null;
 	}
 
-	public <T extends IMonitorInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid) {
+	public <T extends IInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid) {
 		MonitoredList<T> list = MonitoredList.<T>newMonitoredList(networkID);
 		monitoredLists.putIfAbsent(uuid, list);
 		for (Entry<InfoUUID, MonitoredList<?>> entry : monitoredLists.entrySet()) {
@@ -232,8 +287,30 @@ public class ServerInfoManager implements IInfoManager {
 		return list;
 	}
 
+	public void updateChunks() {
+		for (Entry<Integer, List<ChunkPos>> dims : chunksToUpdate.entrySet()) {
+			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+			WorldServer world = server.worldServerForDimension(dims.getKey());
+			PlayerChunkMap chunkMap = world.getPlayerChunkMap();
+			for (ChunkPos chunkPos : dims.getValue()) {
+				PlayerChunkMapEntry entry = chunkMap.getEntry(chunkPos.chunkXPos, chunkPos.chunkZPos);
+				List<EntityPlayerMP> players = SonarHelper.getPlayersWatchingChunk(entry);
+				if (players.isEmpty()) {
+					continue;
+				}
+				for (IDisplay d : getDisplaysInChunk(dims.getKey(), chunkPos)) {
+					ListenerList list = d.getListenerList();
+					players.forEach(p -> list.addListener(p, ListenerType.TEMPORARY, ListenerType.FULL_INFO));
+				}
+			}
+		}
+		newChunks = false;
+	}
+
 	public void onServerTick() {
-		
+		if (newChunks) {
+			updateChunks();
+		}
 		if (updateViewingMonitors) {
 			updateViewingMonitors = false;
 			for (ILogicListenable monitor : identityTiles.values()) {
@@ -242,8 +319,7 @@ public class ServerInfoManager implements IInfoManager {
 			for (IDisplay display : displays) {
 				for (int i = 0; i < display.container().getMaxCapacity(); i++) {
 					InfoUUID uuid = display.container().getInfoUUID(i);
-					MonitoredList<?> list = monitoredLists.get(uuid);
-					if (list != null) {
+					if (uuid != null) {
 						ILogicListenable monitor = CableHelper.getMonitorFromIdentity(uuid.getIdentity(), false);
 						if (monitor != null && monitor instanceof ILogicListenable) {
 							monitor.getListenerList().addSubListenable(display);
@@ -253,19 +329,13 @@ public class ServerInfoManager implements IInfoManager {
 			}
 		}
 
-		if (ticks < 50) {
-			ticks++;
-		} else {
-			ticks = 0;
-			updateViewers();
-		}
 		if (!changedInfo.isEmpty() && !displays.isEmpty()) {
 			Map<PlayerListener, NBTTagList> savePackets = new HashMap<PlayerListener, NBTTagList>();
 			Map<PlayerListener, NBTTagList> syncPackets = new HashMap<PlayerListener, NBTTagList>();
 
 			for (InfoUUID id : changedInfo) {
 				boolean isSynced = false;
-				IMonitorInfo monitorInfo = info.get(id);
+				IInfo monitorInfo = info.get(id);
 				if (id.valid() && monitorInfo != null) {
 
 					NBTTagCompound updateTag = InfoHelper.writeInfoToNBT(new NBTTagCompound(), monitorInfo, SyncType.SAVE);
@@ -300,7 +370,8 @@ public class ServerInfoManager implements IInfoManager {
 			if (!syncPackets.isEmpty()) {
 				syncPackets.entrySet().forEach(entry -> sendPlayerPacket(entry.getKey(), entry.getValue(), SyncType.SAVE));
 			}
-			changedInfo.clear();
+			if (!savePackets.isEmpty() || !syncPackets.isEmpty())
+				changedInfo.clear();
 		}
 		return;
 
@@ -317,24 +388,6 @@ public class ServerInfoManager implements IInfoManager {
 		}
 	}
 
-	public void updateViewers() {
-		if(requireUpdates.isEmpty()){
-			return;
-		}
-		for (EntityPlayer player : requireUpdates) {
-			// MonitorViewer viewer = new MonitorViewer(player, MonitorType.INFO);
-			List<IDisplay> lastDisplays = viewables.getOrDefault(player, Lists.newArrayList());
-			List<IDisplay> displays = getViewableDisplays(player, false);
-			displays.forEach(display -> {
-				display.getListenerList().addListener(player, ListenerType.FULL_INFO);
-				lastDisplays.remove(display);
-			});
-			lastDisplays.forEach(display -> display.getListenerList().removeListener(player, ListenerType.INFO));
-			viewables.put(player, Lists.newArrayList(displays));
-		}
-		requireUpdates.clear();
-	}
-
 	public void sendPlayerPacket(PlayerListener listener, NBTTagList list, SyncType type) {
 		if (list.hasNoTags()) {
 			return;
@@ -344,13 +397,18 @@ public class ServerInfoManager implements IInfoManager {
 		PL2.network.sendTo(new PacketInfoList(packetTag, type), listener.player);
 	}
 
-	public void changeInfo(InfoUUID id, IMonitorInfo newInfo) {
-		lastInfo.put(id, info.get(id));
-		info.put(id, newInfo);
-		changedInfo.add(id);
+	public void changeInfo(InfoUUID id, IInfo info) {
+		IInfo last = this.info.get(id);
+		if (info == null && last != null) {
+			info = InfoError.noData;
+		}
+		if (info != null && (last == null || !last.isMatchingType(info) || !last.isMatchingInfo(info) || !last.isIdenticalInfo(info))) {
+			this.info.put(id, info);
+			this.changedInfo.add(id);
+		}
 	}
 
-	public List<ILogicListenable> getViewables(List<ILogicListenable> viewables, DisplayMultipart part) {
+	public List<ILogicListenable> getViewables(List<ILogicListenable> viewables, AbstractDisplayPart part) {
 		ILogisticsNetwork networkCache = part.getNetwork();
 		ISlottedPart connectedPart = part.getContainer().getPartInSlot(PartSlot.getFaceSlot(part.face));
 		if (connectedPart != null && connectedPart instanceof IInfoProvider) {
@@ -365,13 +423,13 @@ public class ServerInfoManager implements IInfoManager {
 		return viewables;
 	}
 
-	public void sendViewablesToClientFromScreen(DisplayMultipart part, EntityPlayer player) {
+	public void sendViewablesToClientFromScreen(AbstractDisplayPart part, EntityPlayer player) {
 		List<ILogicListenable> viewables = new ArrayList<ILogicListenable>();
 		int identity = part.getIdentity();
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
 			if (screen != null && screen.getTopLeftScreen() != null) {
-				identity = ((DisplayMultipart) screen.getTopLeftScreen()).getIdentity();
+				identity = ((AbstractDisplayPart) screen.getTopLeftScreen()).getIdentity();
 			}
 			viewables = screen != null ? screen.getLogicMonitors(viewables) : getViewables(viewables, part);
 		} else {
@@ -386,7 +444,7 @@ public class ServerInfoManager implements IInfoManager {
 		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
 	}
 
-	public void sendViewablesToClient(LogisticsMultipart part, int identity, EntityPlayer player) {
+	public void sendViewablesToClient(LogisticsPart part, int identity, EntityPlayer player) {
 		List<IInfoProvider> viewables = part.getNetwork().getLocalInfoProviders();
 		List<ClientViewable> clientMonitors = Lists.newArrayList();
 		viewables.forEach(viewable -> {
@@ -396,49 +454,13 @@ public class ServerInfoManager implements IInfoManager {
 		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
 	}
 
-	public class StoredChunkPos extends ChunkPos {
-
-		// these won't be included in the hashCode
-		public int monitorCount = 0;
-		public int dim;
-
-		public StoredChunkPos(int dim, BlockPos pos) {
-			super(pos);
-			this.dim = dim;
-		}
-
-		public StoredChunkPos(BlockCoords coords) {
-			this(coords.getDimension(), coords.getBlockPos());
-		}
-
-		public int addMonitor() {
-			return monitorCount++;
-		}
-
-		public int removeMonitor() {
-			return monitorCount--;
-		}
-
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			} else if (!(obj instanceof StoredChunkPos)) {
-				return false;
-			} else {
-				StoredChunkPos chunkpos = (StoredChunkPos) obj;
-				return this.chunkXPos == chunkpos.chunkXPos && this.chunkZPos == chunkpos.chunkZPos && dim == chunkpos.dim;
-			}
-		}
-
-	}
-
 	@Override
 	public Map<Integer, ILogicListenable> getMonitors() {
 		return identityTiles;
 	}
 
 	@Override
-	public Map<InfoUUID, IMonitorInfo> getInfoList() {
+	public Map<InfoUUID, IInfo> getInfoList() {
 		return info;
 	}
 

@@ -9,7 +9,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.DataEmitterPart;
+import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
 
 public class GuiDataEmitter extends GuiLogistics {
 	public DataEmitterPart part;

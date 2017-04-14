@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.EnergyReaderPart;
+import sonar.logistics.common.multiparts.readers.EnergyReaderPart;
 
 public class ContainerEnergyReader extends ContainerMultipartSync {
 	public EnergyReaderPart part;
@@ -33,13 +33,14 @@ public class ContainerEnergyReader extends ContainerMultipartSync {
 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		part.getListenerList().removeListener(player, ListenerType.INFO);
+		if (!player.getEntityWorld().isRemote)
+			part.getListenerList().removeListener(player, ListenerType.INFO);
 	}
 
 	public SyncType[] getSyncTypes() {
 		return new SyncType[] { SyncType.DEFAULT_SYNC };
 	}
-	
+
 	public boolean syncInventory() {
 		return false;
 	}

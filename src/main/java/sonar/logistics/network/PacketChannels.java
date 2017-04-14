@@ -8,13 +8,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 
 public class PacketChannels implements IMessage {
 
-	public MonitoredList<IMonitorInfo> list;
+	public MonitoredList<IInfo> list;
 	public NBTTagCompound listTag;
 	public int registryID;
 

@@ -24,11 +24,6 @@ public class ContainerChannelSelection extends ContainerMultipartSync {
 		return itemstack;
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		super.onContainerClosed(player);
-		tile.getListenerList().removeListener(player, ListenerType.CHANNEL);
-	}
-
 	public boolean syncInventory() {
 		return false;
 	}

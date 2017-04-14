@@ -45,7 +45,7 @@ import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.filters.ItemFilter;
 import sonar.logistics.api.filters.OreDictFilter;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
@@ -598,7 +598,7 @@ public class GuiFilterList extends GuiSelectionList {
 		if (info == null)
 			return;
 
-		IMonitorInfo monitorInfo = info.getSidedCachedInfo(true);
+		IInfo monitorInfo = info.getSidedCachedInfo(true);
 		if (monitorInfo instanceof INameableInfo) {
 			INameableInfo directInfo = (INameableInfo) monitorInfo;
 			FontHelper.text(directInfo.getClientIdentifier(), 11, top + 6, LogisticsColours.white_text.getRGB());

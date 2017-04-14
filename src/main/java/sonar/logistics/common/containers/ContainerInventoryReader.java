@@ -10,12 +10,12 @@ import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.InventoryReaderPart;
+import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
 import sonar.logistics.connections.channels.ListNetworkChannels;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;
 
@@ -64,9 +64,9 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 					ILogisticsNetwork network = part.getNetwork();
 					StoredItemStack stack = new StoredItemStack(itemstack1);
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						LogisticsAPI.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
+						PL2API.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
 					} else {
-						StoredItemStack perform = LogisticsAPI.getItemHelper().addItems(stack, network, ActionType.PERFORM);
+						StoredItemStack perform = PL2API.getItemHelper().addItems(stack, network, ActionType.PERFORM);
 						lastStack = itemstack1;
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();

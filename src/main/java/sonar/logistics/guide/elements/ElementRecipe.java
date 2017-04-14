@@ -20,6 +20,7 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 
 	public List<Integer> positions;
 	public int[][] slots = setSlots();
+	public static int slotSize = 24;
 	public int page;
 	public ItemStack stack;
 	public R recipe;
@@ -45,16 +46,15 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 	}
 
 	public int getSlot(int x, int y, int mouseX, int mouseY) {
-		int slotX = (mouseX - x + 1) / 18;
-		int slotY = (mouseY - y + 1) / 18;
-		int posX = slotX * 18;
-		int posY = slotY * 18;
+		int slotX = (mouseX - x)- slotSize;
+		int slotY = (mouseY - y) -8 - slotSize*2;		
 		for (int pos = 0; pos < slots.length; pos++) {
 			int[] slot = slots[pos];
-			if (slot[0] == posX && slot[1] == posY) {
+			if (slot[0] >= slotX && slot[0] <= slotX+slotSize && slot[1] >= slotY && slot[1] <= slotY+slotSize) {
 				return pos;
 			}
 		}
+		
 		return -1;
 	}
 

@@ -10,23 +10,27 @@ import com.google.common.collect.Lists;
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2ASMLoader;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
@@ -37,12 +41,13 @@ import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.common.multiparts.generic.LogisticsMultipart;
+import sonar.logistics.common.multiparts.LogisticsPart;
 import sonar.logistics.connections.channels.ListNetworkChannels;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.network.PacketItemInteractionText;
 
 public class InfoHelper {
 
@@ -55,28 +60,38 @@ public class InfoHelper {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
 		if (toRemove.a != 0 && network != -1) {
 			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
-			if(!cache.isValid()){
+			if (!cache.isValid()) {
 				return;
 			}
 			switch (toRemove.b) {
 			case ADD:
 				if (stack != null) {
+					long changed = 0;
 					if (!doubleClick) {
-						LogisticsAPI.getItemHelper().insertItemFromPlayer(player, cache, player.inventory.currentItem);
+						changed = PL2API.getItemHelper().insertItemFromPlayer(player, cache, player.inventory.currentItem);
 					} else {
-						LogisticsAPI.getItemHelper().insertInventoryFromPlayer(player, cache, player.inventory.currentItem);
+						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, cache, player.inventory.currentItem);
+					}
+					if (changed > 0) {
+						long itemCount = PL2API.getItemHelper().getItemCount(stack, cache);
+						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
+						//FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.GREEN + "+" + changed + TextFormatting.RESET + " x " + stack.getDisplayName(), player.getEntityWorld(), player);
 					}
 				}
 				break;
 			case REMOVE:
 				if (itemstack != null) {
 					IMultipart part = hit.partHit;
-					if (part != null && part instanceof LogisticsMultipart) {
+					if (part != null && part instanceof LogisticsPart) {
 						BlockPos pos = part.getPos();
-						StoredItemStack extract = LogisticsAPI.getItemHelper().extractItem(cache, itemstack.copy().setStackSize(toRemove.a));
+						StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, itemstack.copy().setStackSize(toRemove.a));
 						if (extract != null) {
 							pos = pos.offset(hit.sideHit);
+							long r = extract.stored;
 							SonarAPI.getItemHelper().spawnStoredItemStack(extract, part.getWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
+							long itemCount = PL2API.getItemHelper().getItemCount(itemstack.getItemStack(), cache);
+							PL2.network.sendTo(new PacketItemInteractionText(itemstack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
+							//FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.RED + "-" + r + TextFormatting.RESET + " x " + itemstack.getItemStack().getDisplayName(), player.getEntityWorld(), player);
 						}
 					}
 				}
@@ -85,34 +100,35 @@ public class InfoHelper {
 				break;
 			}
 			ListNetworkChannels channels = (ListNetworkChannels) cache.getNetworkChannels(ItemNetworkHandler.INSTANCE);
-			if (channels != null) // TODO shouldn't have to ever do this.
+			if (channels != null)
 				channels.sendFullRapidUpdate();
+
 		}
 	}
 
 	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
 		if (network != -1) {
 			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
-			if(!cache.isValid()){
+			if (!cache.isValid())
 				return;
-			}
+
 			if (type == BlockInteractionType.RIGHT) {
-				LogisticsAPI.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
+				PL2API.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
 			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
-				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack.copy().setStackSize(Math.min(fluidStack.stored, 1000)));
+				PL2API.getFluidHelper().fillHeldItem(player, cache, fluidStack.copy().setStackSize(Math.min(fluidStack.stored, 1000)));
 			} else if (fluidStack != null && type == BlockInteractionType.SHIFT_LEFT) {
-				LogisticsAPI.getFluidHelper().fillHeldItem(player, cache, fluidStack);
+				PL2API.getFluidHelper().fillHeldItem(player, cache, fluidStack);
 			}
 
 			ListNetworkChannels channels = (ListNetworkChannels) cache.getNetworkChannels(ItemNetworkHandler.INSTANCE);
-			if (channels != null) // TODO shouldn't have to ever do this.
+			if (channels != null)
 				channels.sendFullRapidUpdate();
 
 		}
 	}
 
 	// FIXME - to use updateWriting for some of the tags, like ILogicInfo
-	public static <T extends IMonitorInfo> NBTTagCompound writeMonitoredList(NBTTagCompound tag, boolean lastWasNull, MonitoredList<T> stacks, SyncType type) {
+	public static <T extends IInfo> NBTTagCompound writeMonitoredList(NBTTagCompound tag, boolean lastWasNull, MonitoredList<T> stacks, SyncType type) {
 		if (type.isType(SyncType.DEFAULT_SYNC)) {
 			stacks.sizing.writeData(tag, SyncType.SAVE);
 			NBTTagList list = new NBTTagList();
@@ -157,7 +173,7 @@ public class InfoHelper {
 		return tag;
 	}
 
-	public static <T extends IMonitorInfo> MonitoredList<T> readMonitoredList(NBTTagCompound tag, MonitoredList<T> stacks, SyncType type) {
+	public static <T extends IInfo> MonitoredList<T> readMonitoredList(NBTTagCompound tag, MonitoredList<T> stacks, SyncType type) {
 		if (tag.hasKey(DELETE)) {
 			stacks.clear();
 			return stacks;
@@ -318,7 +334,7 @@ public class InfoHelper {
 		}
 	}
 
-	public boolean hasInfoChanged(IMonitorInfo info, IMonitorInfo newInfo) {
+	public static boolean hasInfoChanged(IInfo info, IInfo newInfo) {
 		if (info == null && newInfo == null) {
 			return false;
 		} else if (info == null && newInfo != null || info != null && newInfo == null) {
@@ -331,21 +347,21 @@ public class InfoHelper {
 		return PL2ASMLoader.infoIds.get(name);
 	}
 
-	public static Class<? extends IMonitorInfo> getInfoType(int id) {
+	public static Class<? extends IInfo> getInfoType(int id) {
 		return PL2ASMLoader.infoClasses.get(PL2ASMLoader.infoNames.get(id));
 	}
 
-	public static NBTTagCompound writeInfoToNBT(NBTTagCompound tag, IMonitorInfo info, SyncType type) {
+	public static NBTTagCompound writeInfoToNBT(NBTTagCompound tag, IInfo info, SyncType type) {
 		tag.setInteger("iiD", PL2ASMLoader.infoIds.get(info.getID()));
 		info.writeData(tag, type);
 		return tag;
 	}
 
-	public static IMonitorInfo readInfoFromNBT(NBTTagCompound tag) {
+	public static IInfo readInfoFromNBT(NBTTagCompound tag) {
 		return loadInfo(tag.getInteger("iiD"), tag);
 	}
 
-	public static IMonitorInfo loadInfo(int id, NBTTagCompound tag) {
+	public static IInfo loadInfo(int id, NBTTagCompound tag) {
 		return NBTHelper.instanceNBTSyncable(getInfoType(id), tag);
 	}
 

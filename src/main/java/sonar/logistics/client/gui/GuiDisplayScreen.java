@@ -13,24 +13,24 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.client.DisplayTextFields;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
-import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
-	public DisplayMultipart part;
+	public AbstractDisplayPart part;
 	public DisplayTextFields textFields;
 	private GuiState state = GuiState.LIST;
 	private int left = 7;
@@ -47,7 +47,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		}
 	}
 
-	public GuiDisplayScreen(DisplayMultipart part) {
+	public GuiDisplayScreen(AbstractDisplayPart part) {
 		super(new ContainerMultipartSync(part), part);
 		this.part = part;
 		this.ySize = 20 + part.maxInfo() * 26;
@@ -90,7 +90,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		case SOURCE:
 			scroller = new SonarScroller(this.guiLeft + 164 + 71, this.guiTop + 29, 134, 10);
 			for (int i = 0; i < size; i++) {
-				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * 12), listHeight));
+				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * 12), listWidth, listHeight));
 			}
 			break;
 		default:
@@ -247,7 +247,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		if (info == null)
 			return;
 
-		IMonitorInfo monitorInfo = info.getSidedCachedInfo(true);
+		IInfo monitorInfo = info.getSidedCachedInfo(true);
 		if (monitorInfo instanceof INameableInfo) {
 			INameableInfo directInfo = (INameableInfo) monitorInfo;
 			FontHelper.text(directInfo.getClientIdentifier(), 11, top + 6, LogisticsColours.white_text.getRGB());
@@ -292,7 +292,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			IMonitorInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
+			IInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
@@ -14,7 +15,7 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemWrapper {
-	
+
 	/** used for getting the full list of Items at a given {@link INode}
 	 * @param storedStacks current list of {@link StoredItemStack} to be added to
 	 * @param storage currentStorageSize
@@ -41,8 +42,13 @@ public class ItemWrapper {
 		return add;
 	}
 
+	/** this method is expensive, this updates all channel lists!, only use on display extract/insert to show instant count update */
+	public long getItemCount(ItemStack stack, ILogisticsNetwork network) {
+		return 0;
+	}
+
 	public void addItemsFromPlayer(StoredItemStack add, EntityPlayer player, ILogisticsNetwork network, ActionType action) {}
-	
+
 	/** used for removing Items from the network
 	 * @param remove {@link StoredItemStack} to remove
 	 * @param network the {@link ILogisticsNetwork} to remove from
@@ -53,7 +59,7 @@ public class ItemWrapper {
 	}
 
 	public void removeItemsFromPlayer(StoredItemStack add, EntityPlayer player, ILogisticsNetwork network, ActionType action) {}
-	
+
 	/** gets the {@link StoredItemStack} in the given slot of the first valid inventory on the network, used by the Inventory Reader
 	 * @param network the {@link ILogisticsNetwork} to get the stack from
 	 * @param slot id of the slot to look for the stack in
@@ -106,7 +112,7 @@ public class ItemWrapper {
 	 * @param network the {@link ILogisticsNetwork} to remove from
 	 * @param player
 	 * @return the {@link StoredItemStack} to add to the player */
-	//@Deprecated
+	// @Deprecated
 	public StoredItemStack removeToPlayerInventory(StoredItemStack stack, long extractSize, ILogisticsNetwork network, EntityPlayer player, ActionType type) {
 		return null;
 	}
@@ -132,16 +138,24 @@ public class ItemWrapper {
 	/** inserts all the items from the players inventory into the network which match the one in the given slot
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
-	 * @param slot the slot of the item to be added */
-	public void insertInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slotID) {}
+	 * @param slot the slot of the item to be added 
+	 * @return TODO*/
+	public long insertInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slotID) {
+		return 0;
+	}
 
 	/** inserts an item into the given network from the players inventory from the given slot
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
-	 * @param slot the slot to remove from */
-	public void insertItemFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slot) {}
+	 * @param slot the slot to remove from
+	 * @return TODO */
+	public long insertItemFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slot) {
+		return 0;
+	}
 
-	public void dumpInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache) {}
+	public boolean dumpInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache) {
+		return false;
+	}
 
 	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {}
 }

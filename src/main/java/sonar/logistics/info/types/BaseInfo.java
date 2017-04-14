@@ -6,13 +6,13 @@ import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.ICheckableSyncPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.register.LogicPath;
 
 /** typical implementation of IMonitorInfo which has a sync parts list for all the Info things it also has the required constructor which required empty constructor */
-public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart implements IMonitorInfo<T>, ISyncableListener {
+public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart implements IInfo<T>, ISyncableListener {
 
 	private LogicPath path;
 	public boolean setInfoRenderSize = false;
@@ -34,8 +34,8 @@ public abstract class BaseInfo<T extends IMonitorInfo> extends BaseSyncListPart 
 	}
 
 	public boolean equals(Object object) {
-		if (object != null && object instanceof IMonitorInfo) {
-			IMonitorInfo info = (IMonitorInfo) object;
+		if (object != null && object instanceof IInfo) {
+			IInfo info = (IInfo) object;
 			return (info.isHeader() && isHeader()) || (this.isMatchingType(info) && isMatchingInfo((T) info) && isIdenticalInfo((T) info));
 		}
 		return false;

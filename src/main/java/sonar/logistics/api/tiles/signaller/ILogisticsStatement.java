@@ -3,8 +3,8 @@ package sonar.logistics.api.tiles.signaller;
 import java.util.List;
 import java.util.Map;
 
-import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 
 public interface ILogisticsStatement {
 
@@ -12,7 +12,7 @@ public interface ILogisticsStatement {
 	public LogicOperator getOperator();
 
 	/** checks the statement is matching */
-	public LogicState isMatching(Map<InfoUUID, IMonitorInfo> info);
+	public LogicState isMatching(Map<InfoUUID, IInfo> info);
 
 	/** get valid operators */
 	public List<LogicOperator> validOperators();

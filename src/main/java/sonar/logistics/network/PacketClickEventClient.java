@@ -14,12 +14,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
+import sonar.logistics.PL2;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
 
 public class PacketClickEventClient extends PacketMultipart {
 
@@ -51,22 +52,31 @@ public class PacketClickEventClient extends PacketMultipart {
 		@Override
 		public IMessage processMessage(PacketClickEventClient message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null && part instanceof DisplayMultipart) {
-					DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (DisplayMultipart) part);
-					if (event.hit == null) {
-						return null;
-					}
-					InfoContainer container = (InfoContainer) ((DisplayMultipart) part).container();
-					if (container != null) {
-						IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
-						IMonitorInfo info = displayInfo.getSidedCachedInfo(true);
-						if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
-							NBTTagCompound eventTag = ((IAdvancedClickableInfo) info).onClientClick(event, displayInfo, player, player.getActiveItemStack(), container);
-							return new PacketClickEventServer(event.hashCode, eventTag);
+
+				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+					@Override
+					public void run() {
+						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+						if (player != null && part instanceof AbstractDisplayPart) {
+							DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (AbstractDisplayPart) part);
+							if (event.hit == null) {
+								return;
+							}
+							InfoContainer container = (InfoContainer) ((AbstractDisplayPart) part).container();
+							if (container != null) {
+								IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
+								IInfo info = displayInfo.getSidedCachedInfo(true);
+								if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
+									NBTTagCompound eventTag = ((IAdvancedClickableInfo) info).onClientClick(event, displayInfo, player, player.getActiveItemStack(), container);
+									if (!eventTag.hasNoTags()) {
+										PL2.network.sendToServer(new PacketClickEventServer(event.hashCode, eventTag));
+									}
+								}
+
+							}
 						}
 					}
-				}
+				});
 			}
 			return null;
 		}

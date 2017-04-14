@@ -22,21 +22,21 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.api.tiles.signaller.EmitterStatement;
 import sonar.logistics.api.tiles.signaller.InputTypes;
 import sonar.logistics.api.tiles.signaller.LogicOperator;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.containers.ContainerStatementList;
-import sonar.logistics.common.multiparts.RedstoneSignallerPart;
+import sonar.logistics.common.multiparts.misc.RedstoneSignallerPart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -163,8 +163,8 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				currentFilter.incrementInputType();
 				inputField.setText("");
 				currentFilter.obj.set("", ObjectType.STRING);
-				currentFilter.comparatorID.setObject(PL2.comparatorRegistry.getObjectID(currentFilter.getInputType().comparatorID));
-				currentFilter.comparator = PL2.comparatorRegistry.getRegisteredObject(currentFilter.getInputType().comparatorID);
+				currentFilter.comparatorID.setObject(PL2.getComparatorRegistry().getObjectID(currentFilter.getInputType().comparatorID));
+				currentFilter.comparator = PL2.getComparatorRegistry().getRegisteredObject(currentFilter.getInputType().comparatorID);
 				if (!currentFilter.validOperators().contains(currentFilter.getOperator())) {
 					currentFilter.operator.setObject((LogicOperator) currentFilter.validOperators().get(0));
 				}
@@ -248,7 +248,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			boolean has1 = false, has2 = false;
 
 			if (uuid1 != null) {
-				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
+				IInfo monitorInfo = PL2.getClientManager().info.get(uuid1).copy();
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList()), currentFilter.key1.getObject());
@@ -260,7 +260,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			}
 			if (currentFilter.getInputType().usesInfo()) {
 				if (uuid2 != null) {
-					IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid2);
+					IInfo monitorInfo = PL2.getClientManager().info.get(uuid2).copy();
 					if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList()), currentFilter.key2.getObject());
@@ -297,7 +297,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			uuid1 = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (uuid1 != null) {
-				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
+				IInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
 				if (monitorInfo != null) {
 					FontHelper.textCentre("Info Type: " + monitorInfo.getID().toUpperCase(), xSize, 6, LogisticsColours.white_text.getRGB());
 					GlStateManager.scale(0.75, 0.75, 0.75);
@@ -394,7 +394,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case CHANNELS:
 			if (info instanceof InfoUUID) {
-				IMonitorInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
+				IInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
 				if (monitorInfo != null) {
 					InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 				} else {
@@ -463,7 +463,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 	public Pair<String, String> getInfoTypeAndObjectStrings(InfoUUID id, String key) {
 		String infoType = "INFO", infoObj = "NULL";
-		IMonitorInfo monitorInfo = PL2.getClientManager().info.get(id);
+		IInfo monitorInfo = PL2.getClientManager().info.get(id);
 		if (monitorInfo instanceof INameableInfo) {
 			infoType = ((INameableInfo) monitorInfo).getClientIdentifier();
 		} else {
@@ -483,12 +483,15 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	public void selectionPressed(GuiButton button, int pos, int buttonID, Object info) {
 		switch (state) {
 		case LIST:
-			if (buttonID == 1) {
-				this.currentFilter = (EmitterStatement) info;
-				lastFilter = (EmitterStatement) info;
-				this.changeState(GuiState.STATEMENT);
-			} else {
-				currentFilter = info != currentFilter ? (EmitterStatement) info : null;
+			if (info instanceof EmitterStatement) {
+				EmitterStatement statement = (EmitterStatement) info;
+				if (buttonID == 1) {
+					this.currentFilter = statement;
+					lastFilter = statement;
+					this.changeState(GuiState.STATEMENT);
+				} else {
+					currentFilter = info != currentFilter ? statement : null;
+				}
 			}
 			break;
 		case STATEMENT:
@@ -506,8 +509,10 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			}
 			break;
 		case STRING:
-			ComparableObject obj = (ComparableObject) info;
-			((infoPos == 0) ? currentFilter.key1 : currentFilter.key2).setObject(obj.string);
+			if (info instanceof ComparableObject) {
+				ComparableObject obj = (ComparableObject) info;
+				((infoPos == 0) ? currentFilter.key1 : currentFilter.key2).setObject(obj.string);
+			}
 			break;
 		default:
 			break;
@@ -537,7 +542,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (uuid != null) {
-				IMonitorInfo monitorInfo = PL2.getClientManager().info.get(uuid);
+				IInfo monitorInfo = PL2.getClientManager().info.get(uuid);
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;
 					List objects = new ArrayList<ComparableObject>();
@@ -575,7 +580,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		if (state != GuiState.LIST && (i == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(i))) {
+		if (this.getFocusedField() == null && state != GuiState.LIST && (i == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(i))) {
 			if (state == GuiState.CHANNELS || state == GuiState.STRING) {
 				changeState(GuiState.STATEMENT);
 				return;

@@ -22,7 +22,7 @@ import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.asm.NetworkHandler;
 import sonar.logistics.api.asm.NetworkHandlerField;
 import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
@@ -36,7 +36,7 @@ public class PL2ASMLoader {
 
 	public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Class<? extends IMonitorInfo>> infoClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, Class<? extends IInfo>> infoClasses = Maps.newLinkedHashMap();
 
 	// public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
 	// public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
@@ -90,8 +90,8 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IMonitorInfo>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicInfoType.class, IMonitorInfo.class, true);
-		for (Pair<ASMDataTable.ASMData, Class<? extends IMonitorInfo>> info : infoTypes) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicInfoType.class, IInfo.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends IInfo>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
 			infoNames.put(hashCode, name);

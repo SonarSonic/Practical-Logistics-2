@@ -37,10 +37,10 @@ public class ExamplesPages extends BaseInfoPage {
 	}
 
 	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements) {
-		elements.add(new Element3DRenderer(FurnaceProgress.instance2, 0, 48, 4, 16, 80, 120));
-		elements.add(new Element3DRenderer(new InventoryExample(), 1, 48, 4, 16, 80, 120));
-		elements.add(new Element3DRenderer(new ExampleConfigurations.WirelessRedstone(), 2, 32, 4, 16, 120, 120));
-		elements.add(new Element3DRenderer(new ExampleConfigurations.MultipleInventory(), 3, 32, 4, 16, 120, 120));
+		elements.add(new Element3DRenderer(FurnaceProgress.instance2, 0, 48, 4, 16, 106, 160));
+		elements.add(new Element3DRenderer(new InventoryExample(), 1, 48, 4, 16, 106, 160));
+		elements.add(new Element3DRenderer(new ExampleConfigurations.WirelessRedstone(), 2, 32, 4, 16, 160, 160));
+		elements.add(new Element3DRenderer(new ExampleConfigurations.MultipleInventory(), 3, 32, 4, 16, 160, 160));
 		return elements;
 	}
 

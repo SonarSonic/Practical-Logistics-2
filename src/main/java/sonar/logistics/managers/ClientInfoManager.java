@@ -17,13 +17,13 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientViewable;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
@@ -35,14 +35,14 @@ public class ClientInfoManager implements IInfoManager {
 	public List<IDisplay> displays = Lists.newArrayList();
 
 	// public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = Maps.newLinkedHashMap();
-	public Map<InfoUUID, IMonitorInfo> info = Maps.newLinkedHashMap();
+	public Map<InfoUUID, IInfo> info = Maps.newLinkedHashMap();
 
 	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, List<Object>>();
 	public Map<Integer, List<ClientViewable>> clientLogicMonitors = new ConcurrentHashMap<Integer, List<ClientViewable>>();
 
 	public Map<InfoUUID, MonitoredList<?>> monitoredLists = Maps.newLinkedHashMap();
 	public Map<Integer, ILogicListenable> monitors = Maps.newLinkedHashMap();
-	public Map<Integer, MonitoredList<IMonitorInfo>> channelMap = new ConcurrentHashMap<Integer, MonitoredList<IMonitorInfo>>();
+	public Map<Integer, MonitoredList<IInfo>> channelMap = new ConcurrentHashMap<Integer, MonitoredList<IInfo>>();
 
 	// emitters
 	public List<ClientDataEmitter> clientEmitters = new ArrayList<ClientDataEmitter>();
@@ -69,7 +69,7 @@ public class ClientInfoManager implements IInfoManager {
 				info.put(id, InfoHelper.readInfoFromNBT(infoTag));
 				// info.replace(id, );
 			} else {
-				IMonitorInfo currentInfo = info.get(id);
+				IInfo currentInfo = info.get(id);
 				if (currentInfo != null) {
 					currentInfo.readData(infoTag, type);
 					info.put(id, currentInfo);
@@ -106,19 +106,19 @@ public class ClientInfoManager implements IInfoManager {
 	}
 
 	@Override
-	public Map<InfoUUID, IMonitorInfo> getInfoList() {
+	public Map<InfoUUID, IInfo> getInfoList() {
 		return info;
 	}
 	
-	public void onMonitoredListChanged(InfoUUID uuid){
+	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list){
 		for(IDisplay display : displays){
 			if(display.container().monitorsUUID(uuid)){
-				
+				display.container().onMonitoredListChanged(uuid, list);
 			}
 		}
 	}
 
-	public <T extends IMonitorInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid) {
+	public <T extends IInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid) {
 		MonitoredList<T> list = MonitoredList.<T>newMonitoredList(networkID);
 		monitoredLists.putIfAbsent(uuid, list);
 		for (Entry<InfoUUID, MonitoredList<?>> entry : monitoredLists.entrySet()) {

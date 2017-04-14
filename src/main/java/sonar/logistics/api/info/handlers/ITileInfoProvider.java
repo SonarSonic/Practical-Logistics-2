@@ -20,7 +20,7 @@ public interface ITileInfoProvider {
 	public boolean canProvide(World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable TileEntity tile, @Nullable Block block);
 
 	/** allows you to add all types of info for a given position for use in the Info Reader
-	 * @param registry TODO
+	 * @param registry the master registry
 	 * @param infoList the current info list
 	 * @param currentPath the current path of the provided info. You should use LogicPath.dupe() when you create new LogicInfo with this ICustomTileHandler
 	 * @param methodCode if this is null, provide all info, if it isn't null provide the method associated with it, this will increase efficiency if implemented correctly

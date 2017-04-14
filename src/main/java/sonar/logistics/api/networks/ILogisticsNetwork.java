@@ -4,9 +4,10 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ISonarListener;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
@@ -22,48 +23,50 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	/**networks which take info from this one*/
 	public static final int WATCHING_NETWORK = 1;
 	
-	public int getNetworkID();
+	int getNetworkID();
 	
-	public void onNetworkCreated();
+	void onNetworkCreated();
 	
-	public void onNetworkTick();	
+	void onNetworkTick();	
 	
-	public void onNetworkRemoved();
+	void onNetworkRemoved();
 	
-	public void onCablesChanged();
+	void onCablesChanged();
 
-	public void onCacheChanged(CacheHandler... cache);
+	void onCacheChanged(CacheHandler... cache);
 	
-	public void markUpdate(NetworkUpdate... updates);
+	void markUpdate(NetworkUpdate... updates);
 	
-	public boolean validateTile(INetworkListener listener);
+	boolean validateTile(INetworkListener listener);
 
 	/** this is the only method a connection should ever call itself!! */
-	public void onConnectionChanged(INetworkListener tile);
+	void onConnectionChanged(INetworkListener tile);
 
-	public void addConnection(INetworkListener tile);
+	void addConnection(INetworkListener tile);
 
-	public void removeConnection(INetworkListener tile);
+	void removeConnection(INetworkListener tile);
 	
-	public void addConnections();
+	void addConnections();
 	
-	public void removeConnections();
+	void removeConnections();
 
-	public void addLocalInfoProvider(IInfoProvider monitor);
+	void addLocalInfoProvider(IInfoProvider monitor);
 
-	public void removeLocalInfoProvider(IInfoProvider monitor);	
+	void removeLocalInfoProvider(IInfoProvider monitor);	
+	
+	void sendChannelPacket(EntityPlayer player);
 
-	public List<NodeConnection> getChannels(CacheType cacheType);	
+	List<NodeConnection> getChannels(CacheType cacheType);	
 	
-	public MonitoredList<IMonitorInfo> createChannelList(CacheType cacheType);
+	MonitoredList<IInfo> createChannelList(CacheType cacheType);
 	
-	public <T> List<T> getConnections(CacheHandler<T> handler, CacheType cacheType);
+	<T> List<T> getConnections(CacheHandler<T> handler, CacheType cacheType);
 	
-	public @Nullable <H extends INetworkHandler> INetworkChannels getNetworkChannels(H handler);
+	@Nullable <H extends INetworkHandler> INetworkChannels getNetworkChannels(H handler);
 	
-	public List<IInfoProvider> getLocalInfoProviders();	
+	List<IInfoProvider> getLocalInfoProviders();	
 
-	public IInfoProvider getLocalInfoProvider();
+	IInfoProvider getLocalInfoProvider();
 
 
 }

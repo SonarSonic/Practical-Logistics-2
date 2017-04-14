@@ -1,6 +1,6 @@
 package sonar.logistics.api.networks;
 
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.connections.CacheHandler;
 

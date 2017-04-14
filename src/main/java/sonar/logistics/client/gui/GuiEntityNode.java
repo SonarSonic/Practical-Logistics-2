@@ -8,7 +8,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.EntityNodePart;
+import sonar.logistics.common.multiparts.nodes.EntityNodePart;
 
 public class GuiEntityNode extends GuiLogistics {
 	public EntityNodePart part;
@@ -22,7 +22,7 @@ public class GuiEntityNode extends GuiLogistics {
 
 	public void initGui() {
 		super.initGui();
-		buttonList.add(new GuiButton(0, guiLeft + 6, guiTop + 20, 80, 20, PL2Translate.BUTTON_TARGET + ": " + part.entityTarget.getObject()));
+		buttonList.add(new GuiButton(0, guiLeft + 6, guiTop + 20, 80, 20, PL2Translate.BUTTON_TARGET.t() + ": " + part.entityTarget.getObject()));
 		buttonList.add(new GuiButton(1, guiLeft + 90, guiTop + 20, 80, 20, part.nearest.getObject() ? PL2Translate.BUTTON_NEAREST.t() : PL2Translate.BUTTON_FURTHEST.t()));
 		buttonList.add(new GuiButton(2, guiLeft + 10, guiTop + 50, 20, 20, "<"));
 		buttonList.add(new GuiButton(3, guiLeft + xSize - 30, guiTop + 50, 20, 20, ">"));

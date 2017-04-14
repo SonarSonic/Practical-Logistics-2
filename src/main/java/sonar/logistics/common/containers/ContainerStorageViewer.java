@@ -8,7 +8,7 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
@@ -52,19 +52,19 @@ public class ContainerStorageViewer extends Container {
 			if (id < 36) {
 				if (!player.getEntityWorld().isRemote) {
 					ILogisticsNetwork network = emitter.getNetwork();
-					
+
 					StoredItemStack stack = new StoredItemStack(itemstack1);
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						LogisticsAPI.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
+						PL2API.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
 					} else {
-						StoredItemStack perform = LogisticsAPI.getItemHelper().addItems(stack, network, ActionType.PERFORM);
+						StoredItemStack perform = PL2API.getItemHelper().addItems(stack, network, ActionType.PERFORM);
 						lastStack = itemstack1;
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();
 					}
 					ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
-					if (channels != null) //TODO shouldn't have to ever do this.
-						channels.sendLocalRapidUpdate(emitter, player);					
+					if (channels != null) // TODO shouldn't have to ever do this.
+						channels.sendLocalRapidUpdate(emitter, player);
 					this.detectAndSendChanges();
 				}
 			} else if (id < 27) {

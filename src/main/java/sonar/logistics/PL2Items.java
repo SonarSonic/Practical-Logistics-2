@@ -18,22 +18,22 @@ import sonar.logistics.common.items.ItemWirelessMultipart;
 import sonar.logistics.common.items.WirelessEntityTransceiver;
 import sonar.logistics.common.items.WirelessItemTransceiver;
 import sonar.logistics.common.items.WirelessStorageReader;
-import sonar.logistics.common.multiparts.ArrayPart;
-import sonar.logistics.common.multiparts.ClockPart;
-import sonar.logistics.common.multiparts.DataCablePart;
-import sonar.logistics.common.multiparts.DataEmitterPart;
-import sonar.logistics.common.multiparts.DataReceiverPart;
-import sonar.logistics.common.multiparts.DisplayScreenPart;
-import sonar.logistics.common.multiparts.EnergyReaderPart;
-import sonar.logistics.common.multiparts.EntityNodePart;
-import sonar.logistics.common.multiparts.FluidReaderPart;
-import sonar.logistics.common.multiparts.HolographicDisplayPart;
-import sonar.logistics.common.multiparts.InfoReaderPart;
-import sonar.logistics.common.multiparts.InventoryReaderPart;
-import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.NodePart;
-import sonar.logistics.common.multiparts.RedstoneSignallerPart;
-import sonar.logistics.common.multiparts.TransferNodePart;
+import sonar.logistics.common.multiparts.displays.DataCablePart;
+import sonar.logistics.common.multiparts.displays.DisplayScreenPart;
+import sonar.logistics.common.multiparts.displays.HolographicDisplayPart;
+import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
+import sonar.logistics.common.multiparts.misc.ClockPart;
+import sonar.logistics.common.multiparts.misc.RedstoneSignallerPart;
+import sonar.logistics.common.multiparts.nodes.ArrayPart;
+import sonar.logistics.common.multiparts.nodes.EntityNodePart;
+import sonar.logistics.common.multiparts.nodes.NodePart;
+import sonar.logistics.common.multiparts.nodes.TransferNodePart;
+import sonar.logistics.common.multiparts.readers.EnergyReaderPart;
+import sonar.logistics.common.multiparts.readers.FluidReaderPart;
+import sonar.logistics.common.multiparts.readers.InfoReaderPart;
+import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
+import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.common.multiparts.wireless.DataReceiverPart;
 
 public class PL2Items extends PL2 {
 

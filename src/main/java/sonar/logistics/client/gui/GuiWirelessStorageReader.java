@@ -28,21 +28,21 @@ import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.tiles.readers.InventoryReader;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerStorageViewer;
-import sonar.logistics.common.multiparts.DataEmitterPart;
+import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketWirelessStorage;
 
-public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
+public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 
 	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/sorting_icons.png");
 
@@ -104,24 +104,20 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 				break;
 			case 3:
 				PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
-
 					@Override
 					public void writeToBuf(ByteBuf buf) {
 						buf.writeBoolean(false);
 						buf.writeInt(3);
 					}
-
 				}));
 				break;
 			case 4:
 				PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
-
 					@Override
 					public void writeToBuf(ByteBuf buf) {
 						buf.writeBoolean(false);
 						buf.writeInt(4);
 					}
-
 				}));
 				break;
 			case 5:
@@ -145,18 +141,18 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	}
 
 	@Override
-	public MonitoredList<IMonitorInfo> getGridList() {
+	public MonitoredList<IInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
 			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, DataEmitterPart.STATIC_ITEM_ID));
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
 
-			MonitoredList<IMonitorInfo> list = MonitoredList.newMonitoredList(networkID);
+			MonitoredList<IInfo> list = MonitoredList.newMonitoredList(networkID);
 			list.addAll(currentList);
 			if (search == null || search.isEmpty() || search.equals(" ")) {
 				return list;
 			} else {
-				MonitoredList<IMonitorInfo> searchList = MonitoredList.newMonitoredList(networkID);
+				MonitoredList<IInfo> searchList = MonitoredList.newMonitoredList(networkID);
 				for (MonitoredItemStack stack : (List<MonitoredItemStack>) currentList.clone()) {
 					StoredItemStack item = stack.getStoredStack();
 					if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
@@ -171,7 +167,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	}
 
 	@Override
-	public void onGridClicked(IMonitorInfo info, int pos, int button, boolean empty) {
+	public void onGridClicked(IInfo info, int pos, int button, boolean empty) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			button = 2;
 		}
@@ -207,7 +203,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	}
 
 	@Override
-	public void renderSelection(IMonitorInfo info, int x, int y, int slot) {
+	public void renderSelection(IInfo info, int x, int y, int slot) {
 		if (info instanceof MonitoredItemStack) {
 			MonitoredItemStack selection = (MonitoredItemStack) info;
 			RenderHelper.saveBlendState();
@@ -223,7 +219,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IMonitorInfo> {
 	}
 
 	@Override
-	public void renderToolTip(IMonitorInfo info, int x, int y) {
+	public void renderToolTip(IInfo info, int x, int y) {
 		if (info instanceof MonitoredItemStack) {
 			MonitoredItemStack selection = (MonitoredItemStack) info;
 			StoredItemStack storedStack = selection.getStoredStack();

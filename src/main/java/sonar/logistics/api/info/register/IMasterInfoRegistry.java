@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
@@ -91,7 +91,7 @@ public interface IMasterInfoRegistry {
 	public void addCapabilities(final List<IProvidableInfo> infoList, LogicPath path, Object obj, EnumFacing currentFace, Object... available);
 
 	/**gets the very latest version of the LogicInfo provided from the MonitoredList provided*/
-	public Pair<Boolean, IProvidableInfo> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, IMonitorInfo monitorInfo);
+	public Pair<Boolean, IProvidableInfo> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, IInfo monitorInfo);
 
 	/**gets the very latest version of the LogicInfo provided from the Node Connection provided*/
 	public Pair<Boolean, IProvidableInfo> getLatestInfo(IProvidableInfo info, NodeConnection entry);

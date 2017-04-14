@@ -11,12 +11,12 @@ import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
 
-public abstract class GuiSelectionGrid<T extends IMonitorInfo> extends GuiLogistics {
+public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 
 	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/sorting_icons.png");
 

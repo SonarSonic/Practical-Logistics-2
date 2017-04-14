@@ -31,6 +31,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 	public List<IGuidePageElement> elements = Lists.newArrayList();
 	private GuiButton selectedButton;
 	public List<GuiButton> guideButtons = Lists.newArrayList();
+	public static final int topOffset = 18;
 	// public Pair<List<String>, List<PageLink>> current = new Pair(Lists.newArrayList(), Lists.newArrayList());
 
 	public BaseInfoPage(int pageID) {
@@ -94,7 +95,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				for (ElementLink link : links) {
 					if (link.lineNum >= from && link.lineNum <= to) {
 						int linePos = lineTally + link.lineNum - 1;
-						link.setDisplayPosition(ordinal, (int) (this.getLineOffset(linePos, ordinal) * 0.75 + link.index), (int) (25 + ((linePos-((numPagesNeeded - currentPages)*GuidePageHelper.maxLinesPerPage)) * 12) * 0.75));
+						link.setDisplayPosition(ordinal, (int) (this.getLineOffset(linePos, ordinal) + link.index), (int) (topOffset+9 + ((linePos-((numPagesNeeded - currentPages)*GuidePageHelper.maxLinesPerPage)) * 12)));
 						pageLinks.add(link);
 					} else {
 						break;
@@ -116,7 +117,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 					pageInfo.put(info.key, infoFormatted);
 					lineTally += wrapLines.size();
 					// if (to != lines.size()-1 || currentInfoPos != pgInfo.size()-1) {
-					if (to != lines.size()-1 || !(currentInfoPos + 1 >= pgInfo.size())) {
+					if (to != lines.size() || !(currentInfoPos + 1 >= pgInfo.size())) {
 						if (lineTally + 1 >= GuidePageHelper.maxLinesPerPage) {
 							ordinal++;
 							lineTally = 0;
@@ -138,23 +139,23 @@ public abstract class BaseInfoPage implements IGuidePage {
 	//// DRAWING \\\\
 
 	public int getLineWidth(int linePos, int page) {
-		int wrapWidth = 242;
-		int pos = (int) (25 + (linePos * 12) * 1 / 0.75);
+		int wrapWidth = 342;
+		int pos = (int) (topOffset + (linePos * 12));
 
 		for (IGuidePageElement e : elements) {
 			if (e.getDisplayPage() == page) {
 				int[] position = e.getSizing();
-				if ((position[1] + position[3]) * 1 / 0.75 > pos) {
-					wrapWidth -= ((position[2] + position[0]) * 0.75);
+				if ((position[1] + position[3]) > pos) {
+					wrapWidth -= ((position[2] + position[0]));
 					break;
 				}
 			}
 		}
-		return (int) ((wrapWidth) * (1 / 0.75));
+		return wrapWidth;
 	}
 
 	public int getLineOffset(int linePos, int page) {
-		int pos = (int) (25 + linePos * 12);
+		int pos = (int) (topOffset + linePos * 12);
 		int offset = 0;
 		for (IGuidePageElement e : elements) {
 			if (e.getDisplayPage() == page) {
@@ -210,19 +211,17 @@ public abstract class BaseInfoPage implements IGuidePage {
 			GuiButton button = ((GuiButton) this.guideButtons.get(i));
 			button.drawButtonForegroundLayer(x, y);
 		}
-		GL11.glScaled(0.75, 0.75, 0.75);
 		int listTally = 0;
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		//GlStateManager.enableLighting();
 		for (ElementInfoFormatted guidePage : currentData) {
 			List<String> info = guidePage.formattedList;
-			for (int i = 0; i < Math.min(16, info.size()); i++) {
+			for (int i = 0; i < Math.min(GuidePageHelper.maxLinesPerPage, info.size()); i++) {
 				String s = info.get(i);
-				FontHelper.text(s, guidePage.displayX + getLineOffset(i + listTally, currentSubPage), 25 + (i + listTally) * 12, -1);
+				FontHelper.text(s, guidePage.displayX + getLineOffset(i + listTally, currentSubPage), topOffset + (i + listTally) * 12, -1);
 			}
 			listTally += (listTally == 0 ? 1 : 1) + guidePage.formattedList.size();
 		}
-		GL11.glScaled(1 / 0.75, 1 / 0.75, 1 / 0.75);
 		for (IGuidePageElement element : elements) {
 			if (element.getDisplayPage() == currentSubPage) {
 				RenderHelper.saveBlendState();

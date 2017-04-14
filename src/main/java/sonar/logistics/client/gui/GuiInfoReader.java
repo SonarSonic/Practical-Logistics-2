@@ -16,7 +16,7 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.common.multiparts.InfoReaderPart;
+import sonar.logistics.common.multiparts.readers.InfoReaderPart;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {

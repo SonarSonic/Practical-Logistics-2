@@ -14,33 +14,34 @@ import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.helpers.LogisticsHelper;
 
-public class ListNetworkChannels<M extends IMonitorInfo, H extends INetworkListHandler<M>> extends DefaultNetworkChannels<H> implements INetworkListChannels<H> {
+public class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels<H> implements INetworkListChannels<H> {
 
-	private List<IListReader<M>> readers = Lists.newArrayList();
-	private Iterator<IListReader<M>> readerIterator;
-	private int readersPerTick = 0;
+	public List<IListReader<M>> readers = Lists.newArrayList();
+	protected Iterator<IListReader<M>> readerIterator;
+	protected int readersPerTick = 0;
 
-	private Map<NodeConnection, MonitoredList<M>> channels = Maps.newHashMap();
-	private Iterator<Entry<NodeConnection, MonitoredList<M>>> channelIterator;
-	private ChannelList currentList;
-	private int channelsPerTick = 0;
+	public Map<NodeConnection, MonitoredList<M>> channels = Maps.newHashMap();
+	protected Iterator<Entry<NodeConnection, MonitoredList<M>>> channelIterator;
+	protected int channelsPerTick = 0;
 
-	public boolean hasListeners = false;
+	protected boolean hasListeners = false;
 	
 	public ListNetworkChannels(H handler, ILogisticsNetwork network) {
 		super(handler, network, CacheHandler.READER);
@@ -56,12 +57,15 @@ public class ListNetworkChannels<M extends IMonitorInfo, H extends INetworkListH
 			}
 		}
 		if (hasListeners) {
-			this.currentList = handler.getChannelsList(network, readers);
-			this.readersPerTick = readers.size() > handler.updateRate() ? (int) Math.ceil(readers.size() / Math.max(1, handler.updateRate())) : 1;
-			this.channelsPerTick = channels.size() > handler.updateRate() ? (int) Math.ceil(channels.size() / Math.max(1, handler.updateRate())) : 1;
-			this.channelIterator = channels.entrySet().iterator();
-			this.readerIterator = readers.iterator();
+			updateTickLists();
 		}
+	}
+	
+	public void updateTickLists(){
+		this.readersPerTick = readers.size() > handler.updateRate() ? (int) Math.ceil(readers.size() / Math.max(1, handler.updateRate())) : 1;
+		this.channelsPerTick = channels.size() > handler.updateRate() ? (int) Math.ceil(channels.size() / Math.max(1, handler.updateRate())) : 1;
+		this.channelIterator = channels.entrySet().iterator();
+		this.readerIterator = readers.iterator();
 	}
 	
 
@@ -100,18 +104,18 @@ public class ListNetworkChannels<M extends IMonitorInfo, H extends INetworkListH
 		updateTicks();
 	}
 
-	private void updateChannels() {
+	public void updateChannels() {
 		int used = 0;
 		while (channelIterator.hasNext() && used != channelsPerTick) {
 			Entry<NodeConnection, MonitoredList<M>> entry = channelIterator.next();
 			MonitoredList<M> oldList = entry.getValue() == null ? MonitoredList.<M>newMonitoredList(network.getNetworkID()) : entry.getValue();
-			MonitoredList<M> newList = handler.updateConnection(MonitoredList.<M>newMonitoredList(network.getNetworkID()), oldList, entry.getKey(), currentList);			
+			MonitoredList<M> newList = handler.updateConnection(this, MonitoredList.<M>newMonitoredList(network.getNetworkID()), oldList, entry.getKey());			
 			entry.setValue(newList);
 			used++;
 		}
 	}
 
-	private void updateReaders() {
+	public void updateReaders() {
 		int used = 0;
 		while (readerIterator.hasNext() && used != readersPerTick) {
 			IListReader<M> reader = readerIterator.next();
@@ -122,14 +126,14 @@ public class ListNetworkChannels<M extends IMonitorInfo, H extends INetworkListH
 		}
 	}
 
-	private void updateAllChannels() {
+	public void updateAllChannels() {
 		for (Entry<NodeConnection, MonitoredList<M>> entry : channels.entrySet()) {
 			MonitoredList<M> oldList = entry.getValue() == null ? MonitoredList.<M>newMonitoredList(network.getNetworkID()) : entry.getValue();
-			entry.setValue(handler.updateConnection(MonitoredList.<M>newMonitoredList(network.getNetworkID()), oldList, entry.getKey(), currentList));
+			entry.setValue(handler.updateConnection(this, MonitoredList.<M>newMonitoredList(network.getNetworkID()), oldList, entry.getKey()));
 		}
 	}
 
-	private void updateAllReaders(boolean send) {
+	public void updateAllReaders(boolean send) {
 		readers.forEach(reader -> handler.updateAndSendList(network, reader, channels, send));
 	}
 
@@ -154,9 +158,18 @@ public class ListNetworkChannels<M extends IMonitorInfo, H extends INetworkListH
 		readerIterator = null;
 		channels.clear();
 		channelIterator = null;
-		currentList = null;
 	}
 
 	@Override
 	public void onCreated() {}
+
+	@Override
+	public boolean isCoordsMonitored(BlockConnection connection) {
+		return true;
+	}
+
+	@Override
+	public boolean isEntityMonitored(EntityConnection connection) {
+		return true;
+	}
 }

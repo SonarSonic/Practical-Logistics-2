@@ -42,7 +42,7 @@ public class Element3DRenderer implements IGuidePageElement {
 
 	@Override
 	public int[] getSizing() {
-		return new int[] { x, y, (int) (width * 1 / 0.75), (int) (height * 1 / 0.75)  };
+		return new int[] { x, y, width, height };
 	}
 
 	@Override

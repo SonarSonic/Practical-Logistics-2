@@ -15,6 +15,7 @@ public class ElementItem implements IGuidePageElement {
 	public int page;
 	public ItemStack stack;
 	public int x, y;
+	public static final int SIZE = 80;
 
 	public ElementItem(int page, ItemStack stack, int x, int y) {
 		this.page = page;
@@ -25,7 +26,7 @@ public class ElementItem implements IGuidePageElement {
 
 	@Override
 	public int[] getSizing() {
-		return new int[] { x, y, (int) ((54) * 1 / 0.75), (int) ((54) * 1 / 0.75) };
+		return new int[] { x, y, SIZE, SIZE};
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class ElementItem implements IGuidePageElement {
 		GlStateManager.pushMatrix();
 		GlStateManager.pushAttrib();
 		GlStateManager.enableDepth();
-		double scale = (double) 54 / 16;
+		double scale = (double) SIZE / 16;
 		GlStateManager.translate(x, y, 640);
 		GlStateManager.scale(scale, scale, scale);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -53,7 +54,7 @@ public class ElementItem implements IGuidePageElement {
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
 		RenderHelper.saveBlendState();
-		gui.drawTransparentRect(x, y, x + 54, y + 54, LogisticsColours.blue_overlay.getRGB());
+		gui.drawTransparentRect(x, y, x + SIZE, y + SIZE, LogisticsColours.blue_overlay.getRGB());
 		RenderHelper.restoreBlendState();
 
 	}

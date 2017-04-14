@@ -59,7 +59,7 @@ public class ClientViewable implements INBTSyncable {
 
 	public ILogicListenable getViewable() {
 		ILogicListenable viewable = CableHelper.getMonitorFromIdentity(identity.getObject().hashCode(), true);
-		if (viewable == null) {
+		if (viewable != null) {
 			IMultipart part = SonarMultipartHelper.getPartFromHash(identity.getObject().hashCode(), coords.getCoords().getWorld(), coords.getCoords().getBlockPos());
 			if (part != null && part instanceof ILogicListenable) {
 				ILogicListenable partViewer = (ILogicListenable) part;

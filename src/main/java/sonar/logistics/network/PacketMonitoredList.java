@@ -9,8 +9,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.helpers.InfoHelper;
@@ -63,7 +63,7 @@ public class PacketMonitoredList implements IMessage {
 						ILogicListenable viewable = PL2.getClientManager().monitors.get(message.identity);
 						MonitoredList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
 						PL2.getClientManager().monitoredLists.put(message.id, list);
-						PL2.getClientManager().onMonitoredListChanged(message.id);
+						PL2.getClientManager().onMonitoredListChanged(message.id, list);
 					}
 				}
 			});

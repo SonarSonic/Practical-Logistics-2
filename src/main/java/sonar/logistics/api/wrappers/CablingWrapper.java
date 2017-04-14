@@ -3,7 +3,7 @@ package sonar.logistics.api.wrappers;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
-import sonar.logistics.api.networks.EmptyNetworkCache;
+import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.cable.IDataCable;
@@ -29,10 +29,10 @@ public class CablingWrapper {
 	}
 
 	public ILogisticsNetwork getNetwork(TileEntity tile, EnumFacing dir) {
-		return EmptyNetworkCache.INSTANCE;
+		return EmptyLogisticsNetwork.INSTANCE;
 	}
 
 	public ILogisticsNetwork getNetwork(int registryID) {
-		return EmptyNetworkCache.INSTANCE;
+		return EmptyLogisticsNetwork.INSTANCE;
 	}
 }

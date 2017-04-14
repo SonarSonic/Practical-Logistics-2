@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import sonar.core.helpers.ListHelper;
@@ -25,7 +27,8 @@ import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.filters.ITransferFilteredTile;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.IEntityMonitorHandler;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
@@ -43,12 +46,11 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.utils.ChannelType;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.multiparts.DataEmitterPart;
+import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
 import sonar.logistics.connections.handlers.FluidNetworkHandler;
 import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.FluidHelper;
@@ -77,8 +79,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		this.networkID = networkID;
 	}
 
-	public void onNetworkCreated() {
-	}
+	public void onNetworkCreated() {}
 
 	public void onNetworkTick() {
 		addConnections();
@@ -110,7 +111,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	/// UPDATE CACHES \\\
-	public void onCacheChanged(CacheHandler... caches) {
+	public void onCacheChanged(CacheHandler...caches) {
 		for (CacheHandler cache : caches)
 			if (!changedCaches.contains(cache)) {
 				changedCaches.add(cache);
@@ -125,7 +126,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	@Override
-	public void markUpdate(NetworkUpdate... updates) {
+	public void markUpdate(NetworkUpdate...updates) {
 		for (NetworkUpdate update : updates)
 			if (!toUpdate.contains(update)) {
 				toUpdate.add(update);
@@ -250,16 +251,23 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	@Override
-	public void onSubListenableAdded(ISonarListenable<ILogisticsNetwork> listen) {
-	}
+	public void onSubListenableAdded(ISonarListenable<ILogisticsNetwork> listen) {}
 
 	@Override
-	public void onSubListenableRemoved(ISonarListenable<ILogisticsNetwork> listen) {
-	}
+	public void onSubListenableRemoved(ISonarListenable<ILogisticsNetwork> listen) {}
 
 	@Override
 	public ListenableList<ILogisticsNetwork> getListenerList() {
 		return subNetworks;
+	}
+
+	@Override
+	public void sendChannelPacket(EntityPlayer player) {
+		MonitoredList<IInfo> coords = createChannelList(CacheType.ALL);
+		NBTTagCompound channelTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC);
+		if (channelTag.hasNoTags())
+			return;
+		PL2.network.sendTo(new PacketChannels(getNetworkID(), channelTag), (EntityPlayerMP) player);
 	}
 
 	/// CHANNELS \\\
@@ -320,8 +328,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		handlers.forEach((H, C) -> C.createChannelLists());
 	}
 
-	public MonitoredList<IMonitorInfo> createChannelList(CacheType cacheType) {
-		MonitoredList<IMonitorInfo> list = MonitoredList.<IMonitorInfo>newMonitoredList(getNetworkID());
+	public MonitoredList<IInfo> createChannelList(CacheType cacheType) {
+		MonitoredList<IInfo> list = MonitoredList.<IInfo>newMonitoredList(getNetworkID());
 		getChannels(cacheType).forEach(CHANNEL -> list.add(CHANNEL.getChannel()));
 		return list;
 	}

@@ -5,7 +5,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.inventory.ContainerSync;
 import sonar.core.inventory.slots.SlotBlockedInventory;
-import sonar.logistics.common.tileentity.TileEntityHammer;
+import sonar.logistics.common.hammer.TileEntityHammer;
 
 public class ContainerHammer extends ContainerSync {
 

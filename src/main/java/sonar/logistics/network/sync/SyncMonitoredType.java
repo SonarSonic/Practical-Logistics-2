@@ -5,18 +5,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.helpers.InfoHelper;
 
-public class SyncMonitoredType<T extends IMonitorInfo> extends SyncPart {
+public class SyncMonitoredType<T extends IInfo> extends SyncPart {
 
-	public IMonitorInfo<T> info;
+	public IInfo<T> info;
 
 	public SyncMonitoredType(int id) {
 		super(id);
 	}
 
-	public void setInfo(IMonitorInfo<T> info) {
+	public void setInfo(IInfo<T> info) {
 		this.info = info;
 		markChanged();
 	}

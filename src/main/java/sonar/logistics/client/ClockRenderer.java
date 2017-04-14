@@ -16,7 +16,8 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.common.multiparts.ClockPart;
+import sonar.logistics.api.PL2Properties;
+import sonar.logistics.common.multiparts.misc.ClockPart;
 
 public class ClockRenderer extends MultipartSpecialRenderer<ClockPart> {
 
@@ -57,7 +58,7 @@ public class ClockRenderer extends MultipartSpecialRenderer<ClockPart> {
 			}
 			wr.begin(7, DefaultVertexFormats.BLOCK);
 			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-			IBlockState state = part.getActualState(MultipartRegistry.getDefaultState(part).getBaseState(), world, pos).withProperty(ClockPart.HAND, true);
+			IBlockState state = part.getActualState(MultipartRegistry.getDefaultState(part).getBaseState(), world, pos).withProperty(PL2Properties.CLOCK_HAND, true);
 			EnumBlockRenderType type = state.getRenderType();
 			if (type != EnumBlockRenderType.MODEL) {
 				blockrendererdispatcher.renderBlock(state, pos, world, wr);

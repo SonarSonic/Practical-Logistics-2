@@ -19,8 +19,8 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
 import sonar.logistics.PL2;
-import sonar.logistics.api.LogisticsAPI;
-import sonar.logistics.api.networks.EmptyNetworkCache;
+import sonar.logistics.api.PL2API;
+import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.IConnectable;
@@ -34,8 +34,8 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wrappers.CablingWrapper;
-import sonar.logistics.common.multiparts.DataCablePart;
-import sonar.logistics.common.multiparts.generic.SidedMultipart;
+import sonar.logistics.common.multiparts.SidedPart;
+import sonar.logistics.common.multiparts.displays.DataCablePart;
 
 public class CableHelper extends CablingWrapper {
 
@@ -47,10 +47,10 @@ public class CableHelper extends CablingWrapper {
 			}
 			IMultipart part = container.getPartInSlot(PartSlot.getFaceSlot(dir));
 			if (part == null)
-				part = (IMultipart) LogisticsAPI.getCableHelper().getDisplayScreen(cable.getCoords(), dir);
+				part = (IMultipart) PL2API.getCableHelper().getDisplayScreen(cable.getCoords(), dir);
 			if (part != null && part instanceof INetworkTile) {
-				if (part instanceof SidedMultipart) {
-					SidedMultipart sided = (SidedMultipart) part;
+				if (part instanceof SidedPart) {
+					SidedPart sided = (SidedPart) part;
 					if (sided.getMultipart().heightMax == 0.0625 * 6) {
 						return CableRenderType.NONE;
 					} else if (sided.getMultipart().heightMax == 0.0625 * 4) {
@@ -226,7 +226,6 @@ public class CableHelper extends CablingWrapper {
 			double yStart = (i * elementSize) + (Math.max(0, (i - 1) * spacing)) + 0.0625;
 			double yEnd = yStart + elementSize;
 			if (yClick > yStart && yClick < yEnd) {
-				// System.out.println("SLOT:" + i);
 				return i;
 			}
 		}
@@ -320,8 +319,8 @@ public class CableHelper extends CablingWrapper {
 		List<T> logicTiles = Lists.newArrayList();
 		for (IMultipart part : cable.getContainer().getParts()) {
 			if (validate.isValid(part)) {
-				if (part instanceof SidedMultipart) {
-					SidedMultipart sided = (SidedMultipart) part;
+				if (part instanceof SidedPart) {
+					SidedPart sided = (SidedPart) part;
 					if (!cable.canConnectOnSide(sided.getNetworkID(), sided.getCableFace(), true)) {
 						continue;
 					}
@@ -332,7 +331,7 @@ public class CableHelper extends CablingWrapper {
 		for (EnumFacing face : EnumFacing.values()) {
 			if (cable.canConnectOnSide(cable.registryID, face, false)) {
 				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-				INetworkTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
+				INetworkTile tile = PL2API.getCableHelper().getMultipart(offset, face);
 				if (validate.isValid(tile) && tile.canConnect(face).canConnect()) {
 					logicTiles.add((T) tile);
 				}
@@ -346,7 +345,7 @@ public class CableHelper extends CablingWrapper {
 		for (EnumFacing face : EnumFacing.values()) {
 			if (cable.canConnectOnSide(cable.getRegistryID(), face.getOpposite(), false)) {
 				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-				INetworkTile tile = LogisticsAPI.getCableHelper().getMultipart(offset, face);
+				INetworkTile tile = PL2API.getCableHelper().getMultipart(offset, face);
 				if (tile instanceof IInfoProvider) {
 					logicTiles.add((IInfoProvider) tile);
 				}
@@ -364,7 +363,7 @@ public class CableHelper extends CablingWrapper {
 				return cache;
 			}
 		}
-		return EmptyNetworkCache.INSTANCE;
+		return EmptyLogisticsNetwork.INSTANCE;
 	}
 
 	public ILogisticsNetwork getNetwork(int registryID) {

@@ -37,7 +37,9 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	public GuiGuide(EntityPlayer player) {
 		super(new ContainerGuide(player), (IWorldPosition) null);
 		listHeight = 20;
-		this.xSize = 182 + 66;
+		listWidth = 330;
+		this.xSize = 350;// (182 + 66);
+		this.ySize = 250;// 166
 
 	}
 
@@ -54,14 +56,14 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		if (currentPage != null) {
 			currentPage.initGui(this, pagePos);
 			buttonList.add(new LogisticsButton(this, 0, guiLeft + 6, guiTop + 3, 512 - 24, 0, 16, 11, PL2Translate.BUTTON_BACK.t(), ""));
-			buttonList.add(new GuiButton(-1, guiLeft + 6, guiTop + 140, 20, 20, "<<"));
-			buttonList.add(new GuiButton(-2, guiLeft + 222, guiTop + 140, 20, 20, ">>"));
-			buttonList.add(new GuiButton(-3, guiLeft + 26, guiTop + 140, 20, 20, "<"));
-			buttonList.add(new GuiButton(-4, guiLeft + 202, guiTop + 140, 20, 20, ">"));
+			buttonList.add(new GuiButton(-1, guiLeft + 6, guiTop + ySize - 26, 20, 20, "<<"));
+			buttonList.add(new GuiButton(-2, guiLeft + xSize - 26, guiTop + ySize - 26, 20, 20, ">>"));
+			buttonList.add(new GuiButton(-3, guiLeft + 26, guiTop + ySize - 26, 20, 20, "<"));
+			buttonList.add(new GuiButton(-4, guiLeft + xSize - 26 - 20, guiTop + ySize - 26, 20, 20, ">"));
 		} else {
 			infoList = GuidePageRegistry.pages;
 			Keyboard.enableRepeatEvents(true);
-			searchField = new SonarTextField(0, this.fontRendererObj, 34, 17, 180, 10);
+			searchField = new SonarTextField(0, this.fontRendererObj, 50, 17, 240, 10);
 			searchField.setMaxStringLength(20);
 			searchField.setText("");
 			fieldList.add(searchField);
@@ -195,9 +197,10 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		if (currentPage != null) {
 			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, -1);
 			currentPage.drawForegroundPage(this, x, y, pagePos);
-			FontHelper.textCentre(pagePos + 1 + " / " + currentPage.getPageCount(), xSize, 140, -1);
-			FontHelper.textCentre(currentPos + 1 + " / " + infoList.size(), xSize, 152, -1);
+			FontHelper.textCentre("Sub Page: " + (pagePos + 1) + "/" + currentPage.getPageCount(), xSize, ySize - 26, -1);
+			FontHelper.textCentre("Page: " + (currentPos + 1) + "/" + infoList.size(), xSize, ySize - 16, -1);
 		} else {
+			FontHelper.text("Search: ", 8, 18, -1);
 			FontHelper.textCentre(PL2Translate.GUIDE_TITLE.t(), xSize, 6, -1);
 		}
 		if (coolDown != 0) {
@@ -276,13 +279,23 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		} else if (keyCode == Keyboard.KEY_RIGHT) {
 			if (this.pagePos == currentPage.getPageCount() - 1) {
 				this.buttonAction(-2);
-			}else{
+			} else {
 				this.buttonAction(-4);
 			}
 			return;
 		}
-
 		Element3DRenderer.reset();
+		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && currentPage != null) {
+			if(lastPos==-1 || lastPagePos==-1){
+				this.currentPage=null;
+				reset();
+				return;
+			}
+			setCurrentPage(lastPos, lastPagePos);
+			resetLastPos();
+			reset();
+			return;
+		}
 		super.keyTyped(typedChar, keyCode);
 	}
 }

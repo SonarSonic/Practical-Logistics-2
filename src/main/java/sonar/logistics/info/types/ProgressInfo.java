@@ -9,7 +9,7 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.ISuffixable;
 import sonar.logistics.api.info.render.IDisplayInfo;
@@ -20,7 +20,7 @@ import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = ProgressInfo.id, modid = PL2Constants.MODID)
-public class ProgressInfo implements IMonitorInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable {
+public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable {
 
 	public static final String id = "progress";
 	public LogicInfo first, second;
@@ -114,7 +114,7 @@ public class ProgressInfo implements IMonitorInfo<ProgressInfo>, INBTSyncable, I
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof ProgressInfo;
 	}
 

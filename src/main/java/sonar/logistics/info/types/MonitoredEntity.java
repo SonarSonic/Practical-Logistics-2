@@ -9,11 +9,12 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
@@ -37,6 +38,12 @@ public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INamea
 		this.dimension.setObject(dim);
 	}
 
+	public MonitoredEntity(EntityConnection connection) {
+		this.uuid.setObject(connection.uuid);
+		this.unlocalizedName.setObject(connection.name);
+		this.dimension.setObject(connection.dim);
+	}
+
 	public MonitoredEntity(Entity entity) {
 		this.uuid.setObject(entity.getPersistentID());
 		this.unlocalizedName.setObject(entity.getName());
@@ -54,7 +61,7 @@ public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INamea
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof MonitoredEntity;
 	}
 

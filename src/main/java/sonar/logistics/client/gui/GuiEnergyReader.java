@@ -12,15 +12,15 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.readers.EnergyReader.Modes;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEnergyReader;
-import sonar.logistics.common.multiparts.EnergyReaderPart;
-import sonar.logistics.common.multiparts.generic.MonitorMultipart;
+import sonar.logistics.common.multiparts.AbstractReaderPart;
+import sonar.logistics.common.multiparts.readers.EnergyReaderPart;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
@@ -94,7 +94,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if (buttonID == 0) {
 			if (info.isValid() && !info.isHeader()) {
 				part.selected.setCoords(info.coords.getMonitoredInfo().syncCoords.getCoords());
-				part.sendByteBufPacket(buttonID == 0 ? MonitorMultipart.ADD : MonitorMultipart.PAIRED);
+				part.sendByteBufPacket(buttonID == 0 ? AbstractReaderPart.ADD : AbstractReaderPart.PAIRED);
 			}
 		} else {
 			RenderBlockSelection.addPosition(info.coords.getMonitoredInfo().syncCoords.getCoords(), false);
@@ -158,7 +158,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
 	@Override
 	public int getColour(int i, int type) {
-		IMonitorInfo info = (IMonitorInfo) infoList.get(i + start);
+		IInfo info = (IInfo) infoList.get(i + start);
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}

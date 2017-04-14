@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import sonar.logistics.PL2Config;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.IEntityMonitorHandler;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
@@ -28,7 +28,6 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.connections.CacheHandler;
 
-//TODO create custom version for Inventory Reader which will do one slot at a time at low numbers.
 public abstract class DefaultNetworkChannels<H extends INetworkHandler> implements INetworkChannels<H> {
 
 	private final CacheHandler[] caches;

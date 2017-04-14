@@ -31,7 +31,7 @@ public class LogisticsButton extends AnimatedButton {
 	public static class HELP extends LogisticsButton{
 
 		public HELP(GuiSonar sonar, int id, int x, int y) {
-			super(sonar, id, x, y, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), PL2Translate.BUTTON_HELP_ENABLED + ": " + GuiHelpOverlay.enableHelp, "button.HelpButton");
+			super(sonar, id, x, y, 32, 160 + 32 + (GuiHelpOverlay.enableHelp ? 16 : 0), PL2Translate.BUTTON_HELP_ENABLED.t() + ": " + GuiHelpOverlay.enableHelp, "button.HelpButton");
 		}
 		
 	}

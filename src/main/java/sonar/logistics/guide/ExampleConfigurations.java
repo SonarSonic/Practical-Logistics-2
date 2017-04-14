@@ -15,22 +15,22 @@ import net.minecraft.world.IBlockAccess;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.MultipartStateOverride;
 import sonar.logistics.PL2Items;
+import sonar.logistics.api.PL2Properties;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.tiles.cable.PL2Properties;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayConnections;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.common.multiparts.DataCablePart;
-import sonar.logistics.common.multiparts.DataEmitterPart;
-import sonar.logistics.common.multiparts.DataReceiverPart;
-import sonar.logistics.common.multiparts.DisplayScreenPart;
-import sonar.logistics.common.multiparts.InfoReaderPart;
-import sonar.logistics.common.multiparts.InventoryReaderPart;
-import sonar.logistics.common.multiparts.LargeDisplayScreenPart;
-import sonar.logistics.common.multiparts.NodePart;
-import sonar.logistics.common.multiparts.RedstoneSignallerPart;
+import sonar.logistics.common.multiparts.displays.DataCablePart;
+import sonar.logistics.common.multiparts.displays.DisplayScreenPart;
+import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
+import sonar.logistics.common.multiparts.misc.RedstoneSignallerPart;
+import sonar.logistics.common.multiparts.nodes.NodePart;
+import sonar.logistics.common.multiparts.readers.InfoReaderPart;
+import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
+import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.common.multiparts.wireless.DataReceiverPart;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -46,7 +46,7 @@ public class ExampleConfigurations {
 			NodePart node = new NodePart();
 			node.setCableFace(EnumFacing.DOWN);
 			InfoReaderPart reader = new InfoReaderPart();
-			reader.setCableFace(EnumFacing.DOWN);
+			reader.setCableFace(EnumFacing.NORTH);
 			DisplayScreenPart screen = new DisplayScreenPart(EnumFacing.NORTH, EnumFacing.NORTH);
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
@@ -177,6 +177,7 @@ public class ExampleConfigurations {
 			fullDisplay.container.storedInfo.get(0).cachedInfo = new LogicInfoList() {
 				{
 					infoID.setObject(MonitoredItemStack.id);
+					listChanged=false;
 				}
 
 				public MonitoredList<?> getCachedList(InfoUUID id) {

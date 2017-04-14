@@ -14,16 +14,18 @@ import sonar.logistics.PL2Config;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NetworkHandler;
 import sonar.logistics.api.asm.NetworkHandlerField;
+import sonar.logistics.api.networks.INetworkChannels;
+import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.multiparts.DataEmitterPart;
+import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
 @NetworkHandler(handlerID = FluidNetworkHandler.id, modid = PL2Constants.MODID)
-public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack> implements ITileMonitorHandler<MonitoredFluidStack> {
+public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack> implements ITileMonitorHandler<MonitoredFluidStack,INetworkListChannels> {
 	
 	@NetworkHandlerField(handlerID = FluidNetworkHandler.id)
 	public static FluidNetworkHandler INSTANCE;
@@ -43,7 +45,7 @@ public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack>
 	}
 
 	@Override
-	public MonitoredList<MonitoredFluidStack> updateInfo(MonitoredList<MonitoredFluidStack> newList, MonitoredList<MonitoredFluidStack> previousList, BlockConnection connection) {
+	public MonitoredList<MonitoredFluidStack> updateInfo(INetworkListChannels channels, MonitoredList<MonitoredFluidStack> newList, MonitoredList<MonitoredFluidStack> previousList, BlockConnection connection) {
 		List<ISonarFluidHandler> providers = SonarCore.fluidHandlers;
 		for (ISonarFluidHandler provider : providers) {
 			TileEntity fluidTile = connection.coords.getTileEntity();

@@ -1,11 +1,12 @@
 package sonar.logistics;
 
 import net.minecraft.item.ItemStack;
-import sonar.core.utils.Localisation;
+import sonar.core.translate.Localisation;
 
 public enum PL2Multiparts {
 	ARRAY(0.625, 0.0625 * 1, 0.0625 * 4, new ItemStack(PL2Items.array), PL2Translate.ARRAY),
 	CLOCK(3 * 0.0625, 0.0625 * 1, 0.0625 * 3, new ItemStack(PL2Items.clock), PL2Translate.CLOCK),
+	DATA_CABLE(0, 0, 0, new ItemStack(PL2Items.cable), PL2Translate.CABLE),
 	DATA_EMITTER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, new ItemStack(PL2Items.data_emitter), PL2Translate.DATA_EMITTER),
 	DATA_RECEIVER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, new ItemStack(PL2Items.data_receiver), PL2Translate.DATA_RECEIVER),
 	DISPLAY_SCREEN(0, 0, 0, new ItemStack(PL2Items.display_screen), PL2Translate.DISPLAY_SCREEN),
@@ -20,8 +21,8 @@ public enum PL2Multiparts {
 	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, new ItemStack(PL2Items.transfer_node), PL2Translate.TRANSFER_NODE);
 
 	public double width, heightMin, heightMax;
-	public ItemStack stack;
-	public Localisation localisation;
+	private ItemStack stack;
+	private Localisation localisation;
 
 	PL2Multiparts(double width, double heightMin, double heightMax, ItemStack stack, Localisation localisation) {
 		this.width = width;
@@ -29,5 +30,17 @@ public enum PL2Multiparts {
 		this.heightMax = heightMax;
 		this.stack = stack;
 		this.localisation = localisation;
+	}
+	
+	public ItemStack getItem(){
+		return stack;
+	}
+	
+	public String getUnlocalisedName(){
+		return localisation.o();
+	}
+	
+	public String getDisplayName(){
+		return localisation.t();
 	}
 }

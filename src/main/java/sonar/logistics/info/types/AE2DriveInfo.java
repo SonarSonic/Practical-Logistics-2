@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
@@ -80,7 +80,7 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof AE2DriveInfo;
 	}
 

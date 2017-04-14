@@ -1,7 +1,7 @@
 package sonar.logistics.api.tiles;
 
 import sonar.core.listener.PlayerListener;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -17,5 +17,5 @@ public interface IChannelledTile extends ILogicListenable<PlayerListener> {
 	
 	/**call this client side only, sends the selected coords to the server
 	 * @param channelID the id to modify the coords on*/
-	public void sendCoordsToServer(IMonitorInfo coords, int channelID);
+	public void sendCoordsToServer(IInfo coords, int channelID);
 }

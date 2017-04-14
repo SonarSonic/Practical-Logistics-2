@@ -32,11 +32,6 @@ public class ContainerFilterList extends ContainerMultipartSync {
 		return null;
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		super.onContainerClosed(player);
-		tile.getListenerList().removeListener(player, ListenerType.CHANNEL);
-	}
-
 	public SyncType[] getSyncTypes() {
 		return new SyncType[] { SyncType.DEFAULT_SYNC };
 	}

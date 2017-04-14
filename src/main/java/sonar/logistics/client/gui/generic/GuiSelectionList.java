@@ -33,6 +33,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public boolean enableListRendering = true; // for when this is overriden and the gui has multiple states.
 	public int size = 11;
 	public int listHeight = 12;
+	public int listWidth = 226;
 	public int start, finish;
 	private GuiButton rselectButton;
 	public List<T> infoList = Lists.newArrayList();
@@ -48,9 +49,9 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
 		if (enableListRendering) {
-			scroller = new SonarScroller(this.guiLeft + 235, this.guiTop + 29, size * listHeight + 2, 10);
+			scroller = new SonarScroller(this.guiLeft + listWidth+9, this.guiTop + 29, size * listHeight + 2, 10);
 			for (int i = 0; i < size; i++) {
-				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * listHeight), listHeight));
+				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * listHeight), listWidth, listHeight));
 			}
 		}
 	}
@@ -197,16 +198,15 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		if (enableListRendering) {
-			int width = 225;
 			int left = guiLeft + 7;
 
 			List<List<Integer>> data = getListTypes();
 			for (int i = 0; i < size; i++) {
 				int top = guiTop + 29 + (listHeight * i);
 				if (!data.get(2).contains(i)) {
-					drawInfoBackground(data, width, listHeight, left, top, i);
+					drawInfoBackground(data, listWidth, listHeight, left, top, i);
 				} else {
-					drawSelectedInfoBackground(width, listHeight, left, top, i);
+					drawSelectedInfoBackground(listWidth, listHeight, left, top, i);
 				}
 			}
 		}
@@ -256,8 +256,8 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public static class SelectionButton extends ImageButton {
 
 		GuiSelectionList list;
-		public SelectionButton(GuiSelectionList list, int id, int x, int y, int listHeight) {
-			super(id, x, y, null, 0, 224, 154 + 72, listHeight - 1);
+		public SelectionButton(GuiSelectionList list, int id, int x, int y, int listWidth, int listHeight) {
+			super(id, x, y, null, 0, 224, 154 + 72-1, listHeight - 1);
 			this.list=list;
 		}
 

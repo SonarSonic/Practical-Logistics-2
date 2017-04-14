@@ -19,7 +19,7 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.client.gui.GuiHammer;
 import sonar.logistics.common.containers.ContainerHammer;
-import sonar.logistics.utils.HammerRecipes;
+import sonar.logistics.common.hammer.HammerRecipes;
 
 @JEIPlugin
 public class PracticalLogisticsJEI extends BlankModPlugin {

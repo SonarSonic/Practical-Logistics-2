@@ -21,6 +21,7 @@ import sonar.logistics.network.PacketClientEmitters;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 import sonar.logistics.network.PacketEmitterStatement;
 import sonar.logistics.network.PacketInfoList;
+import sonar.logistics.network.PacketItemInteractionText;
 import sonar.logistics.network.PacketInventoryReader;
 import sonar.logistics.network.PacketMonitoredList;
 import sonar.logistics.network.PacketNodeFilter;
@@ -43,6 +44,7 @@ public class PL2Common implements IGuiHandler {
 		PL2.network.registerMessage(PacketNodeFilter.Handler.class, PacketNodeFilter.class, 10, Side.SERVER);
 		PL2.network.registerMessage(PacketEmitterStatement.Handler.class, PacketEmitterStatement.class, 11, Side.SERVER);
 		PL2.network.registerMessage(PacketWirelessStorage.Handler.class, PacketWirelessStorage.class, 12, Side.SERVER);
+		PL2.network.registerMessage(PacketItemInteractionText.Handler.class, PacketItemInteractionText.class, 13, Side.CLIENT);
 	}
 
 	@Override

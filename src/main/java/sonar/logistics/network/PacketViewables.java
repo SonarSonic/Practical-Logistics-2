@@ -17,9 +17,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.ClientViewable;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.api.viewers.ILogicListenable;
 
 public class PacketViewables implements IMessage {
@@ -27,8 +27,7 @@ public class PacketViewables implements IMessage {
 	public List<ClientViewable> viewables;
 	public int screenIdentity;
 
-	public PacketViewables() {
-	}
+	public PacketViewables() {}
 
 	public PacketViewables(List<ClientViewable> viewables, int screenIdentity) {
 		this.viewables = viewables;

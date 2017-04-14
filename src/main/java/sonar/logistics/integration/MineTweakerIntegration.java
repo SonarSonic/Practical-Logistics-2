@@ -9,7 +9,7 @@ import minetweaker.api.minecraft.MineTweakerMC;
 import sonar.core.integration.minetweaker.SonarAddRecipeV2;
 import sonar.core.integration.minetweaker.SonarRemoveRecipeV2;
 import sonar.core.recipes.RecipeObjectType;
-import sonar.logistics.utils.HammerRecipes;
+import sonar.logistics.common.hammer.HammerRecipes;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 

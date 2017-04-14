@@ -24,7 +24,7 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IJoinableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
@@ -58,16 +58,16 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 
 	@Override
 	public boolean isIdenticalInfo(MonitoredFluidStack info) {
-		return fluidStack.getObject().equals(info.fluidStack.getObject());
+		return fluidStack.getObject().equals(info.fluidStack.getObject()) && networkID.getObject().equals(networkID.getObject());
 	}
 
 	@Override
 	public boolean isMatchingInfo(MonitoredFluidStack info) {
-		return fluidStack.getObject().equalStack(info.fluidStack.getObject().fluid);
+		return fluidStack.getObject().equalStack(info.getFluidStack());
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof MonitoredFluidStack;
 	}
 
@@ -159,7 +159,7 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 		return fluidStack.getObject().toString();
 	}
 
-	public FluidStack getItemStack() {
+	public FluidStack getFluidStack() {
 		return this.fluidStack.getObject().getFullStack();
 	}
 

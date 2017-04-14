@@ -20,14 +20,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
 import sonar.core.client.gui.MultipartStateOverride;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.common.multiparts.generic.DisplayMultipart;
+import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 
@@ -59,9 +59,9 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) {
 			BlockPos pos = entry.getKey();
 			for (MultipartStateOverride part : entry.getValue()) {
-				if (part.part instanceof DisplayMultipart) {
+				if (part.part instanceof AbstractDisplayPart) {
 					try {
-						renderScreenAt((DisplayMultipart) part.part, pos, 0);
+						renderScreenAt((AbstractDisplayPart) part.part, pos, 0);
 					} catch (Throwable t) {
 
 					}
@@ -71,7 +71,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
-	public void renderScreenAt(DisplayMultipart part, BlockPos pos, float partialTicks) {
+	public void renderScreenAt(AbstractDisplayPart part, BlockPos pos, float partialTicks) {
 		if(part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()){
 			return;
 		}
@@ -103,7 +103,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 			if (info.cachedInfo != null && !info.getUnformattedStrings().isEmpty()) {
 				InfoRenderer.renderNormalInfo(type, scaling[0], scaling[1], scaling[2], info.getFormattedStrings());
 			} else {
-				IMonitorInfo toDisplay = info.cachedInfo == null ? InfoError.noData : info.cachedInfo;
+				IInfo toDisplay = info.cachedInfo == null ? InfoError.noData : info.cachedInfo;
 				toDisplay.renderInfo((InfoContainer) part.container(), info, scaling[0], scaling[1], scaling[2], dataPos);
 			}
 			GlStateManager.popAttrib();

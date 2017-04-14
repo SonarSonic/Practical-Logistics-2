@@ -8,13 +8,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import sonar.logistics.common.multiparts.generic.WirelessPart;
+import sonar.logistics.common.multiparts.wireless.AbstractWirelessPart;
 
 /** for data emitter and data receiver */
 public class ItemWirelessMultipart extends ItemMultiPart  {
-	public final Class<? extends WirelessPart> type;
+	public final Class<? extends AbstractWirelessPart> type;
 
-	public ItemWirelessMultipart(Class<? extends WirelessPart> type) {
+	public ItemWirelessMultipart(Class<? extends AbstractWirelessPart> type) {
 		this.type = type;
 	}
 

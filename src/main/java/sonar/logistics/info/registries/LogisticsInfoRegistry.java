@@ -7,7 +7,7 @@ import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.common.tileentity.TileEntityHammer;
+import sonar.logistics.common.hammer.TileEntityHammer;
 
 @InfoRegistry(modid = PL2Constants.MODID)
 public class LogisticsInfoRegistry extends IInfoRegistry {

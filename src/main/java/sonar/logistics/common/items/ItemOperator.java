@@ -79,7 +79,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 				if (part != null && part instanceof IChannelledTile) {
 					if (!world.isRemote) {
 						IChannelledTile tile = (IChannelledTile) part;
-						tile.getListenerList().addListener(player, ListenerType.CHANNEL);
+						tile.getNetwork().sendChannelPacket(player);
 						NBTTagCompound tag = new NBTTagCompound();
 						tag.setBoolean(FlexibleGuiHandler.ITEM, true);
 						tag.setInteger(FlexibleGuiHandler.ID, 0);

@@ -6,7 +6,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.NodePart;
+import sonar.logistics.common.multiparts.nodes.NodePart;
 
 public class GuiNode extends GuiLogistics {
 	public NodePart part;

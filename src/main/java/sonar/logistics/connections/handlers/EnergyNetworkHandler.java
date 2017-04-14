@@ -10,6 +10,8 @@ import sonar.logistics.PL2Config;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NetworkHandler;
 import sonar.logistics.api.asm.NetworkHandlerField;
+import sonar.logistics.api.networks.INetworkChannels;
+import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.utils.MonitoredList;
@@ -17,7 +19,7 @@ import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
 @NetworkHandler(handlerID = EnergyNetworkHandler.id, modid = PL2Constants.MODID)
-public class EnergyNetworkHandler extends ListNetworkHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack> {
+public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNetworkHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack,INetworkListChannels> {
 	
 	@NetworkHandlerField(handlerID = EnergyNetworkHandler.id)
 	public static EnergyNetworkHandler INSTANCE;
@@ -30,7 +32,7 @@ public class EnergyNetworkHandler extends ListNetworkHandler<MonitoredEnergyStac
 	}
 
 	@Override
-	public MonitoredList<MonitoredEnergyStack> updateInfo(MonitoredList<MonitoredEnergyStack> newList, MonitoredList<MonitoredEnergyStack> previousList, BlockConnection connection) {
+	public MonitoredList<MonitoredEnergyStack> updateInfo(INetworkListChannels channels, MonitoredList<MonitoredEnergyStack> newList, MonitoredList<MonitoredEnergyStack> previousList, BlockConnection connection) {
 		List<ISonarEnergyHandler> providers = SonarCore.energyHandlers;
 		StoredEnergyStack maxEnergy = null;
 		for (ISonarEnergyHandler provider : providers) {

@@ -2,7 +2,7 @@ package sonar.logistics.common.containers;
 
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.logistics.common.multiparts.ArrayPart;
+import sonar.logistics.common.multiparts.nodes.ArrayPart;
 
 public class ArraySlot extends Slot {
 

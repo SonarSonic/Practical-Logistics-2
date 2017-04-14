@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
@@ -55,7 +55,7 @@ public class PacketClickEventServer implements IMessage {
 							if (event != null && event.hit.partHit instanceof IDisplay) {
 								InfoContainer container = (InfoContainer) ((IDisplay) event.hit.partHit).container();
 								IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
-								IMonitorInfo info = displayInfo.getSidedCachedInfo(false);
+								IInfo info = displayInfo.getSidedCachedInfo(false);
 								if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
 									((IAdvancedClickableInfo) info).onClickEvent(container, displayInfo, event, message.eventTag);
 								}

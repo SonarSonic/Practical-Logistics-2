@@ -4,7 +4,7 @@ import java.util.List;
 
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 
-public interface IComparableInfo<T extends IMonitorInfo> extends IMonitorInfo<T> {
+public interface IComparableInfo<T extends IInfo> extends IInfo<T> {
 
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects);
 

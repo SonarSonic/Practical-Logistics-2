@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.utils.InfoUUID;
 
 /** used within a IInfoContainer */
 public interface IDisplayInfo extends INBTSyncable {
@@ -21,7 +21,7 @@ public interface IDisplayInfo extends INBTSyncable {
 	//public IMonitorInfo getClientCachedInfo();
 	
 	@Nullable
-	public IMonitorInfo getSidedCachedInfo(boolean isRemote);
+	public IInfo getSidedCachedInfo(boolean isRemote);
 
 	/** the currently cached info UUID, obtained via the Client Cache, this can be null */
 	@Nullable

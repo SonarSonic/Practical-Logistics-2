@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.common.multiparts.ClockPart;
+import sonar.logistics.common.multiparts.misc.ClockPart;
 
 public class GuiClock extends GuiLogistics {
 

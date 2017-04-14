@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.LogisticsAPI;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
@@ -56,7 +56,7 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	}
 
 	public Pair<ConnectableType, Integer> getConnectionType(ILargeDisplay source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
-		IDisplay display = LogisticsAPI.getCableHelper().getDisplayScreen(new BlockCoords(pos.offset(dir)), source.getCableFace());
+		IDisplay display = PL2API.getCableHelper().getDisplayScreen(new BlockCoords(pos.offset(dir)), source.getCableFace());
 		if (display != null && display instanceof ILargeDisplay) {
 			ILargeDisplay largeDisplay = (ILargeDisplay) display;
 			if (largeDisplay.getCableFace().equals(source.getCableFace()) && source.canConnectOnSide(largeDisplay.getRegistryID(), dir.getOpposite(), false) && largeDisplay.canConnectOnSide(source.getRegistryID(), dir, false)) {

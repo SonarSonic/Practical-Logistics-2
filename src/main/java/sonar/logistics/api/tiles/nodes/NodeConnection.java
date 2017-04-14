@@ -8,11 +8,11 @@ import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.logistics.api.filters.ITransferFilteredTile;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.INetworkTile;
-import sonar.logistics.api.utils.NodeConnectionType;
+import sonar.logistics.api.tiles.IPriority;
 
-public abstract class NodeConnection<T extends IMonitorInfo> {
+public abstract class NodeConnection<T extends IInfo> {
 	
 	
 	public INetworkTile source;

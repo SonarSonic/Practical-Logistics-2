@@ -21,11 +21,11 @@ import sonar.core.network.sync.SyncTagTypeList;
 import sonar.core.network.sync.SyncableList;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
-import sonar.logistics.api.utils.InfoUUID;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.info.types.LogicInfoList;
 
@@ -33,7 +33,7 @@ import sonar.logistics.info.types.LogicInfoList;
 public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableListener {
 
 	public RenderInfoProperties renderInfo;
-	public IMonitorInfo cachedInfo = null;
+	public IInfo cachedInfo = null;
 	public SyncTagTypeList<String> formatList = new SyncTagTypeList(NBT.TAG_STRING, 0);
 	public SyncNBTAbstract<InfoUUID> uuid = new SyncNBTAbstract<InfoUUID>(InfoUUID.class, 1);
 	public SyncNBTAbstract<CustomColour> textColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 2), backgroundColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 3);
@@ -66,7 +66,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	}
 
 	@Override
-	public IMonitorInfo getSidedCachedInfo(boolean isClient) {
+	public IInfo getSidedCachedInfo(boolean isClient) {
 		InfoUUID id = getInfoUUID();
 		if (id == null) {
 			return null;
@@ -131,7 +131,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		}
 
 		if (empty) {
-			IMonitorInfo info = getSidedCachedInfo(true);
+			IInfo info = getSidedCachedInfo(true);
 			if (info == null) {
 				info = cachedInfo;
 			}

@@ -6,6 +6,7 @@ import net.minecraft.util.EnumFacing;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 
 
@@ -26,4 +27,6 @@ public interface INetworkTile extends IWorldPosition, INetworkListener {
 	
 	/**this tiles identity on the network*/
 	public int getIdentity();		
+	
+	public TileMessage[] getValidMessages();
 }

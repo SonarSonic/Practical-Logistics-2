@@ -1,6 +1,6 @@
 package sonar.logistics.api.wireless;
 
-import sonar.core.utils.Localisation;
+import sonar.core.translate.Localisation;
 import sonar.logistics.PL2Translate;
 
 public enum DataEmitterSecurity {

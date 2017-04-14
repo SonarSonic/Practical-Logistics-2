@@ -1,6 +1,6 @@
 package sonar.logistics.api.tiles.readers;
 
-import sonar.core.utils.Localisation;
+import sonar.core.translate.Localisation;
 import sonar.logistics.PL2Translate;
 
 /** all the modes used by the Fluid Reader */

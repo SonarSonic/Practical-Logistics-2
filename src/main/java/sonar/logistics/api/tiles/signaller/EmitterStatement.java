@@ -13,8 +13,8 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUnidentifiedObject;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.utils.InfoUUID;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
 public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsStatement {
@@ -46,7 +46,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 
 	public EmitterStatement(ILogicComparator<T> comparator) {
 		this.comparator = comparator;
-		this.comparatorID.setObject(PL2.comparatorRegistry.getObjectID(comparator.getName()));
+		this.comparatorID.setObject(PL2.getComparatorRegistry().getObjectID(comparator.getName()));
 		this.operator.setObject(comparator.getValidOperators().get(0));
 		this.hashCode.setObject(UUID.randomUUID().hashCode());
 	}
@@ -64,12 +64,12 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 
 	public ILogicComparator<T> getComparator() {
 		if (comparator == null) {
-			comparator = PL2.comparatorRegistry.getRegisteredObject(comparatorID.getObject());
+			comparator = PL2.getComparatorRegistry().getRegisteredObject(comparatorID.getObject());
 		}
 		return comparator;
 	}
 
-	public Object getObject(Map<InfoUUID, IMonitorInfo> info, int pos) {
+	public Object getObject(Map<InfoUUID, IInfo> info, int pos) {
 		if (pos == 0) {
 			return getObject(info, uuid1.getObject(), key1.getObject());
 		} else if (useInfo.getObject().usesInfo()) {
@@ -80,9 +80,9 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 
 	}
 
-	public Object getObject(Map<InfoUUID, IMonitorInfo> info, InfoUUID id, String key) {
+	public Object getObject(Map<InfoUUID, IInfo> info, InfoUUID id, String key) {
 		if (id != null && key != null) {
-			IMonitorInfo info1 = info.get(id);
+			IInfo info1 = info.get(id);
 			if (info1 != null && info1 instanceof IComparableInfo) {
 				IComparableInfo provider1 = (IComparableInfo) info1;
 				ComparableObject obj = ComparableObject.getComparableObject(provider1.getComparableObjects(Lists.newArrayList()), key);
@@ -96,7 +96,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	}
 
 	@Override
-	public LogicState isMatching(Map<InfoUUID, IMonitorInfo> info) {
+	public LogicState isMatching(Map<InfoUUID, IInfo> info) {
 		T num1 = (T) getObject(info, 0);
 		T num2 = (T) getObject(info, 1);
 		if (num1 != null && num2 != null) {

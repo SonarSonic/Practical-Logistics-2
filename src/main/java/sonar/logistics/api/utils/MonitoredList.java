@@ -8,9 +8,9 @@ import com.google.common.collect.Lists;
 import sonar.core.api.StorageSize;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IJoinableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 
-public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
+public class MonitoredList<T extends IInfo> extends ArrayList<T> {
 
 	public List<T> changed = new ArrayList<T>();
 	public List<T> removed = new ArrayList<T>();
@@ -31,7 +31,7 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 		this.removed = removed;
 	}
 
-	public static <I extends IMonitorInfo> MonitoredList<I> newMonitoredList(int networkID) {
+	public static <I extends IInfo> MonitoredList<I> newMonitoredList(int networkID) {
 		return new MonitoredList<I>(networkID, Lists.<I>newArrayList(), new StorageSize(0, 0), Lists.<I>newArrayList(), Lists.<I>newArrayList());
 	}
 
@@ -96,7 +96,7 @@ public class MonitoredList<T extends IMonitorInfo> extends ArrayList<T> {
 
 	/** @param info the info type you wish to check
 	 * @return a boolean for if the info was changed and the new info */
-	public Pair<Boolean, IMonitorInfo> getLatestInfo(IMonitorInfo oldInfo) {
+	public Pair<Boolean, IInfo> getLatestInfo(IInfo oldInfo) {
 		for (T newInfo : this) {
 			if (newInfo.isMatchingType(oldInfo) && newInfo.isMatchingInfo(oldInfo)) {
 				return new Pair(!newInfo.isIdenticalInfo(oldInfo), newInfo);

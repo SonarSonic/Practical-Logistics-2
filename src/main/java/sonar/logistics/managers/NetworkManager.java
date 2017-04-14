@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Config;
-import sonar.logistics.api.info.IMonitorInfo;
-import sonar.logistics.api.networks.EmptyNetworkCache;
+import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -58,7 +58,7 @@ public class NetworkManager {
 
 	public ILogisticsNetwork getNetwork(int networkID) {
 		ILogisticsNetwork networkCache = cache.get(networkID);
-		return networkCache != null ? networkCache : EmptyNetworkCache.INSTANCE;
+		return networkCache != null ? networkCache : EmptyLogisticsNetwork.INSTANCE;
 	}
 
 	public ILogisticsNetwork getOrCreateNetwork(int networkID) {

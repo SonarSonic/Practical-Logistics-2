@@ -22,7 +22,7 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IJoinableInfo;
-import sonar.logistics.api.info.IMonitorInfo;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
@@ -59,16 +59,16 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	@Override
 	public boolean isIdenticalInfo(MonitoredItemStack info) {
-		return itemStack.getObject().equals(info.itemStack.getObject()) && networkID.getObject().equals(networkID.getObject());
+		return getStoredStack().equals(info.getStoredStack()) && networkID.getObject().equals(networkID.getObject());
 	}
 
 	@Override
 	public boolean isMatchingInfo(MonitoredItemStack info) {
-		return itemStack.getObject().equalStack(info.itemStack.getObject().item);
+		return getStoredStack().equalStack(info.getStoredStack().getActualStack());
 	}
 
 	@Override
-	public boolean isMatchingType(IMonitorInfo info) {
+	public boolean isMatchingType(IInfo info) {
 		return info instanceof MonitoredItemStack;
 	}
 

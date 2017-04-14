@@ -27,7 +27,7 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.common.multiparts.FluidReaderPart;
+import sonar.logistics.common.multiparts.readers.FluidReaderPart;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {

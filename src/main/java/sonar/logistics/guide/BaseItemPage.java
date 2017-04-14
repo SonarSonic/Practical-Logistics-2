@@ -45,7 +45,7 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements) {
 		super.getElements(gui, elements);
 		elements.add(new ElementItem(0, stack, 4, 15));
-		ElementCraftingRecipe recipe = new ElementCraftingRecipe(0, gui.mc.thePlayer, stack, 4, 74);
+		ElementCraftingRecipe recipe = new ElementCraftingRecipe(0, gui.mc.thePlayer, stack, 4, 104);
 		if (recipe.recipe != null) {
 			elements.add(recipe);
 		} else {
