@@ -1,35 +1,5 @@
 package sonar.logistics.connections.channels;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import net.minecraft.entity.player.EntityPlayer;
-import sonar.core.listener.ISonarListenable;
-import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerTally;
-import sonar.core.listener.PlayerListener;
-import sonar.core.utils.Pair;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.INetworkListChannels;
-import sonar.logistics.api.networks.INetworkListHandler;
-import sonar.logistics.api.networks.INetworkListener;
-import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.tiles.readers.ChannelList;
-import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.helpers.LogisticsHelper;
-
 /**an alternative versions which does sub lists properly, i.e. preventing blocks being read twice. had a lot of trouble for minimal performance increase...may revisit later*/
 /*
 public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkListHandler<M>> extends DefaultNetworkChannels<H> implements INetworkListChannels<H> {

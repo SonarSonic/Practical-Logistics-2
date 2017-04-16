@@ -35,7 +35,7 @@ public class FluidHelper extends FluidWrapper {
 		if (add.stored == 0) {
 			return add;
 		}
-		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getConnections(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferFluid(entry, add, NodeTransferMode.ADD)) {
 				continue;
@@ -58,7 +58,7 @@ public class FluidHelper extends FluidWrapper {
 		if (remove.stored == 0) {
 			return remove;
 		}
-		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getConnections(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferFluid(entry, remove, NodeTransferMode.REMOVE)) {
 				continue;
@@ -155,7 +155,7 @@ public class FluidHelper extends FluidWrapper {
 			EnumFacing dirTo = !mode.shouldRemove() ? filter.face : connection.face;
 			TileEntity from = mode.shouldRemove() ? filterTile : netTile;
 			TileEntity to = !mode.shouldRemove() ? filterTile : netTile;
-			ConnectionFilters filters = new ConnectionFilters(filter, connection);
+			ConnectionFilters filters = new ConnectionFilters(null, filter, connection);
 
 			SonarAPI.getFluidHelper().transferFluids(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), filters);
 		}

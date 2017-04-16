@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.utils.MonitoredList;
@@ -23,8 +24,9 @@ public class InfoReaderPart extends AbstractInfoReaderPart<IProvidableInfo> impl
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_DATA_SELECTED};
 
 	@Override
-	public void addHandlerIDs(List<String> ids) {
-		ids.add(InfoNetworkHandler.id);
+	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
+		handlers.add(InfoNetworkHandler.INSTANCE);
+		return handlers;
 	}
 
 	//// ILogicReader \\\\

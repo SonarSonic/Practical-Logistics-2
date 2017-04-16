@@ -41,7 +41,6 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
 

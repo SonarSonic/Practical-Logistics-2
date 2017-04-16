@@ -17,7 +17,6 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.IDirtyPart;
@@ -41,6 +40,7 @@ import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
@@ -249,11 +249,11 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 		this.canBeRendered.setObject(true);
 	}
 
-	public List<ILogicListenable> getLogicMonitors(List<ILogicListenable> monitors) {
+	public List<ILogicListenable> getLocalProviders(List<ILogicListenable> monitors) {
 		displays = PL2.getDisplayManager().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
 			if (display instanceof AbstractDisplayPart) {
-				monitors = PL2.getServerManager().getViewables(monitors, (AbstractDisplayPart) display);
+				monitors = LogisticsHelper.getLocalProviders(monitors, (AbstractDisplayPart) display);
 			}
 		}
 		return monitors;

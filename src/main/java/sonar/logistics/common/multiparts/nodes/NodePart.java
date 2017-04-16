@@ -4,12 +4,9 @@ import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.multipart.ISlottedPart;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
@@ -24,7 +21,6 @@ import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.client.gui.GuiNode;
 import sonar.logistics.common.multiparts.SidedPart;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class NodePart extends SidedPart implements INode, ISlottedPart, IByteBufTile, IFlexibleGui {
 

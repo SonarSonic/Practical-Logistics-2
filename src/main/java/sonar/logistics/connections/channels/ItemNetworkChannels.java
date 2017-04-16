@@ -2,26 +2,22 @@ package sonar.logistics.connections.channels;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.INetworkListHandler;
-import sonar.logistics.api.tiles.nodes.BlockConnection;
-import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.info.types.MonitoredItemStack;
 
-//TODO create custom version for Inventory Reader which will do one slot at a time at low numbers.
 public class ItemNetworkChannels extends ListNetworkChannels<MonitoredItemStack, INetworkListHandler<MonitoredItemStack>> {
 
 	public boolean updateLargeInventory = false;
 
-	public ItemNetworkChannels(ItemNetworkHandler handler, ILogisticsNetwork network) {
-		super(handler, network);
+	public ItemNetworkChannels(ILogisticsNetwork network) {
+		super(ItemNetworkHandler.INSTANCE, network);
 	}
 
 	public boolean updateLargeInventory() {
-		return updateLargeInventory; // TODO THIS IS NO WORKING WELL
+		return updateLargeInventory;
 	}
 	
 	public void updateTickLists(){

@@ -17,8 +17,6 @@ public interface IDisplayInfo extends INBTSyncable {
 	public void setUUID(InfoUUID infoUUID);
 
 	/** the currently cached info, obtained via the Client Cache, this can be null */
-	//@Nullable
-	//public IMonitorInfo getClientCachedInfo();
 	
 	@Nullable
 	public IInfo getSidedCachedInfo(boolean isRemote);

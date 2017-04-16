@@ -20,9 +20,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncCoords;
@@ -34,14 +32,13 @@ import sonar.logistics.api.PL2API;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.network.sync.SyncMonitoredType;
@@ -53,7 +50,7 @@ public abstract class AbstractReaderPart<T extends IInfo> extends SidedPart impl
 
 	public final ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	public final ChannelList list = new ChannelList(getIdentity(), this.channelType(), -2);
-	protected List<INetworkHandler> validHandlers = null;
+	protected List<INetworkListHandler> validHandlers = null;
 	public SyncMonitoredType<T> selectedInfo = new SyncMonitoredType<T>(-5);
 	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-4);
 	public int lastPos = -1;
@@ -64,7 +61,7 @@ public abstract class AbstractReaderPart<T extends IInfo> extends SidedPart impl
 		syncList.addParts(list, hasMonitor);
 	}
 
-	public abstract void addHandlerIDs(List<String> ids);
+	public abstract List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers);
 
 	//// ILogicMonitor \\\\
 
@@ -93,12 +90,9 @@ public abstract class AbstractReaderPart<T extends IInfo> extends SidedPart impl
 	}
 
 	@Override
-	public List<INetworkHandler> getValidHandlers() {
+	public List<INetworkListHandler> getValidHandlers() {
 		if (validHandlers == null) {
-			List<String> ids = Lists.newArrayList();
-			addHandlerIDs(ids);
-			validHandlers = Lists.newArrayList();
-			ids.forEach(i -> validHandlers.add(DefaultNetworkHandler.instance(i)));
+			validHandlers = addValidHandlers(Lists.newArrayList());
 		}
 		return validHandlers;
 	}
@@ -238,7 +232,7 @@ public abstract class AbstractReaderPart<T extends IInfo> extends SidedPart impl
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 1:
-			getNetwork().sendChannelPacket(player);
+			getNetwork().sendConnectionsPacket(player);
 			break;
 		}
 	}

@@ -17,8 +17,6 @@ public class GuiArray extends GuiLogistics {
 		this.ySize = 132;
 	}
 
-	// TODO setting priority
-
 	//// DRAWING \\\\
 
 	@Override

@@ -1,9 +1,7 @@
 package sonar.logistics.api;
 
 import java.util.Collection;
-import java.util.List;
 
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;

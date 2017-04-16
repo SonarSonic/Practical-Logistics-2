@@ -23,13 +23,12 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 import sonar.logistics.connections.handlers.FluidNetworkHandler;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
@@ -58,12 +57,12 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 
 	@Override
 	public boolean isIdenticalInfo(MonitoredFluidStack info) {
-		return fluidStack.getObject().equals(info.fluidStack.getObject()) && networkID.getObject().equals(networkID.getObject());
+		return getStoredStack().equals(info.getStoredStack()) && networkID.getObject().equals(info.networkID.getObject());
 	}
 
 	@Override
 	public boolean isMatchingInfo(MonitoredFluidStack info) {
-		return fluidStack.getObject().equalStack(info.getFluidStack());
+		return getStoredStack().equalStack(info.getFluidStack());
 	}
 
 	@Override

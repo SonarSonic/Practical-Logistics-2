@@ -1,6 +1,5 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,21 +8,15 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
-import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncEnum;
@@ -36,20 +29,16 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.DataEmitterSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataEmitter;
-import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.connections.channels.ListNetworkChannels;
-import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 import sonar.logistics.connections.handlers.FluidNetworkHandler;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.managers.WirelessManager;
@@ -60,7 +49,7 @@ public class DataEmitterPart extends AbstractWirelessPart implements IDataEmitte
 	public static int STATIC_FLUID_ID = -17;
 	public static final String UNNAMED = "Unnamed Emitter";
 	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
-	public List<INetworkHandler> validHandlers;
+	public List<INetworkListHandler> validHandlers;
 	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault(UNNAMED);
 	public SyncEnum<DataEmitterSecurity> security = new SyncEnum(DataEmitterSecurity.values(), 5);
 
@@ -151,7 +140,7 @@ public class DataEmitterPart extends AbstractWirelessPart implements IDataEmitte
 	public void sendRapidUpdate(EntityPlayer player) {
 		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 		for (INetworkHandler handler : getValidHandlers()) {
-			INetworkChannels list = network.getNetworkChannels(handler);
+			INetworkChannels list = network.getNetworkChannels(handler.getChannelsType());
 			if (list != null && list instanceof ListNetworkChannels) {
 				((ListNetworkChannels) list).sendLocalRapidUpdate(this, player);
 			}
@@ -174,7 +163,7 @@ public class DataEmitterPart extends AbstractWirelessPart implements IDataEmitte
 	}
 
 	@Override
-	public List<INetworkHandler> getValidHandlers() {
+	public List<INetworkListHandler> getValidHandlers() {
 		if (validHandlers == null) {
 			validHandlers = Lists.newArrayList(ItemNetworkHandler.INSTANCE, FluidNetworkHandler.INSTANCE);
 		}

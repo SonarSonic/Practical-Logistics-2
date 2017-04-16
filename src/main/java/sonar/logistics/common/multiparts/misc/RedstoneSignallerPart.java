@@ -9,21 +9,19 @@ import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
 import mcmultipart.multipart.IRedstonePart;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstractList;
@@ -40,10 +38,9 @@ import sonar.logistics.api.tiles.signaller.ILogisticsTile;
 import sonar.logistics.api.tiles.signaller.SignallerModes;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.client.gui.generic.GuiStatementList;
-import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.common.multiparts.SidedPart;
 import sonar.logistics.helpers.CableHelper;
-import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.helpers.PacketHelper;
 
 public class RedstoneSignallerPart extends SidedPart implements IRedstonePart, ILogisticsTile, IByteBufTile, IFlexibleGui {
 
@@ -189,7 +186,7 @@ public class RedstoneSignallerPart extends SidedPart implements IRedstonePart, I
 	
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
-		PL2.getServerManager().sendViewablesToClient(this, getIdentity(), player);
+		PacketHelper.sendLocalProviders(this, getIdentity(), player);
 	}
 	
 	@Override
@@ -240,7 +237,7 @@ public class RedstoneSignallerPart extends SidedPart implements IRedstonePart, I
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			PL2.getServerManager().sendViewablesToClient(this, getIdentity(), player);
+			PacketHelper.sendLocalProviders(this, getIdentity(), player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
@@ -249,19 +246,15 @@ public class RedstoneSignallerPart extends SidedPart implements IRedstonePart, I
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:
-			return new ContainerStatementList(player, this);
-		}
-		return null;
+		case 0:	return new ContainerMultipartSync(this);
+		default: return null;}
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:
-			return new GuiStatementList(player, this);
-		}
-		return null;
+		case 0:	return new GuiStatementList(player, this);
+		default: return null;}
 	}
 
 	@Override

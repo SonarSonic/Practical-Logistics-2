@@ -2,14 +2,11 @@ package sonar.logistics.api.networks;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -81,7 +78,7 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	public void onSubListenableRemoved(ISonarListenable<ILogisticsNetwork> listen) {}
 
 	@Override
-	public void sendChannelPacket(EntityPlayer player) {}
+	public void sendConnectionsPacket(EntityPlayer player) {}
 
 	@Override
 	public ListenableList<ILogisticsNetwork> getListenerList() {
@@ -89,22 +86,22 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	}
 	
 	@Override
-	public List<NodeConnection> getChannels(CacheType cacheType) {
+	public List<NodeConnection> getConnections(CacheType cacheType) {
 		return Lists.newArrayList();
 	}
 
 	@Override
-	public MonitoredList<IInfo> createChannelList(CacheType cacheType) {
+	public MonitoredList<IInfo> createConnectionsList(CacheType cacheType) {
 		return MonitoredList.newMonitoredList(-1);
 	}
 
 	@Override
-	public <T> List<T> getConnections(CacheHandler<T> handler, CacheType cacheType) {
+	public <T> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType) {
 		return Lists.newArrayList();
 	}
 
 	@Override
-	public <H extends INetworkHandler> INetworkChannels getNetworkChannels(H handler) {
+	public <T extends INetworkChannels> T getNetworkChannels(Class<T> channelClass){
 		return null;
 	}
 
@@ -126,5 +123,10 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	@Override
 	public int getNetworkID() {
 		return 0;
+	}
+
+	@Override
+	public <T extends INetworkChannels> T getOrCreateNetworkChannels(Class<T> channelClass) {
+		return null;//this may cause problems lets hope not
 	}
 }

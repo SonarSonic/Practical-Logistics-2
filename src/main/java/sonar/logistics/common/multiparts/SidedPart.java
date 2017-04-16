@@ -21,7 +21,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 

@@ -9,6 +9,7 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncableListener;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.utils.MonitoredList;
@@ -18,7 +19,7 @@ import sonar.logistics.common.multiparts.AbstractDisplayPart;
 public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListener {
 
 	/** if this Display requires this InfoUUID to be synced */
-	public boolean monitorsUUID(InfoUUID id);
+	public boolean isDisplayingUUID(InfoUUID id);
 
 	/** get the current info UUID of the Monitor Info at the given position */
 	public InfoUUID getInfoUUID(int pos);
@@ -40,5 +41,7 @@ public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListe
 
 	public DisplayInfo getDisplayInfo(int pos);
 	
-	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list);
+	public void onInfoChanged(InfoUUID uuid, IInfo list);
+	
+	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList info);
 }

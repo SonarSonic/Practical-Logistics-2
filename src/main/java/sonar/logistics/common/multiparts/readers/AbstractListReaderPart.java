@@ -1,34 +1,25 @@
 package sonar.logistics.common.multiparts.readers;
 
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import mcmultipart.multipart.ISlottedPart;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.ISyncPart;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.readers.IReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.AbstractReaderPart;
 import sonar.logistics.connections.channels.ListNetworkChannels;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public abstract class AbstractListReaderPart<T extends IInfo> extends AbstractReaderPart<T> implements ISlottedPart, IReader<T>, IFlexibleGui {
 
@@ -61,7 +52,7 @@ public abstract class AbstractListReaderPart<T extends IInfo> extends AbstractRe
 	}
 
 	public void sendRapidUpdate(EntityPlayer player) {
-		INetworkChannels list = network.getNetworkChannels(this.getValidHandlers().get(0));
+		INetworkChannels list = network.getNetworkChannels(this.getValidHandlers().get(0).getChannelsType());
 		if (list != null && list instanceof ListNetworkChannels) {
 			((ListNetworkChannels) list).sendLocalRapidUpdate(this, player);
 		}

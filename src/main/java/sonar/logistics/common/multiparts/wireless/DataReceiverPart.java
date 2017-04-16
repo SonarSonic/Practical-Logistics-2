@@ -6,12 +6,9 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -25,8 +22,6 @@ import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.common.containers.ContainerDataReceiver;
-import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.managers.WirelessManager;
 
 public class DataReceiverPart extends AbstractWirelessPart implements IDataReceiver, IFlexibleGui, IByteBufTile {

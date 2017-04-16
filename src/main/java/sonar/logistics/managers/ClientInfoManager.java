@@ -15,15 +15,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.api.tiles.readers.ClientViewable;
-import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
@@ -38,7 +36,7 @@ public class ClientInfoManager implements IInfoManager {
 	public Map<InfoUUID, IInfo> info = Maps.newLinkedHashMap();
 
 	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, List<Object>>();
-	public Map<Integer, List<ClientViewable>> clientLogicMonitors = new ConcurrentHashMap<Integer, List<ClientViewable>>();
+	public Map<Integer, List<ClientLocalProvider>> clientLogicMonitors = new ConcurrentHashMap<Integer, List<ClientLocalProvider>>();
 
 	public Map<InfoUUID, MonitoredList<?>> monitoredLists = Maps.newLinkedHashMap();
 	public Map<Integer, ILogicListenable> monitors = Maps.newLinkedHashMap();
@@ -66,16 +64,20 @@ public class ClientInfoManager implements IInfoManager {
 			NBTTagCompound infoTag = packetList.getCompoundTagAt(i);
 			InfoUUID id = NBTHelper.instanceNBTSyncable(InfoUUID.class, infoTag);
 			if (save) {
-				info.put(id, InfoHelper.readInfoFromNBT(infoTag));
-				// info.replace(id, );
+				setInfo(id, InfoHelper.readInfoFromNBT(infoTag));				
 			} else {
 				IInfo currentInfo = info.get(id);
 				if (currentInfo != null) {
 					currentInfo.readData(infoTag, type);
-					info.put(id, currentInfo);
+					setInfo(id, currentInfo);
 				}
 			}
 		}
+	}
+	
+	public void setInfo(InfoUUID uuid, IInfo newInfo){
+		info.put(uuid, newInfo);
+		onInfoChanged(uuid, newInfo);
 	}
 
 
@@ -109,10 +111,18 @@ public class ClientInfoManager implements IInfoManager {
 	public Map<InfoUUID, IInfo> getInfoList() {
 		return info;
 	}
+
+	public void onInfoChanged(InfoUUID uuid, IInfo info){
+		for(IDisplay display : displays){
+			if(display.container().isDisplayingUUID(uuid)){
+				display.container().onInfoChanged(uuid, info);
+			}
+		}
+	}
 	
 	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list){
 		for(IDisplay display : displays){
-			if(display.container().monitorsUUID(uuid)){
+			if(display.container().isDisplayingUUID(uuid)){
 				display.container().onMonitoredListChanged(uuid, list);
 			}
 		}

@@ -203,7 +203,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	}
 
 	@Override
-	public void renderSelection(IInfo info, int x, int y, int slot) {
+	public void renderGridElement(IInfo info, int x, int y, int slot) {
 		if (info instanceof MonitoredItemStack) {
 			MonitoredItemStack selection = (MonitoredItemStack) info;
 			RenderHelper.saveBlendState();
@@ -219,7 +219,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	}
 
 	@Override
-	public void renderToolTip(IInfo info, int x, int y) {
+	public void renderElementToolTip(IInfo info, int x, int y) {
 		if (info instanceof MonitoredItemStack) {
 			MonitoredItemStack selection = (MonitoredItemStack) info;
 			StoredItemStack storedStack = selection.getStoredStack();

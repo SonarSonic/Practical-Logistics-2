@@ -8,9 +8,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.IDirtyPart;
@@ -27,7 +25,6 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.info.types.LogicInfoList;
 
 /** default implementation of the Display Info used on displays */
 public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableListener {
@@ -68,10 +65,17 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	@Override
 	public IInfo getSidedCachedInfo(boolean isClient) {
 		InfoUUID id = getInfoUUID();
-		if (id == null) {
+		if (id == null)
 			return null;
+		if (cachedInfo == null) {
+			cachedInfo = PL2.getInfoManager(isClient).getInfoList().get(id);
+			cachedInfo = cachedInfo != null ? cachedInfo.copy() : null;
 		}
-		return cachedInfo = PL2.getInfoManager(isClient).getInfoList().get(id);
+		return cachedInfo;
+	}
+
+	public void setCachedInfo(IInfo info) {
+		this.cachedInfo = info.copy();//we copy it so page counts work and to avoid stuff being altered
 	}
 
 	@Override

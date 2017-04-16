@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
 
@@ -37,7 +38,11 @@ public class PacketInfoList implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketInfoList message, MessageContext ctx) {
-			PL2.getClientManager().onInfoPacket(message.tag, message.type);
+			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				public void run() {
+					PL2.getClientManager().onInfoPacket(message.tag, message.type);
+				}
+			});
 			return null;
 		}
 

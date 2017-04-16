@@ -30,9 +30,9 @@ import sonar.logistics.logic.comparators.ComparatorRegistry;
 import sonar.logistics.managers.CableManager;
 import sonar.logistics.managers.ClientInfoManager;
 import sonar.logistics.managers.DisplayManager;
-import sonar.logistics.managers.WirelessManager;
 import sonar.logistics.managers.NetworkManager;
 import sonar.logistics.managers.ServerInfoManager;
+import sonar.logistics.managers.WirelessManager;
 import sonar.logistics.utils.SapphireOreGen;
 
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, version = PL2Constants.VERSION, dependencies = "required-after:sonarcore")

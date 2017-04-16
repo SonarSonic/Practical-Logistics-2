@@ -7,28 +7,21 @@ import sonar.core.SonarCore;
 import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.logistics.PL2Config;
-import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.NetworkHandler;
-import sonar.logistics.api.asm.NetworkHandlerField;
-import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.connections.channels.EnergyNetworkChannels;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
-@NetworkHandler(handlerID = EnergyNetworkHandler.id, modid = PL2Constants.MODID)
 public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNetworkHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack,INetworkListChannels> {
 	
-	@NetworkHandlerField(handlerID = EnergyNetworkHandler.id)
-	public static EnergyNetworkHandler INSTANCE;
-
-	public static final String id = "energy";
+	public static EnergyNetworkHandler INSTANCE = new EnergyNetworkHandler();
 
 	@Override
-	public String id() {
-		return id;
+	public Class<? extends INetworkListChannels> getChannelsType() {
+		return EnergyNetworkChannels.class;
 	}
 
 	@Override

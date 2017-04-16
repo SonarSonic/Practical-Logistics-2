@@ -3,6 +3,7 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import sonar.core.helpers.InventoryHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.common.multiparts.nodes.ArrayPart;
 
@@ -26,7 +27,7 @@ public class ContainerArray extends ContainerMultipartSync {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = InventoryHelper.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(slotID);
 
 		if (slot != null && slot.getHasStack()) {
@@ -35,14 +36,14 @@ public class ContainerArray extends ContainerMultipartSync {
 
 			if (slotID < 8) {
 				if (!this.mergeItemStack(itemstack1, 8, this.inventorySlots.size(), true)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 8, false)) {
-				return null;
+				return InventoryHelper.EMPTY;
 			}
 
 			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
+				slot.putStack(InventoryHelper.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}

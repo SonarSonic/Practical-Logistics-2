@@ -1,6 +1,5 @@
 package sonar.logistics.api.wireless;
 
-import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;

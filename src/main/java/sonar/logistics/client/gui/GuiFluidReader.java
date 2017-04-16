@@ -46,6 +46,10 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		super(new ContainerFluidReader(part, player), part);
 		this.part = part;
 		this.player = player;
+		this.eWidth = 27;
+		this.eHeight = 27;		
+		this.gWidth = 8;
+		this.gHeight = 5;
 	}
 
 	public FluidReader.Modes getSetting() {
@@ -81,7 +85,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
-	
+
 	}
 
 	public void onTextFieldChanged(SonarTextField field) {
@@ -207,21 +211,21 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void renderSelection(MonitoredFluidStack selection, int x, int y, int slot) {
+	public void renderGridElement(MonitoredFluidStack selection, int x, int y, int slot) {
 		StoredFluidStack fluidStack = selection.getStoredStack();
 		if (fluidStack.fluid != null) {
 			GL11.glPushMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(fluidStack.fluid.getFluid().getStill().toString());
 			Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			drawTexturedModalRect(13 + (x * 18), 32 + (y * 18), sprite, 16, 16);
+			drawTexturedModalRect(xPos + (x * eWidth), yPos + (y * eHeight), sprite, eWidth-2, eHeight-2);
 			GL11.glPopMatrix();
 		}
 	}
 
 	@Override
-	public void renderToolTip(MonitoredFluidStack selection, int x, int y) {
-		StoredFluidStack fluidStack = selection.getStoredStack();
+	public void renderElementToolTip(MonitoredFluidStack element, int x, int y) {
+		StoredFluidStack fluidStack = element.getStoredStack();
 		List list = Lists.newArrayList();
 		list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 		if (fluidStack.stored != 0) {
@@ -239,6 +243,5 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {
-	}
+	public void renderStrings(int x, int y) {}
 }

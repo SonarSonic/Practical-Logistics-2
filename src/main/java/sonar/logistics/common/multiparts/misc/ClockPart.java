@@ -5,25 +5,19 @@ import java.text.SimpleDateFormat;
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
 import mcmultipart.multipart.IRedstonePart;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
@@ -39,7 +33,6 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiClock;
 import sonar.logistics.common.multiparts.SidedPart;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.ClockInfo;
 
 public class ClockPart extends SidedPart implements IInfoProvider, IRedstonePart, IByteBufTile, IFlexibleGui {
@@ -80,7 +73,6 @@ public class ClockPart extends SidedPart implements IInfoProvider, IRedstonePart
 				this.lastMillis = currentMillis;
 				powering = true;
 				notifyBlockUpdate();
-				// TODO send signal
 			} else {
 				if (powering) {
 					powering = false;

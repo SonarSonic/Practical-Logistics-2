@@ -12,9 +12,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.ChannelNetworkHandler;
-import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = MonitoredBlockCoords.id, modid = PL2Constants.MODID)
@@ -74,11 +73,6 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 	}
 
 	@Override
-	public ChannelNetworkHandler getHandler() {
-		return ChannelNetworkHandler.INSTANCE;
-	}
-
-	@Override
 	public boolean isValid() {
 		return syncCoords.getCoords() != null;
 	}
@@ -105,5 +99,10 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 		objects.add(new ComparableObject(this, "y", coords.getY()));
 		objects.add(new ComparableObject(this, "z", coords.getZ()));
 		return objects;
+	}
+
+	@Override
+	public INetworkHandler getHandler() {
+		return null; // shouldn't hurt hopefully
 	}
 }

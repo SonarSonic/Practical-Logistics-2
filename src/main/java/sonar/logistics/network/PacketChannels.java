@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
@@ -18,8 +19,7 @@ public class PacketChannels implements IMessage {
 	public NBTTagCompound listTag;
 	public int registryID;
 
-	public PacketChannels() {
-	}
+	public PacketChannels() {}
 
 	public PacketChannels(int registryID, NBTTagCompound listTag) {
 		this.listTag = listTag;
@@ -44,8 +44,12 @@ public class PacketChannels implements IMessage {
 	public static class Handler implements IMessageHandler<PacketChannels, IMessage> {
 		@Override
 		public IMessage onMessage(PacketChannels message, MessageContext ctx) {
-			if (message.list != null)
-				PL2.getClientManager().channelMap.put(message.registryID, message.list);
+			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				public void run() {
+					if (message.list != null)
+						PL2.getClientManager().channelMap.put(message.registryID, message.list);
+				}
+			});
 			return null;
 		}
 	}

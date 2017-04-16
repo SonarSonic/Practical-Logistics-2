@@ -24,33 +24,29 @@ import sonar.core.api.utils.ActionType;
 import sonar.core.handlers.inventories.IInventoryHandler;
 import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.InventoryHelper.DefaultTransferOverride;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
+import sonar.core.helpers.InventoryHelper.ITransferOverride;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.network.PacketInvUpdate;
 import sonar.core.network.PacketStackUpdate;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
-import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IListReader;
+import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.SortingType;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wrappers.ItemWrapper;
 import sonar.logistics.connections.channels.ItemNetworkChannels;
-import sonar.logistics.connections.channels.ListNetworkChannels;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemHelper extends ItemWrapper {
@@ -98,7 +94,7 @@ public class ItemHelper extends ItemWrapper {
 
 	public long getItemCount(ItemStack stack, ILogisticsNetwork network) {
 		if (network.isValid()) {
-			ItemNetworkChannels channels = (ItemNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+			ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 			channels.updateLargeInventory = true;
 			channels.updateAllChannels();
 			channels.updateLargeInventory = false;
@@ -120,7 +116,7 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack addItems(StoredItemStack add, ILogisticsNetwork network, ActionType action) {
-		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getConnections(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferItem(entry, add, NodeTransferMode.ADD)) {
 				continue;
@@ -161,7 +157,7 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	public StoredItemStack removeItems(StoredItemStack remove, ILogisticsNetwork network, ActionType action) {
-		List<NodeConnection> connections = network.getChannels(CacheType.ALL);
+		List<NodeConnection> connections = network.getConnections(CacheType.ALL);
 		for (NodeConnection entry : connections) {
 			if (!entry.canTransferItem(entry, remove, NodeTransferMode.REMOVE)) {
 				continue;
@@ -380,7 +376,7 @@ public class ItemHelper extends ItemWrapper {
 		boolean change = false;
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			ItemStack add = player.inventory.getStackInSlot(i);
-			if (add == null)
+			if (add == null || add.getItem() instanceof IWirelessStorageReader)
 				continue;
 			StoredItemStack stack = PL2API.getItemHelper().addItems(new StoredItemStack(add), cache, ActionType.PERFORM);
 			if (stack == null || stack.stored == 0) {
@@ -405,7 +401,7 @@ public class ItemHelper extends ItemWrapper {
 		}
 	}
 
-	public static void transferItems(NodeTransferMode mode, BlockConnection filter, BlockConnection connection) {
+	public static void transferItems(NodeTransferMode mode, BlockConnection filter, BlockConnection connection, ITransferOverride override) {
 		TileEntity filterTile = filter.coords.getTileEntity();
 		TileEntity netTile = connection.coords.getTileEntity();
 		if (filterTile != null && netTile != null) {
@@ -413,17 +409,19 @@ public class ItemHelper extends ItemWrapper {
 			EnumFacing dirTo = !mode.shouldRemove() ? filter.face : connection.face;
 			TileEntity from = mode.shouldRemove() ? filterTile : netTile;
 			TileEntity to = !mode.shouldRemove() ? filterTile : netTile;
-			ConnectionFilters filters = new ConnectionFilters(filter, connection);
+			ConnectionFilters filters = new ConnectionFilters(override, filter, connection);
 
 			SonarAPI.getItemHelper().transferItems(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), filters);
 		}
 	}
 
-	public static class ConnectionFilters implements IInventoryFilter, ITankFilter {
+	public static class ConnectionFilters implements IInventoryFilter, ITankFilter, ITransferOverride {
 
+		ITransferOverride override;
 		NodeConnection[] connections;
 
-		public ConnectionFilters(NodeConnection...connections) {
+		public ConnectionFilters(ITransferOverride override, NodeConnection...connections) {
+			this.override=override;
 			this.connections = connections;
 		}
 
@@ -451,6 +449,37 @@ public class ItemHelper extends ItemWrapper {
 				}
 			}
 			return true;
+		}
+
+		@Override
+		public void reset() {
+			override.reset();			
+		}
+
+		@Override
+		public void add(long added) {
+			override.add(added);			
+		}
+
+		@Override
+		public void remove(long removed) {
+			override.remove(removed);
+			
+		}
+
+		@Override
+		public long getMaxRemove() {
+			return override.getMaxRemove();
+		}
+
+		@Override
+		public long getMaxAdd() {
+			return override.getMaxAdd();
+		}
+
+		@Override
+		public ITransferOverride copy() {
+			return new ConnectionFilters(override.copy(), connections);
 		}
 
 	}
@@ -496,7 +525,7 @@ public class ItemHelper extends ItemWrapper {
 			}
 
 		}
-		ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+		ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 		if (channels != null) // TODO shouldn't have to ever do this.
 			channels.sendLocalRapidUpdate(reader, player);
 	}

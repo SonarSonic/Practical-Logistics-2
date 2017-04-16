@@ -16,7 +16,6 @@ import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = MonitoredEntity.id, modid = PL2Constants.MODID)

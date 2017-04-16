@@ -2,9 +2,6 @@ package sonar.logistics.api.states;
 
 import java.util.List;
 
-import sonar.core.SonarCore;
-import sonar.core.network.SonarClient;
-import sonar.core.translate.ILocalisationHandler;
 import sonar.core.translate.Localisation;
 
 public enum TileMessage implements IState {

@@ -48,7 +48,8 @@ public class PL2Events {
 	//server only
 	@SubscribeEvent
 	public void watchChunk(ChunkWatchEvent.Watch event) {
-		PL2.getServerManager().addListener(event.getChunk(), event.getPlayer());		
+		PL2.getServerManager().addListener(event.getChunk(), event.getPlayer());	
+		//System.out.println("watchy");
 	}
 
 	//server only

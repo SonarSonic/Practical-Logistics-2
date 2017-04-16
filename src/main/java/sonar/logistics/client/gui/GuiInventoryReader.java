@@ -168,7 +168,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public MonitoredList<MonitoredItemStack> getGridList() {
+	public List<MonitoredItemStack> getGridList() {
 		String search = searchField.getText();
 		if (search == null || search.isEmpty() || search.equals(" ")) {
 			return part.getMonitoredList();
@@ -200,7 +200,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	public void renderStrings(int x, int y) {}
 
 	@Override
-	public void renderSelection(MonitoredItemStack selection, int x, int y, int slot) {
+	public void renderGridElement(MonitoredItemStack selection, int x, int y, int slot) {
 		RenderHelper.saveBlendState();
 		StoredItemStack storedStack = selection.getStoredStack();
 		if (storedStack == null) {
@@ -214,8 +214,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void renderToolTip(MonitoredItemStack selection, int x, int y) {
-		StoredItemStack storedStack = selection.getStoredStack();
+	public void renderElementToolTip(MonitoredItemStack element, int x, int y) {
+		StoredItemStack storedStack = element.getStoredStack();
 		if (storedStack == null) {
 			return;
 		}

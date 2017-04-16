@@ -38,10 +38,14 @@ public class PacketAddListener implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketAddListener message, MessageContext ctx) {
-			EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-			if (message.monitor != null && player != null) {
-				message.monitor.getListenerList().addListener(player, message.type);
-			}
+			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				public void run() {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (message.monitor != null && player != null) {
+						message.monitor.getListenerList().addListener(player, message.type);
+					}
+				}
+			});
 			return null;
 		}
 	}

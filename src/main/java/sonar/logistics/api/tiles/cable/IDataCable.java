@@ -39,7 +39,7 @@ public interface IDataCable extends ICableRenderer, IWorldPosition, IConnectable
 
 	/** adds all connections adjacent to the cable including...<pre>
 	 *internal = (Multiparts which implement {@link INetworkTile} and are within the same block as the cable), 
-	 *external = (Adjacent full blocks which implement {@link INetworkTile} TODO),
+	 *external = (Adjacent full blocks which implement {@link INetworkTile}),
 	 *local providers = (see {@link IDataCable#onLocalProviderAdded})</pre>
 	 * @param network the network to add the connections to */
 	public void addConnections(ILogisticsNetwork network);

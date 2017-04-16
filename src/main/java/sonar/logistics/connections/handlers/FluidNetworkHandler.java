@@ -9,12 +9,7 @@ import sonar.core.SonarCore;
 import sonar.core.api.StorageSize;
 import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.PL2Config;
-import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.NetworkHandler;
-import sonar.logistics.api.asm.NetworkHandlerField;
-import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
@@ -22,19 +17,16 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.connections.channels.FluidNetworkChannels;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
-@NetworkHandler(handlerID = FluidNetworkHandler.id, modid = PL2Constants.MODID)
 public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack> implements ITileMonitorHandler<MonitoredFluidStack,INetworkListChannels> {
 	
-	@NetworkHandlerField(handlerID = FluidNetworkHandler.id)
-	public static FluidNetworkHandler INSTANCE;
-
-	public static final String id = "fluid";
-
+	public static FluidNetworkHandler INSTANCE = new FluidNetworkHandler();
+	
 	@Override
-	public String id() {
-		return id;
+	public Class<? extends INetworkListChannels> getChannelsType() {
+		return FluidNetworkChannels.class;
 	}
 	
 	public int getReaderID(IListReader reader){

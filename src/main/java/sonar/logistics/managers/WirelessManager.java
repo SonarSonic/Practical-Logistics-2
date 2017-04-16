@@ -14,6 +14,7 @@ import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.connections.CacheHandler;
+import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.network.PacketClientEmitters;
 
 public class WirelessManager {
@@ -104,7 +105,7 @@ public class WirelessManager {
 	public static void addViewer(EntityPlayer player) {
 		if (!viewers.contains(player)) {
 			viewers.add(player);
-			getAndSendPacketForViewer(player);
+			PacketHelper.sendDataEmittersToPlayer(player);
 		}
 	}
 
@@ -116,18 +117,18 @@ public class WirelessManager {
 
 	public static void tick() {
 		if (dirty) {
-			viewers.forEach(player -> getAndSendPacketForViewer(player));
+			viewers.forEach(player -> PacketHelper.sendDataEmittersToPlayer(player));
 			dirty = false;
 		}
 	}
-
-	public static void getAndSendPacketForViewer(EntityPlayer player) {
+	
+	public static ArrayList<ClientDataEmitter> getClientEmitters(EntityPlayer player){
 		List<IDataEmitter> emitters = getEmitters(player.getGameProfile().getId());
 		ArrayList<ClientDataEmitter> clientEmitters = Lists.newArrayList();
 		for (IDataEmitter emitter : WirelessManager.emitters) {
 			clientEmitters.add(new ClientDataEmitter(emitter));
 		}
-		PL2.network.sendTo(new PacketClientEmitters(clientEmitters), (EntityPlayerMP) player);
+		return clientEmitters;
 	}
 
 }

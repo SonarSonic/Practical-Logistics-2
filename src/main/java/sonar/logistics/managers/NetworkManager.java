@@ -6,23 +6,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.common.collect.Lists;
 
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Config;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.connections.LogisticsNetwork;
-import sonar.logistics.connections.handlers.ChannelNetworkHandler;
-import sonar.logistics.connections.handlers.DefaultNetworkHandler;
 
 public class NetworkManager {
 
@@ -53,7 +47,7 @@ public class NetworkManager {
 
 	public List<NodeConnection> getChannelArray(int networkID) {
 		ILogisticsNetwork network = getNetwork(networkID);
-		return network != null ? network.getChannels(CacheType.GLOBAL) : Lists.newArrayList();
+		return network != null ? network.getConnections(CacheType.GLOBAL) : Lists.newArrayList();
 	}
 
 	public ILogisticsNetwork getNetwork(int networkID) {
@@ -79,7 +73,7 @@ public class NetworkManager {
 				return;
 			}
 			ILogisticsNetwork newNet = getOrCreateNetwork(newID);
-			List<INetworkListener> tiles = oldNet.getConnections(CacheHandler.TILE, CacheType.LOCAL);
+			List<INetworkListener> tiles = oldNet.getCachedTiles(CacheHandler.TILE, CacheType.LOCAL);
 			oldNet.onNetworkRemoved();
 			cache.remove(oldNet);
 			newNet.onCablesChanged();

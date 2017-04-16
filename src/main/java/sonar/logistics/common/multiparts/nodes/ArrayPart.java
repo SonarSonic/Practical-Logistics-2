@@ -5,19 +5,16 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import mcmultipart.multipart.ISlottedPart;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarMultipartInventory;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.wireless.ITransceiver;
@@ -51,9 +48,11 @@ public class ArrayPart extends SidedPart implements ISlottedPart, INode, IFlexib
 
 	public void update() {
 		super.update();
+		/* TODO update entities properly
 		if (isServer() && entityChanged) {
 			this.updateConnectionLists();
 		}
+		*/
 	}
 
 	public void updateConnectionLists() {

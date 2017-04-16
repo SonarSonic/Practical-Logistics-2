@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
+import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
@@ -42,7 +43,7 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = InventoryHelper.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(par2);
 
 		if (slot != null && slot.getHasStack()) {
@@ -67,25 +68,25 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 					}
 				}
 				if (!this.mergeItemStack(itemstack1.copy(), 0, INV_START, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			} else if (par2 >= INV_START && par2 < HOTBAR_START) {
 				if (!this.mergeItemStack(itemstack1, HOTBAR_START, HOTBAR_END + 1, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			} else if (par2 >= HOTBAR_START && par2 < HOTBAR_END + 1) {
 				if (!this.mergeItemStack(itemstack1, INV_START, INV_END + 1, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			}
 			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
+				slot.putStack(InventoryHelper.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 
 			if (itemstack1.stackSize == itemstack.stackSize) {
-				return null;
+				return InventoryHelper.EMPTY;
 			}
 
 			slot.onPickupFromSlot(par1EntityPlayer, itemstack1);
@@ -97,7 +98,7 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			part.getListenerList().removeListener(player, ListenerType.INFO);
+			part.getListenerList().removeListener(player, true, ListenerType.INFO);
 	}
 
 	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
@@ -115,11 +116,6 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 
 	public SyncType[] getSyncTypes() {
 		return new SyncType[] { SyncType.SPECIAL };
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
 	}
 
 }

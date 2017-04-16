@@ -21,13 +21,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -46,7 +44,7 @@ import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.api.tiles.readers.ClientViewable;
+import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -56,6 +54,7 @@ import sonar.logistics.common.multiparts.LogisticsPart;
 import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.network.PacketInfoList;
 import sonar.logistics.network.PacketViewables;
@@ -70,8 +69,6 @@ public class ServerInfoManager implements IInfoManager {
 	public List<InfoUUID> changedInfo = Lists.newArrayList();
 	public List<IDisplay> displays = Lists.newArrayList();
 	public boolean markDisplaysDirty = true;
-	// public List<EntityPlayer> requireUpdates = Lists.newArrayList();
-	// public Map<EntityPlayer, ArrayList<IDisplay>> viewables = Maps.newHashMap();
 
 	public Map<InfoUUID, IInfo> info = Maps.newLinkedHashMap();
 	public Map<InfoUUID, MonitoredList<?>> monitoredLists = Maps.newLinkedHashMap();
@@ -109,6 +106,10 @@ public class ServerInfoManager implements IInfoManager {
 		return !displays.isEmpty();
 	}
 
+	public IInfo getInfoFromUUID(InfoUUID uuid) {
+		return info.get(uuid);
+	}
+
 	public ConnectedDisplay getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID) {
 		Map<Integer, ConnectedDisplay> displays = getConnectedDisplays();
 		ConnectedDisplay toSet = displays.get(registryID);
@@ -141,7 +142,7 @@ public class ServerInfoManager implements IInfoManager {
 
 	public void addDisplay(IDisplay display) {
 		if (!displays.contains(display) && displays.add(display)) {
-			addChunkFromDisplay(display);
+			addListenersFromDisplay(display);
 			updateViewingMonitors = true;
 		}
 	}
@@ -160,10 +161,10 @@ public class ServerInfoManager implements IInfoManager {
 
 	public void removeListener(ChunkPos chunkPos, EntityPlayerMP player) {
 		List<IDisplay> displays = getDisplaysInChunk(player.dimension, chunkPos);
-		displays.forEach(d -> d.getListenerList().removeListener(player, ListenerType.INFO));
+		displays.forEach(d -> d.getListenerList().removeListener(player, true, ListenerType.INFO));
 	}
 
-	public void addChunkFromDisplay(IDisplay display) {
+	public void addListenersFromDisplay(IDisplay display) {
 		BlockCoords coords = display.getCoords();
 		WorldServer world = (WorldServer) coords.getWorld();
 		addChangedChunk(coords.getDimension(), SonarHelper.getChunkFromPos(coords.getX(), coords.getZ()));
@@ -171,7 +172,7 @@ public class ServerInfoManager implements IInfoManager {
 
 	public void removeListenersFromDisplay(IDisplay display) {
 		List<PlayerListener> listeners = display.getListenerList().getListeners(ListenerType.INFO);
-		listeners.forEach(pl -> display.getListenerList().removeListener(pl, ListenerType.INFO));
+		listeners.forEach(pl -> display.getListenerList().removeListener(pl, true, ListenerType.INFO));
 	}
 
 	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
@@ -193,79 +194,11 @@ public class ServerInfoManager implements IInfoManager {
 		return inChunk;
 	}
 
-	public List<IDisplay> getViewableDisplays(EntityPlayer player, boolean sendSyncPackets) {
-		List<IDisplay> viewable = Lists.newArrayList();
-		World world = player.getEntityWorld();
-		PlayerChunkMap manager = ((WorldServer) world).getPlayerChunkMap();
-		for (IDisplay display : displays) {
-			if (manager.isPlayerWatchingChunk((EntityPlayerMP) player, display.getCoords().getX() >> 4, display.getCoords().getZ() >> 4)) {
-				viewable.add(display);
-			}
-			if (sendSyncPackets && display instanceof LargeDisplayScreenPart) {
-				LargeDisplayScreenPart part = (LargeDisplayScreenPart) display;
-				SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);
-			}
-		}
-		return viewable;
-	}
-
-	public void sendFullPacket(EntityPlayer player) {
-		if (player != null) {
-			List<IInfo> infoList = getInfoFromUUIDs(getUUIDsToSync(getViewableDisplays(player, true)));
-			if (infoList.isEmpty()) {
-				return;
-			}
-			NBTTagList packetList = new NBTTagList();
-			for (IInfo info : infoList) {
-				if (info != null && info.isValid() && !info.isHeader()) {
-					packetList.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE));
-				}
-			}
-			if (!packetList.hasNoTags()) {
-				NBTTagCompound packetTag = new NBTTagCompound();
-				packetTag.setTag("infoList", packetList);
-				PL2.network.sendTo(new PacketInfoList(packetTag, SyncType.SAVE), (EntityPlayerMP) player);
-			}
-		}
-	}
-
-	public List<IInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
-		List<IInfo> infoList = Lists.newArrayList();
-		for (InfoUUID id : ids) {
-			ILogicListenable monitor = CableHelper.getMonitorFromIdentity(id.getIdentity(), false);
-			if (monitor != null && monitor instanceof IInfoProvider) {
-				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
-				if (info != null) {
-					infoList.add(info);
-				}
-			}
-		}
-		return infoList;
-	}
-
-	public List<InfoUUID> getUUIDsToSync(List<IDisplay> displays) {
-		ArrayList<InfoUUID> ids = Lists.newArrayList();
-		for (IDisplay display : displays) {
-			IInfoContainer container = display.container();
-			for (int i = 0; i < container.getMaxCapacity(); i++) {
-				InfoUUID id = container.getInfoUUID(i);
-				if (id != null && id.valid() && !ids.contains(id)) {
-					ids.add(id);
-				}
-			}
-		}
-		return ids;
-	}
-
-	public IInfo getInfoFromUUID(InfoUUID uuid) {
-		return info.get(uuid);
-	}
 
 	public TargetPoint getTargetPointFromPlayer(EntityPlayer player) {
 		return new TargetPoint(player.getEntityWorld().provider.getDimension(), player.posX, player.posY, player.posZ, UPDATE_RADIUS);
 	}
 
-	// client methods
 	@Nullable
 	public Pair<InfoUUID, MonitoredList<?>> getMonitorFromServer(InfoUUID uuid) {
 		for (Entry<InfoUUID, ?> entry : monitoredLists.entrySet()) {
@@ -304,6 +237,7 @@ public class ServerInfoManager implements IInfoManager {
 				}
 			}
 		}
+		chunksToUpdate.clear();
 		newChunks = false;
 	}
 
@@ -343,19 +277,19 @@ public class ServerInfoManager implements IInfoManager {
 					boolean shouldUpdate = !updateTag.hasNoTags();
 
 					for (IDisplay display : displays) {
-						if (display.container().monitorsUUID(id)) {
+						if (display.container().isDisplayingUUID(id)) {
 							ListenerList<PlayerListener> list = display.getListenerList();
 							if (shouldUpdate) {
 								List<PlayerListener> listeners = list.getListeners(ListenerType.INFO);
 								updateTag = id.writeData(updateTag, SyncType.SAVE);
-								addPacketsToList(syncPackets, listeners, updateTag, saveTag, false);
+								PacketHelper.addInfoPacketsToList(syncPackets, listeners, updateTag, saveTag, false);
 							}
 							List<PlayerListener> fullViewers = list.getListeners(ListenerType.FULL_INFO);
 							if (!fullViewers.isEmpty()) {
 								saveTag = id.writeData(saveTag, SyncType.SAVE);
-								addPacketsToList(savePackets, fullViewers, updateTag, saveTag, true);
+								PacketHelper.addInfoPacketsToList(savePackets, fullViewers, updateTag, saveTag, true);
 								fullViewers.forEach(viewer -> {
-									display.getListenerList().removeListener(viewer, ListenerType.FULL_INFO);
+									display.getListenerList().removeListener(viewer, true, ListenerType.FULL_INFO);
 									display.getListenerList().addListener(viewer, ListenerType.INFO);
 								});
 							}
@@ -365,36 +299,16 @@ public class ServerInfoManager implements IInfoManager {
 			}
 
 			if (!savePackets.isEmpty()) {
-				savePackets.entrySet().forEach(entry -> sendPlayerPacket(entry.getKey(), entry.getValue(), SyncType.SAVE));
+				savePackets.entrySet().forEach(entry -> PacketHelper.sendInfoListPacket(entry.getKey(), entry.getValue(), SyncType.SAVE));
 			}
 			if (!syncPackets.isEmpty()) {
-				syncPackets.entrySet().forEach(entry -> sendPlayerPacket(entry.getKey(), entry.getValue(), SyncType.SAVE));
+				syncPackets.entrySet().forEach(entry -> PacketHelper.sendInfoListPacket(entry.getKey(), entry.getValue(), SyncType.SAVE));
 			}
-			if (!savePackets.isEmpty() || !syncPackets.isEmpty())
+			//if (!savePackets.isEmpty() || !syncPackets.isEmpty())
 				changedInfo.clear();
 		}
 		return;
 
-	}
-
-	public void addPacketsToList(Map<PlayerListener, NBTTagList> listenerPackets, List<PlayerListener> listeners, NBTTagCompound updateTag, NBTTagCompound saveTag, boolean fullPacket) {
-		for (PlayerListener listener : listeners) {
-			NBTTagList list = listenerPackets.get(listener);
-			if (list == null) {
-				listenerPackets.put(listener, new NBTTagList());
-				list = listenerPackets.get(listener);
-			}
-			list.appendTag(fullPacket ? saveTag.copy() : updateTag.copy());
-		}
-	}
-
-	public void sendPlayerPacket(PlayerListener listener, NBTTagList list, SyncType type) {
-		if (list.hasNoTags()) {
-			return;
-		}
-		NBTTagCompound packetTag = new NBTTagCompound();
-		packetTag.setTag("infoList", list);
-		PL2.network.sendTo(new PacketInfoList(packetTag, type), listener.player);
 	}
 
 	public void changeInfo(InfoUUID id, IInfo info) {
@@ -404,55 +318,11 @@ public class ServerInfoManager implements IInfoManager {
 		}
 		if (info != null && (last == null || !last.isMatchingType(info) || !last.isMatchingInfo(info) || !last.isIdenticalInfo(info))) {
 			this.info.put(id, info);
-			this.changedInfo.add(id);
+			if (!changedInfo.contains(id))
+				this.changedInfo.add(id);
 		}
 	}
 
-	public List<ILogicListenable> getViewables(List<ILogicListenable> viewables, AbstractDisplayPart part) {
-		ILogisticsNetwork networkCache = part.getNetwork();
-		ISlottedPart connectedPart = part.getContainer().getPartInSlot(PartSlot.getFaceSlot(part.face));
-		if (connectedPart != null && connectedPart instanceof IInfoProvider) {
-			if (!viewables.contains((IInfoProvider) connectedPart))
-				viewables.add((IInfoProvider) connectedPart);
-		} else {
-			for (IInfoProvider monitor : networkCache.getLocalInfoProviders()) {
-				if (!viewables.contains(monitor))
-					viewables.add(monitor);
-			}
-		}
-		return viewables;
-	}
-
-	public void sendViewablesToClientFromScreen(AbstractDisplayPart part, EntityPlayer player) {
-		List<ILogicListenable> viewables = new ArrayList<ILogicListenable>();
-		int identity = part.getIdentity();
-		if (part instanceof ILargeDisplay) {
-			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
-			if (screen != null && screen.getTopLeftScreen() != null) {
-				identity = ((AbstractDisplayPart) screen.getTopLeftScreen()).getIdentity();
-			}
-			viewables = screen != null ? screen.getLogicMonitors(viewables) : getViewables(viewables, part);
-		} else {
-			viewables = getViewables(viewables, part);
-		}
-
-		List<ClientViewable> clientMonitors = Lists.newArrayList();
-		viewables.forEach(viewable -> {
-			viewable.getListenerList().addListener(player, ListenerType.TEMPORARY);
-			clientMonitors.add(new ClientViewable(viewable));
-		});
-		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
-	}
-
-	public void sendViewablesToClient(LogisticsPart part, int identity, EntityPlayer player) {
-		List<IInfoProvider> viewables = part.getNetwork().getLocalInfoProviders();
-		List<ClientViewable> clientMonitors = Lists.newArrayList();
-		viewables.forEach(viewable -> {
-			viewable.getListenerList().addListener(player, ListenerType.TEMPORARY);
-			clientMonitors.add(new ClientViewable(viewable));
-		});
-		PL2.network.sendTo(new PacketViewables(clientMonitors, identity), (EntityPlayerMP) player);
-	}
 
 	@Override
 	public Map<Integer, ILogicListenable> getMonitors() {
@@ -468,4 +338,42 @@ public class ServerInfoManager implements IInfoManager {
 	public Map<Integer, ConnectedDisplay> getConnectedDisplays() {
 		return connectedDisplays;
 	}
+
+	/*
+	public List<IDisplay> getViewableDisplays(EntityPlayer player, boolean sendSyncPackets) {
+		List<IDisplay> viewable = Lists.newArrayList();
+		World world = player.getEntityWorld();
+		PlayerChunkMap manager = ((WorldServer) world).getPlayerChunkMap();
+		for (IDisplay display : displays) {
+			if (manager.isPlayerWatchingChunk((EntityPlayerMP) player, display.getCoords().getX() >> 4, display.getCoords().getZ() >> 4)) {
+				viewable.add(display);
+			}
+			if (sendSyncPackets && display instanceof LargeDisplayScreenPart) {
+				LargeDisplayScreenPart part = (LargeDisplayScreenPart) display;
+				SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);
+			}
+		}
+		return viewable;
+	}
+
+	public void sendFullPacket(EntityPlayer player) {
+		if (player != null) {
+			List<IInfo> infoList = getInfoFromUUIDs(getUUIDsToSync(getViewableDisplays(player, true)));
+			if (infoList.isEmpty()) {
+				return;
+			}
+			NBTTagList packetList = new NBTTagList();
+			for (IInfo info : infoList) {
+				if (info != null && info.isValid() && !info.isHeader()) {
+					packetList.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE));
+				}
+			}
+			if (!packetList.hasNoTags()) {
+				NBTTagCompound packetTag = new NBTTagCompound();
+				packetTag.setTag("infoList", packetList);
+				PL2.network.sendTo(new PacketInfoList(packetTag, SyncType.SAVE), (EntityPlayerMP) player);
+			}
+		}
+	}
+	*/
 }

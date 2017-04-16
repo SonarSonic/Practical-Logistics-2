@@ -20,7 +20,7 @@ import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.helpers.CableHelper;
 
 /** used when syncing Logic Monitors for display in the Display Screen with the client, since some may not be loaded on client side. */
-public class ClientViewable implements INBTSyncable {
+public class ClientLocalProvider implements INBTSyncable {
 
 	public List<ISyncPart> syncParts = new ArrayList<ISyncPart>();
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
@@ -29,21 +29,21 @@ public class ClientViewable implements INBTSyncable {
 		syncParts.addAll(Lists.newArrayList(identity, coords));
 	}
 
-	public ClientViewable() {
+	public ClientLocalProvider() {
 	}
 
-	public ClientViewable(ILogicListenable monitor) {
+	public ClientLocalProvider(ILogicListenable monitor) {
 		this.identity.setObject(monitor.getIdentity());
 		this.coords.setCoords(monitor.getCoords());
 	}
 
-	public ClientViewable(int uuid, BlockCoords coords) {
+	public ClientLocalProvider(int uuid, BlockCoords coords) {
 		this.identity.setObject(uuid);
 		this.coords.setCoords(coords);
 	}
 
-	public ClientViewable copy() {
-		return new ClientViewable(identity.getObject(), coords.getCoords());
+	public ClientLocalProvider copy() {
+		return new ClientLocalProvider(identity.getObject(), coords.getCoords());
 	}
 
 	@Override

@@ -18,7 +18,7 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.INetworkChannels;
+import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -30,9 +30,8 @@ import sonar.logistics.client.gui.GuiFluidReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.connections.channels.ListNetworkChannels;
+import sonar.logistics.connections.channels.FluidNetworkChannels;
 import sonar.logistics.connections.handlers.FluidNetworkHandler;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
@@ -56,8 +55,9 @@ public class FluidReaderPart extends AbstractListReaderPart<MonitoredFluidStack>
 	}
 
 	@Override
-	public void addHandlerIDs(List<String> ids) {
-		ids.add(FluidNetworkHandler.id);
+	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
+		handlers.add(FluidNetworkHandler.INSTANCE);
+		return handlers;
 	}
 
 	//// ILogicReader \\\\
@@ -107,10 +107,10 @@ public class FluidReaderPart extends AbstractListReaderPart<MonitoredFluidStack>
 		super.readPacket(buf, id);
 		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
-			INetworkChannels list = network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
-			if (list != null && list instanceof ListNetworkChannels) {
+			FluidNetworkChannels list = network.getNetworkChannels(FluidNetworkChannels.class);
+			if (list != null) {
 				List<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
-				players.forEach(player -> ((ListNetworkChannels) list).sendLocalRapidUpdate(this, player.player));
+				players.forEach(player -> list.sendLocalRapidUpdate(this, player.player));
 			}
 		}
 	}

@@ -14,7 +14,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -22,7 +21,6 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.utils.CustomColour;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
@@ -33,7 +31,6 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.RenderBlockSelection;
@@ -46,14 +43,14 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 	public static final String ITEM_CLICK = "ITEM_CLICK";
 	public static final String id = "logiclist";
+	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(2).setDefault(-1);
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
 	public SyncTagType.STRING infoID = new SyncTagType.STRING(1);
-	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(2).setDefault(-1);
 
 	public MonitoredList<?> cachedList = null;
 	public boolean listChanged = true, wasRefreshed = false;
 	public int pageCount = 0;
-	public int xSlots, ySlots, perPage;
+	public int xSlots, ySlots, perPage = 0;
 
 	// client rendering
 	public Type type = Type.ITEM;
@@ -142,50 +139,35 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public void setCachedList(MonitoredList list, InfoUUID id) {
 		cachedList = list;
 	}
-
-	@Override
-	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		super.renderSizeChanged(container, displayInfo, width, height, scale, infoPos);
-		switch (type) {
-		case ENERGY:
-			xSlots = (int) 1;
-			ySlots = (int) ((Math.round(height)) / (0.0625 * 7));
-			perPage = xSlots * ySlots;
-			break;
-		case FLUID:
-			xSlots = (int) Math.round(width);
-			ySlots = (int) (Math.round(height));
-			perPage = xSlots * ySlots;
-			break;
-		case ITEM:
-			xSlots = (int) Math.ceil(width * 2);
-			ySlots = (int) (Math.round(height * 2));
-			perPage = xSlots * ySlots;
-			break;
-		default:
-			break;
-		}
-	}
-
+	
+	
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		super.renderInfo(container, displayInfo, width, height, scale, infoPos);
 		cachedList = getCachedList(displayInfo.getInfoUUID());
 		if (cachedList.isEmpty()) {
-			InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale / 1.4, "Nothing to display" , "Click to refresh");
+			InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale / 1.4, "Nothing to display", "Click to refresh");
 			return;
 		}
 		switch (type) {
 		case ITEM:
+			xSlots = (int) Math.ceil(width * 2);
+			ySlots = (int) (Math.round(height * 2));
+			perPage = xSlots * ySlots;
 			InfoRenderer.renderInventory((MonitoredList<MonitoredItemStack>) cachedList, perPage * pageCount, Math.min(perPage + perPage * pageCount, cachedList.size()), xSlots, ySlots);
 			break;
 		case FLUID:
+			xSlots = (int) Math.round(width);
+			ySlots = (int) (Math.round(height));
+			perPage = xSlots * ySlots;			
 			MonitoredList<MonitoredFluidStack> fluids = (MonitoredList<MonitoredFluidStack>) cachedList;
-			for (int i = perPage * pageCount; i < Math.min(perPage + perPage * pageCount, fluids.size()); i++) {
+			int start = perPage * pageCount;
+			int finish = Math.min(perPage + (perPage * pageCount), fluids.size());
+			for (int i = start; i < finish; i++) {
 				MonitoredFluidStack fluid = fluids.get(i);
 				FluidStack stack = fluid.getStoredStack().fluid;
 				if (stack != null) {
-					int current = i - perPage * pageCount;
+					int current = i - start;
 					int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
 					int yLevel = (int) (Math.floor((current / xSlots)));
 					GL11.glPushMatrix();
@@ -207,6 +189,9 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			}
 			break;
 		case ENERGY:
+			xSlots = (int) 1;
+			ySlots = (int) ((Math.round(height)) / (0.0625 * 7));
+			perPage = xSlots * ySlots;
 			MonitoredList<MonitoredEnergyStack> energy = (MonitoredList<MonitoredEnergyStack>) cachedList;
 			double spacing = 0.0625 * 7;
 			GL11.glTranslated(-1, -1 + 0.0625 * 4, 0.00);

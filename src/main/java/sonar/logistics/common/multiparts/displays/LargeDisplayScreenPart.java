@@ -32,9 +32,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
@@ -47,7 +45,6 @@ import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayConnections;
@@ -57,6 +54,7 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.client.gui.GuiDisplayScreen;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILargeDisplay {
@@ -459,7 +457,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			PL2.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
-			PL2.getServerManager().sendViewablesToClientFromScreen(part, player);
+			PacketHelper.sendLocalProvidersFromScreen(part, player);
 			break;
 		}
 	}

@@ -12,6 +12,7 @@ import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.connections.IEntityNode;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemWrapper {
@@ -139,7 +140,7 @@ public class ItemWrapper {
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
 	 * @param slot the slot of the item to be added 
-	 * @return TODO*/
+	 * @return if anything was inserted*/
 	public long insertInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slotID) {
 		return 0;
 	}
@@ -148,7 +149,7 @@ public class ItemWrapper {
 	 * @param player the player who is inserting the items
 	 * @param cache the network to add them to
 	 * @param slot the slot to remove from
-	 * @return TODO */
+	 * @return if anything was inserted */
 	public long insertItemFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slot) {
 		return 0;
 	}

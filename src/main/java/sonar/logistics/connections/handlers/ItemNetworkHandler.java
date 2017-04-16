@@ -12,16 +12,8 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
-import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.PL2Config;
-import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.EntityMonitorHandler;
-import sonar.logistics.api.asm.NetworkHandler;
-import sonar.logistics.api.asm.NetworkHandlerField;
 import sonar.logistics.api.networks.IEntityMonitorHandler;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
@@ -30,23 +22,12 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
-import sonar.logistics.connections.channels.InfoNetworkChannels;
 import sonar.logistics.connections.channels.ItemNetworkChannels;
 import sonar.logistics.info.types.MonitoredItemStack;
 
-@EntityMonitorHandler(handlerID = ItemNetworkHandler.id, modid = PL2Constants.MODID)
-@NetworkHandler(handlerID = ItemNetworkHandler.id, modid = PL2Constants.MODID)
 public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack> implements ITileMonitorHandler<MonitoredItemStack, ItemNetworkChannels>, IEntityMonitorHandler<MonitoredItemStack, ItemNetworkChannels> {
 
-	@NetworkHandlerField(handlerID = ItemNetworkHandler.id)
-	public static ItemNetworkHandler INSTANCE;
-
-	public static final String id = "item";
-
-	@Override
-	public String id() {
-		return id;
-	}
+	public static ItemNetworkHandler INSTANCE = new ItemNetworkHandler();
 
 	public int getReaderID(IListReader reader) {
 		if (reader instanceof IDataEmitter) {
@@ -56,8 +37,8 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack> i
 	}
 
 	@Override
-	public ItemNetworkChannels instance(ILogisticsNetwork network) {
-		return new ItemNetworkChannels(INSTANCE, network);
+	public Class<? extends INetworkListChannels> getChannelsType(){
+		return ItemNetworkChannels.class;
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package sonar.logistics.api.info.render;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
@@ -17,7 +19,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -89,14 +90,8 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		}
 	}
 
-	public boolean monitorsUUID(InfoUUID id) {
-		for (int i = 0; i < display.getLayout().maxInfo; i++) {
-			InfoUUID infoID = this.getInfoUUID(i);
-			if (infoID != null && infoID.equals(id)) {
-				return true;
-			}
-		}
-		return false;
+	public boolean isDisplayingUUID(InfoUUID id) {
+		return getDisplayMonitoringUUID(id) != null;
 	}
 
 	@Override
@@ -230,15 +225,29 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		listener.markChanged(this);
 	}
 
-	@Override
-	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list) {
+	public @Nullable DisplayInfo getDisplayMonitoringUUID(InfoUUID uuid) {
 		for (int i = 0; i < display.getLayout().maxInfo; i++) {
 			DisplayInfo info = this.getDisplayInfo(i);
 			if (info != null && uuid.equals(info.getInfoUUID())) {
-				if (info.cachedInfo instanceof LogicInfoList) {
-					((LogicInfoList) info.cachedInfo).setCachedList((MonitoredList) list.cloneInfo(), uuid);
-				}
+				return info;
 			}
+		}
+		return null;
+	}
+
+	@Override
+	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list) {
+		DisplayInfo displayInfo = getDisplayMonitoringUUID(uuid);
+		if (displayInfo != null && displayInfo.cachedInfo instanceof LogicInfoList) {
+			((LogicInfoList) displayInfo.cachedInfo).setCachedList((MonitoredList) list.cloneInfo(), uuid);
+		}
+	}
+
+	@Override
+	public void onInfoChanged(InfoUUID uuid, IInfo info) {
+		DisplayInfo displayInfo = getDisplayMonitoringUUID(uuid);
+		if (info != null){
+			displayInfo.setCachedInfo(info);
 		}
 	}
 

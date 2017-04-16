@@ -91,10 +91,9 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, IInfo info) {
 		if (buttonID == 0) {
 			tile.sendCoordsToServer(info, channelID);
-		} else {
-			if (info instanceof MonitoredBlockCoords)
-				RenderBlockSelection.addPosition(((MonitoredBlockCoords) info).syncCoords.getCoords(), false);
-		}
+		} else if (info instanceof MonitoredBlockCoords)
+			RenderBlockSelection.addPosition(((MonitoredBlockCoords) info).syncCoords.getCoords(), false);
+
 	}
 
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {

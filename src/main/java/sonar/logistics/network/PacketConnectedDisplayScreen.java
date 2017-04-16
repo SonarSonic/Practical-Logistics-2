@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+import sonar.core.SonarCore;
 import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
@@ -15,8 +16,7 @@ public class PacketConnectedDisplayScreen implements IMessage {
 	public ConnectedDisplay screen;
 	public int registryID;
 
-	public PacketConnectedDisplayScreen() {
-	}
+	public PacketConnectedDisplayScreen() {}
 
 	public PacketConnectedDisplayScreen(ConnectedDisplay screen, int registryID) {
 		super();
@@ -43,15 +43,18 @@ public class PacketConnectedDisplayScreen implements IMessage {
 		@Override
 		public IMessage onMessage(PacketConnectedDisplayScreen message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				if (message.screen == null) {
-					message.screen = new ConnectedDisplay(message.registryID);
-				}
-				message.screen.readFromBuf(message.savedBuf);
-				PL2.getClientManager().connectedDisplays.put(message.registryID, message.screen);
-				ILargeDisplay topLeft = message.screen.getTopLeftScreen();
-				if (topLeft != null)
-					topLeft.setConnectedDisplay(message.screen);
-
+				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+					public void run() {
+						if (message.screen == null) {
+							message.screen = new ConnectedDisplay(message.registryID);
+						}
+						message.screen.readFromBuf(message.savedBuf);
+						PL2.getClientManager().connectedDisplays.put(message.registryID, message.screen);
+						ILargeDisplay topLeft = message.screen.getTopLeftScreen();
+						if (topLeft != null)
+							topLeft.setConnectedDisplay(message.screen);
+					}
+				});
 			}
 			return null;
 		}

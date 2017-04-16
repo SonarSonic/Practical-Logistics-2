@@ -3,7 +3,6 @@ package sonar.logistics.connections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -13,7 +12,6 @@ import com.google.common.collect.Maps;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.SonarHelper;
@@ -21,49 +19,24 @@ import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.ListenerTally;
-import sonar.core.listener.PlayerListener;
-import sonar.core.utils.Pair;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Config;
-import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.IEntityMonitorHandler;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.networks.INetworkListener;
-import sonar.logistics.api.networks.ITileMonitorHandler;
-import sonar.logistics.api.tiles.nodes.BlockConnection;
-import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.tiles.nodes.NodeTransferMode;
-import sonar.logistics.api.tiles.nodes.TransferType;
-import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
-import sonar.logistics.connections.handlers.FluidNetworkHandler;
-import sonar.logistics.connections.handlers.InfoNetworkHandler;
-import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.network.PacketChannels;
-import sonar.logistics.network.PacketMonitoredList;
 
 public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public final ListenableList<ILogisticsNetwork> subNetworks = new ListenableList(this, 2);
-	public final Map<INetworkHandler, INetworkChannels> handlers = Maps.newLinkedHashMap();
+	public final Map<Class, INetworkChannels> handlers = Maps.newLinkedHashMap();
 	public final List<IInfoProvider> localMonitors = Lists.newArrayList();
 	private List<NetworkUpdate> toUpdate = SonarHelper.convertArray(NetworkUpdate.values());
 	private List<CacheHandler> changedCaches = Lists.newArrayList(CacheHandler.handlers);
@@ -94,10 +67,10 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		isValid = false;
 
 		List<ILogisticsNetwork> watching = subNetworks.getListeners(ILogisticsNetwork.WATCHING_NETWORK);
-		watching.forEach(network -> network.getListenerList().removeListener(this, ILogisticsNetwork.CONNECTED_NETWORK));
+		watching.forEach(network -> network.getListenerList().removeListener(this, true, ILogisticsNetwork.CONNECTED_NETWORK));
 		subNetworks.invalidateList();
 
-		getConnections(CacheHandler.TILE, CacheType.LOCAL).forEach(TILE -> CacheHandler.TILE.onConnectionRemoved(this, TILE));
+		getCachedTiles(CacheHandler.TILE, CacheType.LOCAL).forEach(TILE -> CacheHandler.TILE.onConnectionRemoved(this, TILE));
 		handlers.values().forEach(CHANNELS -> CHANNELS.onDeleted());
 
 		caches.clear();
@@ -247,7 +220,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		if (tally.listener == this) {
 			return;
 		}
-		tally.listener.getListenerList().removeListener(this, ILogisticsNetwork.CONNECTED_NETWORK);
+		tally.listener.getListenerList().removeListener(this, true, ILogisticsNetwork.CONNECTED_NETWORK);
 	}
 
 	@Override
@@ -262,8 +235,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	@Override
-	public void sendChannelPacket(EntityPlayer player) {
-		MonitoredList<IInfo> coords = createChannelList(CacheType.ALL);
+	public void sendConnectionsPacket(EntityPlayer player) {
+		MonitoredList<IInfo> coords = createConnectionsList(CacheType.ALL);
 		NBTTagCompound channelTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC);
 		if (channelTag.hasNoTags())
 			return;
@@ -272,7 +245,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	/// CHANNELS \\\
 	@Override
-	public List<NodeConnection> getChannels(CacheType cacheType) {
+	public List<NodeConnection> getConnections(CacheType cacheType) {
 		switch (cacheType) {
 		case GLOBAL:
 			return globalChannels;
@@ -286,7 +259,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	private void updateSubNetworks() {
 		subNetworks.invalidateList();
 		subNetworks.validateList();
-		getConnections(CacheHandler.RECEIVERS, CacheType.LOCAL).forEach(r -> {
+		getCachedTiles(CacheHandler.RECEIVERS, CacheType.LOCAL).forEach(r -> {
 			if (validateTile(r)) {
 				r.refreshConnectedNetworks();
 				LogisticsHelper.addConnectedNetworks(this, r);
@@ -301,13 +274,13 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	private void updateLocalChannels() {
 		List<NodeConnection> channels = Lists.newArrayList();
-		LogisticsHelper.sortNodeConnections(channels, getConnections(CacheHandler.NODES, CacheType.LOCAL));
+		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.LOCAL));
 		this.localChannels = Lists.newArrayList(channels);
 	}
 
 	private void updateGlobalChannels() {
 		List<NodeConnection> channels = Lists.newArrayList();
-		LogisticsHelper.sortNodeConnections(channels, getConnections(CacheHandler.NODES, CacheType.GLOBAL));
+		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.GLOBAL));
 		this.globalChannels = Lists.newArrayList(channels);
 
 		List<NodeConnection> all = Lists.newArrayList();
@@ -318,38 +291,38 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	private void updateNetworkHandlers() {
-		handlers.values().forEach(CHANNELS -> CHANNELS.updateChannelLists());
+		handlers.values().forEach(CHANNELS -> CHANNELS.updateChannel());
 		for (IInfoProvider provider : localMonitors) {
-			LogisticsHelper.sendNormalProviderInfo(provider);
+			PacketHelper.sendNormalProviderInfo(provider);
 		}
 	}
 
 	private void updateHandlerChannels() {
-		handlers.forEach((H, C) -> C.createChannelLists());
+		handlers.forEach((H, C) -> C.onChannelsChanged());
 	}
 
-	public MonitoredList<IInfo> createChannelList(CacheType cacheType) {
+	public MonitoredList<IInfo> createConnectionsList(CacheType cacheType) {
 		MonitoredList<IInfo> list = MonitoredList.<IInfo>newMonitoredList(getNetworkID());
-		getChannels(cacheType).forEach(CHANNEL -> list.add(CHANNEL.getChannel()));
+		getConnections(cacheType).forEach(CHANNEL -> list.add(CHANNEL.getChannel()));
 		return list;
 	}
 
-	public <T> List<T> getConnections(CacheHandler<T> handler, CacheType cacheType) {
+	public <T> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType) {
 		List<T> tiles = cacheType.isLocal() ? Lists.newArrayList(caches.getOrDefault(handler, Lists.newArrayList())) : Lists.newArrayList();
 		if (cacheType.isGlobal()) {
 			List<ILogisticsNetwork> connected = subNetworks.getListeners(ILogisticsNetwork.CONNECTED_NETWORK);
-			connected.forEach(network -> ListHelper.addWithCheck(tiles, network.getConnections(handler, CacheType.LOCAL)));
+			connected.forEach(network -> ListHelper.addWithCheck(tiles, network.getCachedTiles(handler, CacheType.LOCAL)));
 		}
 		return tiles;
 	}
 
 	@Override
-	public <H extends INetworkHandler> INetworkChannels getNetworkChannels(H handler) {
-		return handlers.get(handler);
+	public <T extends INetworkChannels> T getNetworkChannels(Class<T> channelClass) {
+		return (T) handlers.get(channelClass);
 	}
 
-	public INetworkChannels getOrCreateNetworkChannels(INetworkHandler handler) {
-		return handlers.computeIfAbsent(handler, c -> handler.instance(this)); // TODO should we update the Cache Handlers, then also have CACHE handlers only update if there is a relevant INetworkHandler?
+	public <T extends INetworkChannels> T getOrCreateNetworkChannels(Class<T> channelClass) {
+		return (T) handlers.computeIfAbsent(channelClass, c -> LogisticsHelper.getChannelInstance(channelClass, this));
 	}
 
 	@Override

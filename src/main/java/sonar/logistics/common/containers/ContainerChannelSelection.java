@@ -3,11 +3,11 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.tiles.IChannelledTile;
-import sonar.logistics.api.viewers.ListenerType;
 
 public class ContainerChannelSelection extends ContainerMultipartSync {
 
@@ -19,9 +19,7 @@ public class ContainerChannelSelection extends ContainerMultipartSync {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
-		ItemStack itemstack = null;
-		Slot slot = (Slot) this.inventorySlots.get(slotID);
-		return itemstack;
+		return InventoryHelper.EMPTY;
 	}
 
 	public boolean syncInventory() {

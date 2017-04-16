@@ -4,15 +4,12 @@ import java.util.List;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.SonarHelper;
@@ -32,7 +29,6 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.client.gui.GuiEntityNode;
 import sonar.logistics.common.multiparts.SidedPart;
 import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class EntityNodePart extends SidedPart implements INode, IByteBufTile, IFlexibleGui {
 

@@ -2,7 +2,6 @@ package sonar.logistics.common.items;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
@@ -14,9 +13,7 @@ import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
@@ -24,7 +21,6 @@ import sonar.logistics.client.gui.GuiWirelessStorageEmitterList;
 import sonar.logistics.client.gui.GuiWirelessStorageReader;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.containers.ContainerStorageViewer;
-import sonar.logistics.connections.channels.ListNetworkChannels;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.managers.WirelessManager;
 

@@ -156,14 +156,12 @@ public class GuiFilterList extends GuiSelectionList {
 		List<String> newList = Lists.newArrayList();
 		boolean matches = tile.allowed(stack);
 		for (int i = 0; i < list.size(); ++i) {
-
 			if (i == 0) {
 				newList.add(stack.getRarity().rarityColor + (String) list.get(i));
 				newList.add(TextFormatting.GRAY + "Matches Filter: " + (matches ? TextFormatting.GREEN + "TRUE" : TextFormatting.RED + "FALSE"));
 			} else {
 				newList.add(TextFormatting.GRAY + (String) list.get(i));
 			}
-
 		}
 
 		FontRenderer font = stack.getItem().getFontRenderer(stack);
@@ -292,8 +290,7 @@ public class GuiFilterList extends GuiSelectionList {
 					PL2.network.sendToServer(new PacketNodeFilter(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
 				}
 				break;
-			case 6:
-				PL2.network.sendToServer(new PacketNodeFilter(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
+			case 6:	PL2.network.sendToServer(new PacketNodeFilter(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			case 7:
 				if (tile instanceof IFlexibleGui) {

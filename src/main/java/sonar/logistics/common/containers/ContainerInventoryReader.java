@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.IFlexibleContainer;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
+import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
@@ -16,8 +17,7 @@ import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
-import sonar.logistics.connections.channels.ListNetworkChannels;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
+import sonar.logistics.connections.channels.ItemNetworkChannels;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
 
@@ -54,7 +54,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = InventoryHelper.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
@@ -71,30 +71,30 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();
 					}
-					ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+					ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 					if (channels != null)channels.sendLocalRapidUpdate(part, player);		
 					this.detectAndSendChanges();
 				}
 			} else if (id < 27) {
 				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			} else if (id >= 27 && id < 36) {
 				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return null;
+					return InventoryHelper.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 36, false)) {
-				return null;
+				return InventoryHelper.EMPTY;
 			}
 
 			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
+				slot.putStack(InventoryHelper.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 
 			if (itemstack1.stackSize == itemstack.stackSize) {
-				return null;
+				return InventoryHelper.EMPTY;
 			}
 
 			slot.onPickupFromSlot(player, itemstack1);
@@ -105,7 +105,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			part.getListenerList().removeListener(player, ListenerType.INFO);
+			part.getListenerList().removeListener(player, true, ListenerType.INFO);
 	}
 
 	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
@@ -119,18 +119,9 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 		}
 		return null;
 	}
-
-	public SyncType[] getSyncTypes() {
-		return new SyncType[] { SyncType.DEFAULT_SYNC };
-	}
-
+	
 	@Override
 	public InventoryReader.Modes getCurrentState() {
 		return part.setting.getObject();
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer player) {
-		return true;
 	}
 }

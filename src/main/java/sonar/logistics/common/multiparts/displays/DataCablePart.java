@@ -1,6 +1,5 @@
 package sonar.logistics.common.multiparts.displays;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 

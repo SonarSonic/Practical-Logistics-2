@@ -17,6 +17,7 @@ import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
+import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
@@ -35,7 +36,6 @@ import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.common.containers.ContainerStatementList;
 import sonar.logistics.common.multiparts.misc.RedstoneSignallerPart;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
@@ -65,7 +65,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	}
 
 	public GuiStatementList(EntityPlayer player, RedstoneSignallerPart tile) {
-		super(new ContainerStatementList(player, tile), tile);
+		super(new ContainerMultipartSync(tile), tile);
 		this.tile = tile;
 		this.xSize = 182 + 66;
 		this.ySize = ySize + 22;
@@ -577,7 +577,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		}
 
 	}
-
+	
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
 		if (this.getFocusedField() == null && state != GuiState.LIST && (i == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(i))) {

@@ -16,18 +16,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2ASMLoader;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IInfo;
@@ -38,15 +35,10 @@ import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
-import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.LogisticsPart;
-import sonar.logistics.connections.channels.ListNetworkChannels;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
+import sonar.logistics.connections.channels.ItemNetworkChannels;
 import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.info.types.MonitoredFluidStack;
-import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketItemInteractionText;
 
 public class InfoHelper {
@@ -91,7 +83,6 @@ public class InfoHelper {
 							SonarAPI.getItemHelper().spawnStoredItemStack(extract, part.getWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
 							long itemCount = PL2API.getItemHelper().getItemCount(itemstack.getItemStack(), cache);
 							PL2.network.sendTo(new PacketItemInteractionText(itemstack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
-							//FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.RED + "-" + r + TextFormatting.RESET + " x " + itemstack.getItemStack().getDisplayName(), player.getEntityWorld(), player);
 						}
 					}
 				}
@@ -99,7 +90,7 @@ public class InfoHelper {
 			default:
 				break;
 			}
-			ListNetworkChannels channels = (ListNetworkChannels) cache.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+			ItemNetworkChannels channels = cache.getNetworkChannels(ItemNetworkChannels.class);
 			if (channels != null)
 				channels.sendFullRapidUpdate();
 
@@ -120,7 +111,7 @@ public class InfoHelper {
 				PL2API.getFluidHelper().fillHeldItem(player, cache, fluidStack);
 			}
 
-			ListNetworkChannels channels = (ListNetworkChannels) cache.getNetworkChannels(ItemNetworkHandler.INSTANCE);
+			ItemNetworkChannels channels = cache.getNetworkChannels(ItemNetworkChannels.class);
 			if (channels != null)
 				channels.sendFullRapidUpdate();
 

@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import sonar.core.helpers.InventoryHelper;
 
 public class ContainerGuide extends Container {
 	public EntityPlayer player;
@@ -13,9 +14,7 @@ public class ContainerGuide extends Container {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
-		ItemStack itemstack = null;
-		Slot slot = (Slot) this.inventorySlots.get(slotID);
-		return itemstack;
+		return InventoryHelper.EMPTY;
 	}
 
 	@Override

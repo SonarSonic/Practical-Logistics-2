@@ -5,7 +5,6 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import mcmultipart.raytrace.PartMOP;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -14,10 +13,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
@@ -79,7 +76,7 @@ public abstract class LogisticsPart extends SonarMultipart implements INetworkTi
 		if (isClient() || !network.isValid() || getNetworkID() == -1) {
 			return;
 		}
-		MonitoredList<IInfo> coords = network.createChannelList(CacheType.ALL);
+		MonitoredList<IInfo> coords = network.createConnectionsList(CacheType.ALL);
 		NBTTagCompound coordTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), coords.isEmpty(), coords.copyInfo(), SyncType.DEFAULT_SYNC);
 		if (!coordTag.hasNoTags()) {
 			PL2.network.sendTo(new PacketChannels(getNetworkID(), coordTag), (EntityPlayerMP) player);

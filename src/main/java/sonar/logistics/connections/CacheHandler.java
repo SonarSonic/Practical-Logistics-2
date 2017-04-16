@@ -12,7 +12,7 @@ import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
-import sonar.logistics.connections.handlers.TransferNetworkHandler;
+import sonar.logistics.connections.channels.TransferNetworkChannels;
 import sonar.logistics.managers.WirelessManager;
 
 public abstract class CacheHandler<T> {
@@ -55,14 +55,14 @@ public abstract class CacheHandler<T> {
 		public void onConnectionAdded(LogisticsNetwork network, IListReader reader) {
 			List<INetworkHandler> handlers = reader.getValidHandlers();
 			for (INetworkHandler handler : handlers) {
-				network.getOrCreateNetworkChannels(handler).addConnection(this, reader);
+				network.getOrCreateNetworkChannels(handler.getChannelsType()).addConnection(this, reader);
 			}
 		}
 
 		public void onConnectionRemoved(LogisticsNetwork network, IListReader reader) {
 			List<INetworkHandler> handlers = reader.getValidHandlers();
 			for (INetworkHandler handler : handlers) {
-				network.getOrCreateNetworkChannels(handler).removeConnection(this, reader);
+				network.getOrCreateNetworkChannels(handler.getChannelsType()).removeConnection(this, reader);
 			}
 		}
 	};
@@ -82,12 +82,12 @@ public abstract class CacheHandler<T> {
 
 	public static final CacheHandler<ITransferFilteredTile> TRANSFER_NODES = new CacheHandler<ITransferFilteredTile>(ITransferFilteredTile.class) {
 
-		public void onConnectionAdded(LogisticsNetwork network, IListReader reader) {
-			network.getOrCreateNetworkChannels(TransferNetworkHandler.INSTANCE).addConnection(this, reader);
+		public void onConnectionAdded(LogisticsNetwork network, ITransferFilteredTile reader) {
+			network.getOrCreateNetworkChannels(TransferNetworkChannels.class).addConnection(this, reader);
 		}
 
-		public void onConnectionRemoved(LogisticsNetwork network, IListReader reader) {
-			network.getOrCreateNetworkChannels(TransferNetworkHandler.INSTANCE).removeConnection(this, reader);
+		public void onConnectionRemoved(LogisticsNetwork network, ITransferFilteredTile reader) {
+			network.getOrCreateNetworkChannels(TransferNetworkChannels.class).removeConnection(this, reader);
 		}
 
 	};

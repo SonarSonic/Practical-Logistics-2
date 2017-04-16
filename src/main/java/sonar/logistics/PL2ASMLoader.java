@@ -2,33 +2,25 @@ package sonar.logistics;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 import com.google.common.collect.Maps;
 
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import sonar.core.helpers.ASMLoader;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.asm.EntityInfoProvider;
-import sonar.logistics.api.asm.EntityMonitorHandler;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.TileInfoProvider;
-import sonar.logistics.api.asm.NetworkHandler;
-import sonar.logistics.api.asm.NetworkHandlerField;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
-import sonar.logistics.api.networks.IEntityMonitorHandler;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
@@ -43,15 +35,13 @@ public class PL2ASMLoader {
 	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
 
-	public static LinkedHashMap<String, INetworkHandler> networkHandlers = Maps.newLinkedHashMap();
-
 	private PL2ASMLoader() {
 	}
 
 	public static void init(FMLPreInitializationEvent event) {
 		ASMDataTable asmDataTable = event.getAsmData();
 		PL2ASMLoader.loadInfoTypes(asmDataTable);
-		PL2ASMLoader.loadNetworkHandlers(asmDataTable);
+		//PL2ASMLoader.loadNetworkHandlers(asmDataTable);
 		PL2ASMLoader.loadNodeFilters(asmDataTable);
 		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
 		LogicInfoRegistry.INSTANCE.tileProviders.addAll(PL2ASMLoader.getTileProviders(asmDataTable));
@@ -69,7 +59,7 @@ public class PL2ASMLoader {
 	public static List<IEntityInfoProvider> getEntityProviders(@Nonnull ASMDataTable asmDataTable) {
 		return ASMLoader.getInstances(asmDataTable, EntityInfoProvider.class, IEntityInfoProvider.class, true, false);
 	}
-
+	/*
 	public static void loadNetworkHandlers(@Nonnull ASMDataTable asmDataTable) {
 		List<Pair<ASMDataTable.ASMData, Class<? extends INetworkHandler>>> infoTypes = ASMLoader.getClasses(asmDataTable, NetworkHandler.class, INetworkHandler.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends INetworkHandler>> info : infoTypes) {
@@ -88,6 +78,8 @@ public class PL2ASMLoader {
 		});
 
 	}
+
+	*/
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
 		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicInfoType.class, IInfo.class, true);

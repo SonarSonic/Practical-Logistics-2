@@ -29,8 +29,6 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.listener.ISonarListenable;
-import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
@@ -49,6 +47,7 @@ import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiDisplayScreen;
 import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.helpers.PacketHelper;
 
 public abstract class AbstractDisplayPart extends LogisticsPart implements IByteBufTile, INormallyOccludingPart, IDisplay, IOperatorTile, IFlexibleGui<AbstractDisplayPart> {
 
@@ -94,10 +93,10 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 
 	public void updateDefaultInfo() {
 		if (isServer() && !defaultData.getObject()) {
-			List<ILogicListenable> monitors = PL2.getServerManager().getViewables(Lists.newArrayList(), this);
+			List<ILogicListenable> providers = LogisticsHelper.getLocalProviders(Lists.newArrayList(), this);
 			ILogicListenable v;
-			if (!monitors.isEmpty() && (v = monitors.get(0)) instanceof IInfoProvider) {
-				IInfoProvider monitor = (IInfoProvider) monitors.get(0);
+			if (!providers.isEmpty() && (v = providers.get(0)) instanceof IInfoProvider) {
+				IInfoProvider monitor = (IInfoProvider) providers.get(0);
 				if (container() != null && monitor != null && monitor.getIdentity() != -1) {
 					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
 						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty()){
@@ -273,7 +272,7 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	public void onGuiOpened(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			PL2.getServerManager().sendViewablesToClientFromScreen(this, player);
+			PacketHelper.sendLocalProvidersFromScreen(this, player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}

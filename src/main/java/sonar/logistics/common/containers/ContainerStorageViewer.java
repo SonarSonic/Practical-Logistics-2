@@ -8,12 +8,14 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.inventory.slots.SlotLimiter;
+import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
+import sonar.logistics.connections.channels.ItemNetworkChannels;
 import sonar.logistics.connections.channels.ListNetworkChannels;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.managers.WirelessManager;
 
 public class ContainerStorageViewer extends Container {
@@ -34,12 +36,12 @@ public class ContainerStorageViewer extends Container {
 		}
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 41 + j * 18, 174 + i * 18));
+				this.addSlotToContainer(new SlotLimiter(player.inventory, j + i * 9 + 9, 41 + j * 18, 174 + i * 18, PL2Items.wireless_storage_reader));
 			}
 		}
 
 		for (int i = 0; i < 9; ++i) {
-			this.addSlotToContainer(new Slot(player.inventory, i, 41 + i * 18, 232));
+			this.addSlotToContainer(new SlotLimiter(player.inventory, i, 41 + i * 18, 232, PL2Items.wireless_storage_reader));
 		}
 	}
 
@@ -62,9 +64,8 @@ public class ContainerStorageViewer extends Container {
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();
 					}
-					ListNetworkChannels channels = (ListNetworkChannels) network.getNetworkChannels(ItemNetworkHandler.INSTANCE);
-					if (channels != null) // TODO shouldn't have to ever do this.
-						channels.sendLocalRapidUpdate(emitter, player);
+					ListNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
+					if (channels != null) channels.sendLocalRapidUpdate(emitter, player);
 					this.detectAndSendChanges();
 				}
 			} else if (id < 27) {
@@ -95,7 +96,7 @@ public class ContainerStorageViewer extends Container {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote && emitter != null) {
-			emitter.getListenerList().removeListener(player, ListenerType.INFO);
+			emitter.getListenerList().removeListener(player, true, ListenerType.INFO);
 		}
 	}
 
