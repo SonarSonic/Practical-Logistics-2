@@ -38,6 +38,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 	public SyncEnum<RegistryType> regType = new SyncEnum(RegistryType.values(), 3);
 	public SyncUnidentifiedObject obj = new SyncUnidentifiedObject(4);
 	public SyncTagType.BOOLEAN isCategory = new SyncTagType.BOOLEAN(5);
+	public boolean markDirty = false;
 
 	{
 		syncList.addParts(iden, idenNum, regType, obj, isCategory);
@@ -78,7 +79,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 
 	@Override
 	public boolean isIdenticalInfo(LogicInfo info) {
-		return obj.get().equals(info.obj.get());
+		return markDirty? false : obj.get().equals(info.obj.get());
 	}
 
 	@Override
@@ -164,7 +165,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 
 	@Override
 	public LogicInfo copy() {
-		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get()).setPath(getPath()!=null ? getPath().dupe() : null);
+		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get()).setPath(getPath() != null ? getPath().dupe() : null);
 	}
 
 	@Override
@@ -206,7 +207,17 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 
 	@Override
 	public void setFromReturn(LogicPath path, Object returned) {
-		this.obj.obj = returned;
+		if (returned == null && this.obj.obj == null) {
+			return;
+		}
+		if (this.obj.obj == null || !this.obj.obj.equals(returned)) {
+			this.obj.obj = returned;
+			this.markDirty = true;
+		}
+	}
+
+	public void onInfoStored() {
+		this.markDirty = false;
 	}
 
 }

@@ -45,33 +45,15 @@ public class PL2Events {
 		}
 	}
 
-	//server only
 	@SubscribeEvent
 	public void watchChunk(ChunkWatchEvent.Watch event) {
 		PL2.getServerManager().addListener(event.getChunk(), event.getPlayer());	
-		//System.out.println("watchy");
 	}
 
-	//server only
 	@SubscribeEvent
 	public void unWatchChunk(ChunkWatchEvent.UnWatch event) {
 		PL2.getServerManager().removeListener(event.getChunk(), event.getPlayer());	
 	}
-
-	/*
-	@SubscribeEvent
-	public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-		PL2.getServerManager().sendFullPacket(event.player);
-		PL2.getServerManager().requireUpdates.add((EntityPlayer) event.player);
-	}
-
-	@SubscribeEvent
-	public void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-		PL2.getServerManager().sendFullPacket(event.player);
-		PL2.getServerManager().requireUpdates.add((EntityPlayer) event.player);
-	}
-	*/
-
 	
 	@SubscribeEvent
 	public void onEntityJoin(EntityJoinWorldEvent event) {

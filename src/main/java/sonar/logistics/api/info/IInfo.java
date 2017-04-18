@@ -41,4 +41,6 @@ public interface IInfo<T extends IInfo> extends INBTSyncable{
 	
 	public void identifyChanges(T newInfo);
 	
+	public void onInfoStored();
+	
 }

@@ -21,6 +21,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.utils.CustomColour;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
@@ -146,7 +147,6 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		super.renderInfo(container, displayInfo, width, height, scale, infoPos);
 		cachedList = getCachedList(displayInfo.getInfoUUID());
 		if (cachedList.isEmpty()) {
-			InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale / 1.4, "Nothing to display", "Click to refresh");
 			return;
 		}
 		switch (type) {
@@ -203,13 +203,13 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				int yLevel = (int) (Math.floor((current / xSlots)));
 				GL11.glPushMatrix();
 				GL11.glTranslated(xLevel * spacing, yLevel * spacing, 0);
-				double l = ((double) info.energyStack.obj.stored * (double) (width) / info.energyStack.obj.capacity);
+				double l = ((double) info.getEnergyStack().stored * (double) (width) / info.getEnergyStack().capacity);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				RenderHelper.saveBlendState();
 				GlStateManager.disableLighting();
 				boolean isHighlighted = false;
 				if (!RenderBlockSelection.positions.isEmpty()) {
-					if (RenderBlockSelection.isPositionRenderered(info.coords.getMonitoredInfo().syncCoords.getCoords())) {
+					if (RenderBlockSelection.isPositionRenderered(info.getMonitoredCoords().getCoords())) {
 						isHighlighted = true;
 					}
 				}
@@ -219,7 +219,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				GL11.glTranslated(0, 0, -0.00625);
 				// GL11.glTranslated((width/2)-1, +1 + 0.0625 * 4, 0.00);
 				GL11.glTranslated(1, 1 - 0.0625 * 3.5, 0.00);
-				InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, 0.0625 * 6, scale / 3, isHighlighted ? new CustomColour(20, 100, 180).getRGB() : -1, Lists.newArrayList(info.coords.getMonitoredInfo().getClientIdentifier() + " - " + info.coords.getMonitoredInfo().getClientObject(), info.getClientIdentifier() + " - " + info.getClientObject()));
+				InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, 0.0625 * 6, scale / 3, isHighlighted ? new CustomColour(20, 100, 180).getRGB() : -1, Lists.newArrayList(info.getMonitoredCoords().getClientIdentifier() + " - " + info.getMonitoredCoords().getClientObject(), info.getClientIdentifier() + " - " + info.getClientObject()));
 				GL11.glPopMatrix();
 			}
 			break;
@@ -240,7 +240,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			} else {
 				this.pageCount = 0;
 			}
-			player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "PAGE " + (pageCount + 1) + " of " + (Math.round((double) list.size() / Math.max(perPage, 1)) + 1)));
+			player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "PAGE " + (pageCount + 1) + " of " + (Math.round((double) list.size() / Math.max(perPage, 1)) )));
 			return clickTag;
 		}
 		/* if (displayMenu) { return clickTag; } */
@@ -276,9 +276,9 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				MonitoredEnergyStack energyStack = (MonitoredEnergyStack) list.get(slot);
 				if (energyStack != null) {
 					if (event.type == BlockInteractionType.RIGHT) {
-						RenderBlockSelection.addPosition(energyStack.coords.getMonitoredInfo().syncCoords.getCoords(), false);
-						player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "'" + energyStack.coords.getMonitoredInfo().getClientIdentifier() + "'" + " has been highlighted"));
-
+						RenderBlockSelection.addPosition(energyStack.getMonitoredCoords().getCoords(), false);
+						player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "'" + energyStack.getMonitoredCoords().getClientIdentifier() + "'" + " has been highlighted"));
+						
 					}
 				}
 				// MonitoredEnergyStack energyStack = (MonitoredEnergyStack) list.get(slot);

@@ -2,6 +2,7 @@ package sonar.logistics.api.info.render;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -225,6 +226,15 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		listener.markChanged(this);
 	}
 
+	public void forEachValidUUID(Consumer<InfoUUID> action) {
+		for (int i = 0; i < display.container().getMaxCapacity(); i++) {
+			InfoUUID uuid = display.container().getInfoUUID(i);
+			if (uuid != null) {
+				action.accept(uuid);
+			}
+		}
+	}
+
 	public @Nullable DisplayInfo getDisplayMonitoringUUID(InfoUUID uuid) {
 		for (int i = 0; i < display.getLayout().maxInfo; i++) {
 			DisplayInfo info = this.getDisplayInfo(i);
@@ -246,7 +256,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	@Override
 	public void onInfoChanged(InfoUUID uuid, IInfo info) {
 		DisplayInfo displayInfo = getDisplayMonitoringUUID(uuid);
-		if (info != null){
+		if (info != null) {
 			displayInfo.setCachedInfo(info);
 		}
 	}

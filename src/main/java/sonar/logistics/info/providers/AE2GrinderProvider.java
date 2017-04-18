@@ -31,8 +31,8 @@ public class AE2GrinderProvider implements ITileInfoProvider {
 	public void provide(IMasterInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, Block block, TileEntity tile) {
 		TileGrinder grinder = (TileGrinder) tile;
 		int requiredTurns = 8;
-		ItemStack processing = grinder.getStackInSlot(6);
-		if (grinder.getStackInSlot(6) != null) {
+		ItemStack processing = grinder.getInternalInventory().getStackInSlot(6);
+		if (processing != null) {
 			IGrinderRecipe r = AEApi.instance().registries().grinder().getRecipeForInput(processing);
 			if (r != null) {
 				requiredTurns = r.getRequiredTurns();

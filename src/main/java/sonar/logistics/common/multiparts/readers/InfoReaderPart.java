@@ -21,28 +21,22 @@ import sonar.logistics.helpers.InfoHelper;
 
 public class InfoReaderPart extends AbstractInfoReaderPart<IProvidableInfo> implements IByteBufTile {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_DATA_SELECTED};
-
 	@Override
 	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
 		handlers.add(InfoNetworkHandler.INSTANCE);
 		return handlers;
 	}
 
-	//// ILogicReader \\\\
 	@Override
 	public MonitoredList<IProvidableInfo> sortMonitoredList(MonitoredList<IProvidableInfo> updateInfo, int channelID) {
-		updateInfo.setInfo(InfoHelper.sortInfoList(updateInfo));
-		return updateInfo;
+		return updateInfo.setInfo(InfoHelper.sortInfoList(updateInfo));
 	}
 
-	//// IChannelledTile \\\\
 	@Override
 	public ChannelType channelType() {
 		return ChannelType.SINGLE;
 	}
 
-	//// GUI \\\\
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
@@ -57,11 +51,6 @@ public class InfoReaderPart extends AbstractInfoReaderPart<IProvidableInfo> impl
 		case 0:	return new GuiInfoReader(player, this);
 		case 1:	return new GuiChannelSelection(player, this, 0);
 		default: return null;}
-	}
-
-	@Override
-	public TileMessage[] getValidMessages() {
-		return validStates;
 	}
 
 	@Override

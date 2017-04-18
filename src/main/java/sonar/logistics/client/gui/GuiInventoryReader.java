@@ -236,10 +236,10 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		if (this.getSetting() == InventoryReader.Modes.STACK) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(playerInv);
 			drawTexturedModalRect(guiLeft + 62, guiTop + 8, 0, 0, 18, 18);
 		}
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 	}
 }

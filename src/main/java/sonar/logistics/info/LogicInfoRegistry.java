@@ -74,28 +74,28 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		infoRegistries.forEach(registry -> {
 			try {
 				registry.registerBaseReturns(this);
-			} catch (NoClassDefFoundError e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		});
 		infoRegistries.forEach(registry -> {
 			try {
 				registry.registerBaseMethods(this);
-			} catch (NoClassDefFoundError e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		});
 		infoRegistries.forEach(registry -> {
 			try {
 				registry.registerAllFields(this);
-			} catch (NoClassDefFoundError e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		});
 		infoRegistries.forEach(registry -> {
 			try {
 				registry.registerAdjustments(this);
-			} catch (NoClassDefFoundError e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		});
@@ -419,13 +419,13 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		}
 	}
 
-	public Pair<Boolean, IProvidableInfo> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, IInfo monitorInfo) {
+	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, T monitorInfo) {
 		if (monitorInfo == null) {
 			return null;
 		}
-		Pair<Boolean, IProvidableInfo> newPaired = null;
-		if (monitorInfo instanceof IProvidableInfo && !connections.isEmpty()) {
-			IProvidableInfo info = (IProvidableInfo) monitorInfo;
+		Pair<Boolean, T> newPaired = null;
+		if (!connections.isEmpty()) {
+			T info = monitorInfo;
 			if (info.getPath() == null) {
 				Object latest = updateInfo.getLatestInfo(info).b;
 				if (latest != null && latest instanceof IProvidableInfo) {
@@ -443,7 +443,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		return newPaired;
 	}
 
-	public Pair<Boolean, IProvidableInfo> getLatestInfo(IProvidableInfo info, NodeConnection entry) {
+	public <T extends IProvidableInfo > Pair<Boolean, T> getLatestInfo(T info, NodeConnection entry) {
 		if (info.getPath() == null) {
 			return null;
 		}
@@ -469,16 +469,15 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		}
 		return null;
 	}
-
-	public IProvidableInfo getInfoFromPath(IProvidableInfo info, LogicPath logicPath, EnumFacing currentFace, Object... available) {
-
+	
+	public <T extends IProvidableInfo> T getInfoFromPath(T info, LogicPath logicPath, EnumFacing currentFace, Object... available){
 		Object returned = logicPath.getStart(available);
 		if (returned.equals(TileHandlerMethod.class)) {
 			TileHandlerMethod method = (TileHandlerMethod) logicPath.startObj;
 			LogicPath path = logicPath.dupe();
-			List<IProvidableInfo> infolist = Lists.newArrayList();
-			method.handler.provide(this, infolist, path, method.bitCode, (World) available[0], (IBlockState) available[1], (BlockPos) available[2], (EnumFacing) available[3], (Block) available[4], (TileEntity) available[5]);
-			for (IProvidableInfo logicInfo : infolist) {
+			List<T> infolist = Lists.newArrayList();
+			method.handler.provide(this, (List<IProvidableInfo>) infolist, path, method.bitCode, (World) available[0], (IBlockState) available[1], (BlockPos) available[2], (EnumFacing) available[3], (Block) available[4], (TileEntity) available[5]);
+			for (T logicInfo : infolist) {
 				if (logicInfo.isValid() && logicInfo.isMatchingType(info) && logicInfo.isMatchingInfo(info)) {
 					return logicInfo; // should fix to use paths given in info if possible :P
 				}

@@ -39,23 +39,25 @@ public abstract class AbstractListReaderPart<T extends IInfo> extends AbstractRe
 	public void writePacket(ByteBuf buf, int id) {
 		super.writePacket(buf, id);
 		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
-		if (part != null)
-			part.writeToBuf(buf);
+		if (part != null) part.writeToBuf(buf);
 	}
 
 	@Override
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
 		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
-		if (part != null)
-			part.readFromBuf(buf);
+		if (part != null) part.readFromBuf(buf);
 	}
 
 	public void sendRapidUpdate(EntityPlayer player) {
-		INetworkChannels list = network.getNetworkChannels(this.getValidHandlers().get(0).getChannelsType());
+		INetworkChannels list = getNetworkChannels();
 		if (list != null && list instanceof ListNetworkChannels) {
 			((ListNetworkChannels) list).sendLocalRapidUpdate(this, player);
 		}
+	}
+	
+	public INetworkChannels getNetworkChannels(){
+		return network.getNetworkChannels(getValidHandlers().get(0).getChannelsType());
 	}
 
 	//// GUI \\\\

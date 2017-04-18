@@ -31,15 +31,15 @@ public class EnergyHelper extends EnergyWrapper {
 	public static void sortEnergyList(List<MonitoredEnergyStack> info, final SortingDirection dir, SortingType type) {
 		info.sort(new Comparator<MonitoredEnergyStack>() {
 			public int compare(MonitoredEnergyStack str1, MonitoredEnergyStack str2) {
-				StoredEnergyStack item1 = str1.energyStack.getObject(), item2 = str2.energyStack.getObject();
+				StoredEnergyStack item1 = str1.getEnergyStack(), item2 = str2.getEnergyStack();
 				switch (type) {
 				case CAPACITY:
 					return SonarHelper.compareWithDirection(item1.capacity, item2.capacity, dir);
 				case INPUT:
 					return SonarHelper.compareWithDirection(item1.input, item2.input, dir);
 				case NAME:
-					String modid1 = str1.coords.getMonitoredInfo().unlocalizedName.getObject();
-					String modid2 = str2.coords.getMonitoredInfo().unlocalizedName.getObject();
+					String modid1 = str1.getMonitoredCoords().getUnlocalizedName();
+					String modid2 = str2.getMonitoredCoords().getUnlocalizedName();
 					return SonarHelper.compareStringsWithDirection(modid1, modid2, dir);
 				case STORED:
 					return SonarHelper.compareWithDirection(item1.stored, item2.stored, dir);

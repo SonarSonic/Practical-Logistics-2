@@ -33,6 +33,8 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 		return false;
 	}
 
+	public void onInfoStored() {}
+
 	public boolean equals(Object object) {
 		if (object != null && object instanceof IInfo) {
 			IInfo info = (IInfo) object;
@@ -56,7 +58,6 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 	public void identifyChanges(T newInfo) {
 		List<ISyncPart> parts = syncList.getStandardSyncParts();
 		List<ISyncPart> infoParts = syncList.getStandardSyncParts();
-
 		for (int i = 0; i < parts.size(); i++) {
 			ISyncPart toCheck = infoParts.get(i);
 			if (toCheck instanceof ICheckableSyncPart) {

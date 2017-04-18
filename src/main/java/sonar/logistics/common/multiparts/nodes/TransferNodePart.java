@@ -203,11 +203,11 @@ public class TransferNodePart extends SidedPart implements INode, IOperatorTile,
 	@Override
 	public void sendCoordsToServer(IInfo info, int channelID) {
 		if (info instanceof MonitoredBlockCoords) {
-			lastSelected.setCoords(((MonitoredBlockCoords) info).syncCoords.getCoords());
+			lastSelected.setCoords(((MonitoredBlockCoords) info).getCoords());
 			sendByteBufPacket(-3);
 		}
 		if (info instanceof MonitoredEntity) {
-			lastSelectedUUID.setObject(((MonitoredEntity) info).uuid.getUUID());
+			lastSelectedUUID.setObject(((MonitoredEntity) info).getUUID());
 			sendByteBufPacket(-4);
 		}
 	}

@@ -57,22 +57,9 @@ public class ClientInfoManager implements IInfoManager {
 		clientEmitters.clear();
 	}
 
-	public void onInfoPacket(NBTTagCompound packetTag, SyncType type) {
-		NBTTagList packetList = packetTag.getTagList("infoList", NBT.TAG_COMPOUND);
-		boolean save = type.isType(SyncType.SAVE);
-		for (int i = 0; i < packetList.tagCount(); i++) {
-			NBTTagCompound infoTag = packetList.getCompoundTagAt(i);
-			InfoUUID id = NBTHelper.instanceNBTSyncable(InfoUUID.class, infoTag);
-			if (save) {
-				setInfo(id, InfoHelper.readInfoFromNBT(infoTag));				
-			} else {
-				IInfo currentInfo = info.get(id);
-				if (currentInfo != null) {
-					currentInfo.readData(infoTag, type);
-					setInfo(id, currentInfo);
-				}
-			}
-		}
+	@Override
+	public IInfo getInfoFromUUID(InfoUUID uuid) {
+		return info.get(uuid);
 	}
 	
 	public void setInfo(InfoUUID uuid, IInfo newInfo){

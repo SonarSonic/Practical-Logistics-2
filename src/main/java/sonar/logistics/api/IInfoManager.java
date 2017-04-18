@@ -16,6 +16,11 @@ public interface IInfoManager {
 	public Map<Integer,ILogicListenable> getMonitors();
 
 	public Map<InfoUUID, IInfo> getInfoList();
+	
+
+	public IInfo getInfoFromUUID(InfoUUID uuid);
+	
+	public void setInfo(InfoUUID uuid, IInfo newInfo);
 
 	public Map<Integer, ConnectedDisplay> getConnectedDisplays();
 

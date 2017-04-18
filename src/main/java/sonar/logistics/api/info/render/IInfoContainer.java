@@ -1,5 +1,7 @@
 package sonar.logistics.api.info.render;
 
+import java.util.function.Consumer;
+
 import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -40,6 +42,8 @@ public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListe
 	public IDisplay getDisplay();
 
 	public DisplayInfo getDisplayInfo(int pos);
+	
+	public void forEachValidUUID(Consumer<InfoUUID> action);
 	
 	public void onInfoChanged(InfoUUID uuid, IInfo list);
 	

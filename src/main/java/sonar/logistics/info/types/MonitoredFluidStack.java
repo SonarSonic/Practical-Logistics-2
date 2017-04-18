@@ -38,7 +38,7 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 
 	public static final String id = "fluid";
 	private SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
-	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
+	private final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 
 	{
 		syncList.addParts(fluidStack, networkID);

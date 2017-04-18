@@ -30,9 +30,9 @@ import sonar.logistics.network.sync.SyncMonitoredType;
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {
 
 	public static final String id = "energy";
-	public SyncNBTAbstract<StoredEnergyStack> energyStack = new SyncNBTAbstract<StoredEnergyStack>(StoredEnergyStack.class, 0);
-	public SyncMonitoredType<MonitoredBlockCoords> coords = new SyncMonitoredType<MonitoredBlockCoords>(1);
-	public final SyncNBTAbstract<StoredItemStack> dropStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 3);
+	private SyncNBTAbstract<StoredEnergyStack> energyStack = new SyncNBTAbstract<StoredEnergyStack>(StoredEnergyStack.class, 0);
+	private SyncMonitoredType<MonitoredBlockCoords> coords = new SyncMonitoredType<MonitoredBlockCoords>(1);
+	private final SyncNBTAbstract<StoredItemStack> dropStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 3);
 
 	{
 		syncList.addParts(energyStack, coords, dropStack);
@@ -52,7 +52,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 		this.energyStack.setObject(stack);
 		this.coords.setInfo(coords);
 
-		Item item = Item.getItemFromBlock(coords.syncCoords.getCoords().getBlockState().getBlock());
+		Item item = Item.getItemFromBlock(coords.getCoords().getBlockState().getBlock());
 		if (item != null) {
 			this.dropStack.setObject(new StoredItemStack(new ItemStack(item, 1)));
 		}
@@ -136,11 +136,23 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 	public String getClientType() {
 		return "energy";
 	}
+	
+	public MonitoredBlockCoords getMonitoredCoords(){
+		return coords.getMonitoredInfo();
+	}
+	
+	public StoredEnergyStack getEnergyStack(){
+		return energyStack.getObject();
+	}
+	
+	public StoredItemStack getDropStack(){
+		return dropStack.getObject();
+	}
 
 	@Override
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
-		BlockCoords blockCoords = coords.getMonitoredInfo().syncCoords.getCoords();
-		StoredEnergyStack stack = energyStack.getObject();
+		BlockCoords blockCoords = getMonitoredCoords().getCoords();
+		StoredEnergyStack stack = getEnergyStack();
 		objects.add(new ComparableObject(this, "x", blockCoords.getX()));
 		objects.add(new ComparableObject(this, "y", blockCoords.getY()));
 		objects.add(new ComparableObject(this, "z", blockCoords.getZ()));

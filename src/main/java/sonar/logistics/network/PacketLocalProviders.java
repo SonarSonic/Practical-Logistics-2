@@ -23,14 +23,14 @@ import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 
-public class PacketViewables implements IMessage {
+public class PacketLocalProviders implements IMessage {
 
 	public List<ClientLocalProvider> viewables;
 	public int screenIdentity;
 
-	public PacketViewables() {}
+	public PacketLocalProviders() {}
 
-	public PacketViewables(List<ClientLocalProvider> viewables, int screenIdentity) {
+	public PacketLocalProviders(List<ClientLocalProvider> viewables, int screenIdentity) {
 		this.viewables = viewables;
 		this.screenIdentity = screenIdentity;
 	}
@@ -61,9 +61,9 @@ public class PacketViewables implements IMessage {
 
 	}
 
-	public static class Handler implements IMessageHandler<PacketViewables, IMessage> {
+	public static class Handler implements IMessageHandler<PacketLocalProviders, IMessage> {
 		@Override
-		public IMessage onMessage(PacketViewables message, MessageContext ctx) {
+		public IMessage onMessage(PacketLocalProviders message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 
 				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {

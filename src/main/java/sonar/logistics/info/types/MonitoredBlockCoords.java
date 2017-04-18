@@ -20,8 +20,8 @@ import sonar.logistics.helpers.InfoRenderer;
 public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> implements INameableInfo<MonitoredBlockCoords>, IComparableInfo<MonitoredBlockCoords> {
 
 	public static final String id = "coords";
-	public SyncCoords syncCoords = new SyncCoords(1);
-	public SyncTagType.STRING unlocalizedName = new SyncTagType.STRING(2);
+	private SyncCoords syncCoords = new SyncCoords(1);
+	private SyncTagType.STRING unlocalizedName = new SyncTagType.STRING(2);
 	{
 		syncList.addParts(syncCoords, unlocalizedName);
 	}
@@ -67,14 +67,14 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 	public boolean equals(Object obj) {
 		if (obj instanceof MonitoredBlockCoords) {
 			MonitoredBlockCoords monitoredCoords = (MonitoredBlockCoords) obj;
-			return monitoredCoords.syncCoords.equals(syncCoords) && monitoredCoords.unlocalizedName.equals(unlocalizedName);
+			return monitoredCoords.getCoords().equals(getCoords()) && monitoredCoords.getUnlocalizedName().equals(getUnlocalizedName());
 		}
 		return false;
 	}
 
 	@Override
 	public boolean isValid() {
-		return syncCoords.getCoords() != null;
+		return getCoords() != null;
 	}
 
 	@Override
@@ -84,7 +84,15 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 
 	@Override
 	public MonitoredBlockCoords copy() {
-		return new MonitoredBlockCoords(syncCoords.getCoords(), unlocalizedName.getObject());
+		return new MonitoredBlockCoords(getCoords(), unlocalizedName.getObject());
+	}
+	
+	public BlockCoords getCoords(){
+		return syncCoords.getCoords();
+	}
+	
+	public String getUnlocalizedName(){
+		return unlocalizedName.getObject();
 	}
 
 	@Override

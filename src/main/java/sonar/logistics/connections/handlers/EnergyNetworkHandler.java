@@ -15,8 +15,8 @@ import sonar.logistics.connections.channels.EnergyNetworkChannels;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
-public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNetworkHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack,INetworkListChannels> {
-	
+public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNetworkHandler<MonitoredEnergyStack> implements ITileMonitorHandler<MonitoredEnergyStack, INetworkListChannels> {
+
 	public static EnergyNetworkHandler INSTANCE = new EnergyNetworkHandler();
 
 	@Override
@@ -54,7 +54,7 @@ public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNe
 				}
 			}
 		}
-		if (maxEnergy != null){
+		if (maxEnergy != null) {
 			TileEntity tile = connection.coords.getTileEntity();
 			MonitoredEnergyStack coords = new MonitoredEnergyStack(maxEnergy, new MonitoredBlockCoords(connection.coords, tile != null && tile.getDisplayName() != null ? tile.getDisplayName().getFormattedText() : connection.coords.getBlock().getLocalizedName()));
 			newList.addInfoToList(coords, previousList);

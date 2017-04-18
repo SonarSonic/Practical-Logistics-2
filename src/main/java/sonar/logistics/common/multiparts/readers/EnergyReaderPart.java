@@ -51,7 +51,6 @@ public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStac
 	}
 
 	//// ILogicReader \\\\
-
 	@Override
 	public MonitoredList<MonitoredEnergyStack> sortMonitoredList(MonitoredList<MonitoredEnergyStack> updateInfo, int channelID) {
 		EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), EnergyReader.SortingType.NAME);
@@ -65,9 +64,9 @@ public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStac
 		case STORAGE:
 			if (selected.getCoords() != null) {
 				for (MonitoredEnergyStack stack : updateInfo) {
-					if (stack.coords.getMonitoredInfo().syncCoords.getCoords().equals(selected.getCoords())) {
+					if (stack.getMonitoredCoords().getCoords().equals(selected.getCoords())) {
 						MonitoredEnergyStack convert = stack.copy();
-						convert.energyStack.getObject().convertEnergyType(energyType.getEnergyType());
+						convert.getEnergyStack().convertEnergyType(energyType.getEnergyType());
 						info = convert;
 						break;
 					}
@@ -81,7 +80,7 @@ public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStac
 			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(this.getCoords(), this.getDisplayName()), new StoredItemStack(this.getItemStack()));
 			for (MonitoredEnergyStack stack : updateInfo.cloneInfo()) {
 				MonitoredEnergyStack convert = stack.copy();
-				convert.energyStack.getObject().convertEnergyType(energyType.getEnergyType());
+				convert.getEnergyStack().convertEnergyType(energyType.getEnergyType());
 				energy = (MonitoredEnergyStack) energy.joinInfo(convert);
 			}
 			info = energy;
@@ -129,19 +128,15 @@ public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStac
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:
-			return new ContainerEnergyReader(player, this);
-		}
-		return null;
+		case 0:	return new ContainerEnergyReader(player, this);
+		default: return null;}
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:
-			return new GuiEnergyReader(player, this);
-		}
-		return null;
+		case 0:	return new GuiEnergyReader(player, this);
+		default: return null;}
 	}
 
 	@Override

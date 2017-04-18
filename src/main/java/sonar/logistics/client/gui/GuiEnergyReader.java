@@ -46,8 +46,9 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		this.buttonList.add(new LogisticsButton.CHANNELS(this, 0, guiLeft + start, guiTop + 9));
 		this.buttonList.add(new LogisticsButton.HELP(this, 1, guiLeft + start + 18 * 1, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 18 * 2, guiTop + 9, 64 + 64 + 16, 16 * part.setting.getObject().ordinal(), part.setting.getObject().getName(), part.setting.getObject().getDescription()));
-		if (part.setting.getObject() != Modes.STORAGES)
+		if (part.setting.getObject() != Modes.STORAGES) {
 			this.buttonList.add(new GuiButton(3, guiLeft + 190, guiTop + 6, 40, 20, part.energyType.getEnergyType().getStorageSuffix()));
+		}
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -93,18 +94,18 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, MonitoredEnergyStack info) {
 		if (buttonID == 0) {
 			if (info.isValid() && !info.isHeader()) {
-				part.selected.setCoords(info.coords.getMonitoredInfo().syncCoords.getCoords());
+				part.selected.setCoords(info.getMonitoredCoords().getCoords());
 				part.sendByteBufPacket(buttonID == 0 ? AbstractReaderPart.ADD : AbstractReaderPart.PAIRED);
 			}
 		} else {
-			RenderBlockSelection.addPosition(info.coords.getMonitoredInfo().syncCoords.getCoords(), false);
+			RenderBlockSelection.addPosition(info.getMonitoredCoords().getCoords(), false);
 		}
 	}
 
 	@Override
 	public boolean isCategoryHeader(MonitoredEnergyStack info) {
 		if (!RenderBlockSelection.positions.isEmpty()) {
-			if (RenderBlockSelection.isPositionRenderered(info.coords.getMonitoredInfo().syncCoords.getCoords())) {
+			if (RenderBlockSelection.isPositionRenderered(info.getMonitoredCoords().getCoords())) {
 				return true;
 			}
 		}
@@ -116,7 +117,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if (!info.isValid() || info.isHeader()) {
 			return false;
 		}
-		return part.selected.getCoords() != null && part.selected.getCoords().equals(info.coords.getMonitoredInfo().syncCoords.getCoords());
+		return part.selected.getCoords() != null && part.selected.getCoords().equals(info.getMonitoredCoords().getCoords());
 	}
 
 	@Override
@@ -129,15 +130,16 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
 	@Override
 	public void renderInfo(MonitoredEnergyStack info, int yPos) {
-		int l = (int) (info.energyStack.obj.stored * 231 / info.energyStack.obj.capacity);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderHelper.saveBlendState();
-		this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
-		if (l != 0)
-			this.drawTransparentRect(25, (yPos) + 6, l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
-		RenderHelper.restoreBlendState();
-
-		StoredItemStack storedStack = info.dropStack.getObject();
+		if (info.getEnergyStack().capacity > 0) {
+			int l = (int) (info.getEnergyStack().stored * 231 / info.getEnergyStack().capacity);
+			RenderHelper.saveBlendState();
+			this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
+			if (l != 0)
+				this.drawTransparentRect(25, (yPos) + 6, l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
+			RenderHelper.restoreBlendState();
+		}
+		StoredItemStack storedStack = info.getDropStack();
 		if (storedStack != null) {
 
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
@@ -149,7 +151,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 			RenderHelper.restoreBlendState();
 		}
 		GL11.glScaled(0.75, 0.75, 0.75);
-		FontHelper.text(info.coords.getMonitoredInfo().getClientIdentifier() + " - " + info.coords.getMonitoredInfo().getClientObject(), 35, (int) (yPos * 1 / 0.75) - 1, LogisticsColours.white_text.getRGB());
+		FontHelper.text(info.getMonitoredCoords().getClientIdentifier() + " - " + info.getMonitoredCoords().getClientObject(), 35, (int) (yPos * 1 / 0.75) - 1, LogisticsColours.white_text.getRGB());
 		FontHelper.text(info.getClientIdentifier(), 35, (int) (yPos * 1 / 0.75) + 10, 1);
 		FontHelper.text(info.getClientObject(), 160, (int) (yPos * 1 / 0.75) + 10, 1);
 		GL11.glScaled(1 / 0.75, 1 / 0.75, 1 / 0.75);

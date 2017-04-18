@@ -43,6 +43,15 @@ import sonar.logistics.network.PacketItemInteractionText;
 
 public class InfoHelper {
 
+	
+	public static boolean isMatchingInfo(IInfo info, IInfo info2){
+		return info.isMatchingType(info2) && info.isMatchingInfo(info2);
+	}	
+
+	public static boolean isIdenticalInfo(IInfo info, IInfo info2){
+		return isMatchingInfo(info, info2) && info.isIdenticalInfo(info2);
+	}	
+	
 	public static final String DELETE = "del";
 	public static final String SYNC = "syn";
 	public static final String REMOVED = "rem";

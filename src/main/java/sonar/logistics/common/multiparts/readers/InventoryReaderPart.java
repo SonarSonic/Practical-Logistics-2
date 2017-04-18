@@ -98,7 +98,7 @@ public class InventoryReaderPart extends AbstractListReaderPart<MonitoredItemSta
 			int pos = posSlot.getObject();
 			if (pos < updateInfo.size()) {
 				MonitoredItemStack posItem = updateInfo.get(posSlot.getObject()).copy();
-				posItem.networkID.setObject(network.getNetworkID());
+				posItem.setNetworkSource(network.getNetworkID());
 				info = posItem;
 			}
 			break;
@@ -118,7 +118,7 @@ public class InventoryReaderPart extends AbstractListReaderPart<MonitoredItemSta
 			}
 			if (slotStack != null) {
 				MonitoredItemStack newInfo = new MonitoredItemStack(slotStack);
-				newInfo.networkID.setObject(network.getNetworkID());
+				newInfo.setNetworkSource(network.getNetworkID());
 				info = newInfo;
 			}
 			// make a way of getting the stack
@@ -129,7 +129,7 @@ public class InventoryReaderPart extends AbstractListReaderPart<MonitoredItemSta
 				MonitoredItemStack dummyInfo = new MonitoredItemStack(new StoredItemStack(stack.copy(), 0), network.getNetworkID());
 				Pair<Boolean, IInfo> latestInfo = updateInfo.getLatestInfo(dummyInfo);
 				if (latestInfo.b instanceof MonitoredItemStack) {
-					((MonitoredItemStack) latestInfo.b).networkID.setObject(network.getNetworkID());
+					((MonitoredItemStack) latestInfo.b).setNetworkSource(network.getNetworkID());
 				}
 				info = latestInfo.a ? latestInfo.b : dummyInfo;
 			}

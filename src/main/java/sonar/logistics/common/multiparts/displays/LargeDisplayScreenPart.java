@@ -267,8 +267,6 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 		if (isServer() && !wasAdded) {
 			addConnection();
 			wasAdded = true;
-		} else {
-			this.requestSyncPacket();
 		}
 	}
 

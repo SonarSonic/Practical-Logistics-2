@@ -3,6 +3,8 @@ package sonar.logistics.helpers;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,11 +13,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import sonar.core.SonarCore;
 import sonar.core.api.SonarAPI;
+import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
+import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
+import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.PL2API;
@@ -31,50 +37,30 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class FluidHelper extends FluidWrapper {
 
-	public StoredFluidStack addFluids(StoredFluidStack add, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
-		if (add.stored == 0) {
+	public StoredFluidStack transferFluids(ILogisticsNetwork network, StoredFluidStack add, NodeTransferMode mode, ActionType action, ITankFilter filter) {
+		if (!validStack(add)) {
 			return add;
 		}
-		List<NodeConnection> connections = network.getConnections(CacheType.ALL);
-		for (NodeConnection entry : connections) {
-			if (!entry.canTransferFluid(entry, add, NodeTransferMode.ADD)) {
-				continue;
-			}
-			if (entry instanceof BlockConnection) {
-				BlockConnection connection = (BlockConnection) entry;
-				TileEntity tile = connection.coords.getTileEntity();
-				if (tile != null) {
-					add = SonarAPI.getFluidHelper().addFluids(add, tile, connection.face, action, filter);
-					if (add == null) {
-						return null;
-					}
-				}
-			}
-		}
-		return add;
+		return NetworkHelper.forEachTileEntity(network, CacheType.ALL, c -> c.canTransferFluid(c, add, mode), getTileAction(add, mode, action, filter)) ? add : null;
 	}
 
-	public StoredFluidStack removeFluids(StoredFluidStack remove, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
-		if (remove.stored == 0) {
-			return remove;
-		}
-		List<NodeConnection> connections = network.getConnections(CacheType.ALL);
-		for (NodeConnection entry : connections) {
-			if (!entry.canTransferFluid(entry, remove, NodeTransferMode.REMOVE)) {
-				continue;
-			}
-			if (entry instanceof BlockConnection) {
-				BlockConnection connection = (BlockConnection) entry;
-				TileEntity tile = connection.coords.getTileEntity();
-				if (tile != null) {
-					remove = SonarAPI.getFluidHelper().removeFluids(remove, tile, connection.face, action, filter);
-					if (remove == null) {
-						return null;
-					}
-				}
+	private BiPredicate<BlockConnection, TileEntity> getTileAction(StoredFluidStack stack, NodeTransferMode mode, ActionType action, ITankFilter filter) {
+		return (c, t) -> stack.setStackSize(transfer(mode, t, stack, c.face, action)).getStackSize() != 0;
+	}
+
+	private StoredFluidStack transfer(NodeTransferMode mode, TileEntity tile, StoredFluidStack stack, EnumFacing dir, ActionType action) {
+		List<ISonarFluidHandler> handlers = SonarCore.fluidHandlers;
+		for (ISonarFluidHandler handler : handlers) {
+			if (handler.canHandleFluids(tile, dir)) {
+				StoredFluidStack copy = stack.copy().setStackSize(stack);
+				return stack = mode.shouldRemove() ? handler.removeStack(copy, tile, dir, action) : handler.addStack(stack, tile, dir, action);
 			}
 		}
-		return remove;
+		return null;
+	}
+
+	public static boolean validStack(StoredFluidStack stack) {
+		return stack != null && stack.getStackSize() != 0;
 	}
 
 	public int fillCapabilityStack(ItemStack container, StoredFluidStack fill, ILogisticsNetwork network, ActionType action) {
@@ -92,7 +78,7 @@ public class FluidHelper extends FluidWrapper {
 			FluidStack stack = handler.getTankProperties()[0].getContents();
 			if (stack != null && stack.amount >= 0) {
 				StoredFluidStack add = new StoredFluidStack(stack, Math.min(toDrain, stack.amount));
-				StoredFluidStack added = SonarAPI.getFluidHelper().getStackToAdd(toDrain, add, addFluids(add.copy(), network, ActionType.SIMULATE, null));
+				StoredFluidStack added = SonarAPI.getFluidHelper().getStackToAdd(toDrain, add, transferFluids(network, add.copy(), null, ActionType.SIMULATE, null));
 				if (added == null || added.stored >= 0) {
 					return handler.drain((int) added.stored, !action.shouldSimulate());
 				}
@@ -110,7 +96,7 @@ public class FluidHelper extends FluidWrapper {
 		heldItem = heldItem.copy();
 		heldItem.stackSize = 1;
 
-		StoredFluidStack remaining = removeFluids(toFill.copy(), cache, ActionType.SIMULATE, null);
+		StoredFluidStack remaining = transferFluids(cache, toFill.copy(), NodeTransferMode.REMOVE, ActionType.SIMULATE, null);
 		StoredFluidStack removed = SonarAPI.getFluidHelper().getStackToAdd(toFill.getStackSize(), toFill, remaining);
 		if (removed.stored <= 0) {
 			return;
@@ -118,7 +104,7 @@ public class FluidHelper extends FluidWrapper {
 		int filled = fillCapabilityStack(heldItem.copy(), removed, cache, ActionType.SIMULATE);
 		if (filled != 0) {
 			ItemStack toAdd = heldItem.copy();
-			removed = SonarAPI.getFluidHelper().getStackToAdd(toFill.getStackSize(), toFill, removeFluids(new StoredFluidStack(toFill.getFullStack(), filled, toFill.capacity), cache, ActionType.PERFORM, null));
+			removed = SonarAPI.getFluidHelper().getStackToAdd(toFill.getStackSize(), toFill, transferFluids(cache, new StoredFluidStack(toFill.getFullStack(), filled, toFill.capacity), NodeTransferMode.REMOVE, ActionType.PERFORM, null));
 			int fill = fillCapabilityStack(toAdd, removed, cache, ActionType.PERFORM);
 			if (player.getHeldItemMainhand().stackSize != 1) {
 				player.inventory.decrStackSize(player.inventory.currentItem, 1);
@@ -137,7 +123,7 @@ public class FluidHelper extends FluidWrapper {
 		FluidStack drained = drainCapabilityStack(heldItem.copy(), toDrain, cache, ActionType.SIMULATE);
 		if (drained != null && drained.amount > 0) {
 			ItemStack toAdd = heldItem.copy();
-			addFluids(new StoredFluidStack(drainCapabilityStack(toAdd, toDrain, cache, ActionType.PERFORM)), cache, ActionType.PERFORM, null);
+			transferFluids(cache, new StoredFluidStack(drainCapabilityStack(toAdd, toDrain, cache, ActionType.PERFORM)), null, ActionType.PERFORM, null);
 			if (heldItem.stackSize != 1) {
 				player.inventory.decrStackSize(player.inventory.currentItem, 1);
 				PL2API.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);

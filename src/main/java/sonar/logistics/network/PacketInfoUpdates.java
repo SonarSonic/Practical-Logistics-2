@@ -9,15 +9,16 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
+import sonar.logistics.helpers.PacketHelper;
 
-public class PacketInfoList implements IMessage {
+public class PacketInfoUpdates implements IMessage {
 
 	public NBTTagCompound tag;
 	public SyncType type;
 
-	public PacketInfoList() {}
+	public PacketInfoUpdates() {}
 
-	public PacketInfoList(NBTTagCompound tag, SyncType type) {
+	public PacketInfoUpdates(NBTTagCompound tag, SyncType type) {
 		this.tag = tag;
 		this.type = type;
 	}
@@ -34,13 +35,13 @@ public class PacketInfoList implements IMessage {
 		buf.writeInt(type.ordinal());
 	}
 
-	public static class Handler implements IMessageHandler<PacketInfoList, IMessage> {
+	public static class Handler implements IMessageHandler<PacketInfoUpdates, IMessage> {
 
 		@Override
-		public IMessage onMessage(PacketInfoList message, MessageContext ctx) {
+		public IMessage onMessage(PacketInfoUpdates message, MessageContext ctx) {
 			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 				public void run() {
-					PL2.getClientManager().onInfoPacket(message.tag, message.type);
+					PacketHelper.receiveInfoUpdate(message.tag, message.type);
 				}
 			});
 			return null;

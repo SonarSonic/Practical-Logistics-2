@@ -27,13 +27,16 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	public int compare;
 	public double firstNum, secondNum;
 
-	public ProgressInfo() {
+	public ProgressInfo() {}
+
+	public ProgressInfo(IInfo first, IInfo second) {
+		this.first = (LogicInfo) first;
+		this.second = (LogicInfo) second;
+		checkInfo();
 	}
 
-	public ProgressInfo(LogicInfo first, LogicInfo second) {
-		this.first = first;
-		this.second = second;
-		checkInfo();
+	public static boolean isStorableInfo(IInfo info) {
+		return info != null && info instanceof LogicInfo;
 	}
 
 	public void checkInfo() {
@@ -166,6 +169,7 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 		first.identifyChanges(newInfo.first);
 		second.identifyChanges(newInfo.second);
 	}
+
 	@Override
 	public LogicPath getPath() {
 		return null;
@@ -178,5 +182,11 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 
 	@Override
 	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
+
+	@Override
+	public void onInfoStored() {
+		first.onInfoStored();
+		second.onInfoStored();
+	}
 
 }

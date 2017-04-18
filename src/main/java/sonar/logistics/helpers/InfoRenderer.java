@@ -48,7 +48,7 @@ public class InfoRenderer {
 
 	public static final double zLevel = 0, barOffset = 0.001;
 
-	public static void renderNormalInfo(DisplayType type, String... toDisplay) {
+	public static void renderNormalInfo(DisplayType type, String...toDisplay) {
 		renderNormalInfo(type, type.width, type.height, type.scale, SonarHelper.convertArray(toDisplay));
 	}
 
@@ -60,11 +60,11 @@ public class InfoRenderer {
 		return ((0.12 * height) * (0.12 * height)) + (0.35 * height) - 0.58; // quadratic equation to solve the scale
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, String... toDisplay) {
+	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, String...toDisplay) {
 		renderNormalInfo(displayType, width, height, scale, SonarHelper.convertArray(toDisplay));
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, String... toDisplay) {
+	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, String...toDisplay) {
 		renderNormalInfo(displayType, width, height, scale, colour, SonarHelper.convertArray(toDisplay));
 	}
 
@@ -91,17 +91,6 @@ public class InfoRenderer {
 		GlStateManager.disableCull();
 		GlStateManager.enableLighting();
 
-	}
-
-	/** NEED TO WORK OUT A FORMULA! */
-	public static double yCentreScale(double height) {
-		/* int newHeight = (int) (height + 0.0625 * 2) - 1; switch (newHeight) { case 0: return -16; case 1: return 2.9375; case 2: return 9.4375; case 3: return 12.7375; case 4: return 14.6375; case 5: return 16.0375; case 6: return 16.9375; case 7: return 17.6375; case 8: return 18.1375; case 9: return 0; case 14: return 20; } return 0; */
-
-		// y = -0.0023x^6 + 0.067x^5 - 0.774x^4 + 4.6276x^3 - 15.524x^2 + 30.49^5x - 15.993
-
-		double y = -0.0023 * Math.pow(height, 6) + 0.067 * Math.pow(height, 5) - 0.774 * Math.pow(height, 4) + 4.6276 * Math.pow(height, 3) - 15.524 * Math.pow(height, 2) + 30.49 * (height) - 15.993;
-
-		return y;
 	}
 
 	public static void renderProgressBar(double width, double height, double scale, double d, double e) {
@@ -153,7 +142,6 @@ public class InfoRenderer {
 		switch (face) {
 		case DOWN:
 			GL11.glRotated(90, 1, 0, 0);
-
 			int ordinal = rotation.ordinal();
 			ordinal = ordinal == 4 ? 5 : ordinal == 5 ? 4 : ordinal;
 			GL11.glRotated(rotate[ordinal], 0, 0, 1);
@@ -162,7 +150,6 @@ public class InfoRenderer {
 			break;
 		case UP:
 			GL11.glRotated(270, 1, 0, 0);
-
 			GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
 			translate = getUpMatrix(rotation.ordinal(), width, height);
 			GL11.glTranslated(0, 0, 0);
@@ -196,15 +183,13 @@ public class InfoRenderer {
 				FontHelper.text(directInfo.getClientIdentifier(), identifierLeft, yPos, colour);
 				FontHelper.text(directInfo.getClientObject(), objectLeft, yPos, colour);
 				FontHelper.text(directInfo.getClientType(), kindLeft, yPos, colour);
-			} else {
-				if (directInfo instanceof LogicInfo) {
-					String category = ((LogicInfo) directInfo).getRegistryType().name();
-					FontHelper.text(category.substring(0, 1) + category.substring(1).toLowerCase(), identifierLeft + 4, yPos, colour);
-				}
+			} else if (directInfo instanceof LogicInfo) {
+				String category = ((LogicInfo) directInfo).getRegistryType().name();
+				FontHelper.text(category.substring(0, 1) + category.substring(1).toLowerCase(), identifierLeft + 4, yPos, colour);
 			}
 		} else if (info instanceof MonitoredBlockCoords) {
 			MonitoredBlockCoords directInfo = (MonitoredBlockCoords) info;
-			FontHelper.text(directInfo.syncCoords.toString(), identifierLeft, yPos, colour);
+			FontHelper.text(directInfo.getCoords().toString(), identifierLeft, yPos, colour);
 		}
 	}
 

@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.SonarTextField;
+import sonar.core.client.gui.widgets.ScrollerOrientation;
+import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
@@ -47,7 +49,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		return 1;
 	}
 
-	public void initGui() {
+	public void initGui() {		
 		coolDown = 25;
 		enableListRendering = currentPage == null;
 		super.initGui();
@@ -70,7 +72,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		}
 		updateSearchList();
 	}
-
+	
 	public void onTextFieldChanged(SonarTextField field) {
 		if (field == searchField) {
 			updateSearchList = true;
@@ -286,8 +288,8 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		}
 		Element3DRenderer.reset();
 		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && currentPage != null) {
-			if(lastPos==-1 || lastPagePos==-1){
-				this.currentPage=null;
+			if (lastPos == -1 || lastPagePos == -1) {
+				this.currentPage = null;
 				reset();
 				return;
 			}

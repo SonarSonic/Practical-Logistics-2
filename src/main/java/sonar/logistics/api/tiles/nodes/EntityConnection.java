@@ -39,5 +39,6 @@ public class EntityConnection extends NodeConnection<MonitoredEntity> {
 	@Override
 	public NodeConnectionType getType() {
 		return NodeConnectionType.ENTITY;
-	}
+	}	
+	
 }

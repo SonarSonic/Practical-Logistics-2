@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarMultipartInventory;
 import sonar.core.network.sync.SyncTagType;
@@ -40,6 +41,10 @@ public class ArrayPart extends SidedPart implements ISlottedPart, INode, IFlexib
 		public boolean isItemValidForSlot(int slot, ItemStack stack) {
 			return stack != null && stack.getItem() instanceof ITransceiver;
 		}
+
+		public SyncType[] getSyncTypes() {
+			return new SyncType[] { SyncType.SAVE, SyncType.DEFAULT_SYNC };
+		}
 	};
 
 	{
@@ -48,11 +53,7 @@ public class ArrayPart extends SidedPart implements ISlottedPart, INode, IFlexib
 
 	public void update() {
 		super.update();
-		/* TODO update entities properly
-		if (isServer() && entityChanged) {
-			this.updateConnectionLists();
-		}
-		*/
+		/* TODO update entities properly if (isServer() && entityChanged) { this.updateConnectionLists(); } */
 	}
 
 	public void updateConnectionLists() {
@@ -98,6 +99,14 @@ public class ArrayPart extends SidedPart implements ISlottedPart, INode, IFlexib
 	public void validate() {
 		super.validate();
 		this.updateConnectionLists();
+		if (this.isClient()) {
+			this.requestSyncPacket();
+		}
+	}
+
+	public void onSyncPacketRequested(EntityPlayer player) {
+		super.onSyncPacketRequested(player);
+		inventory.markChanged();
 	}
 
 	//// GUI \\\\
@@ -105,7 +114,7 @@ public class ArrayPart extends SidedPart implements ISlottedPart, INode, IFlexib
 	public boolean hasStandardGui() {
 		return true;
 	}
-	
+
 	@Override
 	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		if (id == 0)

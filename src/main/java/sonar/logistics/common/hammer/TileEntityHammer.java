@@ -29,7 +29,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 
 	public void update() {
 		super.update();
-		if (this.worldObj.isBlockIndirectlyGettingPowered(pos) == 15) {
+		if (getWorld().isBlockIndirectlyGettingPowered(pos) == 15) {
 			return;
 		}
 		if (coolDown.getObject() != 0) {
@@ -46,7 +46,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 			} else {
 				coolDown.setObject(speed * 2);
 				progress.setObject(0);
-				if (!this.worldObj.isRemote) {
+				if (!this.getWorld().isRemote) {
 					finishProcess();	
 					SonarCore.sendPacketAround(this, 64, 2);
 				}

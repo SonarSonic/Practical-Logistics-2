@@ -8,15 +8,17 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
+import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.INode;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.connections.IEntityNode;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemWrapper {
-
+		
 	/** used for getting the full list of Items at a given {@link INode}
 	 * @param storedStacks current list of {@link StoredItemStack} to be added to
 	 * @param storage currentStorageSize
@@ -39,7 +41,7 @@ public class ItemWrapper {
 	 * @param network the {@link ILogisticsNetwork} to add to
 	 * @param action what type of action should be carried out
 	 * @return remaining {@link StoredItemStack} (what wasn't added), can be null */
-	public StoredItemStack addItems(StoredItemStack add, ILogisticsNetwork network, ActionType action) {
+	public StoredItemStack transferItems(ILogisticsNetwork network, StoredItemStack add, NodeTransferMode mode, ActionType action, IInventoryFilter filter) {
 		return add;
 	}
 
@@ -55,9 +57,9 @@ public class ItemWrapper {
 	 * @param network the {@link ILogisticsNetwork} to remove from
 	 * @param action what type of action should be carried out
 	 * @return remaining {@link StoredItemStack} (what wasn't removed), can be null */
-	public StoredItemStack removeItems(StoredItemStack remove, ILogisticsNetwork network, ActionType action) {
-		return remove;
-	}
+	//public StoredItemStack removeItems(StoredItemStack remove, ILogisticsNetwork network, ActionType action) {
+	//	return remove;
+	//}
 
 	public void removeItemsFromPlayer(StoredItemStack add, EntityPlayer player, ILogisticsNetwork network, ActionType action) {}
 

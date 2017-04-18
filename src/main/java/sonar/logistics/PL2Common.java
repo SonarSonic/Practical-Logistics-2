@@ -20,12 +20,12 @@ import sonar.logistics.network.PacketClickEventServer;
 import sonar.logistics.network.PacketClientEmitters;
 import sonar.logistics.network.PacketConnectedDisplayScreen;
 import sonar.logistics.network.PacketEmitterStatement;
-import sonar.logistics.network.PacketInfoList;
+import sonar.logistics.network.PacketInfoUpdates;
 import sonar.logistics.network.PacketInventoryReader;
 import sonar.logistics.network.PacketItemInteractionText;
 import sonar.logistics.network.PacketMonitoredList;
 import sonar.logistics.network.PacketNodeFilter;
-import sonar.logistics.network.PacketViewables;
+import sonar.logistics.network.PacketLocalProviders;
 import sonar.logistics.network.PacketWirelessStorage;
 
 public class PL2Common implements IGuiHandler {
@@ -34,10 +34,10 @@ public class PL2Common implements IGuiHandler {
 		PL2.network.registerMessage(PacketMonitoredList.Handler.class, PacketMonitoredList.class, 0, Side.CLIENT);
 		PL2.network.registerMessage(PacketChannels.Handler.class, PacketChannels.class, 1, Side.CLIENT);
 		PL2.network.registerMessage(PacketAddListener.Handler.class, PacketAddListener.class, 2, Side.SERVER);
-		PL2.network.registerMessage(PacketInfoList.Handler.class, PacketInfoList.class, 3, Side.CLIENT);
+		PL2.network.registerMessage(PacketInfoUpdates.Handler.class, PacketInfoUpdates.class, 3, Side.CLIENT);
 		PL2.network.registerMessage(PacketInventoryReader.Handler.class, PacketInventoryReader.class, 4, Side.SERVER);
 		PL2.network.registerMessage(PacketClientEmitters.Handler.class, PacketClientEmitters.class, 5, Side.CLIENT);
-		PL2.network.registerMessage(PacketViewables.Handler.class, PacketViewables.class, 6, Side.CLIENT);
+		PL2.network.registerMessage(PacketLocalProviders.Handler.class, PacketLocalProviders.class, 6, Side.CLIENT);
 		PL2.network.registerMessage(PacketConnectedDisplayScreen.Handler.class, PacketConnectedDisplayScreen.class, 7, Side.CLIENT);
 		PL2.network.registerMessage(PacketClickEventServer.Handler.class, PacketClickEventServer.class, 8, Side.SERVER);
 		PL2.network.registerMessage(PacketClickEventClient.Handler.class, PacketClickEventClient.class, 9, Side.CLIENT);

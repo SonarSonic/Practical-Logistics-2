@@ -1,6 +1,10 @@
 package sonar.logistics.client.gui;
 
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -39,10 +43,17 @@ public class GuiLogistics extends GuiSonar {
 
 	public void renderScroller(SonarScroller scroller) {
 		if (scroller != null && scroller.renderScroller) {
-			int scrollYPos = scroller.start + (int) ((float) (scroller.end - scroller.start - 17) * scroller.getCurrentScroll());
-			drawRect(scroller.left, scroller.start, scroller.left + 8, scroller.end - 2, LogisticsColours.layers[1].getRGB());
-			drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
-			drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+			if (scroller.orientation.isVertical()) {
+				int scrollYPos = scroller.top + (int) ((float) (scroller.length - 17) * scroller.getCurrentScroll());
+				drawRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
+				drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+				drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+			}else{
+				int scrollXPos = scroller.left + (int) ((float) (scroller.width - 17) * scroller.getCurrentScroll());
+				drawRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());				
+				drawRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8, LogisticsColours.layers[2].getRGB());
+				drawRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8,  LogisticsColours.layers[2].getRGB());				
+			}
 		}
 	}
 

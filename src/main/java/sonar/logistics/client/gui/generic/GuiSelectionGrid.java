@@ -45,7 +45,7 @@ public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 		this.xSize = 176 + 72;
 		this.ySize = 256;
 		this.guiLeft = (this.width - this.xSize) / 2;
-		this.guiTop = (this.height - this.ySize) / 2;
+		this.guiTop = (this.height - this.ySize) / 2;		
 		scroller = new SonarScroller(this.guiLeft + xPos + (eWidth * gWidth) + 3, this.guiTop + yPos - 1, (eHeight * gHeight) + 2, 10);
 		grid = new SelectionGrid(this, 0, xPos, yPos, eWidth, eHeight, gWidth, gHeight);
 	}

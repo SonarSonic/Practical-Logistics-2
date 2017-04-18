@@ -52,12 +52,12 @@ public class LogisticsHelper {
 		return false;
 	}
 
-	/** gets a list of all valid networks from the provided network ids*/
+	/** gets a list of all valid networks from the provided network ids */
 	public static List<ILogisticsNetwork> getNetworks(List<Integer> ids) {
 		List<ILogisticsNetwork> networks = Lists.newArrayList();
 		ids.forEach(id -> {
 			ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(id);
-			if(network!=null && network.isValid()){
+			if (network != null && network.isValid()) {
 				networks.add(network);
 			}
 		});
@@ -71,7 +71,7 @@ public class LogisticsHelper {
 		return connections;
 	}
 
-	/**creates a new channel instance of the type provided, requires the constructor to only need the ILogisticsNetwork variable*/
+	/** creates a new channel instance of the type provided, requires the constructor to only need the ILogisticsNetwork variable */
 	public static <T> T getChannelInstance(Class<T> channelType, ILogisticsNetwork network) {
 		try {
 			return channelType.getConstructor(ILogisticsNetwork.class).newInstance(network);
@@ -105,40 +105,39 @@ public class LogisticsHelper {
 		ArrayList<InfoUUID> ids = Lists.newArrayList();
 		for (IDisplay display : displays) {
 			IInfoContainer container = display.container();
-			for (int i = 0; i < container.getMaxCapacity(); i++) {
-				InfoUUID id = container.getInfoUUID(i);
-				if (id != null && id.valid() && !ids.contains(id)) {
+			container.forEachValidUUID(id -> {
+				if (!ids.contains(id))
 					ids.add(id);
-				}
-			}
+			});
 		}
 		return ids;
 	}
-	
+
 	public List<IInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
 		List<IInfo> infoList = Lists.newArrayList();
 		for (InfoUUID id : ids) {
 			ILogicListenable monitor = CableHelper.getMonitorFromIdentity(id.getIdentity(), false);
 			if (monitor != null && monitor instanceof IInfoProvider) {
 				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
-				if (info != null) {
+				if (info != null)
 					infoList.add(info);
-				}
 			}
 		}
 		return infoList;
 	}
-	
+
 	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, AbstractDisplayPart part) {
 		ILogisticsNetwork networkCache = part.getNetwork();
 		ISlottedPart connectedPart = part.getContainer().getPartInSlot(PartSlot.getFaceSlot(part.face));
 		if (connectedPart != null && connectedPart instanceof IInfoProvider) {
-			if (!viewables.contains((IInfoProvider) connectedPart))
+			if (!viewables.contains((IInfoProvider) connectedPart)) {
 				viewables.add((IInfoProvider) connectedPart);
+			}
 		} else {
 			for (IInfoProvider monitor : networkCache.getLocalInfoProviders()) {
-				if (!viewables.contains(monitor))
+				if (!viewables.contains(monitor)) {
 					viewables.add(monitor);
+				}
 			}
 		}
 		return viewables;
@@ -155,10 +154,7 @@ public class LogisticsHelper {
 	}
 
 	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {
-		nodes.forEach(n -> {
-			if (n.isValid())
-				n.addConnections(channels);
-		});
+		nodes.stream().filter(n -> n.isValid()).forEach(n -> n.addConnections(channels));
 		return NodeConnection.sortConnections(channels);
 	}
 

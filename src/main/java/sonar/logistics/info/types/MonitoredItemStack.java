@@ -38,7 +38,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	public static final String id = "item";
 	private final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 0);
-	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
+	private final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 	{
 		syncList.addParts(itemStack, networkID);
 	}
@@ -57,12 +57,12 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	@Override
 	public boolean isIdenticalInfo(MonitoredItemStack info) {
-		return getStoredStack().equals(info.getStoredStack()) && networkID.getObject().equals(networkID.getObject());
+		return getStoredStack().equals(info.getStoredStack());// && networkID.getObject().equals(networkID.getObject());
 	}
 
 	@Override
 	public boolean isMatchingInfo(MonitoredItemStack info) {
-		return getStoredStack().equalStack(info.getStoredStack().getActualStack());
+		return getStoredStack().equalStack(info.getStoredStack().getItemStack());
 	}
 
 	@Override
@@ -112,6 +112,14 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	public long getStored() {
 		return this.itemStack.getObject().stored;
+	}
+	
+	public int getNetworkSource(){
+		return networkID.getObject();
+	}
+	
+	public void setNetworkSource(int id){
+		networkID.setObject(id);
 	}
 
 	@Override

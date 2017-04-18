@@ -92,7 +92,7 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 		if (buttonID == 0) {
 			tile.sendCoordsToServer(info, channelID);
 		} else if (info instanceof MonitoredBlockCoords)
-			RenderBlockSelection.addPosition(((MonitoredBlockCoords) info).syncCoords.getCoords(), false);
+			RenderBlockSelection.addPosition(((MonitoredBlockCoords) info).getCoords(), false);
 
 	}
 
@@ -131,7 +131,7 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 	public boolean isCategoryHeader(IInfo info) {
 		if (info instanceof MonitoredBlockCoords) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((MonitoredBlockCoords) info).syncCoords.getCoords())) {
+				if (RenderBlockSelection.isPositionRenderered(((MonitoredBlockCoords) info).getCoords())) {
 					return true;
 				}
 			}
@@ -142,12 +142,12 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 	@Override
 	public boolean isSelectedInfo(IInfo info) {
 		if (info instanceof MonitoredBlockCoords) {
-			if (info.isValid() && !info.isHeader() && tile.getChannels().coordList.contains(((MonitoredBlockCoords) info).syncCoords.getCoords())) {
+			if (info.isValid() && !info.isHeader() && tile.getChannels().coordList.contains(((MonitoredBlockCoords) info).getCoords())) {
 				return true;
 			}
 		}
 		if (info instanceof MonitoredEntity) {
-			if (info.isValid() && !info.isHeader() && tile.getChannels().uuidList.contains(((MonitoredEntity) info).uuid.getUUID())) {
+			if (info.isValid() && !info.isHeader() && tile.getChannels().uuidList.contains(((MonitoredEntity) info).getUUID())) {
 				return true;
 			}
 		}

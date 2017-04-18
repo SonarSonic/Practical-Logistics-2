@@ -48,11 +48,12 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 
 	@Override
 	public void onConnectionAdded(int registryID, ILargeDisplay added) {
-		ConnectedDisplay screen = PL2.getServerManager().getConnectedDisplays().get(registryID);
-		if (screen == null) {
-			PL2.getServerManager().getConnectedDisplays().put(registryID, screen = new ConnectedDisplay(added));
+		if (registryID != -1) {
+			ConnectedDisplay screen = PL2.getServerManager().getConnectedDisplays().get(registryID);
+			if (screen == null)
+				PL2.getServerManager().getConnectedDisplays().put(registryID, screen = new ConnectedDisplay(added));
+			screen.setHasChanged();
 		}
-		screen.setHasChanged();
 	}
 
 	public Pair<ConnectableType, Integer> getConnectionType(ILargeDisplay source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
@@ -88,7 +89,6 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	}
 
 	@Override
-	public void onNetworksDisconnected(List<Integer> newNetworks) {
-	}
+	public void onNetworksDisconnected(List<Integer> newNetworks) {}
 
 }

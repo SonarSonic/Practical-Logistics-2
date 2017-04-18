@@ -73,15 +73,12 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	}
 
 	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
-		if (canOpenGui(player)) {
-			if (isServer()) {
-				if (hit.sideHit != face) {
-					openFlexibleGui(player, 0);
-				} else {
-					return container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, getWorld(), player, hand, stack, hit);
-				}
+		if (canOpenGui(player) && isServer()) {
+			if (hit.sideHit != face) {
+				openFlexibleGui(player, 0);
+			} else {
+				return container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, getWorld(), player, hand, stack, hit);
 			}
-			return true;
 		}
 		return false;
 	}
@@ -96,11 +93,12 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 			List<ILogicListenable> providers = LogisticsHelper.getLocalProviders(Lists.newArrayList(), this);
 			ILogicListenable v;
 			if (!providers.isEmpty() && (v = providers.get(0)) instanceof IInfoProvider) {
-				IInfoProvider monitor = (IInfoProvider) providers.get(0);
-				if (container() != null && monitor != null && monitor.getIdentity() != -1) {
+				IInfoProvider monitor = (IInfoProvider) v;
+				if (container() != null && monitor != null && monitor.getIdentity() != -1) {	
+					
 					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
-						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty()){
-							container().setUUID(new InfoUUID(monitor.getIdentity(), i), i);							
+						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty()) {
+							container().setUUID(new InfoUUID(monitor.getIdentity(), i), i);
 						}
 					}
 					defaultData.setObject(true);
@@ -133,6 +131,9 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	public void validate() {
 		super.validate();
 		PL2.getInfoManager(isClient()).addDisplay(this);
+		if (isClient()) {
+			this.requestSyncPacket();
+		}
 	}
 
 	public void invalidate() {
@@ -191,15 +192,8 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, listener.player);
 		}
 	}
-	/*
-	public void onSyncPacketRequested(EntityPlayer player) {
-		super.onSyncPacketRequested(player);
-		if (isServer()) {
-			getListenerList().addListener(new PlayerListener(player), ListenerType.FULL_INFO);
-			PL2.getServerManager().sendViewablesToClientFromScreen(this, player);
-		}
-	}
-	*/
+
+	/* public void onSyncPacketRequested(EntityPlayer player) { super.onSyncPacketRequested(player); if (isServer()) { getListenerList().addListener(new PlayerListener(player), ListenerType.FULL_INFO); PL2.getServerManager().sendViewablesToClientFromScreen(this, player); } } */
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
 		super.writeUpdatePacket(buf);
@@ -228,7 +222,7 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 			currentSelected = buf.readInt();
 			InfoUUID uuid = InfoUUID.getUUID(buf);
 			container().setUUID(uuid, currentSelected);
-			if (isServer()) {				
+			if (isServer()) {
 				PL2.getServerManager().updateViewingMonitors = true;
 				this.sendSyncPacket();
 			}

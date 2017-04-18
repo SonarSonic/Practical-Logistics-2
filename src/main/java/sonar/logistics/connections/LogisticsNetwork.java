@@ -37,7 +37,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public final ListenableList<ILogisticsNetwork> subNetworks = new ListenableList(this, 2);
 	public final Map<Class, INetworkChannels> handlers = Maps.newLinkedHashMap();
-	public final List<IInfoProvider> localMonitors = Lists.newArrayList();
+	public final List<IInfoProvider> localProviders = Lists.newArrayList();
 	private List<NetworkUpdate> toUpdate = SonarHelper.convertArray(NetworkUpdate.values());
 	private List<CacheHandler> changedCaches = Lists.newArrayList(CacheHandler.handlers);
 	private Map<CacheHandler, List> caches = LogisticsHelper.getCachesMap();
@@ -168,10 +168,10 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		Iterator<INetworkListener> iterator = toAdd.iterator();
 		while (iterator.hasNext()) {
 			INetworkListener tile = iterator.next();
-			CacheHandler.getValidCaches(tile).forEach(CACHE -> {
-				if (!caches.get(CACHE).contains(tile) && caches.get(CACHE).add(tile)) {
-					onCacheChanged(CACHE);
-					CACHE.onConnectionAdded(this, tile);
+			CacheHandler.getValidCaches(tile).forEach(cache -> {
+				if (!caches.get(cache).contains(tile) && caches.get(cache).add(tile)) {
+					onCacheChanged(cache);
+					cache.onConnectionAdded(this, tile);
 				}
 			});
 			iterator.remove();
@@ -184,10 +184,10 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		Iterator<INetworkListener> iterator = toRemove.iterator();
 		while (iterator.hasNext()) {
 			INetworkListener tile = iterator.next();
-			CacheHandler.getValidCaches(tile).forEach(CACHE -> {
-				if (caches.get(CACHE).remove(tile)) {
-					onCacheChanged(CACHE);
-					CACHE.onConnectionRemoved(this, tile);
+			CacheHandler.getValidCaches(tile).forEach(cache -> {
+				if (caches.get(cache).remove(tile)) {
+					onCacheChanged(cache);
+					cache.onConnectionRemoved(this, tile);
 				}
 			});
 			iterator.remove();
@@ -196,30 +196,28 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	@Override
 	public void addLocalInfoProvider(IInfoProvider monitor) {
-		if (!localMonitors.contains(monitor))
-			localMonitors.add(monitor);
+		if (!localProviders.contains(monitor))
+			localProviders.add(monitor);
 	}
 
 	@Override
 	public void removeLocalInfoProvider(IInfoProvider monitor) {
-		localMonitors.remove(monitor);
+		localProviders.remove(monitor);
 	}
 
 	/// SUB NETWORKS \\\
 
 	@Override
 	public void onListenerAdded(ListenerTally<ILogisticsNetwork> tally) {
-		if (tally.listener == this) {
+		if (tally.listener == this)
 			return;
-		}
 		tally.listener.getListenerList().addListener(this, ILogisticsNetwork.CONNECTED_NETWORK);
 	}
 
 	@Override
 	public void onListenerRemoved(ListenerTally<ILogisticsNetwork> tally) {
-		if (tally.listener == this) {
+		if (tally.listener == this)
 			return;
-		}
 		tally.listener.getListenerList().removeListener(this, true, ILogisticsNetwork.CONNECTED_NETWORK);
 	}
 
@@ -292,9 +290,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	private void updateNetworkHandlers() {
 		handlers.values().forEach(CHANNELS -> CHANNELS.updateChannel());
-		for (IInfoProvider provider : localMonitors) {
-			PacketHelper.sendNormalProviderInfo(provider);
-		}
+		localProviders.forEach(provider -> PacketHelper.sendNormalProviderInfo(provider));
 	}
 
 	private void updateHandlerChannels() {
@@ -327,12 +323,12 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	@Override
 	public List<IInfoProvider> getLocalInfoProviders() {
-		return localMonitors;
+		return localProviders;
 	}
 
 	@Override
 	public IInfoProvider getLocalInfoProvider() {
-		return !localMonitors.isEmpty() ? localMonitors.get(0) : null;
+		return !localProviders.isEmpty() ? localProviders.get(0) : null;
 	}
 
 	@Override

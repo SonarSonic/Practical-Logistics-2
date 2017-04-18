@@ -341,5 +341,19 @@ pl.IReactor.getMaxHeat=Max Heat
 pl.IReactor.getReactorEUEnergyOutput=Energy Output
 
 
+//Big reactors
+pl.IReactorFuelInfo.getFuelRodCount=Fuel Rods
+pl.IReactorFuelInfo.getFuelAmount=Fuel
+pl.IReactorFuelInfo.getCapacity=Max Capacity
+pl.IReactorFuelInfo.getWasteAmount=Waste
+pl.MultiblockReactor.getFuelHeat=Core Heat
+pl.MultiblockReactor.getReactorHeat=Casing Heat
+pl.MultiblockReactor.getEnergyGeneratedLastTick=RF per tick
+pl.MultiblockReactor.getActive=Active
+pl.MultiblockReactor.getFuelFertility=Fuel Reactivity
+pl.MultiblockReactor.getFuelRichness=Fuel Burnup Rate
+pl.MultiblockReactor.isPassivelyCooled=Is Passively Cooled
+
+
 
 

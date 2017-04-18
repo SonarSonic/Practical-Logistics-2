@@ -178,8 +178,6 @@ public class CableHelper extends CablingWrapper {
 		int hSlots = 1;
 		double yClick = (1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height);
 
-		// int yPos = (int) ((1 - (hitVec.yCoord - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
-
 		switch (display.getCableFace()) {
 		case DOWN:
 			switch (display.getRotation()) {

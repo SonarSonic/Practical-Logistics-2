@@ -91,11 +91,11 @@ public interface IMasterInfoRegistry {
 	public void addCapabilities(final List<IProvidableInfo> infoList, LogicPath path, Object obj, EnumFacing currentFace, Object... available);
 
 	/**gets the very latest version of the LogicInfo provided from the MonitoredList provided*/
-	public Pair<Boolean, IProvidableInfo> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, IInfo monitorInfo);
+	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, T monitorInfo);
 
 	/**gets the very latest version of the LogicInfo provided from the Node Connection provided*/
-	public Pair<Boolean, IProvidableInfo> getLatestInfo(IProvidableInfo info, NodeConnection entry);
+	public <T extends IProvidableInfo > Pair<Boolean, T> getLatestInfo(T info, NodeConnection entry);
 
 	/**gets the very latest info from the available objects using the correct LogicPath, this enables maximum efficiency, reducing the need for all methods to be called.*/
-	public IProvidableInfo getInfoFromPath(IProvidableInfo info, LogicPath logicPath, EnumFacing currentFace, Object... available);
+	public<T extends IProvidableInfo > T getInfoFromPath(T info, LogicPath logicPath, EnumFacing currentFace, Object... available);
 }

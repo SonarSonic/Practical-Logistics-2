@@ -6,25 +6,18 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 
 public class FluidWrapper {
 
 	/** used for adding Fluids to the network
-	 * @param add {@link StoredFluidStack} to add
 	 * @param network the {@link INetworkCache} to add to
+	 * @param add {@link StoredFluidStack} to add
+	 * @param mode TODO
 	 * @param action should this action be simulated
 	 * @return remaining {@link StoredFluidStack} (what wasn't added), can be null */
-	public StoredFluidStack addFluids(StoredFluidStack add, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
+	public StoredFluidStack transferFluids(ILogisticsNetwork network, StoredFluidStack add, NodeTransferMode mode, ActionType action, ITankFilter filter) {
 		return add;
-	}
-
-	/** used for removing Fluids from the network
-	 * @param remove {@link StoredFluidStack} to remove
-	 * @param network the {@link INetworkCache} to remove from
-	 * @param action should this action be simulated
-	 * @return remaining {@link StoredFluidStack} (what wasn't removed), can be null */
-	public StoredFluidStack removeFluids(StoredFluidStack remove, ILogisticsNetwork network, ActionType action, ITankFilter filter) {
-		return remove;
 	}
 
 	/** used for filling ItemStacks with the network

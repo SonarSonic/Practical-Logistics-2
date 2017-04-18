@@ -14,6 +14,7 @@ import sonar.logistics.common.multiparts.misc.ClockPart;
 public class GuiClock extends GuiLogistics {
 
 	public ClockPart part;
+	public SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss:SSS");
 
 	public GuiClock(ClockPart part) {
 		super(new ContainerMultipartSync(part), part);
@@ -43,7 +44,7 @@ public class GuiClock extends GuiLogistics {
 		super.drawGuiContainerForegroundLayer(x, y);
 		GL11.glPushMatrix();
 		GL11.glScaled(1.5, 1.5, 1.5);
-		FontHelper.textCentre(new SimpleDateFormat("HH:mm:ss:SSS").format(getLong() - (60 * 60 * 1000)).substring(0, 11), (int) (xSize / (1.5)), 6, -1);
+		FontHelper.textCentre(timeFormat.format(getLong() - (60 * 60 * 1000)).substring(0, 11), (int) (xSize / (1.5)), 6, -1);
 		GL11.glPopMatrix();
 
 	}
@@ -54,9 +55,8 @@ public class GuiClock extends GuiLogistics {
 	}
 
 	protected void actionPerformed(GuiButton button) {
-		if (button != null) {
-			part.sendByteBufPacket(button.id);
-		}
+		if (button != null) 
+			part.sendByteBufPacket(button.id);		
 		reset();
 	}
 

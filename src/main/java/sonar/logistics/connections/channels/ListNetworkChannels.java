@@ -55,6 +55,15 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 		return handler.updateRate();
 	}
 
+	@Override
+	public void updateChannel() {
+		super.updateChannel();
+		if (hasListeners) {
+			updateChannels();
+			updateReaders(true);
+		}
+	}
+
 	protected void updateTicks() {
 		super.updateTicks();
 		hasListeners = false;
@@ -75,15 +84,6 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 		
 		this.channelIterator = channels.entrySet().iterator();
 		this.readerIterator = readers.iterator();
-	}
-
-	@Override
-	public void updateChannel() {
-		super.updateChannel();
-		if (hasListeners) {
-			updateChannels();
-			updateReaders();
-		}
 	}
 
 	@Override
@@ -123,12 +123,12 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 		}
 	}
 
-	public void updateReaders() {
+	public void updateReaders(boolean send) {
 		int used = 0;
 		while (readerIterator.hasNext() && used != readersPerTick) {
 			IListReader<M> reader = readerIterator.next();
 			if (reader.getListenerList().hasListeners()) {
-				handler.updateAndSendList(network, reader, channels, true);
+				handler.updateAndSendList(network, reader, channels, send);
 			}
 			used++;
 		}
@@ -155,7 +155,7 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 		if (listener != null) {
 			updateAllChannels();
 			Pair<InfoUUID, MonitoredList<M>> list = handler.updateAndSendList(network, reader, channels, false);
-			PacketHelper.sendFullInfo(Lists.newArrayList(listener), reader, list.b, list.a);
+			PacketHelper.sendReaderFullInfo(Lists.newArrayList(listener), reader, list.b, list.a);
 		}
 	}
 

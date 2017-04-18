@@ -13,6 +13,7 @@ import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
@@ -66,7 +67,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
 						PL2API.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
 					} else {
-						StoredItemStack perform = PL2API.getItemHelper().addItems(stack, network, ActionType.PERFORM);
+						StoredItemStack perform = PL2API.getItemHelper().transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
 						lastStack = itemstack1;
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();

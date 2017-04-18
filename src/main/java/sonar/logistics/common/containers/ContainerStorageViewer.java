@@ -12,6 +12,7 @@ import sonar.core.inventory.slots.SlotLimiter;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.connections.channels.ItemNetworkChannels;
@@ -59,7 +60,7 @@ public class ContainerStorageViewer extends Container {
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
 						PL2API.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
 					} else {
-						StoredItemStack perform = PL2API.getItemHelper().addItems(stack, network, ActionType.PERFORM);
+						StoredItemStack perform = PL2API.getItemHelper().transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
 						lastStack = itemstack1;
 						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
 						player.inventory.markDirty();

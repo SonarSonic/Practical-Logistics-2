@@ -100,7 +100,7 @@ public class ClockPart extends SidedPart implements IInfoProvider, IRedstonePart
 
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity(), 0);
-			IInfo oldInfo = PL2.getServerManager().info.get(id);
+			IInfo oldInfo = PL2.getServerManager().getInfoFromUUID(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				PL2.getServerManager().changeInfo(id, info);
 			}

@@ -98,4 +98,7 @@ public class InfoError implements IInfo<InfoError> {
 	@Override
 	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
 
+	@Override
+	public void onInfoStored() {}
+
 }

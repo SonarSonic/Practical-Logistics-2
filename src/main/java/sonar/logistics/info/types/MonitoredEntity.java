@@ -22,9 +22,9 @@ import sonar.logistics.helpers.InfoRenderer;
 public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INameableInfo<MonitoredEntity>, IComparableInfo<MonitoredEntity> {
 
 	public static final String id = "entity";
-	public SyncUUID uuid = new SyncUUID(1);
-	public SyncTagType.STRING unlocalizedName = new SyncTagType.STRING(2);
-	public SyncTagType.INT dimension = new SyncTagType.INT(3);
+	private SyncUUID uuid = new SyncUUID(1);
+	private SyncTagType.STRING unlocalizedName = new SyncTagType.STRING(2);
+	private SyncTagType.INT dimension = new SyncTagType.INT(3);
 	{
 		syncList.addParts(uuid, unlocalizedName, dimension);
 	}
@@ -111,6 +111,10 @@ public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INamea
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, getClientIdentifier(), getClientObject());
+	}
+
+	public UUID getUUID() {
+		return uuid.getUUID();
 	}
 
 	@Override

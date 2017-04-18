@@ -94,7 +94,7 @@ public abstract class ListNetworkHandler<I extends IInfo> implements INetworkLis
 			}
 			PL2.getServerManager().monitoredLists.put(uuid, updateList);
 			if (send)
-				PacketHelper.sendPacketsToListeners(reader, updateList, lastList, uuid);
+				PacketHelper.sendReaderToListeners(reader, updateList, lastList, uuid);
 			return new Pair(uuid, updateList);
 		}
 		return new Pair(uuid, MonitoredList.newMonitoredList(network.getNetworkID()));

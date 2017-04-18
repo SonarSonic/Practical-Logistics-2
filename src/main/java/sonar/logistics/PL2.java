@@ -35,7 +35,11 @@ import sonar.logistics.managers.ServerInfoManager;
 import sonar.logistics.managers.WirelessManager;
 import sonar.logistics.utils.SapphireOreGen;
 
-@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, version = PL2Constants.VERSION, dependencies = "required-after:sonarcore")
+@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, 
+	dependencies = 	
+			"required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + 
+			"required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);",
+	version = PL2Constants.VERSION)
 public class PL2 {
 
 	@SidedProxy(clientSide = "sonar.logistics.PL2Client", serverSide = "sonar.logistics.PL2Common")
@@ -127,7 +131,7 @@ public class PL2 {
 		if (Loader.isModLoaded("MineTweaker3") || Loader.isModLoaded("MineTweaker3".toLowerCase())) {
 			MineTweakerIntegration.init();
 			logger.info("'Mine Tweaker' integration was loaded");
-		}		
+		}
 		proxy.postLoad(evt);
 	}
 
@@ -138,8 +142,9 @@ public class PL2 {
 
 	@EventHandler
 	public void serverLoad(FMLServerStartedEvent event) {
-		
+
 	}
+
 	@EventHandler
 	public void serverClose(FMLServerStoppingEvent event) {
 		WirelessManager.removeAll();
@@ -150,7 +155,7 @@ public class PL2 {
 		getServerManager().removeAll();
 		getComparatorRegistry().removeAll();
 	}
-	
+
 	public static NetworkManager getNetworkManager() {
 		return PL2.instance.networkManager;
 	}
@@ -170,7 +175,7 @@ public class PL2 {
 	public static ClientInfoManager getClientManager() {
 		return PL2.instance.clientManager;
 	}
-	
+
 	public static IInfoManager getInfoManager(boolean isRemote) {
 		return !isRemote ? getServerManager() : getClientManager();
 	}

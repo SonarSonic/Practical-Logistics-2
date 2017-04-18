@@ -39,9 +39,10 @@ public class MonitoredList<T extends IInfo> extends ArrayList<T> {
 		return (List<T>) super.clone();
 	}
 
-	public void setInfo(List<T> list) {
+	public MonitoredList<T> setInfo(List<T> list) {
 		clear();
 		addAll(list);
+		return this;
 	}
 
 	public MonitoredList<T> copyInfo() {
