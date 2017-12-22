@@ -22,6 +22,7 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 
 	public void removeAll() {
 		connections.clear();
+		NetworkManager = null;
 	}
 
 	public NetworkManager NetworkManager() {
@@ -89,7 +90,7 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 			}
 			if (network != null && network.contains(connection))
 				return;
-			
+
 			connection.setRegistryID(registryID);
 			network.add(connection);
 			if (refreshCache) {
@@ -105,10 +106,10 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 			if (allConnections == null) {
 				return;
 			}
-			//remove the connection
+			// remove the connection
 			allConnections.remove(connection);
 			onConnectionRemoved(registryID, connection);
-			
+
 			int newID = getNextAvailableID();
 			allConnections = Lists.newArrayList(allConnections); // save all the current cables.
 			connections.get(registryID).clear();
@@ -121,8 +122,8 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 				newNetworks.add(oldCable.getRegistryID());
 			});
 			onNetworksDisconnected(newNetworks);
-			//TODO add an after?
-			
+			// TODO add an after?
+
 		}
 	}
 
@@ -154,13 +155,13 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 	}
 
 	public abstract void onNetworksDisconnected(List<Integer> newNetworks);
-	
+
 	public abstract void onNetworksConnected(int newID, int oldID);
 
 	public abstract void onConnectionAdded(int registryID, T added);
 
 	public abstract void onConnectionRemoved(int registryID, T added);
 
-	//public abstract void afterConnectionRemoved(int registryID, T added);
+	// public abstract void afterConnectionRemoved(int registryID, T added);
 
 }

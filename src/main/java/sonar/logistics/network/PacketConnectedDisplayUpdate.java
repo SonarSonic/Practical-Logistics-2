@@ -10,15 +10,15 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 
-public class PacketConnectedDisplayScreen implements IMessage {
+public class PacketConnectedDisplayUpdate implements IMessage {
 
 	public ByteBuf savedBuf;
 	public ConnectedDisplay screen;
 	public int registryID;
 
-	public PacketConnectedDisplayScreen() {}
+	public PacketConnectedDisplayUpdate() {}
 
-	public PacketConnectedDisplayScreen(ConnectedDisplay screen, int registryID) {
+	public PacketConnectedDisplayUpdate(ConnectedDisplay screen, int registryID) {
 		super();
 		this.screen = screen;
 		this.registryID = registryID;
@@ -38,10 +38,10 @@ public class PacketConnectedDisplayScreen implements IMessage {
 		screen.writeToBuf(buf);
 	}
 
-	public static class Handler implements IMessageHandler<PacketConnectedDisplayScreen, IMessage> {
+	public static class Handler implements IMessageHandler<PacketConnectedDisplayUpdate, IMessage> {
 
 		@Override
-		public IMessage onMessage(PacketConnectedDisplayScreen message, MessageContext ctx) {
+		public IMessage onMessage(PacketConnectedDisplayUpdate message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
 					public void run() {

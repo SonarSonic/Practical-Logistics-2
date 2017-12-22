@@ -18,14 +18,15 @@ import sonar.logistics.network.PacketChannels;
 import sonar.logistics.network.PacketClickEventClient;
 import sonar.logistics.network.PacketClickEventServer;
 import sonar.logistics.network.PacketClientEmitters;
-import sonar.logistics.network.PacketConnectedDisplayScreen;
+import sonar.logistics.network.PacketConnectedDisplayRemove;
+import sonar.logistics.network.PacketConnectedDisplayUpdate;
 import sonar.logistics.network.PacketEmitterStatement;
 import sonar.logistics.network.PacketInfoUpdates;
 import sonar.logistics.network.PacketInventoryReader;
 import sonar.logistics.network.PacketItemInteractionText;
+import sonar.logistics.network.PacketLocalProviders;
 import sonar.logistics.network.PacketMonitoredList;
 import sonar.logistics.network.PacketNodeFilter;
-import sonar.logistics.network.PacketLocalProviders;
 import sonar.logistics.network.PacketWirelessStorage;
 
 public class PL2Common implements IGuiHandler {
@@ -38,13 +39,14 @@ public class PL2Common implements IGuiHandler {
 		PL2.network.registerMessage(PacketInventoryReader.Handler.class, PacketInventoryReader.class, 4, Side.SERVER);
 		PL2.network.registerMessage(PacketClientEmitters.Handler.class, PacketClientEmitters.class, 5, Side.CLIENT);
 		PL2.network.registerMessage(PacketLocalProviders.Handler.class, PacketLocalProviders.class, 6, Side.CLIENT);
-		PL2.network.registerMessage(PacketConnectedDisplayScreen.Handler.class, PacketConnectedDisplayScreen.class, 7, Side.CLIENT);
+		PL2.network.registerMessage(PacketConnectedDisplayUpdate.Handler.class, PacketConnectedDisplayUpdate.class, 7, Side.CLIENT);
 		PL2.network.registerMessage(PacketClickEventServer.Handler.class, PacketClickEventServer.class, 8, Side.SERVER);
 		PL2.network.registerMessage(PacketClickEventClient.Handler.class, PacketClickEventClient.class, 9, Side.CLIENT);
 		PL2.network.registerMessage(PacketNodeFilter.Handler.class, PacketNodeFilter.class, 10, Side.SERVER);
 		PL2.network.registerMessage(PacketEmitterStatement.Handler.class, PacketEmitterStatement.class, 11, Side.SERVER);
 		PL2.network.registerMessage(PacketWirelessStorage.Handler.class, PacketWirelessStorage.class, 12, Side.SERVER);
 		PL2.network.registerMessage(PacketItemInteractionText.Handler.class, PacketItemInteractionText.class, 13, Side.CLIENT);
+		PL2.network.registerMessage(PacketConnectedDisplayRemove.Handler.class, PacketConnectedDisplayRemove.class, 14, Side.CLIENT);
 	}
 
 	@Override

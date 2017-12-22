@@ -16,7 +16,7 @@ public class BlockSapphireOre extends BlockOre {
 		setHarvestLevel("pickaxe", 2);
 	}
 
-	public Item getItemDropped(int meta, Random rand, int fortune) {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune){
 		return PL2Items.sapphire;
 	}
 

@@ -71,7 +71,7 @@ public abstract class ListNetworkHandler<I extends IInfo> implements INetworkLis
 	public MonitoredList<I> updateConnection(INetworkListChannels channels, MonitoredList<I> newList, MonitoredList<I> oldList, NodeConnection c) {
 		if (c instanceof BlockConnection) {
 			BlockConnection connection = (BlockConnection) c;
-			if (channels.isCoordsMonitored(connection)) {
+			if (channels.isCoordsMonitored(connection)) { //isn't monitored???
 				return ((ITileMonitorHandler) this).updateInfo(channels, newList, oldList, connection);
 			}
 		} else if (c instanceof EntityConnection) {

@@ -193,7 +193,6 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 		StoredItemStack stack = itemStack.getObject();
 		objects.add(new ComparableObject(this, "Stored", stack.stored));
 		objects.add(new ComparableObject(this, "Damage", stack != null ? stack.getItemDamage() : -1));
-		// objects.add(new ComparableObject(this, "Item", stack.item.getItem()));
 		objects.add(new ComparableObject(this, "NBT", stack.item.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound()));
 		return objects;
 

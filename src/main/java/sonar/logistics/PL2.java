@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -146,7 +147,7 @@ public class PL2 {
 	}
 
 	@EventHandler
-	public void serverClose(FMLServerStoppingEvent event) {
+	public void serverClose(FMLServerStoppedEvent event) {
 		WirelessManager.removeAll();
 		getNetworkManager().removeAll();
 		getCableManager().removeAll();

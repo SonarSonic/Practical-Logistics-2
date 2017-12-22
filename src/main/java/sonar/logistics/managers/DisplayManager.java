@@ -42,8 +42,9 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 		PL2.getServerManager().getConnectedDisplays().remove(oldID);
 		if (screen != null) {
 			screen.setHasChanged();
-		} else
+		} else{
 			PL2.logger.error("CONNECTED DISPLAY SCREEN SHOULD NOT BE NULL!");
+		}
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	@Override
 	public void onConnectionRemoved(int registryID, ILargeDisplay added) {
 		PL2.getServerManager().removeDisplay(added);
-		if (this.getConnections(registryID).isEmpty()) {
+		if (getConnections(registryID).isEmpty()) {
 			PL2.getServerManager().getConnectedDisplays().remove(registryID);
 		} else {
 			ConnectedDisplay screen = PL2.getServerManager().getConnectedDisplays().get(registryID);

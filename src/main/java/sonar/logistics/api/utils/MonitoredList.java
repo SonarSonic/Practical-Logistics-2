@@ -12,6 +12,7 @@ import sonar.logistics.api.info.IJoinableInfo;
 
 public class MonitoredList<T extends IInfo> extends ArrayList<T> {
 
+	public static final MonitoredList EMPTY = MonitoredList.newMonitoredList(-1);
 	public List<T> changed = new ArrayList<T>();
 	public List<T> removed = new ArrayList<T>();
 	public StorageSize sizing;

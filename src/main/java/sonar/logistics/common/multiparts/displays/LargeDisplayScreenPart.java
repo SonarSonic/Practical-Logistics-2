@@ -55,7 +55,6 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.client.gui.GuiDisplayScreen;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.helpers.PacketHelper;
-import sonar.logistics.network.PacketConnectedDisplayScreen;
 
 public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILargeDisplay {
 
@@ -111,7 +110,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 		super.update();
 		if (isServer() && onRenderChange) {
 			if (this.shouldRender()) {
-				this.getDisplayScreen().sendViewers();
+				this.getDisplayScreen().updateAllListeners();
 			}
 			this.sendSyncPacket();
 			this.sendByteBufPacket(5);
@@ -145,7 +144,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 			getDisplayScreen().layout.incrementEnum();
 		}
 		sendSyncPacket();
-		getDisplayScreen().sendViewers();
+		getDisplayScreen().updateAllListeners();
 	}
 
 	@Override
@@ -186,7 +185,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 			if (this.savedTag != null && !savedTag.hasNoTags()) {
 				connectedDisplay.readData(savedTag, SyncType.SAVE);
 				savedTag = null;
-				connectedDisplay.sendViewers();
+				connectedDisplay.updateAllListeners();
 				PL2.getServerManager().updateViewingMonitors = true;
 			}
 		}
@@ -194,7 +193,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 
 	@Override
 	public boolean shouldRender() {
-		return shouldRender.getObject() && getRegistryID()!=-1 && getDisplayScreen() != null;
+		return shouldRender.getObject() && getRegistryID() != -1 && getDisplayScreen() != null;
 	}
 
 	@Override
@@ -390,7 +389,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		if (type.isType(SyncType.DEFAULT_SYNC) || (type.isType(SyncType.SAVE) && this.getDisplayScreen().isLocked.getObject())) {
+		if (type.isType(SyncType.DEFAULT_SYNC) || (type.isType(SyncType.SAVE) && getDisplayScreen() != null && getDisplayScreen().isLocked.getObject())) {
 			nbt.setInteger("id", registryID);
 			shouldRender.writeData(nbt, type);
 			wasLocked.setObject(this.getDisplayScreen().isLocked.getObject());
@@ -407,9 +406,9 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 	//// PACKETS \\\\
 	public void onSyncPacketRequested(EntityPlayer player) {
 		super.onSyncPacketRequested(player);
-		ConnectedDisplay screen = this.getDisplayScreen();
-		if (screen != null)
-			PL2.network.sendTo(new PacketConnectedDisplayScreen(screen, registryID), (EntityPlayerMP) player);
+		//ConnectedDisplay screen = this.getDisplayScreen();
+		//if (screen != null)
+			//PL2.network.sendTo(new PacketConnectedDisplayScreen(screen, registryID), (EntityPlayerMP) player);
 	}
 
 	@Override
@@ -454,7 +453,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 		case 0:
 			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			PL2.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
+			//PL2.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
 			PacketHelper.sendLocalProvidersFromScreen(part, player);
 			break;
 		}

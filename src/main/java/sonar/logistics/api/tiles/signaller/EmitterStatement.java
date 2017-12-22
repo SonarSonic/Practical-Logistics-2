@@ -86,7 +86,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 			if (info1 != null && info1 instanceof IComparableInfo) {
 				IComparableInfo provider1 = (IComparableInfo) info1;
 				ComparableObject obj = ComparableObject.getComparableObject(provider1.getComparableObjects(Lists.newArrayList()), key);
-				if (getComparator().isValidObject(obj.object)) {
+				if (getComparator() != null && getComparator().isValidObject(obj.object)) {
 					return obj.object;
 				}
 

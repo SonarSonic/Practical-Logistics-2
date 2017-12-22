@@ -132,6 +132,7 @@ public abstract class AbstractReaderPart<T extends IInfo> extends SidedPart impl
 
 	@Override
 	public void onListenerAdded(ListenerTally<PlayerListener> tally) {
+		super.onListenerAdded(tally);
 		SonarMultipartHelper.sendMultipartSyncToPlayer(this, tally.listener.player);
 	}
 

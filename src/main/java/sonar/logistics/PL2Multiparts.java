@@ -4,43 +4,113 @@ import net.minecraft.item.ItemStack;
 import sonar.core.translate.Localisation;
 
 public enum PL2Multiparts {
-	ARRAY(0.625, 0.0625 * 1, 0.0625 * 4, new ItemStack(PL2Items.array), PL2Translate.ARRAY),
-	CLOCK(3 * 0.0625, 0.0625 * 1, 0.0625 * 3, new ItemStack(PL2Items.clock), PL2Translate.CLOCK),
-	DATA_CABLE(0, 0, 0, new ItemStack(PL2Items.cable), PL2Translate.CABLE),
-	DATA_EMITTER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, new ItemStack(PL2Items.data_emitter), PL2Translate.DATA_EMITTER),
-	DATA_RECEIVER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, new ItemStack(PL2Items.data_receiver), PL2Translate.DATA_RECEIVER),
-	DISPLAY_SCREEN(0, 0, 0, new ItemStack(PL2Items.display_screen), PL2Translate.DISPLAY_SCREEN),
-	ENERGY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, new ItemStack(PL2Items.energy_reader), PL2Translate.ENERGY_READER),
-	ENTITY_NODE(5 * 0.0625, 0.0625 * 1, 0.0625 * 4, new ItemStack(PL2Items.entity_node), PL2Translate.ENTITY_NODE),
-	FLUID_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, new ItemStack(PL2Items.fluid_reader), PL2Translate.FLUID_READER),
-	INFO_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, new ItemStack(PL2Items.info_reader), PL2Translate.INFO_READER),
-	INVENTORY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, new ItemStack(PL2Items.inventory_reader), PL2Translate.INVENTORY_READER),
-	LARGE_DISPLAY_SCREEN(0, 0, 0, new ItemStack(PL2Items.large_display_screen), PL2Translate.LARGE_DISPLAY_SCREEN),
-	NODE(0.875, 0, 0.0625, new ItemStack(PL2Items.node), PL2Translate.NODE),
-	REDSTONE_SIGNALLER(3 * 0.0625, 0.0625 * 1, 0.0625 * 6, new ItemStack(PL2Items.redstone_signaller), PL2Translate.REDSTONE_SIGNALLER),
-	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, new ItemStack(PL2Items.transfer_node), PL2Translate.TRANSFER_NODE);
+	ARRAY(0.625, 0.0625 * 1, 0.0625 * 4, PL2Translate.ARRAY) {
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.array);
+		}
+	},
+	CLOCK(3 * 0.0625, 0.0625 * 1, 0.0625 * 3, PL2Translate.CLOCK) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.clock);
+		}
+	},
+	DATA_CABLE(0, 0, 0, PL2Translate.CABLE) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.cable);
+		}
+	},
+	DATA_EMITTER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, PL2Translate.DATA_EMITTER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.data_emitter);
+		}
+	},
+	DATA_RECEIVER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, PL2Translate.DATA_RECEIVER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.data_receiver);
+		}
+	},
+	DISPLAY_SCREEN(0, 0, 0, PL2Translate.DISPLAY_SCREEN) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.display_screen);
+		}
+	},
+	ENERGY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, PL2Translate.ENERGY_READER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.energy_reader);
+		}
+	},
+	ENTITY_NODE(5 * 0.0625, 0.0625 * 1, 0.0625 * 4, PL2Translate.ENTITY_NODE) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.entity_node);
+		}
+	},
+	FLUID_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, PL2Translate.FLUID_READER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.fluid_reader);
+		}
+	},
+	INFO_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, PL2Translate.INFO_READER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.info_reader);
+		}
+	},
+	INVENTORY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 6, PL2Translate.INVENTORY_READER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.inventory_reader);
+		}
+	},
+	LARGE_DISPLAY_SCREEN(0, 0, 0, PL2Translate.LARGE_DISPLAY_SCREEN) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.large_display_screen);
+		}
+	},
+	NODE(0.875, 0, 0.0625, PL2Translate.NODE) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.node);
+		}
+	},
+	REDSTONE_SIGNALLER(3 * 0.0625, 0.0625 * 1, 0.0625 * 6, PL2Translate.REDSTONE_SIGNALLER) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.redstone_signaller);
+		}
+	},
+	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, PL2Translate.TRANSFER_NODE) {
+		@Override
+		public ItemStack getItem() {
+			return new ItemStack(PL2Items.transfer_node);
+		}
+	};
 
 	public double width, heightMin, heightMax;
-	private ItemStack stack;
 	private Localisation localisation;
 
-	PL2Multiparts(double width, double heightMin, double heightMax, ItemStack stack, Localisation localisation) {
+	PL2Multiparts(double width, double heightMin, double heightMax, Localisation localisation) {
 		this.width = width;
 		this.heightMin = heightMin;
 		this.heightMax = heightMax;
-		this.stack = stack;
 		this.localisation = localisation;
 	}
-	
-	public ItemStack getItem(){
-		return stack;
-	}
-	
-	public String getUnlocalisedName(){
+
+	public abstract ItemStack getItem();
+
+	public String getUnlocalisedName() {
 		return localisation.o();
 	}
-	
-	public String getDisplayName(){
+
+	public String getDisplayName() {
 		return localisation.t();
 	}
 }

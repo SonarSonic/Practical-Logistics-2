@@ -48,6 +48,7 @@ public class ClientInfoManager implements IInfoManager {
 	@Override
 	public void removeAll() {
 		connectedDisplays.clear();
+		displays.clear();
 		info.clear();
 		sortedLogicMonitors.clear();
 		clientLogicMonitors.clear();

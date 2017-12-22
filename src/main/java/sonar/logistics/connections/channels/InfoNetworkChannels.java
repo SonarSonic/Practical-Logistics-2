@@ -42,7 +42,7 @@ public class InfoNetworkChannels extends ListNetworkChannels<IProvidableInfo, In
 	public @Nullable ChannelList getChannelsList() {
 		ChannelList list = new ChannelList(-1, ChannelType.NETWORK_SINGLE, network.getNetworkID());
 		for (IListReader monitor : readers) {
-			if (monitor instanceof INetworkReader && !monitor.getListenerList().getListeners(ListenerType.FULL_INFO, ListenerType.TEMPORARY).isEmpty()) {
+			if (monitor instanceof INetworkReader && !monitor.getListenerList().getListeners(ListenerType.FULL_INFO, ListenerType.INFO, ListenerType.TEMPORARY).isEmpty()) {
 				ChannelList channels = ((INetworkReader) monitor).getChannels();
 				list.addAll(channels.getCoords());
 				list.addAllUUID(channels.getUUIDs());

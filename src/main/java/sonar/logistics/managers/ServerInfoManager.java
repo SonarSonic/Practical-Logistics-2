@@ -47,6 +47,7 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.api.utils.MonitoredValue;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
@@ -56,6 +57,7 @@ import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
+import sonar.logistics.info.types.NewMonitoredList;
 import sonar.logistics.network.PacketInfoUpdates;
 import sonar.logistics.network.PacketLocalProviders;
 
@@ -83,12 +85,10 @@ public class ServerInfoManager implements IInfoManager {
 	public void removeAll() {
 		changedInfo.clear();
 		displays.clear();
-		// requireUpdates.clear();
-		// viewables.clear();
+		info.clear();		
 		monitoredLists.clear();
-		identityTiles.clear();
-		info.clear();
-		connectedDisplays.clear();
+		identityTiles.clear();		
+		//connectedDisplays.clear();
 		clickEvents.clear();
 		chunksToUpdate.clear();
 	}
@@ -102,13 +102,16 @@ public class ServerInfoManager implements IInfoManager {
 	}
 
 	public ConnectedDisplay getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID) {
-		Map<Integer, ConnectedDisplay> displays = getConnectedDisplays();
-		ConnectedDisplay toSet = displays.get(registryID);
-		if (toSet == null) {
-			displays.put(registryID, new ConnectedDisplay(display));
-			toSet = displays.get(registryID);
+		if (registryID != -1) {
+			Map<Integer, ConnectedDisplay> displays = getConnectedDisplays();
+			ConnectedDisplay toSet = displays.get(registryID);
+			if (toSet == null) {
+				displays.put(registryID, new ConnectedDisplay(display));
+				toSet = displays.get(registryID);
+			}
+			return toSet;
 		}
-		return toSet;
+		return new ConnectedDisplay(display);//kills Ait
 	}
 
 	public void addIdentityTile(ILogicListenable infoProvider) {
@@ -234,7 +237,7 @@ public class ServerInfoManager implements IInfoManager {
 		if (updateViewingMonitors) {
 			updateViewingMonitors = false;
 			identityTiles.values().forEach(tile -> tile.getListenerList().clearSubLists(true));
-			
+
 			displays.forEach(display -> display.container().forEachValidUUID(uuid -> {
 				ILogicListenable monitor = CableHelper.getMonitorFromIdentity(uuid.getIdentity(), false);
 				if (monitor != null && monitor instanceof ILogicListenable) {

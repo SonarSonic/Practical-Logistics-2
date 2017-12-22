@@ -2,6 +2,7 @@ package sonar.logistics.api.tiles.displays;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
@@ -41,7 +42,8 @@ import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.network.PacketConnectedDisplayScreen;
+import sonar.logistics.network.PacketConnectedDisplayRemove;
+import sonar.logistics.network.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
 public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, IScaleableDisplay, ISyncPart {
@@ -59,7 +61,7 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 	public SyncTagType.BOOLEAN isLocked = new SyncTagType.BOOLEAN(6);
 	// public double[] scaling = null;
 	public boolean hasChanged = true;
-	public boolean sendViewers;
+	public boolean updateListeners = false;
 
 	// server side
 	public List<ILargeDisplay> displays = Lists.newArrayList(); // cached
@@ -90,8 +92,8 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 	}
 
 	public void update(int registryID) {
-		if (sendViewers) {
-			sendViewers();
+		if (updateListeners) {
+			updateAllListeners();
 		}
 		if (hasChanged || this.registryID != registryID) {
 			this.registryID = registryID;
@@ -102,18 +104,33 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 				}
 			}
 			hasChanged = false;
-			sendViewers = true;
+			updateListeners = true;
 		}
 	}
 
-	public void sendViewers() {
+	public void updateAllListeners() {
 		List<PlayerListener> listeners = getListenerList().getListeners(ListenerType.INFO, ListenerType.FULL_INFO);
-		if (!listeners.isEmpty()) {
-			listeners.forEach(listener -> PL2.network.sendTo(new PacketConnectedDisplayScreen(this, registryID), listener.player));
-			sendViewers = false;
-		} else {
-			sendViewers = true;
+		updateListeners = listeners.isEmpty();		
+		if (!updateListeners) {
+			listeners.forEach(listener -> updateListener(listener));
 		}
+	}
+	
+	public void removeAllListeners(){
+		forListeners(listener -> removeListener(listener));
+	}
+	
+	public void forListeners(Consumer<PlayerListener> action){
+		List<PlayerListener> listeners = getListenerList().getListeners(ListenerType.INFO, ListenerType.FULL_INFO);
+		listeners.forEach(action);
+	}
+	
+	public void updateListener(PlayerListener listener){
+		PL2.network.sendTo(new PacketConnectedDisplayUpdate(this, registryID), listener.player);
+	}
+	
+	public void removeListener(PlayerListener listener){
+		PL2.network.sendTo(new PacketConnectedDisplayRemove(registryID), listener.player);
 	}
 
 	public void setDisplayScaling(ILargeDisplay primary, List<ILargeDisplay> displays) {
@@ -430,10 +447,14 @@ public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, I
 	}
 
 	@Override
-	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {
+		updateListener(tally.listener);
+	}
 
 	@Override
-	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {
+		//removeListener(tally.listener);
+	}
 
 	@Override
 	public void onSubListenableAdded(ISonarListenable<PlayerListener> listen) {}

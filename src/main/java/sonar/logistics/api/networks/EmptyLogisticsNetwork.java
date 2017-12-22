@@ -92,7 +92,7 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 
 	@Override
 	public MonitoredList<IInfo> createConnectionsList(CacheType cacheType) {
-		return MonitoredList.newMonitoredList(-1);
+		return MonitoredList.EMPTY;
 	}
 
 	@Override
