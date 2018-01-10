@@ -42,7 +42,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public void initGui() {
 		this.buttonList.clear();
 		Keyboard.enableRepeatEvents(true);
-		this.mc.thePlayer.openContainer = this.inventorySlots;
+		this.mc.player.openContainer = this.inventorySlots;
 		this.xSize = xSize();
 		this.ySize = ySize();
 		this.size = listSize();
@@ -261,8 +261,9 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 			this.list=list;
 		}
 
-		public void drawButton(Minecraft mc, int x, int y) {
-			this.hovered = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
+		@Override
+        public void drawButton(Minecraft mc, int x, int y, float partialTicks) {
+			this.hovered = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
 			if(this.hovered){
 				list.onButtonHovered(this, x, y);
 			}

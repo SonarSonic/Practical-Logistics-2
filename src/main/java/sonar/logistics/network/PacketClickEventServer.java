@@ -22,8 +22,7 @@ public class PacketClickEventServer implements IMessage {
 	public NBTTagCompound eventTag;
 	public int hashCode;
 
-	public PacketClickEventServer() {
-	}
+	public PacketClickEventServer() {}
 
 	public PacketClickEventServer(int hashCode, NBTTagCompound eventTag) {
 		this.hashCode = hashCode;
@@ -47,21 +46,18 @@ public class PacketClickEventServer implements IMessage {
 		@Override
 		public IMessage onMessage(PacketClickEventServer message, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-					public void run() {
-						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-						if (player != null) {
-							DisplayInteractionEvent event = PL2.getServerManager().clickEvents.get(message.hashCode);
-							if (event != null && event.hit.partHit instanceof IDisplay) {
-								InfoContainer container = (InfoContainer) ((IDisplay) event.hit.partHit).container();
-								IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
-								IInfo info = displayInfo.getSidedCachedInfo(false);
-								if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
-									((IAdvancedClickableInfo) info).onClickEvent(container, displayInfo, event, message.eventTag);
-								}
-								PL2.getServerManager().clickEvents.remove(message.hashCode);
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (player != null) {
+						DisplayInteractionEvent event = PL2.getServerManager().clickEvents.get(message.hashCode);
+						if (event != null && event.hit.hitInfo instanceof IDisplay) {
+							InfoContainer container = (InfoContainer) ((IDisplay) event.hit.hitInfo).container();
+							IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
+							IInfo info = displayInfo.getSidedCachedInfo(false);
+							if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
+								((IAdvancedClickableInfo) info).onClickEvent(container, displayInfo, event, message.eventTag);
 							}
-
+							PL2.getServerManager().clickEvents.remove(message.hashCode);
 						}
 					}
 				});

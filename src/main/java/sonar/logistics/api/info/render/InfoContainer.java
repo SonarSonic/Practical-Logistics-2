@@ -11,13 +11,13 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.api.utils.BlockInteractionType;
@@ -135,7 +135,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	}
 
 	@Override
-	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
 		boolean doubleClick = false;
 		if (world.getTotalWorldTime() - lastClickTime < 10 && player.getPersistentID().equals(lastClickUUID)) {
 			doubleClick = true;

@@ -16,7 +16,6 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.InfoError;
-import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 

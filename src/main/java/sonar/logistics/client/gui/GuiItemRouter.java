@@ -96,7 +96,7 @@ public class GuiItemRouter extends GuiSonar {
 			this.buttonList.add(new SideButton(6, guiLeft + 6, guiTop + 6, 34, 12, "DONE"));
 		} else if (state == ORE) {
 			Keyboard.enableRepeatEvents(true);
-			oreDictField = new GuiTextField(0, this.fontRendererObj, 44, 25, 109, 12);
+			oreDictField = new GuiTextField(0, this.fontRenderer, 44, 25, 109, 12);
 			oreDictField.setMaxStringLength(20);
 			oreDictField.setText(handler.clientOreFilter.oreDict);
 			this.buttonList.add(new SideButton(12, guiLeft + 6, guiTop + 6, 34, 12, "DONE"));
@@ -149,7 +149,7 @@ public class GuiItemRouter extends GuiSonar {
 						int colour = Color.white.getRGB();
 						String type = filter.getName() + " : " + i;
 						/*
-						 * if (filter instanceof ItemStackFilter) { ItemStackFilter stackFilter = (ItemStackFilter) filter; FontHelper.textOffsetCentre("Item Stack Filter", 90, 38 + (i * 18) - (start * 18), colour); double scale = 0.5; RenderItem.getInstance().renderItemAndEffectIntoGUI(fontRendererObj, this.mc.getTextureManager(), stackFilter.getFilters().get(0), 10, 34 + (i * 18) - (start * 18)); } if (filter instanceof OreDictionaryFilter) { OreDictionaryFilter oreFilter = (OreDictionaryFilter) filter; if (oreFilter.getFilters() != null && oreFilter.getFilters().size() != 0) { RenderItem.getInstance().renderItemAndEffectIntoGUI(fontRendererObj, this.mc.getTextureManager(), oreFilter.getFilters().get(0), 10, 34 + (i * 18) - (start * 18)); } FontHelper.textOffsetCentre("Ore Dictionary Filter ", 90, 38 + (i * 18) - (start * 18), colour); }
+						 * if (filter instanceof ItemStackFilter) { ItemStackFilter stackFilter = (ItemStackFilter) filter; FontHelper.textOffsetCentre("Item Stack Filter", 90, 38 + (i * 18) - (start * 18), colour); double scale = 0.5; RenderItem.getInstance().renderItemAndEffectIntoGUI(fontRenderer, this.mc.getTextureManager(), stackFilter.getFilters().get(0), 10, 34 + (i * 18) - (start * 18)); } if (filter instanceof OreDictionaryFilter) { OreDictionaryFilter oreFilter = (OreDictionaryFilter) filter; if (oreFilter.getFilters() != null && oreFilter.getFilters().size() != 0) { RenderItem.getInstance().renderItemAndEffectIntoGUI(fontRenderer, this.mc.getTextureManager(), oreFilter.getFilters().get(0), 10, 34 + (i * 18) - (start * 18)); } FontHelper.textOffsetCentre("Ore Dictionary Filter ", 90, 38 + (i * 18) - (start * 18), colour); }
 						 
 					}
 
@@ -201,7 +201,7 @@ public class GuiItemRouter extends GuiSonar {
 			if (filters != null && filters.size() != 0) {
 				ItemStack stack = filters.get(0);
 				net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
-				//RenderItem.getInstance().renderItemAndEffectIntoGUI(fontRendererObj, this.mc.getTextureManager(), stack, 23, 23);
+				//RenderItem.getInstance().renderItemAndEffectIntoGUI(fontRenderer, this.mc.getTextureManager(), stack, 23, 23);
 
 				if (x - guiLeft >= 23 && x - guiLeft <= 23 + 16 && y - guiTop >= 23 && y - guiTop <= 23 + 16) {
 					this.drawNormalToolTip(stack, x, y);

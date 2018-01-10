@@ -205,7 +205,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 		}
 	}
 
-	public void drawForegroundPage(GuiGuide gui, int x, int y, int page) {
+	public void drawForegroundPage(GuiGuide gui, int x, int y, int page, int partialTicks) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		for (int i = 0; i < this.guideButtons.size(); ++i) {
 			GuiButton button = ((GuiButton) this.guideButtons.get(i));
@@ -233,7 +233,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 		for (int i = 0; i < this.guideButtons.size(); ++i) {
 			GuiButton button = ((GuiButton) this.guideButtons.get(i));
 			int left = x + gui.getGuiLeft(), top = y + gui.getGuiTop();
-			button.drawButton(gui.mc, left, top);
+			button.drawButton(gui.mc, left, top, partialTicks);
 		}
 	}
 	

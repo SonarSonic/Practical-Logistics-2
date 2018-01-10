@@ -2,8 +2,8 @@ package sonar.logistics.common.items;
 
 import java.util.List;
 
-import mcmultipart.multipart.IMultipartContainer;
-import mcmultipart.multipart.MultipartHelper;
+import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.multipart.MultipartHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

@@ -25,7 +25,7 @@ public class DisplayTextFields extends Gui {
 	public void initFields(List<String> textList) {
 		Keyboard.enableRepeatEvents(true);
 		this.fields = new GuiTextField[size];
-		FontRenderer render = Minecraft.getMinecraft().fontRendererObj;
+		FontRenderer render = Minecraft.getMinecraft().fontRenderer;
 		for (int i = 0; i < fields.length; i++) {
 			GuiTextField field = new GuiTextField(i, render, x, y + i * height, width, height);
 			field.setMaxStringLength(64);

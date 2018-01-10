@@ -61,7 +61,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		initButtons();
 		switch (getSetting()) {
 		case POS:
-			slotField = new SonarTextField(2, this.fontRendererObj, 63, 10, 32, 14);
+			slotField = new SonarTextField(2, this.fontRenderer, 63, 10, 32, 14);
 			slotField.setMaxStringLength(7);
 			slotField.setText("" + part.posSlot.getObject());
 			slotField.setDigitsOnly(true);
@@ -70,7 +70,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		default:
 			break;
 		}
-		searchField = new SonarTextField(3, this.fontRendererObj, 135, 10, 104, 14);
+		searchField = new SonarTextField(3, this.fontRenderer, 135, 10, 104, 14);
 		searchField.setMaxStringLength(20);
 		fieldList.add(searchField);
 	}
@@ -231,7 +231,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		if (fluidStack.stored != 0) {
 			list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
 		}
-		drawHoveringText(list, x, y, fontRendererObj);
+		drawHoveringText(list, x, y, fontRenderer);
 	}
 
 	@Override

@@ -5,10 +5,42 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+
+repositories {
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
+    maven {
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
+    }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "modmaven.k-4u.nl"
+    }
+    maven {
+        name = "Refined Storage"
+        url "https://dl.bintray.com/raoulvdberge/dev/"
+    }
+    maven {
+        name = "HWYLA"
+        url "http://tehnut.info/maven"
+}
+    maven {
+        name = "MCMultipart"
+        url "http://maven.amadornes.com/"
     }
 }
 
@@ -17,28 +49,55 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 version = "${minecraft_version}-${mod_version}"
 group= "sonar.logistics"
 archivesBaseName = "PracticalLogistics2"
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = targetCompatibility = "1.8"
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
 
 minecraft {
-    version = "1.10.2-12.18.3.2422"
+    version = "${forge_version}"
     runDir = "run"
-    mappings = "snapshot_20161111"
+    mappings = "snapshot_20171002"
     makeObfSourceJar = false
 }
 
-repositories {}
+task deobfJar(type: Jar) { // Generate deobfuscated
+    from sourceSets.main.output
+    classifier = 'deobf'
+}
+tasks.build.dependsOn('deobfJar')
+artifacts {
+    archives deobfJar
+    archives jar
+}
 
-dependencies {}
+dependencies {
+    compileOnly "tesla:Tesla:${tesla_version}"
+    deobfCompile "cofh:RedstoneFlux:${redstoneflux_version}"
+    // compile against the JEI API but do not include it at runtime
+    deobfProvided "mezz.jei:jei_${jei_version}:api"
+    // at runtime, use the full JEI jar
+    runtime "mezz.jei:jei_${jei_version}"
+    compileOnly "crafttweaker:CraftTweaker2:${crafttweaker_version}"
+    compileOnly "storage-drawers:StorageDrawers:${storagedrawers_version}"
+    compileOnly "deep-resonance:deepresonance:${deep_resonance_version}"
+    compileOnly "appeng:appliedenergistics2:${ae2_version}"
+    compileOnly "eleccore-rendering-library:ElecCore:${elec_core_version}"
+    compileOnly "mekanism:Mekanism:${mekanism_version}"
+    compileOnly "refinedstorage:refinedstorage:${refinedstorage_version}:api"
+    deobfCompile "mcp.mobius.waila:Hwyla:${waila_version}"
+    compileOnly "mcjtylib:mcjtylib:${mcjtylib_version}"
+    deobfCompile "MCMultiPart2:MCMultiPart:${mcmp_version}"
+}
 
 processResources
 {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'                
 
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }        
 

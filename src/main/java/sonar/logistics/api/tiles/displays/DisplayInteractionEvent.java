@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
@@ -17,12 +18,12 @@ public class DisplayInteractionEvent {
 	public BlockInteractionType type;
 	public boolean doubleClick;
 	public EnumHand hand;
-	public PartMOP hit;
+	public RayTraceResult hit;
 
 	public DisplayInteractionEvent() {
 	}
 
-	public DisplayInteractionEvent(int hashCode, IInfo currentInfo, int infoPos, EntityPlayer player, BlockInteractionType type, boolean doubleClick, EnumHand hand, PartMOP hit) {
+	public DisplayInteractionEvent(int hashCode, IInfo currentInfo, int infoPos, EntityPlayer player, BlockInteractionType type, boolean doubleClick, EnumHand hand, RayTraceResult hit) {
 		this.hashCode = hashCode;
 		this.currentInfo = currentInfo;
 		this.infoPos = infoPos;

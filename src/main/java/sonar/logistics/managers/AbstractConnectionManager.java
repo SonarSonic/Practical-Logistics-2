@@ -10,12 +10,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
+import sonar.core.helpers.FunctionHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.tiles.IConnectable;
+import sonar.logistics.api.tiles.ICable;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 
-public abstract class AbstractConnectionManager<T extends IConnectable> {
+public abstract class AbstractConnectionManager<T extends ICable> {
 
 	protected Map<Integer, List<T>> connections = new ConcurrentHashMap<Integer, List<T>>();
 	private NetworkManager NetworkManager;
@@ -59,7 +60,7 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 		BlockPos pos = coords.getBlockPos();
 
 		for (EnumFacing dir : EnumFacing.values()) {
-			if (cable.canConnectOnSide(cable.getRegistryID(), dir, false)) {
+			if (cable.canConnect(cable.getRegistryID(), dir, false).canConnect()) {
 				Pair<ConnectableType, Integer> connection = getConnectionType(cable, world, pos, dir, cable.getConnectableType());
 				if (connection.a != ConnectableType.NONE && connection.b != -1) {
 					List<T> cables = getConnections(connection.b);
@@ -83,14 +84,9 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 
 	public void addConnection(int registryID, T connection, boolean refreshCache) {
 		if (registryID != -1 && connection != null) {
-			List<T> network = connections.get(registryID);
-			if (network == null) {
-				connections.put(registryID, Lists.newArrayList());
-				network = connections.get(registryID);
-			}
+			List<T> network = connections.computeIfAbsent(registryID, FunctionHelper.ARRAY);
 			if (network != null && network.contains(connection))
 				return;
-
 			connection.setRegistryID(registryID);
 			network.add(connection);
 			if (refreshCache) {
@@ -111,19 +107,20 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 			onConnectionRemoved(registryID, connection);
 
 			int newID = getNextAvailableID();
-			allConnections = Lists.newArrayList(allConnections); // save all the current cables.
+			allConnections = Lists.newArrayList(allConnections); // save all the
+																	// current
+																	// cables.
 			connections.get(registryID).clear();
-			connections.remove(registryID); // clear all cables currently connected
+			connections.remove(registryID); // clear all cables currently
+											// connected
 
 			List<Integer> newNetworks = Lists.newArrayList();
 			allConnections.forEach(oldCable -> oldCable.setRegistryID(-1));
 			allConnections.forEach(oldCable -> {
-				oldCable.addConnection();
+				addConnectionToNetwork(oldCable);
 				newNetworks.add(oldCable.getRegistryID());
 			});
 			onNetworksDisconnected(newNetworks);
-			// TODO add an after?
-
 		}
 	}
 
@@ -131,10 +128,10 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 		BlockCoords coords = cable.getCoords();
 		for (EnumFacing dir : EnumFacing.values()) {
 			Pair<ConnectableType, Integer> connection = getConnectionType(cable, coords.getWorld(), coords.getBlockPos(), dir, cable.getConnectableType());
-			boolean canConnect = cable.canConnectOnSide(cable.getRegistryID(), dir, false);
+			boolean canConnect = cable.canConnect(cable.getRegistryID(), dir, false).canConnect();
 			if ((!canConnect && connection.a.canConnect(cable.getConnectableType()))) {
-				cable.removeConnection();
-				cable.addConnection();
+				removeConnectionToNetwork(cable);
+				addConnectionToNetwork(cable);
 			} else if ((canConnect && connection.a.canConnect(cable.getConnectableType()) && connection.b != cable.getRegistryID())) {
 				connectNetworks(cable.getRegistryID(), connection.b);
 			}
@@ -162,6 +159,8 @@ public abstract class AbstractConnectionManager<T extends IConnectable> {
 
 	public abstract void onConnectionRemoved(int registryID, T added);
 
-	// public abstract void afterConnectionRemoved(int registryID, T added);
+	public abstract void addConnectionToNetwork(T add);
+
+	public abstract void removeConnectionToNetwork(T remove);
 
 }

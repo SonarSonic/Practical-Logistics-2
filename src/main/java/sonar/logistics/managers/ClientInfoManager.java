@@ -9,12 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants.NBT;
-import sonar.core.helpers.NBTHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -25,7 +20,6 @@ import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
-import sonar.logistics.helpers.InfoHelper;
 
 public class ClientInfoManager implements IInfoManager {
 

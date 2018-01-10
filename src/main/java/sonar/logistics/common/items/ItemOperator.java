@@ -2,11 +2,10 @@ package sonar.logistics.common.items;
 
 import java.util.List;
 
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
-import mcmultipart.multipart.MultipartHelper;
-import mcmultipart.raytrace.RayTraceUtils;
-import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
+import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.MultipartHelper;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,7 +34,7 @@ import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
-	
+
 	//// IOperatorTool \\\\
 
 	@Override
@@ -45,24 +44,26 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		}
 		return OperatorMode.DEFAULT;
 	}
-	
+
 	//// INTERACTIONS \\\\
-	
+
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		/*
 		IMultipartContainer container = (IMultipartContainer) MultipartHelper.getPartContainer(world, pos);
 		if (container != null) {
+			
 			Vec3d start = RayTraceUtils.getStart(player);
 			Vec3d end = RayTraceUtils.getEnd(player);
 			AdvancedRayTraceResultPart result = SonarMultipartHelper.collisionRayTrace(container, start, end);
-			if(result==null){
+			if (result == null) {
 				return EnumActionResult.PASS;
 			}
 			IMultipart part = result.hit.partHit;
 			OperatorMode mode = getOperatorMode(stack);
 			switch (mode) {
 			case ANALYSE:
-				
-				//DO ERROR CHECKING.
+
+				// DO ERROR CHECKING.
 				break;
 			case DEFAULT:
 				if (!player.isSneaking()) {
@@ -95,16 +96,20 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			case INFO:
 				break;
 			case ROTATE:
-				return (part != null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+				//return (part != null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS; //FIXME
+				return EnumActionResult.PASS;
 			default:
 				break;
 
 			}
 		}
+		*/
+		//FIXME
 		return EnumActionResult.PASS;
 	}
 
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		ItemStack stack = player.getHeldItem(hand);
 		if (player.isSneaking()) {
 			stack = changeOperatorMode(stack);
 			FontHelper.sendMessage("Mode: " + getOperatorMode(stack), world, player);
@@ -114,7 +119,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			if (mode == OperatorMode.INFO) {
 				boolean isUsing = !PL2.proxy.isUsingOperator();
 				PL2.proxy.setUsingOperator(isUsing);
-				player.addChatComponentMessage(new TextComponentTranslation("Display Info: " + TextFormatting.AQUA + isUsing));
+				player.sendMessage(new TextComponentTranslation("Display Info: " + TextFormatting.AQUA + isUsing));
 			}
 		}
 		return new ActionResult(EnumActionResult.PASS, stack);
@@ -129,15 +134,16 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		return stack;
 	}
 
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
-		super.addInformation(stack, player, list, par4);
+	public void addInformation(ItemStack stack, World world, List list, ITooltipFlag flag) {
+		super.addInformation(stack, world, list, flag);
 		list.add("Mode: " + getOperatorMode(stack));
 	}
-	
-	//// GUI \\\\
+
+	//// GUI \\\\ FIXME
 
 	@Override
 	public Object getServerElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		/* FIXME
 		switch (id) {
 		case 0:
 			int hash = tag.getInteger("hash");
@@ -152,11 +158,13 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 				}
 			}
 		}
+		*/
 		return null;
 	}
 
 	@Override
 	public Object getClientElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	/*
 		switch (id) {
 		case 0:
 			int hash = tag.getInteger("hash");
@@ -171,6 +179,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 				}
 			}
 		}
+		*/
 		return null;
 	}
 

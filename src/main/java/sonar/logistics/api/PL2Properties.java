@@ -13,9 +13,8 @@ import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 
 public class PL2Properties {
-	public static final PropertyDirection ORIENTATION = PropertyDirection.create("facing");
-	public static final PropertyDirection ROTATION = PropertyDirection.create("rotation");
 	public static final PropertyBool CLOCK_HAND = PropertyBool.create("hand");
+	public static final PropertyBool HASDISPLAY = PropertyBool.create("display");
 	
 	public static final PropertyCableFace NORTH = PropertyCableFace.create(EnumFacing.NORTH);
 	public static final PropertyCableFace EAST = PropertyCableFace.create(EnumFacing.EAST);

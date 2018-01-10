@@ -9,7 +9,6 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.networks.INetworkListHandler;
-import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.gui.GuiInfoReader;

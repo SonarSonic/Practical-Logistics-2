@@ -19,6 +19,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -63,11 +64,9 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	}
 
 	public void addConnection() {
-		PL2.getCableManager().addCable(this);
 	}
 
 	public void removeConnection() {
-		PL2.getCableManager().removeCable(this);
 	}
 
 	@Override
@@ -82,29 +81,6 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 			getNetwork().removeLocalInfoProvider(tile);
 	}
 
-	@Override
-	public void onConnectionAdded(INetworkTile tile, EnumFacing face) {
-		if (canConnectOnSide(tile.getNetworkID(), face, true))
-			getNetwork().addConnection(tile);
-	}
-
-	@Override
-	public void onConnectionRemoved(INetworkTile tile, EnumFacing face) {
-		if (canConnectOnSide(tile.getNetworkID(), face, true))
-			getNetwork().removeConnection(tile);
-	}
-
-	@Override
-	public void addConnections(ILogisticsNetwork network) {
-		CableHelper.getConnectedTiles(this).forEach(t -> network.addConnection(t));
-		CableHelper.getLocalMonitors(this).forEach(m -> network.addLocalInfoProvider(m));
-	}
-
-	@Override
-	public void removeConnections(ILogisticsNetwork network) {
-		CableHelper.getConnectedTiles(this).forEach(t -> network.removeConnection(t));
-		CableHelper.getLocalMonitors(this).forEach(m -> network.removeLocalInfoProvider(m));
-	}
 
 	@Override
 	public void onNeighborTileChange(EnumFacing facing) {
@@ -117,7 +93,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 
 	@Override
 	public ConnectableType canRenderConnection(EnumFacing dir) {
-		return CableHelper.getConnectionType(this, getContainer().getWorldIn(), getContainer().getPosIn(), dir, getConnectableType()).a;
+		return CableHelper.getCableConnection(this, getContainer().getWorldIn(), getContainer().getPosIn(), dir, getConnectableType()).a;
 	}
 
 	@Override
@@ -154,7 +130,7 @@ public class DataCablePart extends SonarMultipart implements ISlotOccludingPart,
 	}
 
 	@Override
-	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (mode == OperatorMode.DEFAULT) {
 			List<AxisAlignedBB> bounds = Lists.newArrayList();
 			addSelectionBoxes(bounds);

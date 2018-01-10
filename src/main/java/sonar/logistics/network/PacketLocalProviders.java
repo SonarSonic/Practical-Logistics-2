@@ -66,37 +66,34 @@ public class PacketLocalProviders implements IMessage {
 		public IMessage onMessage(PacketLocalProviders message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-					public void run() {
-						Map<Integer, List<ClientLocalProvider>> monitors = PL2.getClientManager().clientLogicMonitors;
-						if (monitors.get(message.screenIdentity) == null) {
-							monitors.put(message.screenIdentity, message.viewables);
-						} else {
-							monitors.get(message.screenIdentity).clear();
-							monitors.get(message.screenIdentity).addAll(message.viewables);
-						}
-						List<Object> cache = Lists.newArrayList();
-						for (ClientLocalProvider clientMonitor : message.viewables) {
-							ILogicListenable monitor = clientMonitor.getViewable();
-							if (monitor != null && monitor instanceof IInfoProvider) {
-								int hashCode = monitor.getIdentity();
-								cache.add(monitor);
-								for (int i = 0; i < ((IInfoProvider) monitor).getMaxInfo(); i++) {
-									cache.add(new InfoUUID(hashCode, i));
-								}
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					Map<Integer, List<ClientLocalProvider>> monitors = PL2.getClientManager().clientLogicMonitors;
+					if (monitors.get(message.screenIdentity) == null) {
+						monitors.put(message.screenIdentity, message.viewables);
+					} else {
+						monitors.get(message.screenIdentity).clear();
+						monitors.get(message.screenIdentity).addAll(message.viewables);
+					}
+					List<Object> cache = Lists.newArrayList();
+					for (ClientLocalProvider clientMonitor : message.viewables) {
+						ILogicListenable monitor = clientMonitor.getViewable();
+						if (monitor != null && monitor instanceof IInfoProvider) {
+							int hashCode = monitor.getIdentity();
+							cache.add(monitor);
+							for (int i = 0; i < ((IInfoProvider) monitor).getMaxInfo(); i++) {
+								cache.add(new InfoUUID(hashCode, i));
 							}
 						}
+					}
 
-						Map<Integer, List<Object>> sortedMonitors = PL2.getClientManager().sortedLogicMonitors;						
-						if (sortedMonitors.get(message.screenIdentity) == null) {
-							sortedMonitors.put(message.screenIdentity, cache);
-						} else {
-							sortedMonitors.get(message.screenIdentity).clear();
-							sortedMonitors.get(message.screenIdentity).addAll(cache);
-						}
+					Map<Integer, List<Object>> sortedMonitors = PL2.getClientManager().sortedLogicMonitors;
+					if (sortedMonitors.get(message.screenIdentity) == null) {
+						sortedMonitors.put(message.screenIdentity, cache);
+					} else {
+						sortedMonitors.get(message.screenIdentity).clear();
+						sortedMonitors.get(message.screenIdentity).addAll(cache);
 					}
 				});
-
 			}
 			return null;
 		}

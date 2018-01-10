@@ -43,17 +43,15 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 		@Override
 		public IMessage onMessage(PacketConnectedDisplayUpdate message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-					public void run() {
-						if (message.screen == null) {
-							message.screen = new ConnectedDisplay(message.registryID);
-						}
-						message.screen.readFromBuf(message.savedBuf);
-						PL2.getClientManager().connectedDisplays.put(message.registryID, message.screen);
-						ILargeDisplay topLeft = message.screen.getTopLeftScreen();
-						if (topLeft != null)
-							topLeft.setConnectedDisplay(message.screen);
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					if (message.screen == null) {
+						message.screen = new ConnectedDisplay(message.registryID);
 					}
+					message.screen.readFromBuf(message.savedBuf);
+					PL2.getClientManager().connectedDisplays.put(message.registryID, message.screen);
+					ILargeDisplay topLeft = message.screen.getTopLeftScreen();
+					if (topLeft != null)
+						topLeft.setConnectedDisplay(message.screen);
 				});
 			}
 			return null;

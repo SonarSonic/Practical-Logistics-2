@@ -10,6 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -32,12 +34,12 @@ import sonar.logistics.common.multiparts.LogisticsPart;
 import sonar.logistics.managers.WirelessManager;
 import sonar.logistics.network.PacketClientEmitters;
 import sonar.logistics.network.PacketInfoUpdates;
-import sonar.logistics.network.PacketMonitoredList;
 import sonar.logistics.network.PacketLocalProviders;
+import sonar.logistics.network.PacketMonitoredList;
 
 public class PacketHelper {
 
-	public static void sendLocalProvidersFromScreen(AbstractDisplayPart part, EntityPlayer player) {
+	public static void sendLocalProvidersFromScreen(AbstractDisplayPart part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		List<ILogicListenable> providers = new ArrayList<ILogicListenable>();
 		int identity = part.getIdentity();
 		if (part instanceof ILargeDisplay) {
@@ -45,9 +47,9 @@ public class PacketHelper {
 			if (display != null && display.getTopLeftScreen() != null) {
 				identity = ((AbstractDisplayPart) display.getTopLeftScreen()).getIdentity();
 			}
-			providers = display != null ? display.getLocalProviders(providers) : LogisticsHelper.getLocalProviders(providers, part);
+			providers = display != null ? display.getLocalProviders(providers) : LogisticsHelper.getLocalProviders(providers, world, pos, part);
 		} else {
-			providers = LogisticsHelper.getLocalProviders(providers, part);
+			providers = LogisticsHelper.getLocalProviders(providers, world, pos, part);
 		}
 
 		List<ClientLocalProvider> clientMonitors = Lists.newArrayList();
@@ -107,7 +109,7 @@ public class PacketHelper {
 	}
 
 	public static void sendDataEmittersToPlayer(EntityPlayer player) {
-		PL2.network.sendTo(new PacketClientEmitters(WirelessManager.getClientEmitters(player)), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketClientEmitters(WirelessManager.getClientDataEmitters(player)), (EntityPlayerMP) player);
 	}
 
 	public static void sendNormalProviderInfo(IInfoProvider monitor) {

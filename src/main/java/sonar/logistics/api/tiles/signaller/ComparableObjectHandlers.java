@@ -21,7 +21,7 @@ public class ComparableObjectHandlers {
 		@Override
 		public void getComparableObjects(String parent, ItemStack obj, Map<LogicIdentifier, Object> objects) {
 			objects.put(new LogicIdentifier(parent, "item"), obj.getItem());
-			objects.put(new LogicIdentifier(parent, "stackSize"), obj.stackSize);
+			objects.put(new LogicIdentifier(parent, "stackSize"), obj.getCount());
 		}
 
 	}

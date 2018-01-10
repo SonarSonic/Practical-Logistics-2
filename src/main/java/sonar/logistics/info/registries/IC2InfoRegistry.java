@@ -1,5 +1,5 @@
 package sonar.logistics.info.registries;
-
+/*FIXME
 import com.google.common.collect.Lists;
 
 import ic2.api.reactor.IReactor;
@@ -30,3 +30,4 @@ public class IC2InfoRegistry extends IInfoRegistry {
 		registry.registerInfoAdjustments(Lists.newArrayList("IReactor.getReactorEUEnergyOutput"), "", "EU/t");		
 	}
 }
+*/

@@ -1,5 +1,5 @@
 package sonar.logistics.info.registries;
-
+/*FIXME
 import com.google.common.collect.Lists;
 
 import mekanism.api.IEvaporationSolar;
@@ -50,3 +50,4 @@ public class MekanismInfoRegistry extends IInfoRegistry {
 		registry.registerInfoAdjustments(Lists.newArrayList("TileEntityBasicMachine.operatingTicks", "TileEntityBasicMachine.ticksRequired", "TileEntityBasicMachine.BASE_TICKS_REQUIRED"), "", ClientNameConstants.TICKS);
 	}
 }
+*/

@@ -21,7 +21,6 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.utils.CustomColour;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
@@ -240,7 +239,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			} else {
 				this.pageCount = 0;
 			}
-			player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "PAGE " + (pageCount + 1) + " of " + (Math.round((double) list.size() / Math.max(perPage, 1)) )));
+			player.sendMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "PAGE " + (pageCount + 1) + " of " + (Math.round((double) list.size() / Math.max(perPage, 1)) )));
 			return clickTag;
 		}
 		/* if (displayMenu) { return clickTag; } */
@@ -277,7 +276,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				if (energyStack != null) {
 					if (event.type == BlockInteractionType.RIGHT) {
 						RenderBlockSelection.addPosition(energyStack.getMonitoredCoords().getCoords(), false);
-						player.addChatComponentMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "'" + energyStack.getMonitoredCoords().getClientIdentifier() + "'" + " has been highlighted"));
+						player.sendMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "'" + energyStack.getMonitoredCoords().getClientIdentifier() + "'" + " has been highlighted"));
 						
 					}
 				}

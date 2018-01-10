@@ -7,7 +7,9 @@ import com.google.common.collect.Lists;
 
 import appeng.api.AEApi;
 import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.StorageChannel;
+import appeng.api.storage.channels.IFluidStorageChannel;
+import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.core.Api;
 import appeng.tile.storage.TileDrive;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -40,18 +42,18 @@ public class AE2DriveProvider implements ITileInfoProvider {
 		long totalTypes = 0;
 		long usedTypes = 0;
 		long itemCount = 0;
-		for (int i = 0; i < drives.getInternalInventory().getSizeInventory(); i++) {
+		for (int i = 0; i < drives.getInternalInventory().getSlots(); i++) {
 			ItemStack is = drives.getInternalInventory().getStackInSlot(i);
 			List<IMEInventoryHandler> handlers = Lists.newArrayList();
 			if (is != null) {
-				IMEInventoryHandler itemInventory = AEApi.instance().registries().cell().getCellInventory(is, null, StorageChannel.ITEMS);
-				IMEInventoryHandler fluidInventory = AEApi.instance().registries().cell().getCellInventory(is, null, StorageChannel.FLUIDS);
+				IMEInventoryHandler itemInventory = AEApi.instance().registries().cell().getCellInventory(is, null, Api.INSTANCE.storage().getStorageChannel(IItemStorageChannel.class)); //should ISaveProvider by null?
+				IMEInventoryHandler fluidInventory = AEApi.instance().registries().cell().getCellInventory(is, null, Api.INSTANCE.storage().getStorageChannel(IFluidStorageChannel.class));
 				handlers = Arrays.asList(itemInventory, fluidInventory);
 			}
 			AE2DriveInfo info = new AE2DriveInfo(handlers, i + 1).setPath(currentPath.dupe());
 			totalBytes += info.totalBytes.getObject();
 			usedBytes += info.usedBytes.getObject();
-			totalTypes += info.totalTypes.getObject();
+			totalTypes += info.totalTypes.getObject();	
 			usedTypes += info.usedTypes.getObject();
 			itemCount += info.itemCount.getObject();
 			allInfo.add(info);

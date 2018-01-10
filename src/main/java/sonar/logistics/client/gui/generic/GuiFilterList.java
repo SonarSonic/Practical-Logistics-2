@@ -31,7 +31,6 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarButtons.AnimatedButton;
-import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
@@ -142,7 +141,7 @@ public class GuiFilterList extends GuiSelectionList {
 			this.buttonList.add(new FluidFilterButton(this, 0, guiLeft + 70, guiTop + 8));
 			this.buttonList.add(new GuiButton(1, guiLeft + 184, guiTop + 6, 20, 20, "+"));
 			Keyboard.enableRepeatEvents(true);
-			oreDictField = new GuiTextField(0, this.fontRendererObj, 90, 8, 90, 16);
+			oreDictField = new GuiTextField(0, this.fontRenderer, 90, 8, 90, 16);
 			oreDictField.setMaxStringLength(20);
 			oreDictField.setText("");
 			// this.buttonList.add(new SideButton(12, guiLeft + 6, guiTop + 6, 34, 12, "DONE"));
@@ -167,7 +166,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 		FontRenderer font = stack.getItem().getFontRenderer(stack);
 		net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-		this.drawHoveringText(newList, x, y, (font == null ? fontRendererObj : font));
+		this.drawHoveringText(newList, x, y, (font == null ? fontRenderer : font));
 		net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
 	}
 

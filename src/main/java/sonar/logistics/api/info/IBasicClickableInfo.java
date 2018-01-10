@@ -1,9 +1,9 @@
 package sonar.logistics.api.info;
 
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
@@ -20,6 +20,6 @@ public interface IBasicClickableInfo{
 	 * @param hit the RayTrace hit info
 	 * @param container the displays info container
 	 * @return if the screen was clicked */
-	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit, InfoContainer container);
+	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit, InfoContainer container);
 				
 }

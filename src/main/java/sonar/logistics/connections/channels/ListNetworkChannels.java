@@ -23,9 +23,7 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
-import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels<H> implements INetworkListChannels<H> {
 

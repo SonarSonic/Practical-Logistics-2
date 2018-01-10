@@ -22,6 +22,7 @@ import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -98,7 +99,7 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 	}
 
 	@Override
-	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (getDisplayScreen() != null && !getWorld().isRemote) {
 			incrementLayout();
 			FontHelper.sendMessage("Screen Layout: " + getDisplayScreen().layout.getObject(), getWorld(), player);

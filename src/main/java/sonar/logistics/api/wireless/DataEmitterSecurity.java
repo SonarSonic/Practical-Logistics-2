@@ -11,6 +11,10 @@ public enum DataEmitterSecurity {
 		this.l = l;
 	}
 
+	public boolean requiresPermission() {
+		return this == PRIVATE;
+	}
+
 	public String getClientName() {
 		return l.t();
 	}

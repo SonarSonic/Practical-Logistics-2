@@ -20,7 +20,7 @@ public interface IDataEmitter extends INetworkTile, IListReader<IInfo> {
 	public String getEmitterName();
 	
 	public DataEmitterSecurity getSecurity();
-	
+
 	public MonitoredList<MonitoredItemStack> getServerItems();
 	
 	public MonitoredList<MonitoredFluidStack> getServerFluids();

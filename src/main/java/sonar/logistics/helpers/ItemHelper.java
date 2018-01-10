@@ -19,15 +19,11 @@ import net.minecraftforge.fluids.FluidStack;
 import sonar.core.SonarCore;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.StorageSize;
-import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.handlers.inventories.IInventoryHandler;
 import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.InventoryHelper;
-import sonar.core.helpers.InventoryHelper.DefaultTransferOverride;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.helpers.InventoryHelper.ITransferOverride;
 import sonar.core.helpers.SonarHelper;
@@ -148,7 +144,7 @@ public class ItemHelper extends ItemWrapper {
 		IInventory inv = player.inventory;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null && stack.stackSize != 0 && add.equalStack(stack)) {
+			if (stack != null && stack.getCount() != 0 && add.equalStack(stack)) {
 				StoredItemStack toAdd = new StoredItemStack(stack.copy());
 				StoredItemStack perform = transferItems(network, toAdd.copy(), NodeTransferMode.ADD, ActionType.PERFORM, filter);
 				if (!toAdd.equals(perform)) {
@@ -193,7 +189,7 @@ public class ItemHelper extends ItemWrapper {
 		int size = 0;
 		if (!enderChest) {
 			inv = player.inventory;
-			size = player.inventory.mainInventory.length;
+			size = player.inventory.mainInventory.size();
 		} else {
 			inv = player.getInventoryEnderChest();
 			size = inv.getSizeInventory();
@@ -205,9 +201,9 @@ public class ItemHelper extends ItemWrapper {
 		for (int i = 0; i < size; i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack != null) {
-				if (!(stack.stackSize >= stack.getMaxStackSize()) && add.equalStack(stack) && stack.stackSize < inv.getInventoryStackLimit()) {
-					long used = (long) Math.min(add.item.getMaxStackSize(), Math.min(add.stored, inv.getInventoryStackLimit() - stack.stackSize));
-					stack.stackSize += used;
+				if (!(stack.getCount() >= stack.getMaxStackSize()) && add.equalStack(stack) && stack.getCount() < inv.getInventoryStackLimit()) {
+					long used = (long) Math.min(add.item.getMaxStackSize(), Math.min(add.stored, inv.getInventoryStackLimit() - stack.getCount()));
+					stack.grow((int) used);
 					add.stored -= used;
 					if (used != 0 && !action.shouldSimulate()) {
 						inv.setInventorySlotContents(i, stack);
@@ -229,7 +225,7 @@ public class ItemHelper extends ItemWrapper {
 			ItemStack stack = add.item.copy();
 			if (inv.isItemValidForSlot(slot, stack)) {
 				int used = (int) Math.min(add.stored, inv.getInventoryStackLimit());
-				stack.stackSize = used;
+				stack.setCount(used);
 				add.stored -= used;
 				if (!action.shouldSimulate()) {
 					inv.setInventorySlotContents(slot, stack);
@@ -252,7 +248,7 @@ public class ItemHelper extends ItemWrapper {
 		IInventory inv = null;
 		int size = 0;
 		inv = !enderChest ? player.inventory : player.getInventoryEnderChest();
-		size = !enderChest ? player.inventory.mainInventory.length : inv.getSizeInventory();
+		size = !enderChest ? player.inventory.mainInventory.size() : inv.getSizeInventory();
 		if (inv == null || size == 0) {
 			return remove;
 		}
@@ -260,11 +256,11 @@ public class ItemHelper extends ItemWrapper {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack != null && remove.equalStack(stack)) {
 				stack = stack.copy();
-				long used = (long) Math.min(remove.stored, Math.min(inv.getInventoryStackLimit(), stack.stackSize));
-				stack.stackSize -= used;
+				long used = (long) Math.min(remove.stored, Math.min(inv.getInventoryStackLimit(), stack.getCount()));
+				stack.shrink((int) used);
 				remove.stored -= used;
 				if (!action.shouldSimulate()) {
-					if (stack.stackSize == 0) {
+					if (stack.getCount() == 0) {
 						stack = null;
 					}
 					inv.setInventorySlotContents(i, stack);
@@ -334,12 +330,12 @@ public class ItemHelper extends ItemWrapper {
 		ItemStack add = player.inventory.getStackInSlot(slot);
 		if (add == null)
 			return 0;
-		int original = add.stackSize;
+		int original = add.getCount();
 		StoredItemStack stack = transferItems(cache, new StoredItemStack(add), NodeTransferMode.ADD, ActionType.PERFORM, null);
 		ItemStack returned = StoredItemStack.getActualStack(stack);
 		if (!ItemStack.areItemStacksEqual(returned, player.inventory.getStackInSlot(slot))) {
 			player.inventory.setInventorySlotContents(slot, returned);
-			return (returned == null ? original : original - returned.stackSize);
+			return (returned == null ? original : original - returned.getCount());
 		} else {
 			FontHelper.sendMessage(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "The item cannot be inserted", player.getEntityWorld(), player);
 			return 0;
@@ -356,7 +352,7 @@ public class ItemHelper extends ItemWrapper {
 			if (stack == null || stack.stored == 0) {
 				add = null;
 			} else {
-				add.stackSize = (int) stack.stored;
+				add.setCount((int) stack.stored);
 			}
 			if (!ItemStack.areItemStacksEqual(add, player.inventory.getStackInSlot(i))) {
 				change = true;
@@ -475,7 +471,7 @@ public class ItemHelper extends ItemWrapper {
 			StoredItemStack stack = PL2API.getItemHelper().transferItems(network, add.copy().setStackSize(stackSize), NodeTransferMode.ADD, ActionType.PERFORM, null);
 			StoredItemStack remove = SonarAPI.getItemHelper().getStackToAdd(stackSize, add, stack);
 			ItemStack actualStack = add.copy().setStackSize(add.stored - SonarAPI.getItemHelper().getStackToAdd(stackSize, add, stack).stored).getActualStack();
-			if (actualStack == null || (actualStack.stackSize != add.stored && !(actualStack.stackSize <= 0)) && !ItemStack.areItemStacksEqual(StoredItemStack.getActualStack(stack), player.inventory.getItemStack())) {
+			if (actualStack == null || (actualStack.getCount() != add.stored && !(actualStack.getCount() <= 0)) && !ItemStack.areItemStacksEqual(StoredItemStack.getActualStack(stack), player.inventory.getItemStack())) {
 				player.inventory.setItemStack(actualStack);
 				SonarCore.network.sendTo(new PacketStackUpdate(actualStack), (EntityPlayerMP) player);
 			}

@@ -18,26 +18,31 @@ public class PL2Translate {
 	public static final Localisation SAPPHIRE_DUST = i(PL2Items.sapphire_dust);
 	public static final Localisation STONE_PLATE = i(PL2Items.stone_plate);
 	public static final Localisation ETCHED_PLATE = i(PL2Items.etched_plate);
-	public static final Localisation CABLE = i(PL2Items.cable);
-	public static final Localisation NODE = i(PL2Items.node);
-	public static final Localisation ENTITY_NODE = i(PL2Items.entity_node);
-	public static final Localisation ARRAY = i(PL2Items.array);
-	public static final Localisation TRANSFER_NODE = i(PL2Items.transfer_node);
-	public static final Localisation TRANSCEIVER = i(PL2Items.transceiver);
-	public static final Localisation ENTITY_TRANSCEIVER = i(PL2Items.entity_transceiver);
-	public static final Localisation WIRELESS_STORAGE_READER = i(PL2Items.wireless_storage_reader);
-	public static final Localisation INFO_READER = i(PL2Items.info_reader);
-	public static final Localisation INVENTORY_READER = i(PL2Items.inventory_reader);
-	public static final Localisation FLUID_READER = i(PL2Items.fluid_reader);
-	public static final Localisation ENERGY_READER = i(PL2Items.energy_reader);
-	public static final Localisation DISPLAY_SCREEN = i(PL2Items.display_screen);
-	public static final Localisation LARGE_DISPLAY_SCREEN = i(PL2Items.large_display_screen);
-	public static final Localisation HOLOGRAPHIC_DISPLAY = i(PL2Items.holographic_display);
-	public static final Localisation DATA_EMITTER = i(PL2Items.data_emitter);
-	public static final Localisation DATA_RECEIVER = i(PL2Items.data_receiver);
-	public static final Localisation REDSTONE_SIGNALLER = i(PL2Items.redstone_signaller);
-	public static final Localisation CLOCK = i(PL2Items.clock);
 
+	// MULTIPARTS
+	public static final Localisation CABLE = b(PL2Blocks.data_cable);
+	public static final Localisation NODE = b(PL2Blocks.node);
+	public static final Localisation INFO_READER = b(PL2Blocks.info_reader);
+	public static final Localisation DATA_EMITTER = b(PL2Blocks.data_emitter);
+	public static final Localisation DATA_RECEIVER = b(PL2Blocks.data_receiver);
+
+	/* public static final Localisation ENTITY_NODE = i(PL2Items.entity_node);
+	 * public static final Localisation ARRAY = i(PL2Items.array); public static
+	 * final Localisation TRANSFER_NODE = i(PL2Items.transfer_node); public
+	 * static final Localisation TRANSCEIVER = i(PL2Items.transceiver); public
+	 * static final Localisation ENTITY_TRANSCEIVER =
+	 * i(PL2Items.entity_transceiver); public static final Localisation
+	 * WIRELESS_STORAGE_READER = i(PL2Items.wireless_storage_reader); public
+	 * static final Localisation INVENTORY_READER =
+	 * i(PL2Items.inventory_reader); public static final Localisation
+	 * FLUID_READER = i(PL2Items.fluid_reader); public static final Localisation
+	 * ENERGY_READER = i(PL2Items.energy_reader); public static final
+	 * Localisation DISPLAY_SCREEN = i(PL2Items.display_screen); public static
+	 * final Localisation LARGE_DISPLAY_SCREEN =
+	 * i(PL2Items.large_display_screen); public static final Localisation
+	 * HOLOGRAPHIC_DISPLAY = i(PL2Items.holographic_display); public static
+	 * final Localisation REDSTONE_SIGNALLER = i(PL2Items.redstone_signaller);
+	 * public static final Localisation CLOCK = i(PL2Items.clock); */
 	// BLOCKS
 	public static final Localisation HAMMER = b(PL2Blocks.hammer);
 	public static final Localisation HAMMER_AIR = b(PL2Blocks.hammer_air);
@@ -70,33 +75,32 @@ public class PL2Translate {
 	public static final Localisation BUTTON_DUMP_NETWORK = t("pl.button.dumpNetwork");
 	public static final Localisation BUTTON_MOVE_UP = t("pl.button.moveUp");
 	public static final Localisation BUTTON_MOVE_DOWN = t("pl.button.moveDown");
-	
-	///FILTERS
+
+	/// FILTERS
 	public static final Localisation FILTERS_ITEM_FILTER = t("pl.filters.newItem");
 	public static final Localisation FILTERS_ORE_FILTER = t("pl.filters.newOreDict");
 	public static final Localisation FILTERS_FLUID_FILTER = t("pl.filters.newFluid");
-	
-	
-	///CHANNELS
+
+	/// CHANNELS
 	public static final Localisation CHANNELS_SELECTION = t("pl.channels.selection");
 	public static final Localisation CHANNELS_SELECTION_HELP = t("pl.channels.selection.help");
-	
+
 	/// GUIDE
 	public static final Localisation GUIDE_TITLE = t("pl.guide.title");
-	
+
 	/// DISPLAY SCREEN
 	public static final Localisation SCREEN_INFO_SELECT = t("pl.display.infoselect");
 	public static final Localisation SCREEN_INFO_SELECT_HELP = t("pl.display.infoselect.help");
 	public static final Localisation SCREEN_CUSTOM_DATA = t("pl.display.customdata");
-	public static final Localisation SCREEN_NO_DATA = t("pl.display.nodata");	
-	
+	public static final Localisation SCREEN_NO_DATA = t("pl.display.nodata");
+
 	/// DATA EMITTER
 	public static final Localisation DATA_EMITTER_PUBLIC = t("pl.emitter.public");
 	public static final Localisation DATA_EMITTER_PRIVATE = t("pl.emitter.private");
 
 	/// INFO READER
 	public static final Localisation INFO_READER_HELP = t("pl.info.reader.help");
-	
+
 	/// FLUID READER
 	public static final Localisation FLUID_READER_TANKS_D = t("pl.fluid.desc.tanks");
 	public static final Localisation FLUID_READER_TANKS_N = t("pl.fluid.mode.tanks");
@@ -110,7 +114,7 @@ public class PL2Translate {
 	public static final Localisation FLUID_READER_NAME = t("pl.fluid.sort.name");
 	public static final Localisation FLUID_READER_MODID = t("pl.fluid.sort.modid");
 	public static final Localisation FLUID_READER_TEMPERATURE = t("pl.fluid.sort.temperature");
-	
+
 	/// INVENTORY READER
 	public static final Localisation INV_READER_INVENTORIES_N = t("pl.inv.mode.inventories");
 	public static final Localisation INV_READER_STACK_N = t("pl.inv.mode.stack");
@@ -121,22 +125,22 @@ public class PL2Translate {
 	public static final Localisation INV_READER_STORED = t("pl.inv.sort.stored");
 	public static final Localisation INV_READER_NAME = t("pl.inv.sort.name");
 	public static final Localisation INV_READER_MODID = t("pl.inv.sort.modid");
-	
+
 	/// REDSTONE SIGNALLER
 	public static final Localisation RED_SIGNALLER_DEFAULT = t("pl.signaller.default");
 	public static final Localisation RED_SIGNALLER_OVERRIDE = t("pl.signaller.override");
 	public static final Localisation RED_SIGNALLER_ALL = t("pl.signaller.all");
 	public static final Localisation RED_SIGNALLER_ONE = t("pl.signaller.one");
-	
+
 	/// DATA RECEIVER
 	public static final Localisation DATA_RECEIVER_HELP = t("pl.receiver.help");
-	
+
 	/// ENTITY MODE
 	public static final Localisation ENTITY_NODE_RANGE = t("pl.entitynode.range");
-	
+
 	/// WIRELESS STORAGE READER
 	public static final Localisation WIRELESS_STORAGE_READER_EMITTER = t("pl.wirelessStorage.emitter");
-	
+
 	public static Localisation get(String original) {
 		for (Localisation l : locals) {
 			if (l.o().equals(original)) {
@@ -153,12 +157,16 @@ public class PL2Translate {
 	}
 
 	public static Localisation i(Item item) {
+		if (item == null)
+			return null;
 		Localisation l = new Localisation(item.getUnlocalizedName() + ".name");
 		locals.add(l);
 		return l;
 	}
 
 	public static Localisation b(Block block) {
+		if (block == null)
+			return null;
 		Localisation l = new Localisation(block.getUnlocalizedName() + ".name");
 		locals.add(l);
 		return l;

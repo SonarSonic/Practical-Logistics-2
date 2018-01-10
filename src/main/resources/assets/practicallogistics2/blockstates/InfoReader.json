@@ -10,14 +10,14 @@
     "variants": {
         "normal":[],
         "inventory": [{    
-            "model":"practicallogistics2:Reader"
+            "model":"practicallogistics2:reader"
         }],
         "display":{
             "true":{            
-                "model":"practicallogistics2:ReaderWithDisplay"
+                "model":"practicallogistics2:readerwithdisplay"
             },
             "false":{            
-                "model":"practicallogistics2:Reader"
+                "model":"practicallogistics2:reader"
             }        
         },        
         "facing":{  

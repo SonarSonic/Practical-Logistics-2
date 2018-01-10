@@ -8,8 +8,6 @@ import sonar.logistics.api.viewers.ILogicListenable;
 public interface IInfoProvider extends ILogicListenable<PlayerListener> {
 	
 	public IInfo getMonitorInfo(int pos);
-	
-	public String getDisplayName();
 
 	public int getMaxInfo();
 

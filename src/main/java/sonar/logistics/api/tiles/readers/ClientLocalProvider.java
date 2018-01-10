@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import mcmultipart.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
@@ -19,7 +19,8 @@ import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.helpers.CableHelper;
 
-/** used when syncing Logic Monitors for display in the Display Screen with the client, since some may not be loaded on client side. */
+/** used when syncing Logic Monitors for display in the Display Screen with the
+ * client, since some may not be loaded on client side. */
 public class ClientLocalProvider implements INBTSyncable {
 
 	public List<ISyncPart> syncParts = new ArrayList<ISyncPart>();
@@ -29,8 +30,7 @@ public class ClientLocalProvider implements INBTSyncable {
 		syncParts.addAll(Lists.newArrayList(identity, coords));
 	}
 
-	public ClientLocalProvider() {
-	}
+	public ClientLocalProvider() {}
 
 	public ClientLocalProvider(ILogicListenable monitor) {
 		this.identity.setObject(monitor.getIdentity());
@@ -58,13 +58,10 @@ public class ClientLocalProvider implements INBTSyncable {
 	}
 
 	public ILogicListenable getViewable() {
-		ILogicListenable viewable = CableHelper.getMonitorFromIdentity(identity.getObject().hashCode(), true);
-		if (viewable != null) {
-			IMultipart part = SonarMultipartHelper.getPartFromHash(identity.getObject().hashCode(), coords.getCoords().getWorld(), coords.getCoords().getBlockPos());
-			if (part != null && part instanceof ILogicListenable) {
-				ILogicListenable partViewer = (ILogicListenable) part;
-				viewable = (ILogicListenable) part;
-			}
+		ILogicListenable viewable = CableHelper.getMonitorFromIdentity(identity.getObject(), true);
+		if (viewable != null && viewable instanceof ILogicListenable) {
+			ILogicListenable partViewer = (ILogicListenable) viewable;
+			viewable = (ILogicListenable) viewable;
 		}
 		return viewable;
 	}

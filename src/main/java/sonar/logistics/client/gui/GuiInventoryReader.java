@@ -61,7 +61,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		switch (getSetting()) {
 		case SLOT:
 		case POS:
-			slotField = new SonarTextField(0, this.fontRendererObj, 63, 10, 32, 14);
+			slotField = new SonarTextField(0, this.fontRenderer, 63, 10, 32, 14);
 			slotField.setMaxStringLength(7);
 			slotField.setDigitsOnly(true);
 			if (getSetting() == Modes.SLOT)
@@ -73,7 +73,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		default:
 			break;
 		}
-		searchField = new SonarTextField(1, this.fontRendererObj, 135, 10, 104, 14);
+		searchField = new SonarTextField(1, this.fontRenderer, 135, 10, 104, 14);
 		searchField.setMaxStringLength(20);
 		fieldList.add(searchField);
 	}
@@ -230,7 +230,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		}
 
 		FontRenderer font = storedStack.item.getItem().getFontRenderer(storedStack.item);
-		drawHoveringText(list, x, y, (font == null ? fontRendererObj : font));
+		drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
 
 	}
 

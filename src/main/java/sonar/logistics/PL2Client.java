@@ -2,7 +2,6 @@ package sonar.logistics;
 
 import java.util.List;
 
-import mcmultipart.client.multipart.MultipartRegistryClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -18,10 +17,8 @@ import sonar.core.network.SonarClient;
 import sonar.core.translate.ILocalisationHandler;
 import sonar.core.translate.Localisation;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.client.BlockRenderRegister;
 import sonar.logistics.client.ClockRenderer;
 import sonar.logistics.client.DisplayRenderer;
-import sonar.logistics.client.ItemRenderRegister;
 import sonar.logistics.client.RenderArray;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.RenderHammer;
@@ -38,14 +35,15 @@ import sonar.logistics.guide.GuidePageRegistry;
 public class PL2Client extends PL2Common implements ILocalisationHandler {
 
 	public void registerRenderThings() {
-		ItemRenderRegister.register();
-		BlockRenderRegister.register();
-
+		
+		/*
 		MultipartRegistryClient.bindMultipartSpecialRenderer(DisplayScreenPart.class, new DisplayRenderer());
 		MultipartRegistryClient.bindMultipartSpecialRenderer(HolographicDisplayPart.class, new DisplayRenderer());
 		MultipartRegistryClient.bindMultipartSpecialRenderer(LargeDisplayScreenPart.class, new DisplayRenderer());
 		MultipartRegistryClient.bindMultipartSpecialRenderer(ClockPart.class, new ClockRenderer());
 		MultipartRegistryClient.bindMultipartSpecialRenderer(ArrayPart.class, new RenderArray());
+		*/
+		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHammer.class, new RenderHammer());
 		MinecraftForge.EVENT_BUS.register(this);
 	}

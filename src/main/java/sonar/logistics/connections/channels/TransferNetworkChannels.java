@@ -6,7 +6,6 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import sonar.core.helpers.InventoryHelper.DefaultTransferOverride;
-import sonar.core.helpers.InventoryHelper.ITransferOverride;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.ILogisticsNetwork;

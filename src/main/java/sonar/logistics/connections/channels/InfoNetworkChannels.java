@@ -2,9 +2,7 @@ package sonar.logistics.connections.channels;
 
 import javax.annotation.Nullable;
 
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
@@ -12,7 +10,6 @@ import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.connections.handlers.InfoNetworkHandler;
 

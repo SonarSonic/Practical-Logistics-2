@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.helpers.PacketHelper;
 
 public class PacketInfoUpdates implements IMessage {
@@ -39,11 +38,7 @@ public class PacketInfoUpdates implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketInfoUpdates message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-				public void run() {
-					PacketHelper.receiveInfoUpdate(message.tag, message.type);
-				}
-			});
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> PacketHelper.receiveInfoUpdate(message.tag, message.type));
 			return null;
 		}
 

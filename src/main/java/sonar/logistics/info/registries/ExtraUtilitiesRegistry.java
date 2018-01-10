@@ -1,5 +1,5 @@
 package sonar.logistics.info.registries;
-
+/*FIXME
 import com.google.common.collect.Lists;
 import com.rwtema.extrautils2.machine.TileMachine;
 import com.rwtema.extrautils2.tile.TileResonator;
@@ -28,3 +28,4 @@ public class ExtraUtilitiesRegistry extends IInfoRegistry {
 		registry.registerInfoAdjustments(Lists.newArrayList("TileMachine.totalTime", "TileMachine.processTime"), "", ClientNameConstants.TICKS);
 	}
 }
+*/

@@ -27,7 +27,7 @@ public class ContainerArray extends ContainerMultipartSync {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
-		ItemStack itemstack = InventoryHelper.EMPTY;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(slotID);
 
 		if (slot != null && slot.getHasStack()) {
@@ -36,14 +36,14 @@ public class ContainerArray extends ContainerMultipartSync {
 
 			if (slotID < 8) {
 				if (!this.mergeItemStack(itemstack1, 8, this.inventorySlots.size(), true)) {
-					return InventoryHelper.EMPTY;
+					return ItemStack.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 8, false)) {
-				return InventoryHelper.EMPTY;
+				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.stackSize == 0) {
-				slot.putStack(InventoryHelper.EMPTY);
+				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}

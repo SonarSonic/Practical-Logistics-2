@@ -51,17 +51,15 @@ public class PacketItemInteractionText implements IMessage {
 			// RenderInteractionOverlay.stored(message.stored);
 			// RenderInteractionOverlay.change(message.changed);
 
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-				public void run() {
-					GuiNewChat chatGui = Minecraft.getMinecraft().ingameGUI.getChatGUI();
-					if (lastStack == null || !lastStack.isItemEqual(message.stack)) {
-						lastStack = message.stack;
-						lastChanged = message.changed;
-					} else {
-						lastChanged += message.changed;
-					}
-					chatGui.printChatMessageWithOptionalDeletion(new TextComponentTranslation(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + message.stored + (lastChanged == 0 ? "" : (lastChanged > 0 ? "" + TextFormatting.GREEN + "+" + lastChanged : "" + TextFormatting.RED + lastChanged)) + TextFormatting.RESET + " x " + lastStack.getDisplayName()), lastStack.getDisplayName().hashCode());
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				GuiNewChat chatGui = Minecraft.getMinecraft().ingameGUI.getChatGUI();
+				if (lastStack == null || !lastStack.isItemEqual(message.stack)) {
+					lastStack = message.stack;
+					lastChanged = message.changed;
+				} else {
+					lastChanged += message.changed;
 				}
+				chatGui.printChatMessageWithOptionalDeletion(new TextComponentTranslation(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + message.stored + (lastChanged == 0 ? "" : (lastChanged > 0 ? "" + TextFormatting.GREEN + "+" + lastChanged : "" + TextFormatting.RED + lastChanged)) + TextFormatting.RESET + " x " + lastStack.getDisplayName()), lastStack.getDisplayName().hashCode());
 			});
 			return null;
 		}

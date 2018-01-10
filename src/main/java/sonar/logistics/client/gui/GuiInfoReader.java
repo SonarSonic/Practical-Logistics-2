@@ -16,17 +16,17 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.common.multiparts.readers.InfoReaderPart;
+import sonar.logistics.common.multiparts2.TileInfoReader;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 
-	public InfoReaderPart part;
+	public TileInfoReader part;
 	public EntityPlayer player;
 
 	public GuiHelpOverlay<GuiInfoReader> overlay = HelpOverlays.infoReader;
 
-	public GuiInfoReader(EntityPlayer player, InfoReaderPart tile) {
+	public GuiInfoReader(EntityPlayer player, TileInfoReader tile) {
 		super(new ContainerInfoReader(player, tile), tile);
 		this.player = player;
 		this.part = tile;
@@ -62,8 +62,8 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(PL2Translate.INFO_READER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
+		//FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
+		//FontHelper.textCentre(PL2Translate.INFO_READER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 		overlay.drawOverlay(this, x, y);
 	}
 

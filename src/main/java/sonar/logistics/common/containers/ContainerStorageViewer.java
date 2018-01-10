@@ -33,7 +33,7 @@ public class ContainerStorageViewer extends Container {
 		this.identity = identity;
 		this.player = player;
 		if (!player.getEntityWorld().isRemote) {
-			emitter = WirelessManager.getEmitter(identity);
+			emitter = WirelessManager.getDataEmitter(identity);
 		}
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {

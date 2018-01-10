@@ -5,11 +5,9 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import net.minecraft.tileentity.TileEntity;
-import sonar.core.api.SonarAPI;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.utils.CacheType;
 
 public class NetworkHelper {

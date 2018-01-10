@@ -3,11 +3,13 @@ package sonar.logistics.network;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
+import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,11 +29,10 @@ public class PacketClickEventClient extends PacketMultipart {
 	public DisplayInteractionEvent eventTag;
 	public ByteBuf buf;
 
-	public PacketClickEventClient() {
-	}
+	public PacketClickEventClient() {}
 
-	public PacketClickEventClient(UUID partUUID, BlockPos pos, DisplayInteractionEvent eventTag) {
-		super(partUUID, pos);
+	public PacketClickEventClient(int slotID, BlockPos pos, DisplayInteractionEvent eventTag) {
+		super(slotID, pos);
 		this.eventTag = eventTag;
 	}
 
@@ -50,30 +51,26 @@ public class PacketClickEventClient extends PacketMultipart {
 	public static class Handler extends PacketMultipartHandler<PacketClickEventClient> {
 
 		@Override
-		public IMessage processMessage(PacketClickEventClient message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
+		public IMessage processMessage(PacketClickEventClient message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-					@Override
-					public void run() {
-						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-						if (player != null && part instanceof AbstractDisplayPart) {
-							DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (AbstractDisplayPart) part);
-							if (event.hit == null) {
-								return;
-							}
-							InfoContainer container = (InfoContainer) ((AbstractDisplayPart) part).container();
-							if (container != null) {
-								IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
-								IInfo info = displayInfo.getSidedCachedInfo(true);
-								if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
-									NBTTagCompound eventTag = ((IAdvancedClickableInfo) info).onClientClick(event, displayInfo, player, player.getActiveItemStack(), container);
-									if (!eventTag.hasNoTags()) {
-										PL2.network.sendToServer(new PacketClickEventServer(event.hashCode, eventTag));
-									}
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					if (player != null && part instanceof AbstractDisplayPart) {
+						DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (AbstractDisplayPart) part);
+						if (event.hit == null) {
+							return;
+						}
+						InfoContainer container = (InfoContainer) ((AbstractDisplayPart) part).container();
+						if (container != null) {
+							IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
+							IInfo info = displayInfo.getSidedCachedInfo(true);
+							if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
+								NBTTagCompound eventTag = ((IAdvancedClickableInfo) info).onClientClick(event, displayInfo, player, player.getActiveItemStack(), container);
+								if (!eventTag.hasNoTags()) {
+									PL2.network.sendToServer(new PacketClickEventServer(event.hashCode, eventTag));
 								}
-
 							}
+
 						}
 					}
 				});

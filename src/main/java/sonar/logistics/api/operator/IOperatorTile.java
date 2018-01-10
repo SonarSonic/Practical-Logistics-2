@@ -1,9 +1,9 @@
 package sonar.logistics.api.operator;
 
-import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 
 /** implemented on blocks which can be affected by an IOperatorTool */
 public interface IOperatorTile {
@@ -18,5 +18,5 @@ public interface IOperatorTile {
 	 * @param hitY the y hit
 	 * @param hitZ the z hit
 	 * @return if an operation was performed */
-	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ);
+	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ);
 }

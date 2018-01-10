@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.IFlexibleGui;
@@ -81,7 +82,7 @@ public class TransferNodePart extends SidedPart implements INode, IOperatorTile,
 	}
 
 	@Override
-	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (!getWorld().isRemote) {
 			transferMode.incrementEnum();
 			sendSyncPacket();

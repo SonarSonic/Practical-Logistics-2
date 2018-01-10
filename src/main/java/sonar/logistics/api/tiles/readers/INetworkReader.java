@@ -14,7 +14,4 @@ public interface INetworkReader<T extends IInfo> extends IChannelledTile, IInfoP
 
 	public void setMonitoredInfo(MonitoredList<T> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid);
 
-	/** the multipart UUID */
-	public UUID getUUID();
-
 }

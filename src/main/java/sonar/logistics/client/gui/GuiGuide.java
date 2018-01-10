@@ -11,8 +11,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.SonarTextField;
-import sonar.core.client.gui.widgets.ScrollerOrientation;
-import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
@@ -65,7 +63,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		} else {
 			infoList = GuidePageRegistry.pages;
 			Keyboard.enableRepeatEvents(true);
-			searchField = new SonarTextField(0, this.fontRendererObj, 50, 17, 240, 10);
+			searchField = new SonarTextField(0, this.fontRenderer, 50, 17, 240, 10);
 			searchField.setMaxStringLength(20);
 			searchField.setText("");
 			fieldList.add(searchField);
@@ -198,7 +196,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		if (currentPage != null) {
 			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, -1);
-			currentPage.drawForegroundPage(this, x, y, pagePos);
+			currentPage.drawForegroundPage(this, x, y, pagePos, partialTicks);
 			FontHelper.textCentre("Sub Page: " + (pagePos + 1) + "/" + currentPage.getPageCount(), xSize, ySize - 26, -1);
 			FontHelper.textCentre("Page: " + (currentPos + 1) + "/" + infoList.size(), xSize, ySize - 16, -1);
 		} else {

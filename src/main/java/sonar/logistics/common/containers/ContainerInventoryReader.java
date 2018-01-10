@@ -8,7 +8,6 @@ import sonar.core.api.IFlexibleContainer;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.InventoryHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.PL2API;

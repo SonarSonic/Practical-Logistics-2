@@ -48,14 +48,14 @@ public class DataReceiverPart extends AbstractWirelessPart implements IDataRecei
 		while (iterator.hasNext()) {
 			ClientDataEmitter entry = iterator.next();
 			if (entry.equals(emitter)) {// FIXME what's going on here then
-				IDataEmitter tile = WirelessManager.getEmitter(entry.getIdentity());
+				IDataEmitter tile = WirelessManager.getDataEmitter(entry.getIdentity());
 				iterator.remove();
 				found = true;
 				break;
 			}
 		}
 		if (!found) {
-			IDataEmitter tile = WirelessManager.getEmitter(emitter.getIdentity());
+			IDataEmitter tile = WirelessManager.getDataEmitter(emitter.getIdentity());
 			emitters.add(emitter);
 		}
 		clientEmitters.setObjects(emitters);
@@ -91,7 +91,7 @@ public class DataReceiverPart extends AbstractWirelessPart implements IDataRecei
 	public List<IDataEmitter> getEmitters() {
 		List<IDataEmitter> emitters = Lists.newArrayList();
 		for (ClientDataEmitter dataEmitter : clientEmitters.getObjects()) {
-			IDataEmitter emitter = WirelessManager.getEmitter(dataEmitter.getIdentity());
+			IDataEmitter emitter = WirelessManager.getDataEmitter(dataEmitter.getIdentity());
 			if (emitter != null && emitter.canPlayerConnect(playerUUID.getUUID())) {
 				emitters.add(emitter);
 			}

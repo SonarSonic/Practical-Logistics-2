@@ -129,4 +129,7 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	public <T extends INetworkChannels> T getOrCreateNetworkChannels(Class<T> channelClass) {
 		return null;//this may cause problems lets hope not
 	}
+
+	@Override
+	public void onConnectedNetworkCacheChanged(ILogisticsNetwork network) {}
 }

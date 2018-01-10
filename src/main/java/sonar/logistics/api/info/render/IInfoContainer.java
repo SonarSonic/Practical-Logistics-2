@@ -2,10 +2,10 @@ package sonar.logistics.api.info.render;
 
 import java.util.function.Consumer;
 
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockInteractionType;
@@ -36,7 +36,7 @@ public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListe
 	public int getMaxCapacity();
 
 	/** called when a display associated with this Container is clicked */
-	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit);
+	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit);
 
 	/** gets the display this InfoContainer is connected to */
 	public IDisplay getDisplay();

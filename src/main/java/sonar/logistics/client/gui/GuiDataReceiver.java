@@ -12,22 +12,23 @@ import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerDataReceiver;
 import sonar.logistics.common.multiparts.wireless.DataReceiverPart;
+import sonar.logistics.common.multiparts2.wireless.TileDataReceiver;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {
-	public DataReceiverPart tile;
+	public TileDataReceiver tile;
 
-	public GuiDataReceiver(DataReceiverPart tile) {
-		super(new ContainerDataReceiver(tile), tile);
-		this.tile = tile;
+	public GuiDataReceiver(TileDataReceiver tileDataReceiver) {
+		super(new ContainerDataReceiver(tileDataReceiver), tileDataReceiver);
+		this.tile = tileDataReceiver;
 		this.xSize = 182 + 66;
 	}
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(PL2Translate.DATA_RECEIVER.t(), xSize, 6, LogisticsColours.white_text);
-		FontHelper.textCentre(PL2Translate.DATA_RECEIVER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
+		//FontHelper.textCentre(PL2Translate.DATA_RECEIVER.t(), xSize, 6, LogisticsColours.white_text);
+		//FontHelper.textCentre(PL2Translate.DATA_RECEIVER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 	}
 
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, ClientDataEmitter info) {

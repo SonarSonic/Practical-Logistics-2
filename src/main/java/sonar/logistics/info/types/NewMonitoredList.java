@@ -1,17 +1,7 @@
 package sonar.logistics.info.types;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.ItemStackHelper;
-import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.utils.MonitoredValue;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;

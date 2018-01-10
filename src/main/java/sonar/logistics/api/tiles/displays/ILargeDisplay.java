@@ -1,9 +1,9 @@
 package sonar.logistics.api.tiles.displays;
 
-import sonar.logistics.api.tiles.IConnectable;
+import sonar.logistics.api.tiles.ICable;
 
 /** implemented on Large Display Screen */
-public interface ILargeDisplay extends IDisplay, IConnectable {
+public interface ILargeDisplay extends IDisplay, ICable {
 
 	/** gets the {@link ConnectedDisplay} this {@link ILargeDisplay} is connected to */
 	public ConnectedDisplay getDisplayScreen();

@@ -10,12 +10,13 @@ import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
 
 public class GuiDataEmitter extends GuiLogistics {
-	public DataEmitterPart part;
+	public TileDataEmitter part;
 	private SonarTextField nameField;
 
-	public GuiDataEmitter(DataEmitterPart part) {
+	public GuiDataEmitter(TileDataEmitter part) {
 		super(new ContainerMultipartSync(part), part);
 		this.part = part;
 		this.ySize = 60;
@@ -24,7 +25,7 @@ public class GuiDataEmitter extends GuiLogistics {
 	public void initGui() {
 		super.initGui();
 		Keyboard.enableRepeatEvents(true);
-		nameField = new SonarTextField(0, this.fontRendererObj, 8, 18, 160, 12);
+		nameField = new SonarTextField(0, this.fontRenderer, 8, 18, 160, 12);
 		nameField.setMaxStringLength(20);
 		nameField.setText(part.getEmitterName());
 		fieldList.add(nameField);
@@ -48,7 +49,7 @@ public class GuiDataEmitter extends GuiLogistics {
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		FontHelper.textCentre(PL2Translate.DATA_EMITTER.t(), xSize, 6, LogisticsColours.white_text.getRGB());
+		//FontHelper.textCentre(PL2Translate.DATA_EMITTER.t(), xSize, 6, LogisticsColours.white_text.getRGB());
 	}
 
 	@Override

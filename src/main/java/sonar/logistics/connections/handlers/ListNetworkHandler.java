@@ -22,7 +22,6 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
 
 public abstract class ListNetworkHandler<I extends IInfo> implements INetworkListHandler<I> {

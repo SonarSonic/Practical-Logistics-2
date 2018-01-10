@@ -4,9 +4,8 @@ import java.util.function.BiFunction;
 
 import com.google.common.collect.Lists;
 
+import crafttweaker.api.item.IItemStack;
 import minetweaker.MineTweakerAPI;
-import minetweaker.api.item.IIngredient;
-import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import sonar.core.integration.SonarLoader;
 import sonar.core.integration.minetweaker.SonarAddRecipeV2;

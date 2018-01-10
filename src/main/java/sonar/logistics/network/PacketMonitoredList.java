@@ -57,16 +57,14 @@ public class PacketMonitoredList implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-				public void run() {
-					if (message.list != null) {
-						ILogicListenable viewable = PL2.getClientManager().monitors.get(message.identity);
-						MonitoredList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
-						PL2.getClientManager().monitoredLists.put(message.id, list);
-						PL2.getClientManager().onMonitoredListChanged(message.id, list);
-					}
-				}
-			});
+			if (message.list != null) {
+				ILogicListenable viewable = PL2.getClientManager().monitors.get(message.identity);
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					MonitoredList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
+					PL2.getClientManager().monitoredLists.put(message.id, list);
+					PL2.getClientManager().onMonitoredListChanged(message.id, list);
+				});
+			}
 			return null;
 		}
 

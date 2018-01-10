@@ -30,17 +30,17 @@ public class CommandResetInfoRegistry implements ICommand {
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "/logistics resetRegistry";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return "/logistics resetRegistry";
 	}
 
 	@Override
-	public List<String> getCommandAliases() {
+	public List<String> getAliases() {
 		return aliases;
 	}
 
@@ -51,7 +51,7 @@ public class CommandResetInfoRegistry implements ICommand {
 			LogicInfoRegistry.INSTANCE.reload();
 			PL2.logger.info("Reset Logic Info Registry");
 		}
-		sender.addChatMessage(new TextComponentTranslation("Reset Logic Info Registry"));
+		sender.sendMessage(new TextComponentTranslation("Reset Logic Info Registry"));
 
 
 	}
@@ -62,7 +62,7 @@ public class CommandResetInfoRegistry implements ICommand {
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 		return null;
 	}
 

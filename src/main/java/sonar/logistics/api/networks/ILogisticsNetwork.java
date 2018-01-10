@@ -118,5 +118,6 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	/**gets the first local info provider from the stored list provided in {@link #getLocalInfoProvider()}*/
 	IInfoProvider getLocalInfoProvider();
 
+	void onConnectedNetworkCacheChanged(ILogisticsNetwork network);
 
 }

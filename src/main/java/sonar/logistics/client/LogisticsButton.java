@@ -19,7 +19,8 @@ import sonar.logistics.PL2Translate;
 
 @SideOnly(Side.CLIENT)
 public class LogisticsButton extends AnimatedButton {
-	
+
+	public static final ResourceLocation logisticsButtons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/filter_buttons.png");
 	public static class CHANNELS extends LogisticsButton{
 
 		public CHANNELS(GuiSonar sonar, int id, int x, int y) {
@@ -36,7 +37,6 @@ public class LogisticsButton extends AnimatedButton {
 		
 	}
 	
-	public static final ResourceLocation logisticsButtons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/filter_buttons.png");
 	public GuiSonar sonar;
 	public String buttonText;
 	public int texX, texY;
@@ -62,6 +62,7 @@ public class LogisticsButton extends AnimatedButton {
 		this.texY = texY;
 	}
 
+	@Override
 	public void drawButtonForegroundLayer(int x, int y) {
 		if (hovered) {
 			if (GuiHelpOverlay.enableHelp) {
@@ -72,12 +73,9 @@ public class LogisticsButton extends AnimatedButton {
 		}
 	}
 
-	public void drawButton(Minecraft mc, int x, int y) {
-		super.drawButton(mc, x, y);
-	}
-
 	@Override
 	public void onClicked() {
+		
 	}
 
 	@Override

@@ -7,8 +7,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.raytrace.PartMOP;
+import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -16,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -57,7 +57,7 @@ public class InfoHelper {
 	public static final String REMOVED = "rem";
 	public static final String SPECIAL = "spe";
 
-	public static void screenItemStackClicked(StoredItemStack itemstack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+	public static void screenItemStackClicked(StoredItemStack itemstack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
 		if (toRemove.a != 0 && network != -1) {
 			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
@@ -82,14 +82,14 @@ public class InfoHelper {
 				break;
 			case REMOVE:
 				if (itemstack != null) {
-					IMultipart part = hit.partHit;
+					IMultipart part = (IMultipart) hit.hitInfo;
 					if (part != null && part instanceof LogisticsPart) {
-						BlockPos pos = part.getPos();
+						BlockPos pos = hit.getBlockPos();
 						StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, itemstack.copy().setStackSize(toRemove.a));
 						if (extract != null) {
 							pos = pos.offset(hit.sideHit);
 							long r = extract.stored;
-							SonarAPI.getItemHelper().spawnStoredItemStack(extract, part.getWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
+							SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
 							long itemCount = PL2API.getItemHelper().getItemCount(itemstack.getItemStack(), cache);
 							PL2.network.sendTo(new PacketItemInteractionText(itemstack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
 						}
@@ -106,7 +106,7 @@ public class InfoHelper {
 		}
 	}
 
-	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
 		if (network != -1) {
 			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
 			if (!cache.isValid())
@@ -302,15 +302,15 @@ public class InfoHelper {
 		}
 	}
 
-	public static boolean canBeClickedStandard(RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
+	public static boolean canBeClickedStandard(RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
 		if (renderInfo.container.getMaxCapacity() == 1) {
 			return true;
 		}
 		IDisplay display = renderInfo.container.getDisplay();
 		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.infoPos);
 		BlockPos pos = hit.getBlockPos();
-		double x = hit.hitVec.xCoord - pos.getX();
-		double y = hit.hitVec.yCoord - pos.getY();
+		double x = hit.hitVec.x - pos.getX();
+		double y = hit.hitVec.y - pos.getY();
 		if (x >= intersect[0] && x <= intersect[2] && 1 - y >= intersect[1] && 1 - y <= intersect[3]) {
 			return true;
 		}

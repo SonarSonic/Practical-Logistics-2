@@ -17,6 +17,7 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.connections.LogisticsNetwork;
+import sonar.logistics.connections.NetworkUpdate;
 
 public class NetworkManager {
 
@@ -65,7 +66,6 @@ public class NetworkManager {
 		return networkCache;
 	}
 
-	/* public void markNetworkDirty(int networkID, RefreshType type) { ILogisticsNetwork2 cache = getOrCreateNetwork(networkID); cache.markDirty(type); } */
 	public void connectNetworks(int oldID, int newID) {
 		if (oldID != newID) {
 			ILogisticsNetwork oldNet = cache.get(oldID);
@@ -75,7 +75,8 @@ public class NetworkManager {
 			ILogisticsNetwork newNet = getOrCreateNetwork(newID);
 			List<INetworkListener> tiles = oldNet.getCachedTiles(CacheHandler.TILE, CacheType.LOCAL);
 			oldNet.onNetworkRemoved();
-			cache.remove(oldNet);
+			cache.remove(oldNet);				
+			newNet.markUpdate(NetworkUpdate.CABLES);
 			newNet.onCablesChanged();
 		}
 	}

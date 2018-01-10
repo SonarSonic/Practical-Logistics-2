@@ -9,6 +9,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -39,7 +40,7 @@ public class DisplayScreenPart extends AbstractDisplayPart {
 	}
 
 	@Override
-	public boolean performOperation(AdvancedRayTraceResultPart rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (!getWorld().isRemote) {
 			incrementLayout();
 			FontHelper.sendMessage("Screen Layout: " + layout.getObject(), getWorld(), player);

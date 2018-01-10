@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -17,7 +18,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -61,8 +61,8 @@ public class PL2 {
 
 	public static CreativeTabs creativeTab = new CreativeTabs(PL2Constants.NAME) {
 		@Override
-		public Item getTabIconItem() {
-			return PL2Items.cable;
+		public ItemStack getTabIconItem() {
+			return new ItemStack(PL2Items.etched_plate);
 		}
 	};
 
@@ -111,7 +111,7 @@ public class PL2 {
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		logger.info("Breaking into the pentagon");
-		PL2Crafting.addRecipes();
+		///PL2Crafting.addRecipes();
 		logger.info("Registered Crafting Recipes");
 
 		OreDictionary.registerOre("oreSapphire", PL2Blocks.sapphire_ore);

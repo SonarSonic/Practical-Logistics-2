@@ -21,13 +21,13 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
 
 public class BlockHammerAir extends Block {
-	
+
 	public BlockHammerAir() {
 		super(Material.CLOTH);
 	}
 
 	@Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ){
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.getBlockState(pos.offset(EnumFacing.DOWN)).getBlock() == PL2Blocks.hammer) {
 			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 1, pos.getZ());
 			return true;
@@ -38,7 +38,7 @@ public class BlockHammerAir extends Block {
 		return false;
 
 	}
-	
+
 	//// EVENTS \\\\
 
 	@Override
@@ -58,7 +58,7 @@ public class BlockHammerAir extends Block {
 		}
 
 	}
-	
+
 	//// RENDERING \\\\
 
 	@Override
@@ -79,15 +79,15 @@ public class BlockHammerAir extends Block {
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.INVISIBLE;
 	}
-	
+
 	//// DROPS \\\\
 
 	@Override
 	public int quantityDropped(Random p_149745_1_) {
 		return 0;
 	}
-	
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player){
+
+	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		return new ItemStack(PL2Blocks.hammer, 1, 0);
-    }
+	}
 }

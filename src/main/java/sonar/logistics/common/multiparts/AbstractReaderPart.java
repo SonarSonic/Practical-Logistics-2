@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.MCMultiPartMod;
-import mcmultipart.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -46,7 +46,6 @@ import sonar.logistics.network.sync.SyncMonitoredType;
 public abstract class AbstractReaderPart<T extends IInfo> extends SidedPart implements INetworkReader<T>, IByteBufTile, IFlexibleGui {
 
 	public static final int ADD = -9, PAIRED = -10, ALL = 100;
-	public static final PropertyBool hasDisplay = PropertyBool.create("display");
 
 	public final ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	public final ChannelList list = new ChannelList(getIdentity(), this.channelType(), -2);

@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;

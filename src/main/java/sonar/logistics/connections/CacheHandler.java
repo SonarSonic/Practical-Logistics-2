@@ -22,18 +22,18 @@ public abstract class CacheHandler<T> {
 		@Override
 		public void onConnectionAdded(LogisticsNetwork network, IDataReceiver connection) {			
 			connection.onNetworkConnect(network); //if we don't do this they effectively would have no network
-			WirelessManager.addReceiver(connection);						
+			WirelessManager.connectDataReceiver(network, connection);						
 		}
 
 		@Override
 		public void onConnectionRemoved(LogisticsNetwork network, IDataReceiver connection) {
 			connection.onNetworkDisconnect(network);
-			WirelessManager.removeReceiver(connection);	
+			WirelessManager.disconnectDataReceiver(network, connection);	
 		}
 		
 		@Override
 		public void update(LogisticsNetwork network, List<IDataReceiver> connections) {
-			network.markUpdate(NetworkUpdate.SUB_NETWORKS, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
+			network.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
 		}
 	};
 
@@ -41,12 +41,17 @@ public abstract class CacheHandler<T> {
 
 		public void onConnectionAdded(LogisticsNetwork network, IDataEmitter emitter) {
 			emitter.onNetworkConnect(network); //if we don't do this they effectively would have no network
-			WirelessManager.addEmitter(emitter);						
+			WirelessManager.connectDataEmitter(network, emitter);						
 		}
 
 		public void onConnectionRemoved(LogisticsNetwork network, IDataEmitter emitter) {
 			emitter.onNetworkDisconnect(network);
-			WirelessManager.removeEmitter(emitter);
+			WirelessManager.disconnectDataEmitter(network, emitter);
+		}
+		
+		@Override
+		public void update(LogisticsNetwork network, List<IDataEmitter> connections) {
+			//network.markUpdate(NetworkUpdate.WATCHING_NETWORKS);
 		}
 	};
 

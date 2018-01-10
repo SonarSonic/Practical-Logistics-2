@@ -1,8 +1,7 @@
 package sonar.logistics.info.registries;
-
+/*FIXME
 import com.google.common.collect.Lists;
 
-import appeng.tile.grindstone.TileGrinder;
 import erogenousbeef.bigreactors.common.interfaces.IReactorFuelInfo;
 import erogenousbeef.bigreactors.common.multiblock.MultiblockReactor;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorPartBase;
@@ -28,3 +27,4 @@ public class BigReactorRegistry extends IInfoRegistry {
 
 	public void registerAdjustments(IMasterInfoRegistry registry) {}
 }
+*/

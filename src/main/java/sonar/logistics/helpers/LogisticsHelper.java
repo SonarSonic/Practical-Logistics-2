@@ -3,22 +3,21 @@ package sonar.logistics.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import mcmultipart.multipart.ISlottedPart;
-import mcmultipart.multipart.PartSlot;
+import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipartTile;
+import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.listener.ListenerList;
-import sonar.core.listener.ListenerTally;
-import sonar.core.listener.PlayerListener;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -32,16 +31,12 @@ import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.tiles.readers.INetworkReader;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
 import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.network.PacketMonitoredList;
 
 public class LogisticsHelper {
 
@@ -126,12 +121,12 @@ public class LogisticsHelper {
 		return infoList;
 	}
 
-	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, AbstractDisplayPart part) {
-		ILogisticsNetwork networkCache = part.getNetwork();
-		ISlottedPart connectedPart = part.getContainer().getPartInSlot(PartSlot.getFaceSlot(part.face));
-		if (connectedPart != null && connectedPart instanceof IInfoProvider) {
-			if (!viewables.contains((IInfoProvider) connectedPart)) {
-				viewables.add((IInfoProvider) connectedPart);
+	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, IBlockAccess world, BlockPos pos, AbstractDisplayPart part) {
+		ILogisticsNetwork networkCache = part.getNetwork();		
+		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(world, pos, EnumFaceSlot.fromFace(part.face), tile -> true);		
+		if (connectedPart.isPresent() && connectedPart.get() instanceof IInfoProvider) {
+			if (!viewables.contains((IInfoProvider) connectedPart.get())) {
+				viewables.add((IInfoProvider) connectedPart.get());
 			}
 		} else {
 			for (IInfoProvider monitor : networkCache.getLocalInfoProviders()) {
@@ -141,16 +136,6 @@ public class LogisticsHelper {
 			}
 		}
 		return viewables;
-	}
-
-	public static void addConnectedNetworks(ILogisticsNetwork main, IDataReceiver receiver) {
-		List<Integer> connected = receiver.getConnectedNetworks();
-		connected.iterator().forEachRemaining(networkID -> {
-			ILogisticsNetwork sub = PL2.getNetworkManager().getNetwork(networkID);
-			if (sub.getNetworkID() != main.getNetworkID() && sub.isValid()) {
-				sub.getListenerList().addListener(main, ILogisticsNetwork.WATCHING_NETWORK);
-			}
-		});
 	}
 
 	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {

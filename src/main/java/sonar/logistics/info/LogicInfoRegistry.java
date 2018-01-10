@@ -23,7 +23,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;

@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
+import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -28,8 +28,7 @@ public class PacketEmitterStatement extends PacketMultipart {
 	public EmitterStatement statement;
 	public ListPacket packetType;
 
-	public PacketEmitterStatement() {
-	}
+	public PacketEmitterStatement() {}
 
 	public PacketEmitterStatement(UUID partUUID, BlockPos pos, ListPacket packetType) {
 		super(partUUID, pos);
@@ -64,69 +63,65 @@ public class PacketEmitterStatement extends PacketMultipart {
 	public static class Handler extends PacketMultipartHandler<PacketEmitterStatement> {
 		@Override
 		public IMessage processMessage(PacketEmitterStatement message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-
-				@Override
-				public void run() {
-					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-					if (player == null || player.getEntityWorld().isRemote || !(part instanceof ILogisticsTile)) {
-						return;
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+				if (player == null || player.getEntityWorld().isRemote || !(part instanceof ILogisticsTile)) {
+					return;
+				}
+				ILogisticsTile tile = (ILogisticsTile) part;
+				SyncNBTAbstractList<EmitterStatement> filters = tile.getStatements();
+				switch (message.packetType) {
+				case ADD:
+					for (EmitterStatement filter : filters.getObjects()) {
+						if (filter.equals(message.statement)) {
+							filter.readData(message.statement.writeData(new NBTTagCompound(), SyncType.SAVE), SyncType.SAVE);
+							filters.markChanged();
+							return;
+						}
 					}
-					ILogisticsTile tile = (ILogisticsTile) part;
-					SyncNBTAbstractList<EmitterStatement> filters = tile.getStatements();
-					switch (message.packetType) {
-					case ADD:
-						for (EmitterStatement filter : filters.getObjects()) {
-							if (filter.equals(message.statement)) {
-								filter.readData(message.statement.writeData(new NBTTagCompound(), SyncType.SAVE), SyncType.SAVE);
-								filters.markChanged();
-								return;
-							}
-						}
-						filters.addObject(message.statement);
-						break;
-					case MOVE_DOWN:
+					filters.addObject(message.statement);
+					break;
+				case MOVE_DOWN:
 
-						int listPos = -1;
-						for (int i = 0; i < filters.objs.size(); i++) {
-							EmitterStatement filter = filters.getObjects().get(i);
-							if (filter.equals(message.statement)) {
-								listPos = i;
-							}
+					int listPos = -1;
+					for (int i = 0; i < filters.objs.size(); i++) {
+						EmitterStatement filter = filters.getObjects().get(i);
+						if (filter.equals(message.statement)) {
+							listPos = i;
 						}
-						if (listPos + 1 > 0) {
-							if (listPos + 1 < filters.objs.size()) {
-								Collections.swap(filters.objs, listPos, listPos + 1);
-								filters.markChanged();
-							}
-						}
-						break;
-					case MOVE_UP:
-						listPos = -1;
-						for (int i = 0; i < filters.objs.size(); i++) {
-							EmitterStatement filter = filters.getObjects().get(i);
-							if (filter.equals(message.statement)) {
-								listPos = i;
-							}
-						}
-						if (listPos - 1 >= 0) {
-							if (listPos - 1 < filters.objs.size()) {
-								Collections.swap(filters.objs, listPos, listPos - 1);
-								filters.markChanged();
-							}
-						}
-						break;
-					case REMOVE:
-						filters.removeObject(message.statement);
-						break;
-					case CLEAR:
-						filters.objs.clear();
-						filters.markChanged();
-						break;
-					default:
-						break;
-
 					}
+					if (listPos + 1 > 0) {
+						if (listPos + 1 < filters.objs.size()) {
+							Collections.swap(filters.objs, listPos, listPos + 1);
+							filters.markChanged();
+						}
+					}
+					break;
+				case MOVE_UP:
+					listPos = -1;
+					for (int i = 0; i < filters.objs.size(); i++) {
+						EmitterStatement filter = filters.getObjects().get(i);
+						if (filter.equals(message.statement)) {
+							listPos = i;
+						}
+					}
+					if (listPos - 1 >= 0) {
+						if (listPos - 1 < filters.objs.size()) {
+							Collections.swap(filters.objs, listPos, listPos - 1);
+							filters.markChanged();
+						}
+					}
+					break;
+				case REMOVE:
+					filters.removeObject(message.statement);
+					break;
+				case CLEAR:
+					filters.objs.clear();
+					filters.markChanged();
+					break;
+				default:
+					break;
+
 				}
 
 			});

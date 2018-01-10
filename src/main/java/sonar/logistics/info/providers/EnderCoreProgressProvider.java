@@ -1,5 +1,5 @@
 package sonar.logistics.info.providers;
-
+/* FIXME
 import java.util.List;
 
 import com.enderio.core.api.common.util.IProgressTile;
@@ -34,3 +34,4 @@ public class EnderCoreProgressProvider implements ITileInfoProvider {
 	}
 
 }
+*/

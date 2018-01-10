@@ -97,7 +97,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				this.buttonList.add(new GuiButton(8, guiLeft + xSize / 2 - 60, guiTop + 80, 120, 20, "" + currentBool));
 			} else {
 				Keyboard.enableRepeatEvents(true);
-				inputField = new SonarTextField(0, this.fontRendererObj, 8, 96, xSize - 16, 12);
+				inputField = new SonarTextField(0, this.fontRenderer, 8, 96, xSize - 16, 12);
 				inputField.setDigitsOnly(currentFilter.getInputType() == InputTypes.NUMBER);
 				inputField.setMaxStringLength(20);
 				inputField.setText(currentFilter.obj.get() == null ? "" : currentFilter.obj.get().toString());

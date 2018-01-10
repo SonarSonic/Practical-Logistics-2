@@ -1,5 +1,9 @@
 package sonar.logistics;
 
+import java.util.Optional;
+
+import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -9,7 +13,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.IGuiItem;
 import sonar.core.utils.IGuiTile;
@@ -51,14 +54,15 @@ public class PL2Common implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		Object part = SonarMultipartHelper.getPartFromHash(ID, world, new BlockPos(x, y, z));
+		Optional<IMultipartTile> multipart = SonarMultipartHelper.getMultipartTileFromSlotID(world, new BlockPos(x, y, z), ID);
+		Object part = multipart.isPresent() ? multipart.get() : null;
 		if (part == null || !(part instanceof IGuiTile)) {
 			part = world.getTileEntity(new BlockPos(x, y, z));
 		}
 		if (part != null && ID != IGuiItem.ID && part instanceof IGuiTile) {
-			if (part instanceof SonarMultipart) {
-				((SonarMultipart) part).forceNextSync();
-			}
+			// if (part instanceof SonarMultipart) {
+			// ((SonarMultipart) part).forceNextSync(); //FIXME
+			// }
 			IGuiTile guiTile = (IGuiTile) part;
 			return guiTile.getGuiContainer(player);
 		} else if (ID == IGuiItem.ID) {
@@ -72,14 +76,15 @@ public class PL2Common implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		Object part = SonarMultipartHelper.getPartFromHash(ID, world, new BlockPos(x, y, z));
+		Optional<IMultipartTile> multipart = SonarMultipartHelper.getMultipartTileFromSlotID(world, new BlockPos(x, y, z), ID);
+		Object part = multipart.isPresent() ? multipart.get() : null;
 		if (part == null || !(part instanceof IGuiTile)) {
 			part = world.getTileEntity(new BlockPos(x, y, z));
 		}
 		if (part != null && part instanceof IGuiTile) {
-			if (part instanceof SonarMultipart) {
-				((SonarMultipart) part).forceNextSync();
-			}
+			// if (part instanceof SonarMultipart) {
+			// ((SonarMultipart) part).forceNextSync(); //FIXME
+			// }
 			IGuiTile guiTile = (IGuiTile) part;
 			return guiTile.getGuiScreen(player);
 		} else {

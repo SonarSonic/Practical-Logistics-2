@@ -20,8 +20,7 @@ public class PacketWirelessStorage implements IMessage {
 	public ItemStack readerStack;
 	public EntityPlayer player;
 
-	public PacketWirelessStorage() {
-	}
+	public PacketWirelessStorage() {}
 
 	public PacketWirelessStorage(IWirelessStorageReader reader, ItemStack readerStack, EntityPlayer player, int id, ByteBufWritable... writables) {
 		super();
@@ -60,19 +59,16 @@ public class PacketWirelessStorage implements IMessage {
 		@Override
 		public IMessage onMessage(PacketWirelessStorage message, MessageContext ctx) {
 
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-				public void run() {
-					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-					if (player == null || player.getEntityWorld().isRemote) {
-						return;
-					}
-					ItemStack stack = player.getHeldItemMainhand();
-					if (stack.getItem() instanceof IWirelessStorageReader) {
-						IWirelessStorageReader reader = (IWirelessStorageReader) stack.getItem();
-						reader.readPacket(stack, player, message.buf, message.id);
-					}
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+				if (player == null || player.getEntityWorld().isRemote) {
+					return;
 				}
-
+				ItemStack stack = player.getHeldItemMainhand();
+				if (stack.getItem() instanceof IWirelessStorageReader) {
+					IWirelessStorageReader reader = (IWirelessStorageReader) stack.getItem();
+					reader.readPacket(stack, player, message.buf, message.id);
+				}
 			});
 			return null;
 		}

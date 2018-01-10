@@ -78,7 +78,7 @@ public class BlockHammer extends SonarMachineBlock {
 	}
 
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.INVISIBLE;
+		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	//// DROPS \\\\

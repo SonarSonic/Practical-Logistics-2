@@ -1,23 +1,19 @@
 package sonar.logistics.client.gui;
 
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.GuiSonarTile;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.client.LogisticsColours;
 
-public class GuiLogistics extends GuiSonar {
+public class GuiLogistics extends GuiSonarTile {
 
 	public static final ResourceLocation playerInv = new ResourceLocation(PL2Constants.MODID + ":textures/gui/player_inventory.png");
 	public SonarScroller scroller;

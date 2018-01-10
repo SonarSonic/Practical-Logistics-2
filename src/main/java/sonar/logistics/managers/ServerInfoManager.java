@@ -1,6 +1,5 @@
 package sonar.logistics.managers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +11,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import mcmultipart.multipart.ISlottedPart;
-import mcmultipart.multipart.PartSlot;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -25,45 +21,33 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.SonarHelper;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.render.IInfoContainer;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.api.utils.MonitoredValue;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
-import sonar.logistics.common.multiparts.LogisticsPart;
-import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
-import sonar.logistics.info.types.NewMonitoredList;
-import sonar.logistics.network.PacketInfoUpdates;
-import sonar.logistics.network.PacketLocalProviders;
 
 public class ServerInfoManager implements IInfoManager {
 
 	// server side
+	private int IDENTITY_COUNT = 0; //gives unique identity to all PL2 Tiles ( which connect to networks), they can then be retrieved via their identity.
 	public List<InfoUUID> changedInfo = Lists.newArrayList();
 	public List<IDisplay> displays = Lists.newArrayList();
 	public boolean markDisplaysDirty = true;
@@ -91,6 +75,19 @@ public class ServerInfoManager implements IInfoManager {
 		//connectedDisplays.clear();
 		clickEvents.clear();
 		chunksToUpdate.clear();
+	}
+	
+	public int getNextIdentity(){
+		return IDENTITY_COUNT++;
+	}
+	
+	public int getIdentityCount(){
+		return IDENTITY_COUNT;
+	}
+	
+	/**warning do not use unless reading WorldSavedData, or your world will be corrupted!!!!*/
+	public int setIdentityCount(int count){
+		return count= IDENTITY_COUNT;
 	}
 
 	public boolean enableEvents() {
@@ -212,10 +209,10 @@ public class ServerInfoManager implements IInfoManager {
 	public void updateChunks() {
 		for (Entry<Integer, List<ChunkPos>> dims : chunksToUpdate.entrySet()) {
 			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-			WorldServer world = server.worldServerForDimension(dims.getKey());
+			WorldServer world = server.getWorld(dims.getKey());
 			PlayerChunkMap chunkMap = world.getPlayerChunkMap();
 			for (ChunkPos chunkPos : dims.getValue()) {
-				PlayerChunkMapEntry entry = chunkMap.getEntry(chunkPos.chunkXPos, chunkPos.chunkZPos);
+				PlayerChunkMapEntry entry = chunkMap.getEntry(chunkPos.x, chunkPos.z); //MAY NOT BE CORRECT CHOORDS
 				List<EntityPlayerMP> players = SonarHelper.getPlayersWatchingChunk(entry);
 				if (players.isEmpty()) {
 					continue;

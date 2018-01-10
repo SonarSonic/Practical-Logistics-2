@@ -35,7 +35,7 @@ import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.api.tiles.IConnectable;
+import sonar.logistics.api.tiles.ICable;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -46,7 +46,7 @@ import sonar.logistics.network.PacketConnectedDisplayRemove;
 import sonar.logistics.network.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
-public class ConnectedDisplay implements IDisplay, IConnectable, INBTSyncable, IScaleableDisplay, ISyncPart {
+public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScaleableDisplay, ISyncPart {
 
 	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	private int registryID = -1;

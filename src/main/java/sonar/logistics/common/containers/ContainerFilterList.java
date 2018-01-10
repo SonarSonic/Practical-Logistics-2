@@ -2,8 +2,6 @@ package sonar.logistics.common.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.filters.IFilteredTile;

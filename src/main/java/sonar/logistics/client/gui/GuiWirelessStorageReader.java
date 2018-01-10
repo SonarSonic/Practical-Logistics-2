@@ -68,7 +68,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	public void initGui() {
 		super.initGui();
 		initButtons();
-		searchField = new SonarTextField(1, this.fontRendererObj, 135, 10, 104, 14);
+		searchField = new SonarTextField(1, this.fontRenderer, 135, 10, 104, 14);
 		searchField.setMaxStringLength(20);
 		fieldList.add(searchField);
 	}
@@ -237,7 +237,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			}
 
 			FontRenderer font = storedStack.item.getItem().getFontRenderer(storedStack.item);
-			drawHoveringText(list, x, y, (font == null ? fontRendererObj : font));
+			drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
 		}
 	}
 

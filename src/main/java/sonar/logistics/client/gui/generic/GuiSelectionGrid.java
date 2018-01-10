@@ -16,10 +16,8 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
-import sonar.logistics.info.types.MonitoredFluidStack;
 
 public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 
@@ -41,7 +39,7 @@ public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 	@Override
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
-		this.mc.thePlayer.openContainer = this.inventorySlots;
+		this.mc.player.openContainer = this.inventorySlots;
 		this.xSize = 176 + 72;
 		this.ySize = 256;
 		this.guiLeft = (this.width - this.xSize) / 2;

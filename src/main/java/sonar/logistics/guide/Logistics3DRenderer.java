@@ -11,11 +11,12 @@ import org.lwjgl.opengl.GL11;
 
 import mcmultipart.multipart.MultipartRegistry;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
@@ -39,7 +40,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 
 	public void doMultipartRenderPass(Vector3d trans) {
 
-		VertexBuffer wr = Tessellator.getInstance().getBuffer();
+		BufferBuilder wr = Tessellator.getInstance().getBuffer();
 		wr.begin(7, DefaultVertexFormats.BLOCK);
 
 		Tessellator.getInstance().getBuffer().setTranslation(trans.x, trans.y, trans.z);

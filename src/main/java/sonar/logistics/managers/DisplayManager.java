@@ -61,7 +61,7 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 		IDisplay display = PL2API.getCableHelper().getDisplayScreen(new BlockCoords(pos.offset(dir)), source.getCableFace());
 		if (display != null && display instanceof ILargeDisplay) {
 			ILargeDisplay largeDisplay = (ILargeDisplay) display;
-			if (largeDisplay.getCableFace().equals(source.getCableFace()) && source.canConnectOnSide(largeDisplay.getRegistryID(), dir.getOpposite(), false) && largeDisplay.canConnectOnSide(source.getRegistryID(), dir, false)) {
+			if (largeDisplay.getCableFace().equals(source.getCableFace()) && source.canConnect(largeDisplay.getRegistryID(), dir.getOpposite(), false).canConnect() && largeDisplay.canConnect(source.getRegistryID(), dir, false).canConnect()) {
 				return new Pair(ConnectableType.CONNECTABLE, largeDisplay.getRegistryID());
 			}
 		}

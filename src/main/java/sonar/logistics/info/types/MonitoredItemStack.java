@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.RenderHelper;
@@ -163,7 +163,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	}
 
 	@Override
-	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit, InfoContainer container) {
+	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit, InfoContainer container) {
 		if (InfoHelper.canBeClickedStandard(renderInfo.getRenderProperties(), player, hand, stack, hit)) {
 			if (!player.getEntityWorld().isRemote){
 				InfoHelper.screenItemStackClicked(itemStack.getObject(), networkID.getObject(), type, doubleClick, renderInfo.getRenderProperties(), player, hand, stack, hit);

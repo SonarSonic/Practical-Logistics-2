@@ -61,21 +61,21 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	}
 
 	public boolean canProcess() {
-		if (slots()[0] == null) {
+		if (slots().get(0).isEmpty()) {
 			return false;
 		}
 
-		ISonarRecipe recipe = HammerRecipes.instance().getRecipeFromInputs(null, new Object[] { slots()[0] });
+		ISonarRecipe recipe = HammerRecipes.instance().getRecipeFromInputs(null, new Object[] { slots().get(0) });
 		if (recipe == null) {
 			return false;
 		}
 		ItemStack outputStack = RecipeHelperV2.getItemStackFromList(recipe.outputs(), 0);
-		if (outputStack == null) {
+		if (outputStack.isEmpty()) {
 			return false;
-		} else if (slots()[1] != null) {
-			if (!slots()[1].isItemEqual(outputStack)) {
+		} else if (!slots().get(1).isEmpty()) {
+			if (!slots().get(1).isItemEqual(outputStack)) {
 				return false;
-			} else if (slots()[1].stackSize + outputStack.stackSize > slots()[1].getMaxStackSize()) {
+			} else if (slots().get(1).getCount() + outputStack.getCount() > slots().get(1).getMaxStackSize()) {
 				return false;
 			}
 		}
@@ -84,20 +84,20 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	}
 
 	public void finishProcess() {
-		ISonarRecipe recipe = HammerRecipes.instance().getRecipeFromInputs(null, new Object[] { slots()[0] });
+		ISonarRecipe recipe = HammerRecipes.instance().getRecipeFromInputs(null, new Object[] { slots().get(0) });
 		if (recipe == null) {
 			return;
 		}
 		ItemStack outputStack = RecipeHelperV2.getItemStackFromList(recipe.outputs(), 0);
-		if (outputStack != null && outputStack != null) {
-			if (this.slots()[1] == null) {
-				this.slots()[1] = outputStack.copy();
-			} else if (this.slots()[1].isItemEqual(outputStack)) {
-				this.slots()[1].stackSize += outputStack.stackSize;
+		if (!outputStack.isEmpty()) {
+			if (this.slots().get(1).isEmpty()) {
+				this.slots().set(1, outputStack.copy());
+			} else if (this.slots().get(1).isItemEqual(outputStack)) {
+				this.slots().get(1).grow(outputStack.getCount());
 			}
-			this.slots()[0].stackSize -= recipe.inputs().get(0).getStackSize();
-			if (this.slots()[0].stackSize <= 0) {
-				this.slots()[0] = null;
+			this.slots().get(0).shrink(recipe.inputs().get(0).getStackSize());
+			if (this.slots().get(0).getCount() <= 0) {
+				this.slots().set(0, ItemStack.EMPTY);
 			}
 		}
 

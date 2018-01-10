@@ -3,13 +3,29 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import sonar.calculator.mod.api.items.IStability;
 import sonar.core.inventory.ContainerSync;
+import sonar.core.inventory.TransferSlotsManager;
+import sonar.core.inventory.TransferSlotsManager.TransferSlots;
 import sonar.core.inventory.slots.SlotBlockedInventory;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
 public class ContainerHammer extends ContainerSync {
 
 	private TileEntityHammer entity;
+
+	public static TransferSlotsManager<TileEntityHammer> transfer = new TransferSlotsManager() {
+		{
+			addTransferSlot(new TransferSlots<TileEntityHammer>(TransferType.TILE_INV, 1) {
+				@Override
+				public boolean canInsert(EntityPlayer player, TileEntityHammer inv, Slot slot, int pos, int slotID, ItemStack stack) {
+					return inv.isItemValidForSlot(0, stack);
+				}
+			});
+			addTransferSlot(new DisabledSlots<TileEntityHammer>(TransferType.TILE_INV, 1));
+			addPlayerInventory();
+		}
+	};
 
 	public ContainerHammer(EntityPlayer player, TileEntityHammer entity) {
 		super(entity);
@@ -31,54 +47,12 @@ public class ContainerHammer extends ContainerSync {
 
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
-		ItemStack itemstack = null;
-		Slot slot = (Slot) this.inventorySlots.get(id);
-
-		if ((slot != null) && (slot.getHasStack())) {
-			ItemStack itemstack1 = slot.getStack();
-			itemstack = itemstack1.copy();
-
-			if (id == 1) {
-				if (!mergeItemStack(itemstack1, 2, 38, true)) {
-					return null;
-				}
-
-				slot.onSlotChange(itemstack1, itemstack);
-			} else if (id != 0 && id != 1) {
-				if (entity.isItemValidForSlot(0, itemstack1)) {
-					if (!mergeItemStack(itemstack1, 0, 1, false)) {
-						return null;
-					}
-				} else if ((id >= 2) && (id < 29)) {
-					if (!mergeItemStack(itemstack1, 29, 38, false)) {
-						return null;
-					}
-				} else if ((id >= 29) && (id < 38) && (!mergeItemStack(itemstack1, 2, 29, false))) {
-					return null;
-				}
-			} else if (!mergeItemStack(itemstack1, 2, 38, false)) {
-				return null;
-			}
-
-			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
-			} else {
-				slot.onSlotChanged();
-			}
-
-			if (itemstack1.stackSize == itemstack.stackSize) {
-				return null;
-			}
-
-			slot.onPickupFromSlot(player, itemstack1);
-		}
-
-		return itemstack;
+		return transfer.transferStackInSlot(this, entity, player, id);
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return entity.isUseableByPlayer(player);
+		return entity.isUsableByPlayer(player);
 	}
 
 }

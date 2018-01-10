@@ -7,8 +7,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 
 public class PacketConnectedDisplayRemove implements IMessage {
 
@@ -35,13 +33,8 @@ public class PacketConnectedDisplayRemove implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketConnectedDisplayRemove message, MessageContext ctx) {
-			if (ctx.side == Side.CLIENT) {
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
-					public void run() {
-						PL2.getClientManager().connectedDisplays.remove(message.registryID);
-					}
-				});
-			}
+			if (ctx.side == Side.CLIENT)
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> PL2.getClientManager().connectedDisplays.remove(message.registryID));
 			return null;
 		}
 	}
