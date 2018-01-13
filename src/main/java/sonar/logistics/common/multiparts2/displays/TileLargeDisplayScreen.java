@@ -1,67 +1,44 @@
-package sonar.logistics.common.multiparts.displays;
+package sonar.logistics.common.multiparts2.displays;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
-import mcmultipart.MCMultiPartMod;
-import mcmultipart.raytrace.PartMOP;
-import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import sonar.core.api.utils.BlockCoords;
-import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2API;
-import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.ConnectableType;
+import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayConnections;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.client.gui.GuiDisplayScreen;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.helpers.PacketHelper;
 
-public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILargeDisplay {
+public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILargeDisplay {
 
 	public int registryID = -1;
 	public boolean wasAdded = false;
-	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.<DisplayConnections>create("type", DisplayConnections.class);
 	public ConnectedDisplay overrideDisplay = null;
 	public NBTTagCompound savedTag = null;
 	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // set default info
@@ -72,30 +49,8 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 		syncList.addParts(shouldRender, wasLocked);
 	}
 
-	public LargeDisplayScreenPart() {
+	public TileLargeDisplayScreen() {
 		super();
-	}
-
-	public LargeDisplayScreenPart(EnumFacing dir, EnumFacing rotation) {
-		super(dir, rotation);
-	}
-
-	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
-		if (stack != null && stack.getItem() instanceof IOperatorTool) {
-			return false;
-		}
-		if (isClient()) {
-			return true;
-		}
-		if (hit.sideHit != face) {
-			ConnectedDisplay display = getDisplayScreen();
-			LargeDisplayScreenPart part = (LargeDisplayScreenPart) display.getTopLeftScreen();
-			if (part != null) {
-				part.openFlexibleGui(player, 0);
-			}
-			return true;
-		}
-		return this.container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, getWorld(), player, hand, stack, hit);
 	}
 
 	@Override
@@ -237,8 +192,11 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 	}
 
 	@Override
-	public boolean canConnectOnSide(int connectingID, EnumFacing dir, boolean internal) {
-		return (dir != face && dir != face.getOpposite()) && (connectingID == registryID || !(wasLocked.getObject() || getDisplayScreen().isLocked.getObject()));
+	public NetworkConnectionType canConnect(int networkID, EnumFacing dir, boolean internal) {
+		if((dir != face && dir != face.getOpposite()) && (networkID == registryID || !(wasLocked.getObject() || getDisplayScreen().isLocked.getObject()))){
+			return NetworkConnectionType.NETWORK;
+		}
+		return NetworkConnectionType.NONE;
 	}
 
 	@Override
@@ -273,9 +231,8 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		wasRemoved = true;
 		wasAdded = false;
-		this.removeConnection();
+		removeConnection();
 	}
 
 	//// MULTIPART \\\\
@@ -306,66 +263,6 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 			break;
 
 		}
-	}
-
-	//// STATE \\\\
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess w, BlockPos pos) {
-		IBlockState currentState = state;
-		List<EnumFacing> faces = Lists.newArrayList();
-		for (EnumFacing face : EnumFacing.VALUES) {
-			if (face == this.face || face == this.face.getOpposite()) {
-				continue;
-			}
-			if (this.getWorld() != null) {
-				IDisplay display = PL2API.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(getCoords(), face), this.face);
-				if (display != null && display.getDisplayType() == DisplayType.LARGE && ((ILargeDisplay) display).getRegistryID() == registryID) {
-					switch (this.face) {
-					case DOWN:
-						EnumFacing toAdd = face;
-						if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
-							toAdd = toAdd.getOpposite();
-						}
-						faces.add(toAdd);
-						break;
-					case EAST:
-						toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.Y);
-						if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
-							toAdd = toAdd.getOpposite();
-						}
-						faces.add(toAdd);
-						break;
-					case NORTH:
-						toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.X).rotateAround(Axis.Y);
-						if (toAdd == EnumFacing.NORTH || toAdd == EnumFacing.SOUTH) {
-							toAdd = toAdd.getOpposite();
-						}
-						faces.add(toAdd);
-						break;
-					case SOUTH:
-						toAdd = face.rotateAround(Axis.Z).rotateAround(Axis.X).rotateAround(Axis.Y).getOpposite();
-						faces.add(toAdd);
-						break;
-					case UP:
-						faces.add(face);
-						break;
-					case WEST:
-						faces.add(face.rotateAround(Axis.Z).rotateAround(Axis.Y).getOpposite());
-						break;
-					default:
-						break;
-
-					}
-				}
-			}
-		}
-		DisplayConnections type = DisplayConnections.getType(faces);
-		return currentState.withProperty(PL2Properties.ORIENTATION, face).withProperty(PL2Properties.ROTATION, EnumFacing.NORTH).withProperty(TYPE, type);
-	}
-
-	@Override
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { PL2Properties.ORIENTATION, PL2Properties.ROTATION, TYPE });
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -439,29 +336,31 @@ public class LargeDisplayScreenPart extends AbstractDisplayPart implements ILarg
 		}
 	}
 
-	//// GUI \\\\
-	public Object getServerElement(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new ContainerMultipartSync(obj) : null;
-	}
-
-	public Object getClientElement(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new GuiDisplayScreen(obj) : null;
-	}
 
 	@Override
-	public void onGuiOpened(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			LargeDisplayScreenPart part = (LargeDisplayScreenPart) this.getDisplayScreen().getTopLeftScreen();
+			TileAbstractDisplay part = (TileAbstractDisplay) this.getDisplayScreen().getTopLeftScreen();
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			//PL2.network.sendTo(new PacketConnectedDisplayScreen(this.getDisplayScreen(), registryID), (EntityPlayerMP) player);
-			PacketHelper.sendLocalProvidersFromScreen(part, player);
+			PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player);
 			break;
 		}
 	}
 
 	@Override
-	public PL2Multiparts getMultipart() {
-		return PL2Multiparts.LARGE_DISPLAY_SCREEN;
+	public CableRenderType getCableRenderSize(EnumFacing dir) {
+		return CableRenderType.CABLE;
+	}
+
+	@Override
+	public boolean isBlocked(EnumFacing dir) {
+		return false;
+	}
+
+	@Override
+	public void updateCableRenders() {
+		
 	}
 }

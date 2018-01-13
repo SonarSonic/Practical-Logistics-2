@@ -2,7 +2,6 @@ package sonar.logistics;
 
 import java.util.Optional;
 
-import mcmultipart.api.multipart.IMultipart;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

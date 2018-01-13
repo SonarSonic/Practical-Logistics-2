@@ -1,8 +1,6 @@
 package sonar.logistics.api.tiles;
 
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
@@ -34,4 +32,6 @@ public interface ICable extends IWorldPosition {
 	public NetworkConnectionType canConnect(int networkID, EnumFacing dir, boolean internal);
 	
 	public boolean isBlocked(EnumFacing dir);
+	
+	public void updateCableRenders();
 }

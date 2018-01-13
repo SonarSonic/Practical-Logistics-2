@@ -29,7 +29,7 @@ public interface IGuidePageElement {
 		RenderHelper.saveBlendState();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.renderItem(gui, xPos, yPos, rendStack);
-		RenderHelper.renderStoredItemStackOverlay(rendStack, rendStack.stackSize == 1 ? 0 : rendStack.stackSize, xPos, yPos, null, true);
+		RenderHelper.renderStoredItemStackOverlay(rendStack, rendStack.getCount() == 1 ? 0 : rendStack.getCount(), xPos, yPos, null, true);
 		RenderHelper.restoreBlendState();
 	}
 }

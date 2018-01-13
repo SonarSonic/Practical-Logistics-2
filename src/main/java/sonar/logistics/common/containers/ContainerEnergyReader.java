@@ -3,14 +3,14 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.readers.EnergyReaderPart;
+import sonar.logistics.common.multiparts2.readers.TileEnergyReader;
 
 public class ContainerEnergyReader extends ContainerMultipartSync {
-	public EnergyReaderPart part;
+	public TileEnergyReader part;
 
-	public ContainerEnergyReader(EntityPlayer player, EnergyReaderPart part) {
-		super(part);
-		this.part = part;
+	public ContainerEnergyReader(EntityPlayer player, TileEnergyReader tileEnergyReader) {
+		super(tileEnergyReader);
+		this.part = tileEnergyReader;
 	}
 
 	public void onContainerClosed(EntityPlayer player) {

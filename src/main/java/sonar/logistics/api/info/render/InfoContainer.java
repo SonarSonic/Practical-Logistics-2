@@ -11,13 +11,14 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.api.utils.BlockInteractionType;
@@ -39,7 +40,7 @@ import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
@@ -135,7 +136,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	}
 
 	@Override
-	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
+	public boolean onClicked(TileAbstractDisplay part, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		boolean doubleClick = false;
 		if (world.getTotalWorldTime() - lastClickTime < 10 && player.getPersistentID().equals(lastClickUUID)) {
 			doubleClick = true;
@@ -152,11 +153,11 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 					int hashCode = UUID.randomUUID().hashCode();
 					DisplayInteractionEvent event = new DisplayInteractionEvent(hashCode, cachedInfo, i, player, type, doubleClick, hand, hit);
 					PL2.getServerManager().clickEvents.put(hashCode, event);
-					PL2.network.sendTo(new PacketClickEventClient(part.getUUID(), part.getPos(), event), (EntityPlayerMP) player);
+					PL2.network.sendTo(new PacketClickEventClient(part.getSlotID(), part.getPos(), event), (EntityPlayerMP) player);
 				}
 			} else if (cachedInfo instanceof IBasicClickableInfo) {
 				IBasicClickableInfo clickable = ((IBasicClickableInfo) cachedInfo);
-				return clickable.onStandardClick(type, doubleClick, info, player, hand, stack, hit, this);
+				return clickable.onStandardClick(part, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 		}
 		return true;

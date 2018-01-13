@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
@@ -14,10 +13,8 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.readers.IReader;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.AbstractReaderPart;
 import sonar.logistics.connections.channels.ListNetworkChannels;
 
 public abstract class TileAbstractListReader<T extends IInfo> extends TileAbstractReader<T> implements IReader<T>, IFlexibleGui {

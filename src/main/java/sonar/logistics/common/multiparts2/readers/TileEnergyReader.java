@@ -1,9 +1,10 @@
-package sonar.logistics.common.multiparts.readers;
+package sonar.logistics.common.multiparts2.readers;
 
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.energy.StoredEnergyStack;
@@ -15,7 +16,8 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Multiparts;
+import sonar.logistics.PL2Blocks;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkListHandler;
@@ -32,7 +34,7 @@ import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
-public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStack> implements IByteBufTile {
+public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStack> implements IByteBufTile {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK };
 
@@ -77,7 +79,7 @@ public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStac
 			info = new LogicInfoList(getIdentity(), MonitoredEnergyStack.id, this.getNetworkID());
 			break;
 		case TOTAL:
-			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(this.getCoords(), this.getDisplayName()), new StoredItemStack(this.getItemStack()));
+			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(this.getCoords(),PL2Translate.ENERGY_READER.original), new StoredItemStack(new ItemStack(PL2Blocks.energy_reader)));
 			for (MonitoredEnergyStack stack : updateInfo.cloneInfo()) {
 				MonitoredEnergyStack convert = stack.copy();
 				convert.getEnergyStack().convertEnergyType(energyType.getEnergyType());
@@ -142,11 +144,6 @@ public class EnergyReaderPart extends AbstractListReaderPart<MonitoredEnergyStac
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
-	}
-
-	@Override
-	public PL2Multiparts getMultipart() {
-		return PL2Multiparts.ENERGY_READER;
 	}
 
 }

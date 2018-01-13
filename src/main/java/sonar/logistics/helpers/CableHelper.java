@@ -9,10 +9,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.IMultipart;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
-import mcmultipart.api.ref.MCMPCapabilities;
 import mcmultipart.api.slot.EnumCenterSlot;
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.tileentity.TileEntity;
@@ -22,13 +20,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
 import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
-import sonar.logistics.api.capability.PL2Capabilities;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
@@ -40,18 +36,16 @@ import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wrappers.CablingWrapper;
-import sonar.logistics.common.multiparts.SidedPart;
-import sonar.logistics.common.multiparts.displays.DataCablePart;
 import sonar.logistics.common.multiparts2.cables.TileDataCable;
 
 public class CableHelper extends CablingWrapper {
 
 	public static INetworkConnection getNetworkTile(int networkID, TileEntity tile, EnumFacing dir, boolean internal, boolean cableOnly) {
 		TileEntity actualTile = tile instanceof TileSonarMultipart && ((TileSonarMultipart) tile).info != null ? (TileEntity) ((TileSonarMultipart) tile).info.getContainer() : tile;
+		
 		
 		if (actualTile instanceof IMultipartContainer) {
 			IMultipartContainer container = (IMultipartContainer) actualTile;	

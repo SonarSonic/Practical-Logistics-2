@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import sonar.core.SonarCore;
 import sonar.core.common.tileentity.TileEntityInventory;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.SonarInventory;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
@@ -26,7 +27,11 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		super.inv = new SonarInventory(this, 2);
 		syncList.addParts(progress, coolDown, inv);
 	}
-
+	
+	public SyncType getUpdateTagType(){
+		return SyncType.SAVE;
+	}
+	
 	public void update() {
 		super.update();
 		if (getWorld().isBlockIndirectlyGettingPowered(pos) == 15) {
@@ -167,9 +172,6 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		case 1:
 			coolDown.writeToBuf(buf);
 			break;
-		case 2:
-			inv.writeToBuf(buf);
-			break;
 		}
 
 	}
@@ -182,9 +184,6 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 			break;
 		case 1:
 			coolDown.readFromBuf(buf);
-			break;
-		case 2:
-			inv.readFromBuf(buf);
 			break;
 		}
 	}

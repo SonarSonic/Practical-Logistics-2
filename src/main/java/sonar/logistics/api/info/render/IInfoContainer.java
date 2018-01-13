@@ -2,10 +2,11 @@ package sonar.logistics.api.info.render;
 
 import java.util.function.Consumer;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockInteractionType;
@@ -15,7 +16,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 
 /** used for storing display info to be used on Screens */
 public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListener {
@@ -36,7 +37,7 @@ public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListe
 	public int getMaxCapacity();
 
 	/** called when a display associated with this Container is clicked */
-	public boolean onClicked(AbstractDisplayPart part, BlockInteractionType type, World world, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit);
+	public boolean onClicked(TileAbstractDisplay part, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ);
 
 	/** gets the display this InfoContainer is connected to */
 	public IDisplay getDisplay();

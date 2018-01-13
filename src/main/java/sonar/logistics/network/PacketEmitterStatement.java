@@ -1,14 +1,13 @@
 package sonar.logistics.network;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -30,13 +29,13 @@ public class PacketEmitterStatement extends PacketMultipart {
 
 	public PacketEmitterStatement() {}
 
-	public PacketEmitterStatement(UUID partUUID, BlockPos pos, ListPacket packetType) {
-		super(partUUID, pos);
+	public PacketEmitterStatement(int slotID, BlockPos pos, ListPacket packetType) {
+		super(slotID, pos);
 		this.packetType = packetType;
 	}
 
-	public PacketEmitterStatement(UUID partUUID, BlockPos pos, ListPacket packetType, EmitterStatement filter) {
-		super(partUUID, pos);
+	public PacketEmitterStatement(int slotID, BlockPos pos, ListPacket packetType, EmitterStatement filter) {
+		super(slotID, pos);
 		this.statement = filter;
 		this.packetType = packetType;
 	}
@@ -62,12 +61,11 @@ public class PacketEmitterStatement extends PacketMultipart {
 
 	public static class Handler extends PacketMultipartHandler<PacketEmitterStatement> {
 		@Override
-		public IMessage processMessage(PacketEmitterStatement message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
+		public IMessage processMessage(PacketEmitterStatement message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
+			if (player == null || player.getEntityWorld().isRemote || !(part instanceof ILogisticsTile)) {
+				return null;
+			}
 			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player == null || player.getEntityWorld().isRemote || !(part instanceof ILogisticsTile)) {
-					return;
-				}
 				ILogisticsTile tile = (ILogisticsTile) part;
 				SyncNBTAbstractList<EmitterStatement> filters = tile.getStatements();
 				switch (message.packetType) {

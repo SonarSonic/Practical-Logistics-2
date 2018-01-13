@@ -2,14 +2,9 @@ package sonar.logistics.api.tiles.cable;
 
 import net.minecraft.util.EnumFacing;
 import sonar.core.utils.IWorldPosition;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.ICableRenderer;
 import sonar.logistics.api.tiles.ICable;
 import sonar.logistics.api.tiles.INetworkConnection;
-import sonar.logistics.api.tiles.INetworkTile;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.tiles.readers.IListReader;
 
 /** implemented on Tile Entities and Forge Multipart parts which are cables */
 public interface IDataCable extends ICableRenderer, IWorldPosition, ICable, INetworkConnection {
@@ -49,5 +44,7 @@ public interface IDataCable extends ICableRenderer, IWorldPosition, ICable, INet
 	 * <p> see {@link IDataCable#addConnections}
 	 * @param network the network to remove the connections from */
 	//public void removeConnections(ILogisticsNetwork network);
+	
+	CableRenderType getRenderType(EnumFacing face);
 
 }

@@ -8,7 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.logistics.common.multiparts.nodes.ArrayPart;
+import sonar.logistics.common.multiparts2.cables.CableConnectionHandler;
+import sonar.logistics.common.multiparts2.nodes.TileArray;
 import sonar.logistics.managers.WirelessManager;
 import sonar.logistics.worlddata.IdentityCountData;
 import sonar.logistics.worlddata.LockedDisplayData;
@@ -20,13 +21,14 @@ public class PL2Events {
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
 		if (event.side == Side.SERVER && event.phase == Phase.END) {
-			/*
+			CableConnectionHandler.tick();
+			
 			PL2.getNetworkManager().tick();
 			PL2.getServerManager().onServerTick();
 			WirelessManager.tick();
 			PL2.getDisplayManager().tick();
-			ArrayPart.entityChanged = false;
-			*/
+			TileArray.entityChanged = false;
+			
 		}
 	}
 
@@ -69,6 +71,6 @@ public class PL2Events {
 
 	@SubscribeEvent
 	public void onEntityJoin(EntityJoinWorldEvent event) {
-		ArrayPart.entityChanged = true;
+		TileArray.entityChanged = true;
 	}
 }

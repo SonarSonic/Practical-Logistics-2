@@ -37,7 +37,7 @@ public class ForgingHammerJEI extends JEICategoryV2 {
 	}
 
 	@Override
-	public void drawAnimations(Minecraft minecraft) {
+	public void drawExtras(Minecraft minecraft) {
 		arrow.draw(minecraft, 29, 5);
 	}
 
@@ -55,5 +55,10 @@ public class ForgingHammerJEI extends JEICategoryV2 {
 			super(helper, recipe);
 		}
 
+	}
+
+	@Override
+	public String getModName() {
+		return PL2Constants.MODID;
 	}
 }

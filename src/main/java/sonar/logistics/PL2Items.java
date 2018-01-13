@@ -1,22 +1,21 @@
 package sonar.logistics;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
 import net.minecraft.item.Item;
 import sonar.core.SonarRegister;
-import sonar.core.registries.ISonarRegistryItem;
 import sonar.core.registries.SonarRegistryItem;
 import sonar.logistics.common.items.ItemGuide;
 import sonar.logistics.common.items.ItemOperator;
+import sonar.logistics.common.items.WirelessEntityTransceiver;
+import sonar.logistics.common.items.WirelessItemTransceiver;
+import sonar.logistics.common.items.WirelessStorageReader;
 
 public class PL2Items extends PL2 {
 
 	public static Item guide, operator, sapphire, sapphire_dust, stone_plate, etched_plate;
-	public static Item cable, node, entity_node, array, transfer_node, transceiver, entity_transceiver, wireless_storage_reader;
-	public static Item info_reader, inventory_reader, fluid_reader, energy_reader;
-	public static Item display_screen, large_display_screen, holographic_display, data_emitter, data_receiver, redstone_signaller, clock;
+	public static Item transceiver, entity_transceiver, wireless_storage_reader;
+	//public static Item cable, node, entity_node, array, transfer_node, transceiver, ;
+	//public static Item info_reader, inventory_reader, fluid_reader, energy_reader;
+	//public static Item display_screen, large_display_screen, holographic_display, data_emitter, data_receiver, redstone_signaller, clock;
 	
 	public static void registerItems() {
 		guide = SonarRegister.addItem(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryItem(new ItemGuide(), "PLGuide"));
@@ -27,16 +26,11 @@ public class PL2Items extends PL2 {
 		etched_plate = SonarRegister.addItem(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryItem("EtchedPlate"));
 		
 
-		/*
-		cable = register(new SonarRegistryItem(new ItemDefaultMultipart(DataCablePart.class), "DataCable"));
-		node = register(new SonarRegistryItem(new ItemSidedMultipart(NodePart.class), "Node"));
-		entity_node = register(new SonarRegistryItem(new ItemSidedMultipart(EntityNodePart.class), "EntityNode"));
-		array = register(new SonarRegistryItem(new ItemSidedMultipart(ArrayPart.class), "Array"));
-		transfer_node = register(new SonarRegistryItem(new ItemSidedMultipart(TransferNodePart.class), "TransferNode"));
-		transceiver = register(new SonarRegistryItem(new WirelessItemTransceiver().setMaxStackSize(1), "Transceiver"));
-		entity_transceiver = register(new SonarRegistryItem(new WirelessEntityTransceiver().setMaxStackSize(1), "EntityTransceiver"));
-		wireless_storage_reader = register(new SonarRegistryItem(new WirelessStorageReader(), "WirelessStorage"));
+		transceiver = SonarRegister.addItem(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryItem(new WirelessItemTransceiver().setMaxStackSize(1), "Transceiver"));
+		entity_transceiver = SonarRegister.addItem(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryItem(new WirelessEntityTransceiver().setMaxStackSize(1), "EntityTransceiver"));
+		wireless_storage_reader = SonarRegister.addItem(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryItem(new WirelessStorageReader(), "WirelessStorage"));
 
+		/*
 		info_reader = register(new SonarRegistryItem(new ItemSidedMultipart(InfoReaderPart.class), "InfoReader"));
 		inventory_reader = register(new SonarRegistryItem(new ItemSidedMultipart(InventoryReaderPart.class), "InventoryReader"));
 		fluid_reader = register(new SonarRegistryItem(new ItemSidedMultipart(FluidReaderPart.class), "FluidReader"));

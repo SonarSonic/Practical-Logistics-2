@@ -1,10 +1,6 @@
 package sonar.logistics.network;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.IMultipart;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,10 +13,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
-import sonar.logistics.common.multiparts2.TileInfoReader;
-import sonar.logistics.helpers.ItemHelper;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketInventoryReader extends PacketMultipart {

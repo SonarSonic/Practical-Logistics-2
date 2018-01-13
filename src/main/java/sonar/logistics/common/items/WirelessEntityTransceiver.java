@@ -3,6 +3,7 @@ package sonar.logistics.common.items;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -67,8 +68,8 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par) {
-		super.addInformation(stack, player, list, par);
+    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4) {
+		super.addInformation(stack, world, list, par4);
 		if (stack.hasTagCompound()) {
 			list.add("Entity: " + TextFormatting.ITALIC + FontHelper.translate(stack.getTagCompound().getString("targetName")));
 		}

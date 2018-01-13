@@ -5,13 +5,11 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Translate;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerDataReceiver;
-import sonar.logistics.common.multiparts.wireless.DataReceiverPart;
 import sonar.logistics.common.multiparts2.wireless.TileDataReceiver;
 import sonar.logistics.helpers.InfoRenderer;
 

@@ -1,5 +1,6 @@
 package sonar.logistics.guide.elements;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -57,7 +58,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 				if (!list.isEmpty()) {
 					Integer cyclePos = positions.get(i);
 					ItemStack stack = list.get(cyclePos);
-					IGuidePageElement.renderItem(gui, stack, x + (int)(xy[0]*0.75), y + (int)(xy[1]*0.75));
+					IGuidePageElement.renderItem(gui, stack, x + (int) (xy[0] * 0.75), y + (int) (xy[1] * 0.75));
 				}
 			}
 			GlStateManager.popAttrib();
@@ -73,7 +74,9 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 	}
 
 	public IRecipe getRecipe() {
-		for (IRecipe recipe : CraftingManager.getInstance().getRecipeList()) {
+		Iterator<IRecipe> it = CraftingManager.REGISTRY.iterator();
+		for (; it.hasNext();) {
+			IRecipe recipe = it.next();
 			if (ItemStack.areItemsEqual(recipe.getRecipeOutput(), stack)) {
 				stacks = RecipeUtils.configureStacks(recipe);
 				return recipe;
@@ -86,7 +89,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 	public int[][] setSlots() {
 		int xOffset = 4;
 		int yOffset = -20;
-		return new int[][] { new int[] { xOffset, yOffset }, new int[] { slotSize + xOffset, yOffset }, new int[] { slotSize * 2 + xOffset, yOffset }, new int[] { 0 + xOffset, slotSize + yOffset }, new int[] { slotSize + xOffset, slotSize + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize + yOffset }, new int[] { 0 + xOffset, slotSize*2 + yOffset }, new int[] { slotSize + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize * 2 + yOffset } };
+		return new int[][] { new int[] { xOffset, yOffset }, new int[] { slotSize + xOffset, yOffset }, new int[] { slotSize * 2 + xOffset, yOffset }, new int[] { 0 + xOffset, slotSize + yOffset }, new int[] { slotSize + xOffset, slotSize + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize + yOffset }, new int[] { 0 + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize * 2 + yOffset } };
 
 	}
 

@@ -24,13 +24,13 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
-import sonar.logistics.common.multiparts.displays.LargeDisplayScreenPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts2.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
-	public AbstractDisplayPart part;
+	public TileAbstractDisplay part;
 	public DisplayTextFields textFields;
 	private GuiState state = GuiState.LIST;
 	private int left = 7;
@@ -47,10 +47,10 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		}
 	}
 
-	public GuiDisplayScreen(AbstractDisplayPart part) {
-		super(new ContainerMultipartSync(part), part);
-		this.part = part;
-		this.ySize = 20 + part.maxInfo() * 26;
+	public GuiDisplayScreen(TileAbstractDisplay obj) {
+		super(new ContainerMultipartSync(obj), obj);
+		this.part = obj;
+		this.ySize = 20 + obj.maxInfo() * 26;
 		this.enableListRendering = false;
 	}
 
@@ -73,8 +73,8 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			break;
 		case LIST:
 			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 127, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), PL2Translate.BUTTON_LAYOUT.t() + ": " + part.getLayout(), "button.ScreenLayout"));
-			if (part instanceof LargeDisplayScreenPart) {
-				LargeDisplayScreenPart display = (LargeDisplayScreenPart) part;
+			if (part instanceof TileLargeDisplayScreen) {
+				TileLargeDisplayScreen display = (TileLargeDisplayScreen) part;
 				this.buttonList.add(new LogisticsButton(this, -2, guiLeft + 127 + 20, guiTop + 3, 160, display.getDisplayScreen().isLocked.getObject() ? 0 : 16, PL2Translate.BUTTON_LOCKED.t() + ": " + display.getDisplayScreen().isLocked.getObject(), "button.LockDisplay"));
 
 			}
@@ -153,7 +153,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 				break;
 			}
 			if (button.id == -2) {
-				((LargeDisplayScreenPart) part).getDisplayScreen().isLocked.invert();
+				((TileLargeDisplayScreen) part).getDisplayScreen().isLocked.invert();
 				reset();
 				part.sendByteBufPacket(6);
 				break;
@@ -301,7 +301,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			}
 		} else if (info instanceof IInfoProvider) {
 			IInfoProvider monitor = (IInfoProvider) info;
-			InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), monitor.getDisplayName()), yPos + 1, LogisticsColours.white_text.getRGB());
+			InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), "ERROR"/*FIXME monitor.getDisplayName()*/), yPos + 1, LogisticsColours.white_text.getRGB());
 		}
 	}
 

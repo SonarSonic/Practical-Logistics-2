@@ -23,26 +23,24 @@ public class PL2Translate {
 	public static final Localisation CABLE = b(PL2Blocks.data_cable);
 	public static final Localisation NODE = b(PL2Blocks.node);
 	public static final Localisation INFO_READER = b(PL2Blocks.info_reader);
+	public static final Localisation FLUID_READER = b(PL2Blocks.fluid_reader);
+	public static final Localisation ENERGY_READER = b(PL2Blocks.energy_reader);
+	public static final Localisation INVENTORY_READER = b(PL2Blocks.inventory_reader);
 	public static final Localisation DATA_EMITTER = b(PL2Blocks.data_emitter);
 	public static final Localisation DATA_RECEIVER = b(PL2Blocks.data_receiver);
 
-	/* public static final Localisation ENTITY_NODE = i(PL2Items.entity_node);
-	 * public static final Localisation ARRAY = i(PL2Items.array); public static
-	 * final Localisation TRANSFER_NODE = i(PL2Items.transfer_node); public
-	 * static final Localisation TRANSCEIVER = i(PL2Items.transceiver); public
-	 * static final Localisation ENTITY_TRANSCEIVER =
-	 * i(PL2Items.entity_transceiver); public static final Localisation
-	 * WIRELESS_STORAGE_READER = i(PL2Items.wireless_storage_reader); public
-	 * static final Localisation INVENTORY_READER =
-	 * i(PL2Items.inventory_reader); public static final Localisation
-	 * FLUID_READER = i(PL2Items.fluid_reader); public static final Localisation
-	 * ENERGY_READER = i(PL2Items.energy_reader); public static final
-	 * Localisation DISPLAY_SCREEN = i(PL2Items.display_screen); public static
-	 * final Localisation LARGE_DISPLAY_SCREEN =
-	 * i(PL2Items.large_display_screen); public static final Localisation
-	 * HOLOGRAPHIC_DISPLAY = i(PL2Items.holographic_display); public static
-	 * final Localisation REDSTONE_SIGNALLER = i(PL2Items.redstone_signaller);
-	 * public static final Localisation CLOCK = i(PL2Items.clock); */
+	public static final Localisation ENTITY_NODE = b(PL2Blocks.entity_node);
+	public static final Localisation ARRAY = b(PL2Blocks.array);
+	public static final Localisation TRANSFER_NODE = b(PL2Blocks.transfer_node);
+	public static final Localisation TRANSCEIVER = i(PL2Items.transceiver);
+	public static final Localisation ENTITY_TRANSCEIVER = i(PL2Items.entity_transceiver);
+	public static final Localisation WIRELESS_STORAGE_READER = i(PL2Items.wireless_storage_reader);
+	public static final Localisation REDSTONE_SIGNALLER = b(PL2Blocks.redstone_signaller); 
+	public static final Localisation CLOCK = b(PL2Blocks.clock);
+	public static final Localisation DISPLAY_SCREEN = b(PL2Blocks.display_screen); 
+	public static final Localisation LARGE_DISPLAY_SCREEN = b(PL2Blocks.large_display_screen); 
+	public static final Localisation HOLOGRAPHIC_DISPLAY = b(PL2Blocks.holographic_display);
+	/*  public static final Localisation REDSTONE_SIGNALLER = i(PL2Items.redstone_signaller); public static final Localisation CLOCK = i(PL2Items.clock); */
 	// BLOCKS
 	public static final Localisation HAMMER = b(PL2Blocks.hammer);
 	public static final Localisation HAMMER_AIR = b(PL2Blocks.hammer_air);

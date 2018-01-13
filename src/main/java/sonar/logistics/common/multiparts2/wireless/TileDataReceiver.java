@@ -2,7 +2,6 @@ package sonar.logistics.common.multiparts2.wireless;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -16,7 +15,6 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.DataEmitterSecurity;

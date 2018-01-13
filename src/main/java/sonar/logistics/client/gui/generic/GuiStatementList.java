@@ -36,7 +36,7 @@ import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.common.multiparts.misc.RedstoneSignallerPart;
+import sonar.logistics.common.multiparts2.misc.TileRedstoneSignaller;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -44,7 +44,7 @@ import sonar.logistics.network.PacketEmitterStatement;
 
 public class GuiStatementList extends GuiSelectionList<Object> {
 
-	public RedstoneSignallerPart tile;
+	public TileRedstoneSignaller tile;
 	public GuiState state = GuiState.LIST;
 	public int coolDown = 0;
 	public EmitterStatement currentFilter;
@@ -64,9 +64,9 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		}
 	}
 
-	public GuiStatementList(EntityPlayer player, RedstoneSignallerPart tile) {
-		super(new ContainerMultipartSync(tile), tile);
-		this.tile = tile;
+	public GuiStatementList(EntityPlayer player, TileRedstoneSignaller tileRedstoneSignaller) {
+		super(new ContainerMultipartSync(tileRedstoneSignaller), tileRedstoneSignaller);
+		this.tile = tileRedstoneSignaller;
 		this.xSize = 182 + 66;
 		this.ySize = ySize + 22;
 	}
@@ -132,21 +132,21 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				break;
 			case 2:
 				if (currentFilter != null) {
-					PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.MOVE_UP, currentFilter));
 				}
 				break;
 			case 3:
 				if (currentFilter != null) {
-					PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.MOVE_DOWN, currentFilter));
 				}
 				break;
 			case 4:
 				if (currentFilter != null) {
-					PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.REMOVE, currentFilter));
 				}
 				break;
 			case 5:
-				PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			case 6:
 				tile.requestSyncPacket();
@@ -189,7 +189,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				this.reset();
 				break;
 			case 6:
-				PL2.network.sendToServer(new PacketEmitterStatement(tile.getUUID(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
+				PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
 				this.changeState(GuiState.LIST);
 				break;
 			case 7:
@@ -403,7 +403,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				}
 			} else if (info instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) info;
-				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), monitor.getDisplayName()), yPos + 1, LogisticsColours.white_text.getRGB());
+				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(),"ERROR" /*FIXME monitor.getDisplayName()*/ ), yPos + 1, LogisticsColours.white_text.getRGB());
 			}
 			break;
 		case LIST:

@@ -8,14 +8,17 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import mcmultipart.api.multipart.IMultipart;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -29,6 +32,8 @@ import sonar.logistics.api.PL2API;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
@@ -36,62 +41,59 @@ import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.common.multiparts.LogisticsPart;
+import sonar.logistics.common.multiparts2.TileLogistics;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 import sonar.logistics.connections.channels.ItemNetworkChannels;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.network.PacketItemInteractionText;
 
 public class InfoHelper {
 
-	
-	public static boolean isMatchingInfo(IInfo info, IInfo info2){
+	public static boolean isMatchingInfo(IInfo info, IInfo info2) {
 		return info.isMatchingType(info2) && info.isMatchingInfo(info2);
-	}	
+	}
 
-	public static boolean isIdenticalInfo(IInfo info, IInfo info2){
+	public static boolean isIdenticalInfo(IInfo info, IInfo info2) {
 		return isMatchingInfo(info, info2) && info.isIdenticalInfo(info2);
-	}	
-	
+	}
+
 	public static final String DELETE = "del";
 	public static final String SYNC = "syn";
 	public static final String REMOVED = "rem";
 	public static final String SPECIAL = "spe";
 
-	public static void screenItemStackClicked(StoredItemStack itemstack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
+	public static void screenItemStackClicked(StoredItemStack storedItemStack, TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
-		if (toRemove.a != 0 && network != -1) {
-			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
-			if (!cache.isValid()) {
-				return;
-			}
+		ILogisticsNetwork cache =  part.getNetwork();
+		if (toRemove.a != 0 && cache.isValid()) {
 			switch (toRemove.b) {
 			case ADD:
-				if (stack != null) {
+				if (storedItemStack != null) {
 					long changed = 0;
-					if (!doubleClick) {
+					if (!part.isDoubleClick()) {
 						changed = PL2API.getItemHelper().insertItemFromPlayer(player, cache, player.inventory.currentItem);
 					} else {
 						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, cache, player.inventory.currentItem);
 					}
 					if (changed > 0) {
-						long itemCount = PL2API.getItemHelper().getItemCount(stack, cache);
-						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
-						//FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.GREEN + "+" + changed + TextFormatting.RESET + " x " + stack.getDisplayName(), player.getEntityWorld(), player);
+						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack, cache);
+						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack, itemCount, changed), (EntityPlayerMP) player);
+						// FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.GREEN + "+" + changed + TextFormatting.RESET + " x " + stack.getDisplayName(), player.getEntityWorld(), player);
 					}
 				}
 				break;
 			case REMOVE:
-				if (itemstack != null) {
+				if (storedItemStack != null) {
 					IMultipart part = (IMultipart) hit.hitInfo;
-					if (part != null && part instanceof LogisticsPart) {
+					if (part != null && part instanceof TileLogistics) {
 						BlockPos pos = hit.getBlockPos();
-						StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, itemstack.copy().setStackSize(toRemove.a));
+						StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, storedItemStack.copy().setStackSize(toRemove.a));
 						if (extract != null) {
 							pos = pos.offset(hit.sideHit);
 							long r = extract.stored;
 							SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
-							long itemCount = PL2API.getItemHelper().getItemCount(itemstack.getItemStack(), cache);
-							PL2.network.sendTo(new PacketItemInteractionText(itemstack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
+							long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), cache);
+							PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
 						}
 					}
 				}
@@ -106,21 +108,18 @@ public class InfoHelper {
 		}
 	}
 
-	public static void screenFluidStackClicked(StoredFluidStack fluidStack, int network, BlockInteractionType type, boolean doubleClick, RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
-		if (network != -1) {
-			ILogisticsNetwork cache = PL2.getNetworkManager().getNetwork(network);
-			if (!cache.isValid())
-				return;
-
+	public static void onScreenFluidStackClicked(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, StoredFluidStack fluidStack, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		ILogisticsNetwork network = part.getNetwork();
+		if (network.isValid()) {
 			if (type == BlockInteractionType.RIGHT) {
-				PL2API.getFluidHelper().drainHeldItem(player, cache, doubleClick ? Integer.MAX_VALUE : 1000);
+				PL2API.getFluidHelper().drainHeldItem(player, network, part.isDoubleClick() ? Integer.MAX_VALUE : 1000);
 			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
-				PL2API.getFluidHelper().fillHeldItem(player, cache, fluidStack.copy().setStackSize(Math.min(fluidStack.stored, 1000)));
+				PL2API.getFluidHelper().fillHeldItem(player, network, fluidStack.copy().setStackSize(Math.min(fluidStack.stored, 1000)));
 			} else if (fluidStack != null && type == BlockInteractionType.SHIFT_LEFT) {
-				PL2API.getFluidHelper().fillHeldItem(player, cache, fluidStack);
+				PL2API.getFluidHelper().fillHeldItem(player, network, fluidStack);
 			}
 
-			ItemNetworkChannels channels = cache.getNetworkChannels(ItemNetworkChannels.class);
+			ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 			if (channels != null)
 				channels.sendFullRapidUpdate();
 
@@ -302,15 +301,14 @@ public class InfoHelper {
 		}
 	}
 
-	public static boolean canBeClickedStandard(RenderInfoProperties renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit) {
+	public static boolean canBeClickedStandard(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (renderInfo.container.getMaxCapacity() == 1) {
 			return true;
 		}
 		IDisplay display = renderInfo.container.getDisplay();
-		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.infoPos);
-		BlockPos pos = hit.getBlockPos();
-		double x = hit.hitVec.x - pos.getX();
-		double y = hit.hitVec.y - pos.getY();
+		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.getRenderProperties().infoPos);
+		double x = pos.getX() + hitX;
+		double y = pos.getY() + hitY;
 		if (x >= intersect[0] && x <= intersect[2] && 1 - y >= intersect[1] && 1 - y <= intersect[3]) {
 			return true;
 		}

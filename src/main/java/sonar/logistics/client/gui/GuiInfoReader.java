@@ -6,9 +6,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.GuiHelpOverlay;
-import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.HelpOverlays;
@@ -16,7 +14,7 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.common.multiparts2.TileInfoReader;
+import sonar.logistics.common.multiparts2.readers.TileInfoReader;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {

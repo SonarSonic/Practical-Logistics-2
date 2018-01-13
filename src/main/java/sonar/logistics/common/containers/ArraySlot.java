@@ -2,15 +2,15 @@ package sonar.logistics.common.containers;
 
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.logistics.common.multiparts.nodes.ArrayPart;
+import sonar.logistics.common.multiparts2.nodes.TileArray;
 
 public class ArraySlot extends Slot {
 
-	ArrayPart part;
+	TileArray part;
 
-	public ArraySlot(ArrayPart part, int index, int x, int y) {
-		super(part.inventory, index, x, y);
-		this.part = part;
+	public ArraySlot(TileArray tileArray, int index, int x, int y) {
+		super(tileArray.inventory, index, x, y);
+		this.part = tileArray;
 	}
 
 	public boolean isItemValid(ItemStack stack) {

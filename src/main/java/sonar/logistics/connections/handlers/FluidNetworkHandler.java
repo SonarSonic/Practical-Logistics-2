@@ -16,7 +16,7 @@ import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
 import sonar.logistics.connections.channels.FluidNetworkChannels;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
@@ -31,7 +31,7 @@ public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack>
 	
 	public int getReaderID(IListReader reader){
 		if(reader instanceof IDataEmitter){
-			return DataEmitterPart.STATIC_FLUID_ID;
+			return TileDataEmitter.STATIC_FLUID_ID;
 		}		
 		return 0;
 	}

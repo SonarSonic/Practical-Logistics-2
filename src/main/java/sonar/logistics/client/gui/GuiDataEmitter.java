@@ -4,12 +4,8 @@ import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.client.gui.SonarTextField;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
 import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
 
 public class GuiDataEmitter extends GuiLogistics {
@@ -34,7 +30,7 @@ public class GuiDataEmitter extends GuiLogistics {
 
 	public void onTextFieldChanged(SonarTextField field) {
 		final String text = field.getText();
-		this.part.emitterName.setObject((text.isEmpty() || text == "" || text == null) ? DataEmitterPart.UNNAMED : text);
+		this.part.emitterName.setObject((text.isEmpty() || text == "" || text == null) ? TileDataEmitter.UNNAMED : text);
 		part.sendByteBufPacket(2);
 	}
 

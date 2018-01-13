@@ -4,14 +4,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.integration.multipart.SonarMultipart;
+import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.tiles.displays.IDisplay;
 
 public class ContainerInfoDisplay extends ContainerMultipartSync {
 
 	public ContainerInfoDisplay(IDisplay display) {
-		super((SonarMultipart) display);
+		super((TileSonarMultipart) display);
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
@@ -23,7 +23,7 @@ public class ContainerInfoDisplay extends ContainerMultipartSync {
 	public SyncType[] getSyncTypes() {
 		return new SyncType[] { SyncType.DEFAULT_SYNC };
 	}
-	
+
 	public boolean syncInventory() {
 		return false;
 	}

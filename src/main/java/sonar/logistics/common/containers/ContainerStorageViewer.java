@@ -6,7 +6,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.slots.SlotLimiter;
 import sonar.logistics.PL2Items;
@@ -62,7 +61,7 @@ public class ContainerStorageViewer extends Container {
 					} else {
 						StoredItemStack perform = PL2API.getItemHelper().transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
 						lastStack = itemstack1;
-						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
+						itemstack1.setCount((int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize())));
 						player.inventory.markDirty();
 					}
 					ListNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
@@ -71,25 +70,25 @@ public class ContainerStorageViewer extends Container {
 				}
 			} else if (id < 27) {
 				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return InventoryHelper.EMPTY;
+					return ItemStack.EMPTY;
 				}
 			} else if (id >= 27 && id < 36) {
 				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return InventoryHelper.EMPTY;
+					return ItemStack.EMPTY;
 				}
 			}
 
-			if (itemstack1.stackSize == 0) {
-				slot.putStack(InventoryHelper.EMPTY);
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 
-			if (itemstack1.stackSize == itemstack.stackSize) {
-				return InventoryHelper.EMPTY;
+			if (itemstack1.getCount() == itemstack.getCount()) {
+				return ItemStack.EMPTY;
 			}
 
-			slot.onPickupFromSlot(player, itemstack1);
+			slot.onTake(player, itemstack1);
 		}
 		return itemstack;
 	}

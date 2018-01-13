@@ -2,7 +2,7 @@ package sonar.logistics.common.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
-import sonar.core.integration.multipart.SonarMultipart;
+import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.filters.IFilteredTile;
 
@@ -11,7 +11,7 @@ public class ContainerFilterList extends ContainerMultipartSync {
 	public IFilteredTile tile;
 
 	public ContainerFilterList(EntityPlayer player, IFilteredTile tile) {
-		super((SonarMultipart) tile);
+		super((TileSonarMultipart) tile);
 		this.tile = tile;
 
 		for (int i = 0; i < 3; ++i) {

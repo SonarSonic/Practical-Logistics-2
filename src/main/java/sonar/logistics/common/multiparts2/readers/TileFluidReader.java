@@ -1,4 +1,4 @@
-package sonar.logistics.common.multiparts.readers;
+package sonar.logistics.common.multiparts2.readers;
 
 import java.util.List;
 
@@ -15,7 +15,6 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkListHandler;
@@ -39,7 +38,7 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 
-public class FluidReaderPart extends AbstractListReaderPart<MonitoredFluidStack> implements IByteBufTile {
+public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack> implements IByteBufTile {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_FLUID_SELECTED };
 
@@ -144,11 +143,6 @@ public class FluidReaderPart extends AbstractListReaderPart<MonitoredFluidStack>
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
-	}
-
-	@Override
-	public PL2Multiparts getMultipart() {
-		return PL2Multiparts.FLUID_READER;
 	}
 
 }

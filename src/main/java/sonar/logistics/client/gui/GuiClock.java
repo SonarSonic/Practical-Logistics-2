@@ -9,16 +9,16 @@ import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.common.multiparts.misc.ClockPart;
+import sonar.logistics.common.multiparts2.misc.TileClock;
 
 public class GuiClock extends GuiLogistics {
 
-	public ClockPart part;
+	public TileClock part;
 	public SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss:SSS");
 
-	public GuiClock(ClockPart part) {
-		super(new ContainerMultipartSync(part), part);
-		this.part = part;
+	public GuiClock(TileClock tileClock) {
+		super(new ContainerMultipartSync(tileClock), tileClock);
+		this.part = tileClock;
 		this.xSize = 176;
 		this.ySize = 80;
 	}

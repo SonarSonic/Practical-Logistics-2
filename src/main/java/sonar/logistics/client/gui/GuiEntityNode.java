@@ -8,14 +8,14 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.nodes.EntityNodePart;
+import sonar.logistics.common.multiparts2.nodes.TileEntityNode;
 
 public class GuiEntityNode extends GuiLogistics {
-	public EntityNodePart part;
+	public TileEntityNode part;
 
-	public GuiEntityNode(EntityNodePart entityNodePart) {
-		super(new ContainerMultipartSync(entityNodePart), entityNodePart);
-		this.part = entityNodePart;
+	public GuiEntityNode(TileEntityNode tileEntityNode) {
+		super(new ContainerMultipartSync(tileEntityNode), tileEntityNode);
+		this.part = tileEntityNode;
 		this.xSize = 176;
 		this.ySize = 80;
 	}

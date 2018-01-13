@@ -19,18 +19,18 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEnergyReader;
-import sonar.logistics.common.multiparts.AbstractReaderPart;
-import sonar.logistics.common.multiparts.readers.EnergyReaderPart;
+import sonar.logistics.common.multiparts2.readers.TileAbstractReader;
+import sonar.logistics.common.multiparts2.readers.TileEnergyReader;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 
-	public EnergyReaderPart part;
+	public TileEnergyReader part;
 	public EntityPlayer player;
 
-	public GuiEnergyReader(EntityPlayer player, EnergyReaderPart tile) {
-		super(new ContainerEnergyReader(player, tile), tile);
-		this.part = tile;
+	public GuiEnergyReader(EntityPlayer player, TileEnergyReader tileEnergyReader) {
+		super(new ContainerEnergyReader(player, tileEnergyReader), tileEnergyReader);
+		this.part = tileEnergyReader;
 		this.player = player;
 		this.xSize = 182 + 66;
 		this.listHeight = 18;
@@ -95,7 +95,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if (buttonID == 0) {
 			if (info.isValid() && !info.isHeader()) {
 				part.selected.setCoords(info.getMonitoredCoords().getCoords());
-				part.sendByteBufPacket(buttonID == 0 ? AbstractReaderPart.ADD : AbstractReaderPart.PAIRED);
+				part.sendByteBufPacket(buttonID == 0 ? TileAbstractReader.ADD : TileAbstractReader.PAIRED);
 			}
 		} else {
 			RenderBlockSelection.addPosition(info.getMonitoredCoords().getCoords(), false);

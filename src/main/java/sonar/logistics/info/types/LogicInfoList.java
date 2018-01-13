@@ -28,6 +28,7 @@ import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
@@ -230,7 +231,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	@Override
-	public NBTTagCompound onClientClick(DisplayInteractionEvent event, IDisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
+	public NBTTagCompound onClientClick(DisplayInteractionEvent event, DisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
 		NBTTagCompound clickTag = new NBTTagCompound();
 		if (event.type == BlockInteractionType.SHIFT_RIGHT) {
 			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
@@ -291,7 +292,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	@Override
-	public void onClickEvent(InfoContainer container, IDisplayInfo displayInfo, DisplayInteractionEvent event, NBTTagCompound clickTag) {
+	public void onClickEvent(InfoContainer container, DisplayInfo displayInfo, DisplayInteractionEvent event, NBTTagCompound clickTag) {
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			MonitoredItemStack clicked = clickTag.getBoolean(ITEM_CLICK) ? NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag) : null;
 			InfoHelper.screenItemStackClicked(clicked == null ? null : clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);

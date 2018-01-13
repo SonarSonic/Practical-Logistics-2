@@ -7,13 +7,13 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
-import scala.concurrent.CanAwait;
 import sonar.logistics.PL2;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.DataEmitterSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
+import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.connections.NetworkUpdate;
 import sonar.logistics.helpers.PacketHelper;
 

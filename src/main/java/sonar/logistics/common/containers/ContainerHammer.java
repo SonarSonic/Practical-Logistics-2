@@ -3,10 +3,8 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.calculator.mod.api.items.IStability;
 import sonar.core.inventory.ContainerSync;
 import sonar.core.inventory.TransferSlotsManager;
-import sonar.core.inventory.TransferSlotsManager.TransferSlots;
 import sonar.core.inventory.slots.SlotBlockedInventory;
 import sonar.logistics.common.hammer.TileEntityHammer;
 

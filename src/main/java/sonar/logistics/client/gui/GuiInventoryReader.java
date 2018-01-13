@@ -8,6 +8,7 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -28,7 +29,7 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerInventoryReader;
-import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
+import sonar.logistics.common.multiparts2.readers.TileInventoryReader;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketInventoryReader;
 import sonar.logistics.network.PacketNodeFilter;
@@ -40,14 +41,14 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	public static final ResourceLocation sorting_icons = new ResourceLocation(PL2Constants.MODID + ":textures/gui/sorting_icons.png");
 
-	private InventoryReaderPart part;
+	private TileInventoryReader part;
 	private SonarTextField slotField;
 	private SonarTextField searchField;
 	public EntityPlayer player;
 
-	public GuiInventoryReader(InventoryReaderPart part, EntityPlayer player) {
-		super(new ContainerInventoryReader(part, player), part);
-		this.part = part;
+	public GuiInventoryReader(TileInventoryReader tileInventoryReader, EntityPlayer player) {
+		super(new ContainerInventoryReader(tileInventoryReader, player), tileInventoryReader);
+		this.part = tileInventoryReader;
 		this.player = player;
 	}
 
@@ -117,10 +118,10 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 				FlexibleGuiHandler.changeGui(part, 1, 0, player.getEntityWorld(), player);
 				break;
 			case 3:
-				PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 3));
+				PL2.network.sendToServer(new PacketInventoryReader(part.getSlotID(), part.getPos(), null, 3));
 				break;
 			case 4:
-				PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, 4));
+				PL2.network.sendToServer(new PacketInventoryReader(part.getSlotID(), part.getPos(), null, 4));
 				break;
 			case 5:
 				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
@@ -130,7 +131,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 				FlexibleGuiHandler.changeGui(part, 2, 0, player.getEntityWorld(), player);
 				break;
 			case 7:
-				PL2.network.sendToServer(new PacketNodeFilter(part.getUUID(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
+				PL2.network.sendToServer(new PacketNodeFilter(part.getSlotID(), part.getCoords().getBlockPos(), ListPacket.CLEAR));
 				break;
 			}
 		}
@@ -190,9 +191,9 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			button = 2;
 		}
 		if (!empty) {
-			PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), selection.getStoredStack().item, button));
+			PL2.network.sendToServer(new PacketInventoryReader(part.getSlotID(), part.getPos(), selection.getStoredStack().item, button));
 		} else {
-			PL2.network.sendToServer(new PacketInventoryReader(part.getUUID(), part.getPos(), null, button));
+			PL2.network.sendToServer(new PacketInventoryReader(part.getSlotID(), part.getPos(), null, button));
 		}
 	}
 
@@ -219,7 +220,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		if (storedStack == null) {
 			return;
 		}
-		List list = storedStack.item.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+		List list = storedStack.item.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		list.add(1, PL2Translate.BUTTON_STORED + ": " + storedStack.stored);
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {

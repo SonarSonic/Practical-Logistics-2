@@ -8,7 +8,6 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.INetworkTile;
-import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts2.cables.TileDataCable;

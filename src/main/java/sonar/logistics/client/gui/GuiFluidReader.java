@@ -27,7 +27,7 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.common.multiparts.readers.FluidReaderPart;
+import sonar.logistics.common.multiparts2.readers.TileFluidReader;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
@@ -35,16 +35,16 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	public static final ResourceLocation stackBGround = new ResourceLocation(PL2Constants.MODID + ":textures/gui/inventoryReader_stack.png");
 	public static final ResourceLocation clearBGround = new ResourceLocation(PL2Constants.MODID + ":textures/gui/inventoryReader_clear.png");
 
-	public FluidReaderPart part;
+	public TileFluidReader part;
 	private SonarTextField slotField;
 	private SonarTextField searchField;
 	public static final int STACK = 0, POS = 1, INV = 2, STORAGE = 3;
 
 	public EntityPlayer player;
 
-	public GuiFluidReader(FluidReaderPart part, EntityPlayer player) {
-		super(new ContainerFluidReader(part, player), part);
-		this.part = part;
+	public GuiFluidReader(TileFluidReader tileFluidReader, EntityPlayer player) {
+		super(new ContainerFluidReader(tileFluidReader, player), tileFluidReader);
+		this.part = tileFluidReader;
 		this.player = player;
 		this.eWidth = 27;
 		this.eHeight = 27;		

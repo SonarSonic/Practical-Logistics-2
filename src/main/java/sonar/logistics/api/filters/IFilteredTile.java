@@ -9,4 +9,7 @@ import sonar.logistics.network.sync.SyncFilterList;
 public interface IFilteredTile extends IChannelledTile, ILogicListenable<PlayerListener>, IInventoryFilter {
 
 	public SyncFilterList getFilters();
+	
+	public int getSlotID();
+	
 }

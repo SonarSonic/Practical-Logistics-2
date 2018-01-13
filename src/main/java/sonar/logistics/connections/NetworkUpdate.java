@@ -1,7 +1,6 @@
 package sonar.logistics.connections;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public enum NetworkUpdate {
 	CABLES(LogisticsNetwork::updateCables), //

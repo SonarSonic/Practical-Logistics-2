@@ -5,13 +5,11 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;

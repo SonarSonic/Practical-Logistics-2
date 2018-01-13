@@ -2,9 +2,6 @@ package sonar.logistics.common.items;
 
 import java.util.List;
 
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.IMultipart;
-import mcmultipart.api.multipart.MultipartHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -14,24 +11,16 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
-import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.tiles.IChannelledTile;
-import sonar.logistics.client.gui.generic.GuiChannelSelection;
-import sonar.logistics.common.containers.ContainerChannelSelection;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
 

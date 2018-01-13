@@ -3,16 +3,15 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.core.helpers.InventoryHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.common.multiparts.nodes.ArrayPart;
+import sonar.logistics.common.multiparts2.nodes.TileArray;
 
 public class ContainerArray extends ContainerMultipartSync {
 
-	public ContainerArray(EntityPlayer player, ArrayPart part) {
-		super(part);
+	public ContainerArray(EntityPlayer player, TileArray tileArray) {
+		super(tileArray);
 		for (int k = 0; k < 8; ++k) {
-			this.addSlotToContainer(new ArraySlot(part, k, 17 + k * 18, 20));
+			this.addSlotToContainer(new ArraySlot(tileArray, k, 17 + k * 18, 20));
 		}
 
 		for (int j = 0; j < 3; ++j) {
@@ -42,7 +41,7 @@ public class ContainerArray extends ContainerMultipartSync {
 				return ItemStack.EMPTY;
 			}
 
-			if (itemstack1.stackSize == 0) {
+			if (itemstack1.getCount() == 0) {
 				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();

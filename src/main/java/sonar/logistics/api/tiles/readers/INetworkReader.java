@@ -1,7 +1,6 @@
 package sonar.logistics.api.tiles.readers;
 
 import java.util.List;
-import java.util.UUID;
 
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;

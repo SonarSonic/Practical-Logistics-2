@@ -30,6 +30,7 @@ import sonar.logistics.common.multiparts.readers.InfoReaderPart;
 import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
 import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
 import sonar.logistics.common.multiparts.wireless.DataReceiverPart;
+import sonar.logistics.common.multiparts2.nodes.TileNode;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -42,7 +43,7 @@ public class ExampleConfigurations {
 
 		public FurnaceProgress() {
 			super(4);
-			NodePart node = new NodePart();
+			TileNode node = new TileNode();
 			node.setCableFace(EnumFacing.DOWN);
 			InfoReaderPart reader = new InfoReaderPart();
 			reader.setCableFace(EnumFacing.NORTH);
@@ -191,7 +192,6 @@ public class ExampleConfigurations {
 				public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 					return super.getActualState(state, world, pos).withProperty(LargeDisplayScreenPart.TYPE, DisplayConnections.ONE_E);
 				}
-
 			};
 
 			MultipartStateOverride screenState2 = new MultipartStateOverride(screen2) {

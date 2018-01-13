@@ -6,14 +6,14 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerArray;
-import sonar.logistics.common.multiparts.nodes.ArrayPart;
+import sonar.logistics.common.multiparts2.nodes.TileArray;
 
 public class GuiArray extends GuiLogistics {
-	public ArrayPart part;
+	public TileArray part;
 
-	public GuiArray(EntityPlayer player, ArrayPart part) {
-		super(new ContainerArray(player, part), part);
-		this.part = part;
+	public GuiArray(EntityPlayer player, TileArray tileArray) {
+		super(new ContainerArray(player, tileArray), tileArray);
+		this.part = tileArray;
 		this.ySize = 132;
 	}
 

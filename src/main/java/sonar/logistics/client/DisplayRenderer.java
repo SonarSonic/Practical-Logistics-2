@@ -2,24 +2,24 @@ package sonar.logistics.client;
 
 import org.lwjgl.opengl.GL11;
 
-import mcmultipart.client.multipart.MultipartSpecialRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
-import sonar.logistics.common.multiparts.displays.HolographicDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts2.displays.TileHolographicDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 
 //TWEAKED FAST MSR
-public class DisplayRenderer extends MultipartSpecialRenderer<AbstractDisplayPart> {
+public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDisplay> {
 
 	public ResourceLocation hologram = new ResourceLocation(RenderHammer.modelFolder + "hologram.png");
 
 	@Override
-	public void renderMultipartAt(AbstractDisplayPart part, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void render(TileAbstractDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		if (part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()) {
 			return;
 		}
@@ -32,8 +32,8 @@ public class DisplayRenderer extends MultipartSpecialRenderer<AbstractDisplayPar
 			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, 0, 0);
 		}
 
-		if (part instanceof HolographicDisplayPart) {
-			
+		if (part instanceof TileHolographicDisplay) {
+
 			this.bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));
 			GL11.glPushMatrix();
 			RenderHelper.saveBlendState();
@@ -52,7 +52,6 @@ public class DisplayRenderer extends MultipartSpecialRenderer<AbstractDisplayPar
 			GL11.glPopMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.translate(-0.0625, 0, 0);
-			
 
 		}
 		GlStateManager.translate(-0.0625, 0, 0);

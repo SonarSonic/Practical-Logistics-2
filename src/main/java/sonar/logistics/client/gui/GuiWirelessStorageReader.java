@@ -8,6 +8,7 @@ import org.lwjgl.input.Keyboard;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -37,7 +38,7 @@ import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerStorageViewer;
-import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.network.PacketWirelessStorage;
@@ -144,7 +145,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	public MonitoredList<IInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
-			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, DataEmitterPart.STATIC_ITEM_ID));
+			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
 
 			MonitoredList<IInfo> list = MonitoredList.newMonitoredList(networkID);
@@ -162,7 +163,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				return searchList;
 			}
 		} else {
-			return PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, DataEmitterPart.STATIC_FLUID_ID));
+			return PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID));
 		}
 	}
 
@@ -226,7 +227,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			if (storedStack == null) {
 				return;
 			}
-			List list = storedStack.item.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+			List list = storedStack.item.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 			list.add(1, PL2Translate.BUTTON_STORED + ": " + storedStack.stored);
 			for (int k = 0; k < list.size(); ++k) {
 				if (k == 0) {

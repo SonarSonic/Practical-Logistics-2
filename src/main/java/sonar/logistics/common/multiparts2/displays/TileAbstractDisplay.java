@@ -1,31 +1,23 @@
-package sonar.logistics.common.multiparts;
+package sonar.logistics.common.multiparts2.displays;
 
 import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.MCMultiPartMod;
-import mcmultipart.multipart.INormallyOccludingPart;
-import mcmultipart.raytrace.PartMOP;
-import mcmultipart.raytrace.RayTraceUtils;
-import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockStateContainer;
+import mcmultipart.RayTraceHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
-import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -34,22 +26,20 @@ import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Translate;
-import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiDisplayScreen;
+import sonar.logistics.common.multiparts2.TileSidedLogistics;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
 
-public abstract class AbstractDisplayPart extends LogisticsPart implements IByteBufTile, INormallyOccludingPart, IDisplay, IOperatorTile, IFlexibleGui<AbstractDisplayPart> {
+public abstract class TileAbstractDisplay extends TileSidedLogistics implements IByteBufTile, IDisplay, IOperatorTile, IFlexibleGui<TileAbstractDisplay> {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_READER_SELECTED };
 
@@ -62,40 +52,23 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 		syncList.addPart(defaultData);
 	}
 
-	public AbstractDisplayPart() {
-		super();
-	}
-
-	public AbstractDisplayPart(EnumFacing face, EnumFacing rotation) {
-		super();
-		this.rotation = rotation;
-		this.face = face;
-	}
-
-	public boolean onActivated(EntityPlayer player, EnumHand hand, ItemStack stack, PartMOP hit) {
-		if (canOpenGui(player) && isServer()) {
-			if (hit.sideHit != face) {
-				openFlexibleGui(player, 0);
-			} else {
-				return container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, getWorld(), player, hand, stack, hit);
-			}
-		}
-		return false;
-	}
-
 	public void update() {
 		super.update();
 		updateDefaultInfo();
 	}
 
+	public boolean isDoubleClick() {
+		return false;
+	}
+
 	public void updateDefaultInfo() {
 		if (isServer() && !defaultData.getObject()) {
-			List<ILogicListenable> providers = LogisticsHelper.getLocalProviders(Lists.newArrayList(), this);
+			List<ILogicListenable> providers = LogisticsHelper.getLocalProviders(Lists.newArrayList(), world, pos, this);
 			ILogicListenable v;
 			if (!providers.isEmpty() && (v = providers.get(0)) instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) v;
-				if (container() != null && monitor != null && monitor.getIdentity() != -1) {	
-					
+				if (container() != null && monitor != null && monitor.getIdentity() != -1) {
+
 					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
 						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty()) {
 							container().setUUID(new InfoUUID(monitor.getIdentity(), i), i);
@@ -111,16 +84,6 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	//// IInfoDisplay \\\\
 
 	public abstract void incrementLayout();
-
-	@Override
-	public NetworkConnectionType canConnect(EnumFacing dir) {
-		return dir != face ? NetworkConnectionType.NETWORK : NetworkConnectionType.NONE;
-	}
-
-	@Override
-	public EnumFacing getCableFace() {
-		return face;
-	}
 
 	public EnumFacing getRotation() {
 		return rotation;
@@ -142,30 +105,8 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	}
 
 	//// STATE \\\\
-
-	@Override
-	public void addOcclusionBoxes(List<AxisAlignedBB> list) {
-		this.addSelectionBoxes(list);
-	}
-
-	@Override
-	public void harvest(EntityPlayer player, PartMOP hit) {
-		if (hit.sideHit == face) {
-			container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, getWorld(), player, player.getActiveHand(), player.getActiveItemStack(), hit);
-			return;
-		}
-		super.harvest(player, hit);
-	}
-
-	@Override
-	public IBlockState getActualState(IBlockState state) {
-		return state.withProperty(PL2Properties.ORIENTATION, face).withProperty(PL2Properties.ROTATION, rotation);
-	}
-
-	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(MCMultiPartMod.multipart, new IProperty[] { PL2Properties.ORIENTATION, PL2Properties.ROTATION });
-	}
-
+	/* @Override public void addOcclusionBoxes(List<AxisAlignedBB> list) { this.addSelectionBoxes(list); }
+	 * @Override public void harvest(EntityPlayer player, PartMOP hit) { if (hit.sideHit == face) { container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, getWorld(), player, player.getActiveHand(), player.getActiveItemStack(), hit); return; } super.harvest(player, hit); } */
 	//// SAVE \\\\
 
 	@Override
@@ -194,12 +135,6 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	}
 
 	/* public void onSyncPacketRequested(EntityPlayer player) { super.onSyncPacketRequested(player); if (isServer()) { getListenerList().addListener(new PlayerListener(player), ListenerType.FULL_INFO); PL2.getServerManager().sendViewablesToClientFromScreen(this, player); } } */
-	@Override
-	public void writeUpdatePacket(PacketBuffer buf) {
-		super.writeUpdatePacket(buf);
-		buf.writeByte((byte) rotation.ordinal());
-		buf.writeByte((byte) face.ordinal());
-	}
 
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
@@ -237,36 +172,33 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 			break;
 		}
 	}
+	/* @Override public void writeUpdatePacket(PacketBuffer buf) { super.writeUpdatePacket(buf); buf.writeByte((byte) rotation.ordinal()); buf.writeByte((byte) face.ordinal()); }
+	 * @Override public void readUpdatePacket(PacketBuffer buf) { super.readUpdatePacket(buf); rotation = EnumFacing.VALUES[buf.readByte()]; face = EnumFacing.VALUES[buf.readByte()]; } */
 
-	@Override
-	public void readUpdatePacket(PacketBuffer buf) {
-		super.readUpdatePacket(buf);
-		rotation = EnumFacing.VALUES[buf.readByte()];
-		face = EnumFacing.VALUES[buf.readByte()];
-	}
+	public RayTraceResult getPartHit(EntityPlayer player) {
 
-	public PartMOP getPartHit(EntityPlayer player) {
-		Vec3d start = RayTraceUtils.getStart(player);
-		Vec3d end = RayTraceUtils.getEnd(player);
-		AdvancedRayTraceResultPart result = collisionRayTrace(start, end);
-		return result == null ? null : result.hit;
+		Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);
+		IBlockState state = world.getBlockState(pos);
+		return getBlockType().collisionRayTrace(state, world, pos, vectors.getLeft(), vectors.getRight());
 	}
 
 	//// GUI \\\\
 
-	public Object getServerElement(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	@Override
+	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new ContainerMultipartSync(obj) : null;
 	}
 
-	public Object getClientElement(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	@Override
+	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return id == 0 ? new GuiDisplayScreen(obj) : null;
 	}
 
 	@Override
-	public void onGuiOpened(AbstractDisplayPart obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			PacketHelper.sendLocalProvidersFromScreen(this, player);
+			PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
@@ -275,9 +207,5 @@ public abstract class AbstractDisplayPart extends LogisticsPart implements IByte
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
-	}
-
-	public String getDisplayName() {
-		return PL2Translate.DISPLAY_SCREEN.t();
 	}
 }

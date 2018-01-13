@@ -28,8 +28,7 @@ public class GuidePageHelper {
 
 	public static int maxLinesPerPage = 17;
 
-	/** this formats the {@link ElementInfo} to add any page links, formatting,
-	 * or object inserts prior to splitting the lines with 'createLines' */
+	/** this formats the {@link ElementInfo} to add any page links, formatting, or object inserts prior to splitting the lines with 'createLines' */
 	public static List<String> getLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, List<ElementLink> links) {
 		String value = FontHelper.translate(info.key);
 		for (String add : info.additionals) {
@@ -69,8 +68,7 @@ public class GuidePageHelper {
 		return GuidePageHelper.createLines(current, ordinal, lineTally, info, Lists.newArrayList(), Lists.newArrayList(pageIDs).iterator(), links, value);
 	}
 
-	/** splits the {@link ElementInfo} info individual page lines to be
-	 * rendered, it also adds and {@link ElementLink}s to the list */
+	/** splits the {@link ElementInfo} info individual page lines to be rendered, it also adds and {@link ElementLink}s to the list */
 	public static List<String> createLines(IGuidePage current, int ordinal, int lineTally, ElementInfo info, List<String> lines, Iterator<Integer> pageNums, List<ElementLink> pageLinks, String str) throws StackOverflowError {
 		FontRenderer render = Minecraft.getMinecraft().fontRenderer;
 		String[] split = str.split("-");
@@ -106,13 +104,15 @@ public class GuidePageHelper {
 	}
 
 	public static Object getRecipeForItem(ItemStack stack) {
-		Object itemRecipe;
-		CraftingManager.REGISTRY.iterator().forEachRemaining(recipe -> {
+		Object itemRecipe = null;
+		Iterator<IRecipe> it = CraftingManager.REGISTRY.iterator();
+		for (; it.hasNext();) {
+			IRecipe recipe = it.next();
 			ItemStack output = recipe.getRecipeOutput();
 			if (output != null && ItemStack.areItemsEqual(stack, output)) {
-				itemRecipe=recipe;
+				itemRecipe = recipe;
 			}
-		});
+		}
 		return itemRecipe;
 	}
 }

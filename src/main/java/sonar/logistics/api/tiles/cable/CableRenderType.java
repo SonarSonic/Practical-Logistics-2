@@ -4,7 +4,7 @@ import net.minecraft.util.IStringSerializable;
 
 /**the different types of Data Cable connection, used for rendering, used on client side*/
 public enum CableRenderType implements IStringSerializable {
-	CABLE, INTERNAL, HALF, /* BLOCK, */ NONE;
+	NONE, CABLE, INTERNAL, HALF, /* BLOCK, */ ;
 
 	/**if the Data Cable can connect in this connections direction*/
 	public boolean canConnect() {

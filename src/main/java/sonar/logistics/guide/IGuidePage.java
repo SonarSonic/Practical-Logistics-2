@@ -15,7 +15,7 @@ public interface IGuidePage {
 	
 	public void drawPage(GuiGuide gui, int x, int y, int page);
 	
-	public void drawForegroundPage(GuiGuide gui, int x, int y, int page, int partialTicks);
+	public void drawForegroundPage(GuiGuide gui, int x, int y, int page, float partialTicks);
 	
 	public void drawBackgroundPage(GuiGuide gui, int x, int y, int page);
 

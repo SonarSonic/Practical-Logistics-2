@@ -1,30 +1,24 @@
 package sonar.logistics.common.multiparts2;
 
-import mcmultipart.api.multipart.IMultipart;
-import mcmultipart.api.slot.IPartSlot;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import sonar.core.integration.multipart.BlockSonarMultipart;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.helpers.LogisticsHelper;
 
-public abstract class BlockLogisticsMultipart extends BlockSonarMultipart{
+public abstract class BlockLogistics extends BlockSonarMultipart{
 
 	public PL2Multiparts multipart;
 
-	public BlockLogisticsMultipart(PL2Multiparts multipart) {
+	public BlockLogistics(PL2Multiparts multipart) {
 		super(Material.ROCK);
 		this.multipart = multipart;
 	}

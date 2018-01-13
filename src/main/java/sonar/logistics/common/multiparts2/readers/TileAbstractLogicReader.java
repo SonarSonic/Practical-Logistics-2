@@ -19,7 +19,7 @@ import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 
-public abstract class TileAbstractInfoReader<T extends IProvidableInfo> extends TileAbstractListReader<T> {
+public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends TileAbstractListReader<T> {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_DATA_SELECTED };
 

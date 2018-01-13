@@ -1,10 +1,6 @@
 package sonar.logistics.network;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.IMultipart;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,10 +15,11 @@ import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 
 public class PacketClickEventClient extends PacketMultipart {
 
@@ -55,14 +52,14 @@ public class PacketClickEventClient extends PacketMultipart {
 			if (ctx.side == Side.CLIENT) {
 
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					if (player != null && part instanceof AbstractDisplayPart) {
-						DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (AbstractDisplayPart) part);
+					if (player != null && part instanceof TileAbstractDisplay) {
+						DisplayInteractionEvent event = DisplayInteractionEvent.readFromBuf(message.buf, player, (TileAbstractDisplay) part);
 						if (event.hit == null) {
 							return;
 						}
-						InfoContainer container = (InfoContainer) ((AbstractDisplayPart) part).container();
+						InfoContainer container = (InfoContainer) ((TileAbstractDisplay) part).container();
 						if (container != null) {
-							IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
+							DisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
 							IInfo info = displayInfo.getSidedCachedInfo(true);
 							if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
 								NBTTagCompound eventTag = ((IAdvancedClickableInfo) info).onClientClick(event, displayInfo, player, player.getActiveItemStack(), container);

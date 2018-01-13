@@ -7,13 +7,8 @@ import java.util.Map.Entry;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.api.multipart.IMultipart;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
@@ -27,17 +22,16 @@ import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
-import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
 import sonar.logistics.common.multiparts2.TileSidedLogistics;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
@@ -58,6 +52,12 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public SyncCoords lastSelected = new SyncCoords(-11);
 	{
 		syncList.addParts(list, hasMonitor);
+	}
+
+	@Override
+	public CableRenderType getCableRenderSize(EnumFacing dir) {
+		return dir == this.getCableFace() ? CableRenderType.HALF // internal
+				: CableRenderType.NONE; // external
 	}
 
 	public abstract List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers);

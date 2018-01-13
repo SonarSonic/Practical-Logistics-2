@@ -1,19 +1,11 @@
 package sonar.logistics.common.multiparts2;
 
 import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.capabilities.Capability;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.listener.ISonarListenable;
@@ -21,11 +13,8 @@ import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.core.network.sync.SyncTagType.LONG;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2API;
-import sonar.logistics.api.capability.PL2Capabilities;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
@@ -33,12 +22,11 @@ import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.INetworkTile;
-import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.common.multiparts2.readers.TileInfoReader;
 import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.network.PacketChannels;
 import sonar.logistics.network.sync.SyncTileMessages;
 
@@ -62,8 +50,8 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	public abstract EnumFacing getCableFace();
 
 	public PL2Multiparts getMultipart() {
-		if (this.getBlockType() instanceof BlockLogisticsMultipart) {
-			return ((BlockLogisticsMultipart) getBlockType()).getMultipart();
+		if (this.getBlockType() instanceof BlockLogistics) {
+			return ((BlockLogistics) getBlockType()).getMultipart();
 		}
 		return null;
 	}

@@ -1,43 +1,32 @@
-package sonar.logistics.common.multiparts.displays;
+package sonar.logistics.common.multiparts2.displays;
 
 import java.util.List;
 
-import mcmultipart.raytrace.RayTraceUtils.AdvancedRayTraceResultPart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
-import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
 
-public class DisplayScreenPart extends AbstractDisplayPart {
+public class TileDisplayScreen extends TileAbstractDisplay {
 
 	public SyncEnum<DisplayLayout> layout = new SyncEnum(DisplayLayout.values(), 1);
 	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	public InfoContainer container = new InfoContainer(this);
-
-	public DisplayScreenPart() {
-		super();
-	}
-
-	public DisplayScreenPart(EnumFacing dir, EnumFacing rotation) {
-		super(dir, rotation);
-	}
 
 	@Override
 	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -76,8 +65,7 @@ public class DisplayScreenPart extends AbstractDisplayPart {
 		while (!(layout.getObject().maxInfo <= this.maxInfo())) {
 			layout.incrementEnum();
 		}
-		sendSyncPacket();
-		sendUpdatePacket(true);
+		SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 	}
 
 	public ListenableList<PlayerListener> getListenerList() {
@@ -130,8 +118,12 @@ public class DisplayScreenPart extends AbstractDisplayPart {
 		layout.readData(tag, type);
 	}
 
+	@Override
+	public CableRenderType getCableRenderSize(EnumFacing dir) {
+		return CableRenderType.HALF;
+	}
 	//// PACKETS \\\\
-
+	/*
 	@Override
 	public void writeUpdatePacket(PacketBuffer buf) {
 		super.writeUpdatePacket(buf);
@@ -145,10 +137,5 @@ public class DisplayScreenPart extends AbstractDisplayPart {
 		container().readData(ByteBufUtils.readTag(buf), SyncType.SAVE);
 		layout.readFromBuf(buf);
 	}
-
-	@Override
-	public PL2Multiparts getMultipart() {
-		return PL2Multiparts.DISPLAY_SCREEN;
-	}
-
+	*/
 }

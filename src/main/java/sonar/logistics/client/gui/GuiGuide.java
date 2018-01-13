@@ -142,7 +142,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 				reset();
 			} else {
 				Element3DRenderer.reset();
-				this.mc.thePlayer.closeScreen();
+				this.mc.player.closeScreen();
 			}
 			break;
 		case -1:
@@ -196,7 +196,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		if (currentPage != null) {
 			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, -1);
-			currentPage.drawForegroundPage(this, x, y, pagePos, partialTicks);
+			currentPage.drawForegroundPage(this, x, y, pagePos, 0);
 			FontHelper.textCentre("Sub Page: " + (pagePos + 1) + "/" + currentPage.getPageCount(), xSize, ySize - 26, -1);
 			FontHelper.textCentre("Page: " + (currentPos + 1) + "/" + infoList.size(), xSize, ySize - 16, -1);
 		} else {

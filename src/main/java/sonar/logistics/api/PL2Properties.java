@@ -3,7 +3,6 @@ package sonar.logistics.api;
 import java.util.Collection;
 
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,6 +14,7 @@ import sonar.logistics.api.tiles.cable.CableRenderType;
 public class PL2Properties {
 	public static final PropertyBool CLOCK_HAND = PropertyBool.create("hand");
 	public static final PropertyBool HASDISPLAY = PropertyBool.create("display");
+	public static final PropertyBool ACTIVE = PropertyBool.create("active");
 	
 	public static final PropertyCableFace NORTH = PropertyCableFace.create(EnumFacing.NORTH);
 	public static final PropertyCableFace EAST = PropertyCableFace.create(EnumFacing.EAST);

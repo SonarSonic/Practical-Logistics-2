@@ -4,14 +4,18 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.BlockInteractionType;
@@ -26,9 +30,11 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 import sonar.logistics.connections.handlers.FluidNetworkHandler;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
@@ -45,9 +51,9 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	}
 
 	public MonitoredFluidStack() {}
-	
+
 	public MonitoredFluidStack(StoredFluidStack stack) {
-		this.fluidStack.setObject(stack);		
+		this.fluidStack.setObject(stack);
 	}
 
 	public MonitoredFluidStack(StoredFluidStack stack, int networkID) {
@@ -136,10 +142,10 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	}
 
 	@Override
-	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit, InfoContainer container) {
-		if (InfoHelper.canBeClickedStandard(renderInfo.getRenderProperties(), player, hand, stack, hit)) {
+	public boolean onStandardClick(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (InfoHelper.canBeClickedStandard(part, renderInfo, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ)) {
 			if (!player.getEntityWorld().isRemote) {
-				InfoHelper.screenFluidStackClicked(fluidStack.getObject(), networkID.getObject(), type, doubleClick, renderInfo.getRenderProperties(), player, hand, stack, hit);
+				InfoHelper.onScreenFluidStackClicked(part, renderInfo, type, fluidStack.getObject(), world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 			return true;
 		}

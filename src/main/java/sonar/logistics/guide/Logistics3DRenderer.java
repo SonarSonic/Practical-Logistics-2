@@ -2,25 +2,12 @@ package sonar.logistics.guide;
 
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.vecmath.Vector3d;
-
 import org.lwjgl.opengl.GL11;
 
-import mcmultipart.multipart.MultipartRegistry;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
-import sonar.core.client.gui.MultipartStateOverride;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
@@ -37,7 +24,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 	public Logistics3DRenderer(int cubeSize) {
 		super(cubeSize);
 	}
-
+	/*
 	public void doMultipartRenderPass(Vector3d trans) {
 
 		BufferBuilder wr = Tessellator.getInstance().getBuffer();
@@ -71,6 +58,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		}
 		mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
+	*/
 
 	public void renderScreenAt(AbstractDisplayPart part, BlockPos pos, float partialTicks) {
 		if(part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()){

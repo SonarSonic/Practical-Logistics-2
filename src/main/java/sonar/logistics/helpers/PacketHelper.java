@@ -29,8 +29,8 @@ import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
-import sonar.logistics.common.multiparts.LogisticsPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts2.misc.TileRedstoneSignaller;
 import sonar.logistics.managers.WirelessManager;
 import sonar.logistics.network.PacketClientEmitters;
 import sonar.logistics.network.PacketInfoUpdates;
@@ -39,13 +39,13 @@ import sonar.logistics.network.PacketMonitoredList;
 
 public class PacketHelper {
 
-	public static void sendLocalProvidersFromScreen(AbstractDisplayPart part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
+	public static void sendLocalProvidersFromScreen(TileAbstractDisplay part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		List<ILogicListenable> providers = new ArrayList<ILogicListenable>();
 		int identity = part.getIdentity();
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplay display = ((ILargeDisplay) part).getDisplayScreen();
 			if (display != null && display.getTopLeftScreen() != null) {
-				identity = ((AbstractDisplayPart) display.getTopLeftScreen()).getIdentity();
+				identity = ((TileAbstractDisplay) display.getTopLeftScreen()).getIdentity();
 			}
 			providers = display != null ? display.getLocalProviders(providers) : LogisticsHelper.getLocalProviders(providers, world, pos, part);
 		} else {
@@ -60,8 +60,8 @@ public class PacketHelper {
 		PL2.network.sendTo(new PacketLocalProviders(clientMonitors, identity), (EntityPlayerMP) player);
 	}
 
-	public static void sendLocalProviders(LogisticsPart part, int identity, EntityPlayer player) {
-		List<IInfoProvider> providers = part.getNetwork().getLocalInfoProviders();
+	public static void sendLocalProviders(TileRedstoneSignaller tileRedstoneSignaller, int identity, EntityPlayer player) {
+		List<IInfoProvider> providers = tileRedstoneSignaller.getNetwork().getLocalInfoProviders();
 		List<ClientLocalProvider> clientProviders = Lists.newArrayList();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY);

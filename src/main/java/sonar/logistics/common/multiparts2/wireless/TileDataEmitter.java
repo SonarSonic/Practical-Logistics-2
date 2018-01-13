@@ -2,8 +2,8 @@ package sonar.logistics.common.multiparts2.wireless;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -24,7 +24,6 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.STRING;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkChannels;
@@ -36,7 +35,6 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.DataEmitterSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.client.gui.GuiDataEmitter;
-import sonar.logistics.connections.NetworkUpdate;
 import sonar.logistics.connections.channels.ListNetworkChannels;
 import sonar.logistics.connections.handlers.FluidNetworkHandler;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;

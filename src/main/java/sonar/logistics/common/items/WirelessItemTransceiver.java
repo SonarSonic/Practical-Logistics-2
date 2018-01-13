@@ -2,10 +2,9 @@ package sonar.logistics.common.items;
 
 import java.util.List;
 
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.MultipartHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -41,33 +40,31 @@ public class WirelessItemTransceiver extends SonarItem implements ITileTransceiv
 		}
 		return null;
 	}
-	
+
 	//// INTERACTION \\\\
-	
+
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IBlockState state = world.getBlockState(pos);
 		Block target = state.getBlock();
 		if (target != null && !world.isRemote) {
-			IMultipartContainer container = MultipartHelper.getPartContainer(world, pos);
-			if (container == null) { // ADD COMPATIBILITY FOR MULTIPARTS HERE
-				NBTTagCompound tag = stack.getTagCompound();
-				if (tag == null)
-					tag = new NBTTagCompound();
-				tag.setTag("coord", BlockCoords.writeToNBT(new NBTTagCompound(), new BlockCoords(pos, world.provider.getDimension())));
-				tag.setInteger("dir", side.ordinal());
-				tag.setString("targetName", target.getUnlocalizedName());
-				FontHelper.sendMessage(stack.hasTagCompound() ? "Overwritten Position" : "Saved Position", world, player);
-				stack.setTagCompound(tag);
-			}
+			ItemStack stack = player.getHeldItem(hand);
+			NBTTagCompound tag = stack.getTagCompound();
+			if (tag == null)
+				tag = new NBTTagCompound();
+			tag.setTag("coord", BlockCoords.writeToNBT(new NBTTagCompound(), new BlockCoords(pos, world.provider.getDimension())));
+			tag.setInteger("dir", facing.ordinal());
+			tag.setString("targetName", target.getUnlocalizedName());
+			FontHelper.sendMessage(stack.hasTagCompound() ? "Overwritten Position" : "Saved Position", world, player);
+			stack.setTagCompound(tag);
 		}
 		return EnumActionResult.SUCCESS;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par) {
-		super.addInformation(stack, player, list, par);
+	public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4) {
+		super.addInformation(stack, world, list, par4);
 		if (stack.hasTagCompound()) {
 			list.add("Block: " + TextFormatting.ITALIC + FontHelper.translate(stack.getTagCompound().getString("targetName") + ".name"));
 			list.add("Coords: " + TextFormatting.ITALIC + getCoords(stack).toString());

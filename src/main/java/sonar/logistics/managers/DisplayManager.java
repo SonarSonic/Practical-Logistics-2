@@ -92,4 +92,15 @@ public class DisplayManager extends AbstractConnectionManager<ILargeDisplay> {
 	@Override
 	public void onNetworksDisconnected(List<Integer> newNetworks) {}
 
+	@Override
+	public void addConnectionToNetwork(ILargeDisplay add) {
+		
+	}
+
+	@Override
+	public void removeConnectionToNetwork(ILargeDisplay remove) {
+		
+	}
+
+
 }

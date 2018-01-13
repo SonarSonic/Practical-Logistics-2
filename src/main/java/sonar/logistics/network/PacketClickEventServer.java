@@ -12,6 +12,7 @@ import sonar.core.SonarCore;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
@@ -52,7 +53,7 @@ public class PacketClickEventServer implements IMessage {
 						DisplayInteractionEvent event = PL2.getServerManager().clickEvents.get(message.hashCode);
 						if (event != null && event.hit.hitInfo instanceof IDisplay) {
 							InfoContainer container = (InfoContainer) ((IDisplay) event.hit.hitInfo).container();
-							IDisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
+							DisplayInfo displayInfo = container.getDisplayInfo(event.infoPos);
 							IInfo info = displayInfo.getSidedCachedInfo(false);
 							if (info != null && info instanceof IAdvancedClickableInfo && info.equals(event.currentInfo)) {
 								((IAdvancedClickableInfo) info).onClickEvent(container, displayInfo, event, message.eventTag);

@@ -4,12 +4,16 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.RenderHelper;
@@ -24,12 +28,14 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 import sonar.logistics.connections.handlers.ItemNetworkHandler;
 import sonar.logistics.helpers.InfoHelper;
 
@@ -163,10 +169,10 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	}
 
 	@Override
-	public boolean onStandardClick(BlockInteractionType type, boolean doubleClick, IDisplayInfo renderInfo, EntityPlayer player, EnumHand hand, ItemStack stack, RayTraceResult hit, InfoContainer container) {
-		if (InfoHelper.canBeClickedStandard(renderInfo.getRenderProperties(), player, hand, stack, hit)) {
+	public boolean onStandardClick(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (InfoHelper.canBeClickedStandard(part, renderInfo, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ)) {
 			if (!player.getEntityWorld().isRemote){
-				InfoHelper.screenItemStackClicked(itemStack.getObject(), networkID.getObject(), type, doubleClick, renderInfo.getRenderProperties(), player, hand, stack, hit);
+				InfoHelper.screenItemStackClicked(itemStack.getObject(), part, renderInfo, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 			return true;
 		}

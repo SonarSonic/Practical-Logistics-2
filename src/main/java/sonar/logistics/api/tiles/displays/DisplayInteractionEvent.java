@@ -1,13 +1,12 @@
 package sonar.logistics.api.tiles.displays;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.raytrace.PartMOP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 
 public class DisplayInteractionEvent {
 
@@ -42,14 +41,14 @@ public class DisplayInteractionEvent {
 		buf.writeBoolean(doubleClick);
 	}
 
-	public static DisplayInteractionEvent readFromBuf(ByteBuf buf, EntityPlayer player, AbstractDisplayPart part) {
+	public static DisplayInteractionEvent readFromBuf(ByteBuf buf, EntityPlayer player, TileAbstractDisplay part) {
 		DisplayInteractionEvent event = new DisplayInteractionEvent();
 		event.hashCode = buf.readInt();
 		event.infoPos = buf.readInt();
 		event.player = player;
 		event.type = BlockInteractionType.values()[buf.readInt()];
 		event.hand = EnumHand.values()[buf.readInt()];
-		event.doubleClick = buf.readBoolean();
+		event.doubleClick = buf.readBoolean();		
 		event.hit = part.getPartHit(player);
 		event.currentInfo = part.container().getDisplayInfo(event.infoPos).getSidedCachedInfo(player.getEntityWorld().isRemote);
 		return event;

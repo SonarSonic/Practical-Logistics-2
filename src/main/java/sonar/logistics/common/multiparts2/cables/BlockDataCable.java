@@ -1,8 +1,6 @@
 package sonar.logistics.common.multiparts2.cables;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +22,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import sonar.core.api.utils.BlockInteraction;
 import sonar.core.helpers.FontHelper;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.logistics.PL2Multiparts;
@@ -36,11 +33,11 @@ import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.common.multiparts2.BlockLogisticsMultipart;
+import sonar.logistics.common.multiparts2.BlockLogistics;
 import sonar.logistics.connections.CacheHandler;
 import sonar.logistics.helpers.CableHelper;
 
-public class BlockDataCable extends BlockLogisticsMultipart {
+public class BlockDataCable extends BlockLogistics {
 
 	public BlockDataCable(PL2Multiparts multipart) {
 		super(multipart);
@@ -55,15 +52,17 @@ public class BlockDataCable extends BlockLogisticsMultipart {
 
 	public List<AxisAlignedBB> getSelectionBoxes(World world, BlockPos pos, List<AxisAlignedBB> collidingBoxes) {
 		collidingBoxes.add(cableBox);
+		
 		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
 		if (cable != null) {
 			for (EnumFacing face : EnumFacing.values()) {
-				CableRenderType connect = CableHelper.getConnectionRenderType(cable, face);
+				CableRenderType connect = cable.getRenderType(face);
 				if (connect.canConnect()) {
 					collidingBoxes.add(PL2Properties.getCableBox(connect, face));
 				}
 			}
 		}
+		
 		return collidingBoxes;
 	}
 
@@ -118,13 +117,16 @@ public class BlockDataCable extends BlockLogisticsMultipart {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+		
 		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
 		if (cable == null) {
 			return state;
 		}
 		for (PropertyCableFace p : PL2Properties.PROPS) {
-			state = state.withProperty(p, CableHelper.getConnectionRenderType(cable, p.face));
-		}
+			//state = state.withProperty(p, cable.getRenderType(p.face));
+			//FIXME make the cache work
+			state = state.withProperty(p, CableHelper.getConnectionRenderType(cable, p.face)); ///cable.getRenderType(p.face));
+		}		
 		return state;
 	}
 

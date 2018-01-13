@@ -9,7 +9,6 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import mcmultipart.api.multipart.IMultipart;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.Entity;
@@ -32,10 +31,9 @@ import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 import sonar.logistics.connections.CacheHandler;
 
 public class LogisticsHelper {
@@ -121,7 +119,7 @@ public class LogisticsHelper {
 		return infoList;
 	}
 
-	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, IBlockAccess world, BlockPos pos, AbstractDisplayPart part) {
+	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, IBlockAccess world, BlockPos pos, TileAbstractDisplay part) {
 		ILogisticsNetwork networkCache = part.getNetwork();		
 		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(world, pos, EnumFaceSlot.fromFace(part.face), tile -> true);		
 		if (connectedPart.isPresent() && connectedPart.get() instanceof IInfoProvider) {

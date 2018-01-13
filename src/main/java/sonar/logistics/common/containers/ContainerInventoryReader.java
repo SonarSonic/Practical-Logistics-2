@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.IFlexibleContainer;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.helpers.InventoryHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.PL2API;
@@ -16,7 +15,7 @@ import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.readers.InventoryReaderPart;
+import sonar.logistics.common.multiparts2.readers.TileInventoryReader;
 import sonar.logistics.connections.channels.ItemNetworkChannels;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
@@ -24,12 +23,12 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	private static final int INV_START = 1, INV_END = INV_START + 26, HOTBAR_START = INV_END + 1, HOTBAR_END = HOTBAR_START + 8;
 	public boolean stackMode = false;
 	public ItemStack lastStack = null;
-	public InventoryReaderPart part;
+	public TileInventoryReader part;
 	public EntityPlayer player;
 
-	public ContainerInventoryReader(InventoryReaderPart part, EntityPlayer player) {
-		super(part);
-		this.part = part;
+	public ContainerInventoryReader(TileInventoryReader tileInventoryReader, EntityPlayer player) {
+		super(tileInventoryReader);
+		this.part = tileInventoryReader;
 		this.player = player;
 		refreshState();
 	}
@@ -54,7 +53,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
-		ItemStack itemstack = InventoryHelper.EMPTY;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
@@ -68,7 +67,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 					} else {
 						StoredItemStack perform = PL2API.getItemHelper().transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
 						lastStack = itemstack1;
-						itemstack1.stackSize = (int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize()));
+						itemstack1.setCount((int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize())));
 						player.inventory.markDirty();
 					}
 					ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
@@ -77,27 +76,27 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 				}
 			} else if (id < 27) {
 				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return InventoryHelper.EMPTY;
+					return ItemStack.EMPTY;
 				}
 			} else if (id >= 27 && id < 36) {
 				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return InventoryHelper.EMPTY;
+					return ItemStack.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 36, false)) {
-				return InventoryHelper.EMPTY;
+				return ItemStack.EMPTY;
 			}
 
-			if (itemstack1.stackSize == 0) {
-				slot.putStack(InventoryHelper.EMPTY);
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 
-			if (itemstack1.stackSize == itemstack.stackSize) {
-				return InventoryHelper.EMPTY;
+			if (itemstack1.getCount() == itemstack.getCount()) {
+				return ItemStack.EMPTY;
 			}
 
-			slot.onPickupFromSlot(player, itemstack1);
+			slot.onTake(player, itemstack1);
 		}
 		return itemstack;
 	}

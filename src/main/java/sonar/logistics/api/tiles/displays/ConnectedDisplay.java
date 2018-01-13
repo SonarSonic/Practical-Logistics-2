@@ -1,7 +1,6 @@
 package sonar.logistics.api.tiles.displays;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
@@ -27,7 +26,6 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
-import sonar.core.utils.IUUIDIdentity;
 import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.info.render.IInfoContainer;
@@ -36,11 +34,12 @@ import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.ICable;
+import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.network.PacketConnectedDisplayRemove;
 import sonar.logistics.network.PacketConnectedDisplayUpdate;
@@ -269,8 +268,8 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public List<ILogicListenable> getLocalProviders(List<ILogicListenable> monitors) {
 		displays = PL2.getDisplayManager().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
-			if (display instanceof AbstractDisplayPart) {
-				monitors = LogisticsHelper.getLocalProviders(monitors, (AbstractDisplayPart) display);
+			if (display instanceof TileAbstractDisplay) {
+				monitors = LogisticsHelper.getLocalProviders(monitors, ((TileAbstractDisplay) display).getWorld(), ((TileAbstractDisplay) display).getPos(), (TileAbstractDisplay) display);
 			}
 		}
 		return monitors;
@@ -322,11 +321,6 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	}
 
 	@Override
-	public NetworkConnectionType canConnect(EnumFacing dir) {
-		return NetworkConnectionType.NETWORK;
-	}
-
-	@Override
 	public BlockCoords getCoords() {
 		return topLeftScreen != null ? topLeftScreen.getCoords() : null;
 	}
@@ -340,13 +334,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public ConnectableType getConnectableType() {
 		return ConnectableType.CONNECTABLE;
 	}
-
-	@Override
-	public void addConnection() {}
-
-	@Override
-	public void removeConnection() {}
-
+	
 	@Override
 	public int getRegistryID() {
 		return registryID;
@@ -356,11 +344,6 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public void setRegistryID(int id) {
 		this.registryID = id;
 		this.hasChanged = true;
-	}
-
-	@Override
-	public boolean canConnectOnSide(int connectingID, EnumFacing dir, boolean internal) {
-		return true;
 	}
 
 	public void readData(NBTTagCompound nbt, SyncType type) {
@@ -489,13 +472,28 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public void onNetworkDisconnect(ILogisticsNetwork network) {}
 
 	@Override
-	public UUID getUUID() {
-		return getTopLeftScreen() == null ? IUUIDIdentity.INVALID_UUID : getTopLeftScreen().getUUID();
+	public TileMessage[] getValidMessages() {
+		return new TileMessage[0];
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
-		return new TileMessage[0];
+	public NetworkConnectionType canConnect(int networkID, EnumFacing dir, boolean internal) {
+		return NetworkConnectionType.NETWORK;
+	}
+
+	@Override
+	public CableRenderType getCableRenderSize(EnumFacing dir) {
+		return CableRenderType.CABLE;
+	}
+
+	@Override
+	public boolean isBlocked(EnumFacing dir) {
+		return true;
+	}
+
+	@Override
+	public void updateCableRenders() {
+		
 	}
 
 }

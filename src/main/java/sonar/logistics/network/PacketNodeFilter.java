@@ -1,14 +1,13 @@
 package sonar.logistics.network;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mcmultipart.api.container.IMultipartContainer;
-import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -30,13 +29,13 @@ public class PacketNodeFilter extends PacketMultipart {
 
 	public PacketNodeFilter() {}
 
-	public PacketNodeFilter(UUID partUUID, BlockPos pos, ListPacket packetType) {
-		super(partUUID, pos);
+	public PacketNodeFilter(int slotID, BlockPos pos, ListPacket packetType) {
+		super(slotID, pos);
 		this.packetType = packetType;
 	}
 
-	public PacketNodeFilter(UUID partUUID, BlockPos pos, ListPacket packetType, INodeFilter filter) {
-		super(partUUID, pos);
+	public PacketNodeFilter(int slotID, BlockPos pos, ListPacket packetType, INodeFilter filter) {
+		super(slotID, pos);
 		this.filter = filter;
 		this.packetType = packetType;
 	}
@@ -62,12 +61,11 @@ public class PacketNodeFilter extends PacketMultipart {
 
 	public static class Handler extends PacketMultipartHandler<PacketNodeFilter> {
 		@Override
-		public IMessage processMessage(PacketNodeFilter message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
+		public IMessage processMessage(PacketNodeFilter message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
+			if (player == null || player.getEntityWorld().isRemote || !(part instanceof IFilteredTile)) {
+				return null;
+			}
 			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player == null || player.getEntityWorld().isRemote || !(part instanceof IFilteredTile)) {
-					return;
-				}
 				IFilteredTile tile = (IFilteredTile) part;
 				SyncFilterList filters = tile.getFilters();
 				switch (message.packetType) {

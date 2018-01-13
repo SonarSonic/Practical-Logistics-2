@@ -8,9 +8,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.common.multiparts2.BlockSidedMultipart;
+import sonar.logistics.common.multiparts2.BlockLogisticsSided;
 
-public class BlockAbstractWireless extends BlockSidedMultipart {
+public class BlockAbstractWireless extends BlockLogisticsSided {
 
 	public BlockAbstractWireless(PL2Multiparts multipart) {
 		super(multipart);

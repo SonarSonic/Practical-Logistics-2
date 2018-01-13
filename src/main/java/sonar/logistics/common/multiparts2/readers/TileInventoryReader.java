@@ -1,4 +1,4 @@
-package sonar.logistics.common.multiparts.readers;
+package sonar.logistics.common.multiparts2.readers;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.inventory.SonarMultipartInventory;
+import sonar.core.inventory.SonarInventory;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
@@ -19,7 +19,6 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -50,11 +49,11 @@ import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncFilterList;
 
-public class InventoryReaderPart extends AbstractListReaderPart<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
+public class TileInventoryReader extends TileAbstractListReader<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_STACK_SELECTED };
 
-	public SonarMultipartInventory inventory = new SonarMultipartInventory(this, 1);
+	public SonarInventory inventory = new SonarInventory(this, 1);
 	public SyncEnum<InventoryReader.Modes> setting = (SyncEnum) new SyncEnum(InventoryReader.Modes.values(), 2).addSyncType(SyncType.SPECIAL);
 	public SyncTagType.INT targetSlot = (INT) new SyncTagType.INT(3).addSyncType(SyncType.SPECIAL);
 	public SyncTagType.INT posSlot = (INT) new SyncTagType.INT(4).addSyncType(SyncType.SPECIAL);
@@ -201,11 +200,6 @@ public class InventoryReaderPart extends AbstractListReaderPart<MonitoredItemSta
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
-	}
-
-	@Override
-	public PL2Multiparts getMultipart() {
-		return PL2Multiparts.INVENTORY_READER;
 	}
 
 }

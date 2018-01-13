@@ -21,7 +21,7 @@ import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.common.multiparts.wireless.DataEmitterPart;
+import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
 import sonar.logistics.connections.channels.ItemNetworkChannels;
 import sonar.logistics.info.types.MonitoredItemStack;
 
@@ -31,7 +31,7 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack> i
 
 	public int getReaderID(IListReader reader) {
 		if (reader instanceof IDataEmitter) {
-			return DataEmitterPart.STATIC_ITEM_ID;
+			return TileDataEmitter.STATIC_ITEM_ID;
 		}
 		return 0;
 	}
