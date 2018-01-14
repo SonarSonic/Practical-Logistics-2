@@ -3,7 +3,7 @@ package sonar.logistics.client.gui;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.common.multiparts2.nodes.TileNode;
+import sonar.logistics.common.multiparts.nodes.TileNode;
 
 public class GuiNode extends GuiLogistics {
 	public TileNode part;

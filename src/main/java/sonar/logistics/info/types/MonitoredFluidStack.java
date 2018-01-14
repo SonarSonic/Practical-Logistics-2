@@ -10,11 +10,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
@@ -33,14 +31,17 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.IMonitoredValueInfo;
+import sonar.logistics.api.lists.values.FluidCount;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.connections.handlers.FluidNetworkHandler;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.handlers.FluidNetworkHandler;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = PL2Constants.MODID)
-public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IBasicClickableInfo, IComparableInfo<MonitoredFluidStack> {
+public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IBasicClickableInfo, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
 	private SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
@@ -174,6 +175,11 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 
 	public long getStored() {
 		return this.fluidStack.getObject().stored;
+	}
+
+	@Override
+	public IMonitoredValue<MonitoredFluidStack> createMonitoredValue() {
+		return new FluidCount(this);
 	}
 
 }

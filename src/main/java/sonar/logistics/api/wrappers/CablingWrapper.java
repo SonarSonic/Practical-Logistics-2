@@ -10,7 +10,7 @@ import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.common.multiparts2.cables.TileDataCable;
+import sonar.logistics.common.multiparts.cables.TileDataCable;
 
 public class CablingWrapper {
 

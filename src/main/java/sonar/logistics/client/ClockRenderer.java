@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.PL2Properties;
-import sonar.logistics.common.multiparts2.misc.TileClock;
+import sonar.logistics.common.multiparts.misc.TileClock;
 
 public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 

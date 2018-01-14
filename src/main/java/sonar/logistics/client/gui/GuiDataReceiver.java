@@ -10,7 +10,7 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerDataReceiver;
-import sonar.logistics.common.multiparts2.wireless.TileDataReceiver;
+import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiDataReceiver extends GuiSelectionList<ClientDataEmitter> {

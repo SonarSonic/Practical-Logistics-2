@@ -1,5 +1,7 @@
 package sonar.logistics.info.types;
 
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
@@ -31,9 +33,9 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
@@ -48,7 +50,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
 	public SyncTagType.STRING infoID = new SyncTagType.STRING(1);
 
-	public MonitoredList<?> cachedList = null;
+	public List<?> cachedList = null;
 	public boolean listChanged = true, wasRefreshed = false;
 	public int pageCount = 0;
 	public int xSlots, ySlots, perPage = 0;
@@ -124,11 +126,11 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		return new LogicInfoList(identity.getObject(), infoID.getObject(), networkID.getObject());
 	}
 
-	public MonitoredList<?> getCachedList(InfoUUID id) {
+	public List<?> getCachedList(InfoUUID id) {
 		if (cachedList == null || listChanged) {
 			listChanged = false;
-			MonitoredList<?> list = PL2.getClientManager().getMonitoredList(networkID.getObject(), id);
-			cachedList = list == null ? MonitoredList.newMonitoredList(networkID.getObject()) : (MonitoredList<IInfo>) list.cloneInfo();
+			AbstractChangeableList<?> list = PL2.getInfoManager(true).getMonitoredList(id);
+			cachedList = list!=null? list.createSaveableList() : Lists.newArrayList();
 			setType();
 			if (cachedList.size() < perPage * pageCount - 1) {
 				pageCount = 0;
@@ -137,8 +139,8 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		return cachedList;
 	}
 
-	public void setCachedList(MonitoredList list, InfoUUID id) {
-		cachedList = list;
+	public void setCachedList(AbstractChangeableList list, InfoUUID id) {
+		cachedList = list.createSaveableList();
 	}
 	
 	
@@ -146,7 +148,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		super.renderInfo(container, displayInfo, width, height, scale, infoPos);
 		cachedList = getCachedList(displayInfo.getInfoUUID());
-		if (cachedList.isEmpty()) {
+		if (cachedList==null || cachedList.isEmpty()) {
 			return;
 		}
 		switch (type) {
@@ -154,13 +156,13 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			xSlots = (int) Math.ceil(width * 2);
 			ySlots = (int) (Math.round(height * 2));
 			perPage = xSlots * ySlots;
-			InfoRenderer.renderInventory((MonitoredList<MonitoredItemStack>) cachedList, perPage * pageCount, Math.min(perPage + perPage * pageCount, cachedList.size()), xSlots, ySlots);
+			InfoRenderer.renderInventory((List<MonitoredItemStack>) cachedList, perPage * pageCount, Math.min(perPage + perPage * pageCount, cachedList.size()), xSlots, ySlots);
 			break;
 		case FLUID:
 			xSlots = (int) Math.round(width);
 			ySlots = (int) (Math.round(height));
 			perPage = xSlots * ySlots;			
-			MonitoredList<MonitoredFluidStack> fluids = (MonitoredList<MonitoredFluidStack>) cachedList;
+			List<MonitoredFluidStack> fluids = (List<MonitoredFluidStack>) cachedList;
 			int start = perPage * pageCount;
 			int finish = Math.min(perPage + (perPage * pageCount), fluids.size());
 			for (int i = start; i < finish; i++) {
@@ -192,7 +194,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			xSlots = (int) 1;
 			ySlots = (int) ((Math.round(height)) / (0.0625 * 7));
 			perPage = xSlots * ySlots;
-			MonitoredList<MonitoredEnergyStack> energy = (MonitoredList<MonitoredEnergyStack>) cachedList;
+			List<MonitoredEnergyStack> energy = (List<MonitoredEnergyStack>) cachedList;
 			double spacing = 0.0625 * 7;
 			GL11.glTranslated(-1, -1 + 0.0625 * 4, 0.00);
 			int end = Math.min(perPage + perPage * pageCount, energy.size());
@@ -234,7 +236,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public NBTTagCompound onClientClick(DisplayInteractionEvent event, DisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
 		NBTTagCompound clickTag = new NBTTagCompound();
 		if (event.type == BlockInteractionType.SHIFT_RIGHT) {
-			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
+			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list.size() > perPage * (pageCount + 1)) {
 				this.pageCount++;
 			} else {
@@ -246,7 +248,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 		/* if (displayMenu) { return clickTag; } */
 		if (infoID.getObject().equals(MonitoredItemStack.id) && event.hit != null) {
 			int slot = (perPage * pageCount) + CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 2, 2);
-			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
+			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null) {
 				boolean hasItem = false;
 				if (slot >= 0 && slot < list.size()) {
@@ -261,7 +263,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			}
 		} else if (infoID.getObject().equals(MonitoredFluidStack.id) && event.hit != null) {
 			int slot = (perPage * pageCount) + CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 1, 1);
-			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
+			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredFluidStack fluidStack = (MonitoredFluidStack) list.get(slot);
 				if (fluidStack != null) {
@@ -271,7 +273,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			}
 		} else if (infoID.getObject().equals(MonitoredEnergyStack.id) && event.hit != null) {
 			int slot = (int) ((perPage * pageCount) + CableHelper.getListSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 0.0625 * 6, 0.0625 * 1, perPage));
-			MonitoredList<?> list = getCachedList(renderInfo.getInfoUUID());
+			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredEnergyStack energyStack = (MonitoredEnergyStack) list.get(slot);
 				if (energyStack != null) {
@@ -295,11 +297,11 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public void onClickEvent(InfoContainer container, DisplayInfo displayInfo, DisplayInteractionEvent event, NBTTagCompound clickTag) {
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			MonitoredItemStack clicked = clickTag.getBoolean(ITEM_CLICK) ? NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag) : null;
-			InfoHelper.screenItemStackClicked(clicked == null ? null : clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
+			//FIXME InfoHelper.screenItemStackClicked(clicked == null ? null : clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
 
 		} else if (infoID.getObject().equals(MonitoredFluidStack.id)) {
 			MonitoredFluidStack clicked = NBTHelper.instanceNBTSyncable(MonitoredFluidStack.class, clickTag);
-			InfoHelper.screenFluidStackClicked(clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
+			//FIXME InfoHelper.screenFluidStackClicked(clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
 		}
 	}
 

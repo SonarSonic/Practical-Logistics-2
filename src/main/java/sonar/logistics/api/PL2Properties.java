@@ -37,6 +37,8 @@ public class PL2Properties {
 		}
 	}
 
+	
+	
 	public static AxisAlignedBB getCableBox(CableRenderType connect, EnumFacing face) {
 		double p = 0.0625;
 		double w = (1 - 2 * p) / 2;

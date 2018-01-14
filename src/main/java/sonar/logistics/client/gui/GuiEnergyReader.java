@@ -19,8 +19,8 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEnergyReader;
-import sonar.logistics.common.multiparts2.readers.TileAbstractReader;
-import sonar.logistics.common.multiparts2.readers.TileEnergyReader;
+import sonar.logistics.common.multiparts.readers.TileAbstractReader;
+import sonar.logistics.common.multiparts.readers.TileEnergyReader;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
 public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
@@ -87,7 +87,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	}
 
 	public void setInfo() {
-		infoList = part.getMonitoredList().cloneInfo();
+		infoList = part.getMonitoredList().createSaveableList();
 	}
 
 	@Override

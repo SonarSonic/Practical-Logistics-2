@@ -14,6 +14,7 @@ import sonar.core.utils.Pair;
 import sonar.logistics.api.asm.EntityInfoProvider;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.asm.MonitoredValue;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.filters.INodeFilter;
@@ -21,6 +22,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
+import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
@@ -29,6 +31,10 @@ public class PL2ASMLoader {
 	public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, Class<? extends IInfo>> infoClasses = Maps.newLinkedHashMap();
+
+	//public static LinkedHashMap<Integer, String> monitoredValueNames = Maps.newLinkedHashMap();
+	////public static LinkedHashMap<String, Integer> monitoredValueIds = Maps.newLinkedHashMap();
+	//public static LinkedHashMap<String, Class<? extends IMonitoredValue>> monitoredValueClasses = Maps.newLinkedHashMap();
 
 	// public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
 	// public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
@@ -79,6 +85,19 @@ public class PL2ASMLoader {
 
 	}
 
+	*/
+	/*
+	public static void loadMonitoredValues(@Nonnull ASMDataTable asmDataTable) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends IMonitoredValue>>> infoTypes = ASMLoader.getClasses(asmDataTable, MonitoredValue.class, IMonitoredValue.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends IMonitoredValue>> info : infoTypes) {
+			String name = (String) info.a.getAnnotationInfo().get("id");
+			int hashCode = name.hashCode();
+			monitoredValueNames.put(hashCode, name);
+			monitoredValueIds.put(name, hashCode);
+			monitoredValueClasses.put(name, info.b);
+		}
+		PL2.logger.info("Loaded: " + monitoredValueIds.size() + " Monitored Value Types");
+	}
 	*/
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {

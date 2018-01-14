@@ -38,8 +38,9 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -196,7 +197,7 @@ public class InfoRenderer {
 	public static final double ITEM_SPACING = 22.7;
 	public static final double FLUID_DIMENSION = (14 * 0.0625);
 
-	public static void renderInventory(MonitoredList<MonitoredItemStack> stacks, int start, int stop, int xSlots, int ySlots) {
+	public static void renderInventory(List<MonitoredItemStack> cachedList, int start, int stop, int xSlots, int ySlots) {
 		pushMatrix();
 		RenderHelper.saveBlendState();
 		color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -211,7 +212,7 @@ public class InfoRenderer {
 		enableBlend();
 		pushMatrix();
 		for (int i = start; i < stop; i++) {
-			MonitoredItemStack stack = stacks.get(i);
+			MonitoredItemStack stack = cachedList.get(i);
 			int current = i - start;
 			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
 			int yLevel = (int) (Math.floor((current / xSlots)));
@@ -236,7 +237,7 @@ public class InfoRenderer {
 		final float inverseScaleFactor = 1.0f / scaleFactor;
 		scale(scaleFactor, scaleFactor, scaleFactor);
 		for (int i = start; i < stop; i++) {
-			MonitoredItemStack stack = stacks.get(i);
+			MonitoredItemStack stack = cachedList.get(i);
 			int current = i - start;
 			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
 			int yLevel = (int) (Math.floor((current / xSlots)));

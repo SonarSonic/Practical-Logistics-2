@@ -16,28 +16,32 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.network.SonarClient;
 import sonar.core.translate.ILocalisationHandler;
 import sonar.core.translate.Localisation;
+import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.client.ClockRenderer;
+import sonar.logistics.client.DisplayRenderer;
 import sonar.logistics.client.RenderArray;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.RenderHammer;
 import sonar.logistics.client.RenderInteractionOverlay;
 import sonar.logistics.client.RenderOperatorOverlay;
 import sonar.logistics.common.hammer.TileEntityHammer;
-import sonar.logistics.common.multiparts2.nodes.TileArray;
+import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
+import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
+import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
+import sonar.logistics.common.multiparts.misc.TileClock;
+import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.guide.GuidePageRegistry;
 
 public class PL2Client extends PL2Common implements ILocalisationHandler {
 
 	public void registerRenderThings() {
 
-		ClientRegistry.bindTileEntitySpecialRenderer(TileArray.class, new RenderArray());
-		/*
-		MultipartRegistryClient.bindMultipartSpecialRenderer(DisplayScreenPart.class, new DisplayRenderer());
-		MultipartRegistryClient.bindMultipartSpecialRenderer(HolographicDisplayPart.class, new DisplayRenderer());
-		MultipartRegistryClient.bindMultipartSpecialRenderer(LargeDisplayScreenPart.class, new DisplayRenderer());
-		MultipartRegistryClient.bindMultipartSpecialRenderer(ClockPart.class, new ClockRenderer());
-		*/
-		
+		ClientRegistry.bindTileEntitySpecialRenderer(TileArray.class, new RenderArray());		
+		ClientRegistry.bindTileEntitySpecialRenderer(TileDisplayScreen.class, new DisplayRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileHolographicDisplay.class, new DisplayRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileLargeDisplayScreen.class, new DisplayRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileClock.class, new ClockRenderer());		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHammer.class, new RenderHammer());
 		MinecraftForge.EVENT_BUS.register(this);
 	}

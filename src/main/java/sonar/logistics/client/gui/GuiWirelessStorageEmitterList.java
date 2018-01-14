@@ -22,7 +22,7 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.items.WirelessStorageReader;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.network.PacketWirelessStorage;
+import sonar.logistics.packets.PacketWirelessStorage;
 
 public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEmitter> {
 

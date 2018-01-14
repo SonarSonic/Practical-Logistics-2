@@ -23,11 +23,14 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.register.CapabilityMethod;
 import sonar.logistics.api.register.InvField;
 import sonar.logistics.api.register.LogicPath;
@@ -36,7 +39,6 @@ import sonar.logistics.api.register.TileHandlerMethod;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.LogicInfo;
 
 /** where all the registering for LogicInfo happens */
@@ -353,7 +355,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		return null;
 	}
 
-	public List<IProvidableInfo> getEntityInfo(final List<IProvidableInfo> infoList, Entity entity) {
+	public List<IProvidableInfo> getEntityInfo(List<IProvidableInfo> infoList, Entity entity) {
 		Class<?> argClass;
 		if (entity != null && containsAssignableType(argClass = entity.getClass(), acceptedReturns)) {
 			LogicPath logicPath = new LogicPath();
@@ -370,7 +372,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 	/** @param infoList the list to add to
 	 * @param available all available info about the tile, typically will include the World, BlockPos, IBlockState, EnumFacing, the Block and the tile entity
 	 * @return all the available info */
-	public List<IProvidableInfo> getTileInfo(final List<IProvidableInfo> infoList, EnumFacing currentFace, Object... available) {
+	public List<IProvidableInfo> getTileInfo(List<IProvidableInfo> infoList, EnumFacing currentFace, Object... available) {
 		for (Object arg : available) {
 
 			Class<?> argClass;
@@ -418,7 +420,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		}
 	}
 
-	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, T monitorInfo) {
+	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(AbstractChangeableList<T> updateInfo, List<NodeConnection> connections, T monitorInfo) {
 		if (monitorInfo == null) {
 			return null;
 		}
@@ -426,23 +428,30 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		if (!connections.isEmpty()) {
 			T info = monitorInfo;
 			if (info.getPath() == null) {
-				Object latest = updateInfo.getLatestInfo(info).b;
-				if (latest != null && latest instanceof IProvidableInfo) {
-					IProvidableInfo latestInfo = ((IProvidableInfo) latest);
-					if (latestInfo.getPath() != null) {
-						info.setPath(latestInfo.getPath().dupe());
+				IMonitoredValue<T> latest = updateInfo.find(info);
+				// Object latest = updateInfo.getLatestInfo(info).b;
+				if (latest != null) {
+					IInfo saveableInfo = latest.getSaveableInfo();
+					if (saveableInfo != null && saveableInfo instanceof IProvidableInfo) {
+						IProvidableInfo latestInfo = ((IProvidableInfo) saveableInfo);
+						if (latestInfo.getPath() != null) {
+							info.setPath(latestInfo.getPath().dupe());
+						}
 					}
 				}
 			}
 			newPaired = getLatestInfo(info, connections.get(0));
 		}
 		if (newPaired == null) {
-			newPaired = updateInfo.getLatestInfo(monitorInfo);
+			IMonitoredValue<T> latest = updateInfo.find(monitorInfo);
+			boolean shouldUpdate = latest==null? false : latest.getChange().shouldUpdate();
+			IInfo info = latest==null? monitorInfo : latest.getSaveableInfo();
+			newPaired = new Pair(shouldUpdate, info);
 		}
 		return newPaired;
 	}
 
-	public <T extends IProvidableInfo > Pair<Boolean, T> getLatestInfo(T info, NodeConnection entry) {
+	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(T info, NodeConnection entry) {
 		if (info.getPath() == null) {
 			return null;
 		}
@@ -468,8 +477,8 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		}
 		return null;
 	}
-	
-	public <T extends IProvidableInfo> T getInfoFromPath(T info, LogicPath logicPath, EnumFacing currentFace, Object... available){
+
+	public <T extends IProvidableInfo> T getInfoFromPath(T info, LogicPath logicPath, EnumFacing currentFace, Object... available) {
 		Object returned = logicPath.getStart(available);
 		if (returned.equals(TileHandlerMethod.class)) {
 			TileHandlerMethod method = (TileHandlerMethod) logicPath.startObj;

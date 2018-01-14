@@ -7,7 +7,7 @@ import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ILogicListenable;
 
 /**a tile which has channels which can be configured by the operator*/
-public interface IChannelledTile extends ILogicListenable<PlayerListener> {
+public interface IChannelledTile extends ILogicListenable {
 
 	/**the currently selected channels*/
 	public ChannelList getChannels();

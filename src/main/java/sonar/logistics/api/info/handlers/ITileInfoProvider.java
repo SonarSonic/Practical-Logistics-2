@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
+import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.register.LogicPath;
 
 public interface ITileInfoProvider {

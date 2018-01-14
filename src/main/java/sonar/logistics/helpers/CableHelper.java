@@ -39,7 +39,7 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wrappers.CablingWrapper;
-import sonar.logistics.common.multiparts2.cables.TileDataCable;
+import sonar.logistics.common.multiparts.cables.TileDataCable;
 
 public class CableHelper extends CablingWrapper {
 

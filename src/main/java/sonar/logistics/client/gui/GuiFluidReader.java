@@ -21,13 +21,14 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.FluidReader.Modes;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.common.multiparts2.readers.TileFluidReader;
+import sonar.logistics.common.multiparts.readers.TileFluidReader;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
@@ -126,19 +127,20 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public MonitoredList<MonitoredFluidStack> getGridList() {
+	public List<MonitoredFluidStack> getGridList() {
 		String search = searchField.getText();
 		if (search == null || search.isEmpty() || search.equals(" ") || search.equals(""))
-			return part.getMonitoredList();
+			return part.getMonitoredList().createSaveableList();
 		else {
-			MonitoredList<MonitoredFluidStack> searchList = MonitoredList.<MonitoredFluidStack>newMonitoredList(part.getNetworkID());
-			for (MonitoredFluidStack stack : (List<MonitoredFluidStack>) part.getMonitoredList().clone()) {
+			List<MonitoredFluidStack> searchlist = Lists.newArrayList();
+			List<MonitoredFluidStack> cached = part.getMonitoredList().createSaveableList();
+			for (MonitoredFluidStack stack : cached) {
 				StoredFluidStack fluidStack = stack.getStoredStack();
 				if (stack != null && fluidStack.fluid != null && fluidStack.fluid.getLocalizedName().toLowerCase().contains(searchField.getText().toLowerCase())) {
-					searchList.add(stack);
+					searchlist.add(stack);
 				}
 			}
-			return searchList;
+			return searchlist;
 		}
 	}
 
@@ -152,7 +154,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			part.sendByteBufPacket(1);
 		}
 		if (getSetting() == Modes.POS) {
-			List<MonitoredFluidStack> currentList = (List<MonitoredFluidStack>) this.getGridList().clone();
+			List<MonitoredFluidStack> currentList = getGridList();
 			int position = 0;
 			for (MonitoredFluidStack stack : currentList) {
 				if (stack != null) {

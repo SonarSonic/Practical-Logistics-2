@@ -15,21 +15,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.IGuiItem;
 import sonar.core.utils.IGuiTile;
-import sonar.logistics.network.PacketAddListener;
-import sonar.logistics.network.PacketChannels;
-import sonar.logistics.network.PacketClickEventClient;
-import sonar.logistics.network.PacketClickEventServer;
-import sonar.logistics.network.PacketClientEmitters;
-import sonar.logistics.network.PacketConnectedDisplayRemove;
-import sonar.logistics.network.PacketConnectedDisplayUpdate;
-import sonar.logistics.network.PacketEmitterStatement;
-import sonar.logistics.network.PacketInfoUpdates;
-import sonar.logistics.network.PacketInventoryReader;
-import sonar.logistics.network.PacketItemInteractionText;
-import sonar.logistics.network.PacketLocalProviders;
-import sonar.logistics.network.PacketMonitoredList;
-import sonar.logistics.network.PacketNodeFilter;
-import sonar.logistics.network.PacketWirelessStorage;
+import sonar.logistics.api.IInfoManager;
+import sonar.logistics.packets.PacketAddListener;
+import sonar.logistics.packets.PacketChannels;
+import sonar.logistics.packets.PacketClickEventClient;
+import sonar.logistics.packets.PacketClickEventServer;
+import sonar.logistics.packets.PacketClientEmitters;
+import sonar.logistics.packets.PacketConnectedDisplayRemove;
+import sonar.logistics.packets.PacketConnectedDisplayUpdate;
+import sonar.logistics.packets.PacketEmitterStatement;
+import sonar.logistics.packets.PacketInfoUpdates;
+import sonar.logistics.packets.PacketInventoryReader;
+import sonar.logistics.packets.PacketItemInteractionText;
+import sonar.logistics.packets.PacketLocalProviders;
+import sonar.logistics.packets.PacketMonitoredList;
+import sonar.logistics.packets.PacketNodeFilter;
+import sonar.logistics.packets.PacketWirelessStorage;
 
 public class PL2Common implements IGuiHandler {
 
@@ -50,7 +51,7 @@ public class PL2Common implements IGuiHandler {
 		PL2.network.registerMessage(PacketItemInteractionText.Handler.class, PacketItemInteractionText.class, 13, Side.CLIENT);
 		PL2.network.registerMessage(PacketConnectedDisplayRemove.Handler.class, PacketConnectedDisplayRemove.class, 14, Side.CLIENT);
 	}
-
+	
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		Optional<IMultipartTile> multipart = SonarMultipartHelper.getMultipartTileFromSlotID(world, new BlockPos(x, y, z), ID);

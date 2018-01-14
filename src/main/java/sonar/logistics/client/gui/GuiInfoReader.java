@@ -3,18 +3,20 @@ package sonar.logistics.client.gui;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.client.HelpOverlays;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.common.multiparts2.readers.TileInfoReader;
+import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
@@ -67,9 +69,9 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 
 	public void setInfo() {
 		if (!part.getChannels().hasChannels()) {
-			infoList = MonitoredList.newMonitoredList(part.getNetworkID());
+			infoList = Lists.newArrayList();
 		} else {
-			infoList = part.getMonitoredList().cloneInfo();
+			infoList = part.getMonitoredList().createSaveableList();
 		}
 	}
 

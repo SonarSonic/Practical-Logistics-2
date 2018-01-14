@@ -3,7 +3,7 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts2.readers.TileInfoReader;
+import sonar.logistics.common.multiparts.readers.TileInfoReader;
 
 public class ContainerInfoReader extends ContainerMultipartSync {
 	public TileInfoReader reader;

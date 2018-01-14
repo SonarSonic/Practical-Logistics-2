@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 
 import mcmultipart.MCMultiPart;
 import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.event.DrawMultipartHighlightEvent;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.client.Minecraft;
@@ -50,15 +51,24 @@ public class RenderOperatorOverlay {
 			return;
 		}
 		IOperatorProvider provider = null;
-		if (tile instanceof IOperatorProvider) {
-			provider = (IOperatorProvider) tile;
-		} else if (tile instanceof IMultipartContainer && evt.getTarget().subHit != -1) {
-			IMultipartContainer container = (IMultipartContainer) tile;
-			IPartSlot slot = MCMultiPart.slotRegistry.getValue(evt.getTarget().subHit);
-			if (slot != null) {
-				Optional<IMultipartTile> multipartTile = container.getPartTile(slot);
-				if (multipartTile.isPresent() && multipartTile.get() instanceof IOperatorProvider) {
-					provider = (IOperatorProvider) multipartTile.get();
+		if (evt instanceof DrawMultipartHighlightEvent) {
+			DrawMultipartHighlightEvent multipart = (DrawMultipartHighlightEvent) evt;
+			IMultipartTile multipartTile = multipart.getPartInfo().getTile();
+			if (multipartTile != null && multipartTile instanceof IOperatorProvider) {
+				provider = (IOperatorProvider) multipartTile;
+			}
+		} else {
+
+			if (tile instanceof IOperatorProvider) {
+				provider = (IOperatorProvider) tile;
+			} else if (tile instanceof IMultipartContainer && evt.getTarget().subHit != -1) {
+				IMultipartContainer container = (IMultipartContainer) tile;
+				IPartSlot slot = MCMultiPart.slotRegistry.getValue(evt.getTarget().subHit);
+				if (slot != null) {
+					Optional<IMultipartTile> multipartTile = container.getPartTile(slot);
+					if (multipartTile.isPresent() && multipartTile.get() instanceof IOperatorProvider) {
+						provider = (IOperatorProvider) multipartTile.get();
+					}
 				}
 			}
 		}

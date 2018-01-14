@@ -9,12 +9,13 @@ import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.api.tiles.nodes.IEntityNode;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
-import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.connections.IEntityNode;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemWrapper {
@@ -160,5 +161,5 @@ public class ItemWrapper {
 		return false;
 	}
 
-	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {}
+	public void dumpNetworkToPlayer(AbstractChangeableList<MonitoredItemStack> abstractChangeableList, EntityPlayer player, ILogisticsNetwork cache) {}
 }

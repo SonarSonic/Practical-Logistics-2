@@ -23,8 +23,8 @@ import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.handlers.InfoNetworkHandler;
 
 @LogicInfoType(id = AE2DriveInfo.id, modid = "appliedenergistics2")
 public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableInfo<AE2DriveInfo>,INameableInfo<AE2DriveInfo>, IComparableInfo<AE2DriveInfo> {

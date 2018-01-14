@@ -22,9 +22,9 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.EnergyNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.network.sync.SyncMonitoredType;
+import sonar.logistics.networking.handlers.EnergyNetworkHandler;
 
 @LogicInfoType(id = MonitoredEnergyStack.id, modid = PL2Constants.MODID)
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {

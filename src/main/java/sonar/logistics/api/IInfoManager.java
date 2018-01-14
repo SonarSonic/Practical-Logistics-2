@@ -2,13 +2,15 @@ package sonar.logistics.api;
 
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.world.World;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 
 public interface IInfoManager {
@@ -23,7 +25,8 @@ public interface IInfoManager {
 
 	public Map<Integer, ConnectedDisplay> getConnectedDisplays();
 
-	public <T extends IInfo> MonitoredList<T> getMonitoredList(int networkID, InfoUUID uuid);
+	@Nullable
+	public <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid);
 
 	public ConnectedDisplay getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID);
 

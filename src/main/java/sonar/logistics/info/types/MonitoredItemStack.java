@@ -31,16 +31,19 @@ import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.IMonitoredValueInfo;
+import sonar.logistics.api.lists.values.ItemCount;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.connections.handlers.ItemNetworkHandler;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.networking.handlers.ItemNetworkHandler;
 
 @LogicInfoType(id = MonitoredItemStack.id, modid = PL2Constants.MODID)
-public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack> {
+public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack>, IMonitoredValueInfo<MonitoredItemStack> {
 
 	public static final String id = "item";
 	private final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 0);
@@ -216,8 +219,6 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	@Override
 	public void setFromReturn(LogicPath path, Object returned) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public static MonitoredItemStack findItemStack(List<MonitoredItemStack> stacks, ItemStack item) {
@@ -227,6 +228,11 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public IMonitoredValue<MonitoredItemStack> createMonitoredValue() {
+		return new ItemCount(this);
 	}
 
 }

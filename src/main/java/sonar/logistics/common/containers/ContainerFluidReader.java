@@ -13,7 +13,7 @@ import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.tiles.readers.FluidReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts2.readers.TileFluidReader;
+import sonar.logistics.common.multiparts.readers.TileFluidReader;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class ContainerFluidReader extends ContainerMultipartSync {

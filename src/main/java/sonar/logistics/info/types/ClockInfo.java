@@ -17,8 +17,8 @@ import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.handlers.InfoNetworkHandler;
 
 @LogicInfoType(id = ClockInfo.id, modid = PL2Constants.MODID)
 public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, INBTSyncable, INameableInfo<ClockInfo>, IComparableInfo<ClockInfo> {

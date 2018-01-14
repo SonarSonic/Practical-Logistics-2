@@ -7,14 +7,14 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ISonarListener;
-import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.connections.NetworkUpdate;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.NetworkUpdate;
 
 /**the default implementation of a Logistics Network formed when cables are connected*/
 public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILogisticsNetwork> {
@@ -101,7 +101,7 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	
 	/**creates a connections list of block coords
 	 * see {@link #sendConnectionsPacket(EntityPlayer)} which takes care of also sending the packet to a player*/
-	MonitoredList<IInfo> createConnectionsList(CacheType cacheType);
+	InfoChangeableList<MonitoredBlockCoords> createConnectionsList(CacheType cacheType);
 	
 	/**gets the cached list of the given CacheHandler, within the given CacheType space*/
 	<T> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType);

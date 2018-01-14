@@ -4,9 +4,10 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 
@@ -21,9 +22,9 @@ public interface IDataEmitter extends INetworkTile, IListReader<IInfo> {
 	
 	public DataEmitterSecurity getSecurity();
 
-	public MonitoredList<MonitoredItemStack> getServerItems();
+	public AbstractChangeableList<MonitoredItemStack> getServerItems();
 	
-	public MonitoredList<MonitoredFluidStack> getServerFluids();
+	public AbstractChangeableList<MonitoredFluidStack> getServerFluids();
 
 	public void sendRapidUpdate(EntityPlayer player);
 }

@@ -8,9 +8,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.logistics.common.multiparts2.cables.CableConnectionHandler;
-import sonar.logistics.common.multiparts2.nodes.TileArray;
-import sonar.logistics.managers.WirelessManager;
+import sonar.logistics.common.multiparts.nodes.TileArray;
+import sonar.logistics.networking.connections.CableConnectionHandler;
+import sonar.logistics.networking.connections.WirelessDataHandler;
 import sonar.logistics.worlddata.IdentityCountData;
 import sonar.logistics.worlddata.LockedDisplayData;
 
@@ -21,11 +21,10 @@ public class PL2Events {
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
 		if (event.side == Side.SERVER && event.phase == Phase.END) {
-			CableConnectionHandler.tick();
-			
+			CableConnectionHandler.instance().tick();			
 			PL2.getNetworkManager().tick();
 			PL2.getServerManager().onServerTick();
-			WirelessManager.tick();
+			WirelessDataHandler.tick();
 			PL2.getDisplayManager().tick();
 			TileArray.entityChanged = false;
 			
@@ -57,16 +56,6 @@ public class PL2Events {
 			}
 
 		}
-	}
-
-	@SubscribeEvent
-	public void watchChunk(ChunkWatchEvent.Watch event) {
-		PL2.getServerManager().addListener(event.getChunk(), event.getPlayer());
-	}
-
-	@SubscribeEvent
-	public void unWatchChunk(ChunkWatchEvent.UnWatch event) {
-		PL2.getServerManager().removeListener(event.getChunk(), event.getPlayer());
 	}
 
 	@SubscribeEvent

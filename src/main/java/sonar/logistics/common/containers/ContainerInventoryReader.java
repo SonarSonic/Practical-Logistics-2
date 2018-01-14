@@ -15,8 +15,8 @@ import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts2.readers.TileInventoryReader;
-import sonar.logistics.connections.channels.ItemNetworkChannels;
+import sonar.logistics.common.multiparts.readers.TileInventoryReader;
+import sonar.logistics.networking.channels.ItemNetworkChannels;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
 

@@ -34,6 +34,10 @@ import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.ItemChangeableList;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
@@ -43,10 +47,9 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.SortingType;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.wrappers.ItemWrapper;
-import sonar.logistics.connections.channels.ItemNetworkChannels;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.networking.channels.ItemNetworkChannels;
 
 public class ItemHelper extends ItemWrapper {
 
@@ -123,18 +126,16 @@ public class ItemHelper extends ItemWrapper {
 			channels.updateLargeInventory = true;
 			channels.updateAllChannels();
 			channels.updateLargeInventory = false;
-			MonitoredList<MonitoredItemStack> updateList = MonitoredList.<MonitoredItemStack>newMonitoredList(network.getNetworkID());
-			for (Entry<NodeConnection, MonitoredList<MonitoredItemStack>> entry : channels.channels.entrySet()) {
-				if ((entry.getValue() != null && !entry.getValue().isEmpty())) {
-					for (MonitoredItemStack coordInfo : (MonitoredList<MonitoredItemStack>) entry.getValue()) {
-						updateList.addInfoToList((MonitoredItemStack) coordInfo.copy(), (MonitoredList<MonitoredItemStack>) entry.getValue());
+			ItemChangeableList updateList = new ItemChangeableList();
+			for (Entry<NodeConnection, AbstractChangeableList> entry : channels.channels.entrySet()) {
+				AbstractChangeableList list = entry.getValue();
+				if (!list.getList().isEmpty() && list instanceof ItemChangeableList) {
+					for (IMonitoredValue<MonitoredItemStack> coordInfo : ((ItemChangeableList)list).getList()) {
+						updateList.add((MonitoredItemStack) coordInfo.getSaveableInfo().copy());
 					}
 				}
 			}
-			Pair<Boolean, IInfo> stored = updateList.getLatestInfo(new MonitoredItemStack(new StoredItemStack(stack).setStackSize(1)));
-			if (stored.a) {
-				return ((MonitoredItemStack) stored.b).getStored();
-			}
+			return updateList.getItemCount(stack);
 		}
 		return 0;
 
@@ -362,8 +363,9 @@ public class ItemHelper extends ItemWrapper {
 		return change;
 	}
 
-	public void dumpNetworkToPlayer(MonitoredList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {
-		for (MonitoredItemStack stack : items) {
+	public void dumpNetworkToPlayer(AbstractChangeableList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {
+		for (IMonitoredValue<MonitoredItemStack> value : items.getList()) {
+			MonitoredItemStack stack = value.getSaveableInfo();
 			StoredItemStack returned = removeToPlayerInventory(stack.getStoredStack(), stack.getStored(), cache, player, ActionType.SIMULATE);
 			if (returned != null) {
 				removeToPlayerInventory(stack.getStoredStack(), returned.stored, cache, player, ActionType.PERFORM);
@@ -390,7 +392,7 @@ public class ItemHelper extends ItemWrapper {
 		ITransferOverride override;
 		NodeConnection[] connections;
 
-		public ConnectionFilters(ITransferOverride override, NodeConnection...connections) {
+		public ConnectionFilters(ITransferOverride override, NodeConnection... connections) {
 			this.override = override;
 			this.connections = connections;
 		}
@@ -455,11 +457,11 @@ public class ItemHelper extends ItemWrapper {
 	}
 
 	// TODO clean up this mess
-	public static void onNetworkItemInteraction(IListReader reader, ILogisticsNetwork network, MonitoredList<MonitoredItemStack> items, EntityPlayer player, ItemStack selected, int button) {
+	public static void onNetworkItemInteraction(IListReader reader, ILogisticsNetwork network, AbstractChangeableList<MonitoredItemStack> abstractChangeableList, EntityPlayer player, ItemStack selected, int button) {
 		if (button == 3) {
 			PL2API.getItemHelper().dumpInventoryFromPlayer(player, network);
 		} else if (button == 4) {
-			PL2API.getItemHelper().dumpNetworkToPlayer(items, player, network);
+			PL2API.getItemHelper().dumpNetworkToPlayer(abstractChangeableList, player, network);
 		} else if (button == 2) {
 			if (selected == null) {
 				return;
@@ -500,27 +502,27 @@ public class ItemHelper extends ItemWrapper {
 			channels.sendLocalRapidUpdate(reader, player);
 	}
 
-	public static void sortItemList(List<MonitoredItemStack> info, final SortingDirection dir, SortingType type) {
-		info.sort(new Comparator<MonitoredItemStack>() {
-			public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
-				StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();
+	public static void sortItemList(AbstractChangeableList<MonitoredItemStack> updateInfo, final SortingDirection dir, SortingType type) {
+		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
+			public int compare(IMonitoredValue<MonitoredItemStack> str1,IMonitoredValue<MonitoredItemStack> str2) {
+				StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
 				return SonarHelper.compareStringsWithDirection(item1.getItemStack().getDisplayName(), item2.getItemStack().getDisplayName(), dir);
 			}
 		});
 
 		switch (type) {
 		case STORED:
-			info.sort(new Comparator<MonitoredItemStack>() {
-				public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
-					StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();
+			updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
+				public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
+					StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
 					return SonarHelper.compareWithDirection(item1.stored, item2.stored, dir);
 				}
 			});
 			break;
 		case MODID:
-			info.sort(new Comparator<MonitoredItemStack>() {
-				public int compare(MonitoredItemStack str1, MonitoredItemStack str2) {
-					StoredItemStack item1 = str1.getStoredStack(), item2 = str2.getStoredStack();
+			updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
+				public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
+					StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
 					String modid1 = item1.getItemStack().getItem().getRegistryName().getResourceDomain();
 					String modid2 = item2.getItemStack().getItem().getRegistryName().getResourceDomain();
 					return SonarHelper.compareStringsWithDirection(modid1, modid2, dir);

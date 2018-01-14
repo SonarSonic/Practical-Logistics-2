@@ -1,12 +1,16 @@
 package sonar.logistics.api.tiles.displays;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 public class DisplayInteractionEvent {
 
@@ -22,7 +26,7 @@ public class DisplayInteractionEvent {
 	public DisplayInteractionEvent() {
 	}
 
-	public DisplayInteractionEvent(int hashCode, IInfo currentInfo, int infoPos, EntityPlayer player, BlockInteractionType type, boolean doubleClick, EnumHand hand, RayTraceResult hit) {
+	public DisplayInteractionEvent(int hashCode, IInfo currentInfo, int infoPos, EntityPlayer player, BlockInteractionType type, boolean doubleClick, EnumHand hand) {
 		this.hashCode = hashCode;
 		this.currentInfo = currentInfo;
 		this.infoPos = infoPos;
@@ -30,7 +34,6 @@ public class DisplayInteractionEvent {
 		this.type = type;
 		this.doubleClick = doubleClick;
 		this.hand = hand;
-		this.hit = hit;
 	}
 
 	public void writeToBuf(ByteBuf buf) {

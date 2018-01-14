@@ -33,7 +33,9 @@ import net.minecraftforge.client.ForgeHooksClient;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.utils.MonitoredList;
+import sonar.logistics.api.lists.types.ItemChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
+import sonar.logistics.api.lists.values.ItemCount;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -43,17 +45,17 @@ public class CachedInventoryRenderer {
 
 	public List<CachedItemRenderer> renders = Lists.newArrayList();
 
-	public void update(LogicInfoList info, MonitoredList<MonitoredItemStack> list) {
+	public void update(LogicInfoList info, ItemChangeableList list) {
 		renders = create(info, list);
 	}
 
-	public List<CachedItemRenderer> create(LogicInfoList info, MonitoredList<MonitoredItemStack> list) {
+	public List<CachedItemRenderer> create(LogicInfoList info, ItemChangeableList list) {
 		List<CachedItemRenderer> renders = new ArrayList();
 		int currentX = 0, currentY = 0;
 		int pageCount = info.pageCount;
-		for (int i = info.perPage * pageCount; i < Math.min(info.perPage + info.perPage * pageCount, list.size()); i++) {
-			MonitoredItemStack m = list.get(i);
-			StoredItemStack s = m.getStoredStack();
+		for (int i = info.perPage * pageCount; i < Math.min(info.perPage + info.perPage * pageCount, list.getList().size()); i++) {
+			ItemCount m = (ItemCount) list.list.get(i);
+			StoredItemStack s = m.item.getStoredStack();
 			int current = i - info.perPage * pageCount;
 			int xLevel = (int) (current - ((Math.floor((current / info.xSlots))) * info.xSlots));
 			int yLevel = (int) (Math.floor((current / info.xSlots)));

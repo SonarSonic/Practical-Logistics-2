@@ -15,7 +15,7 @@ import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.common.multiparts.AbstractDisplayPart;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 
@@ -60,7 +60,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 	}
 	*/
 
-	public void renderScreenAt(AbstractDisplayPart part, BlockPos pos, float partialTicks) {
+	public void renderScreenAt(TileAbstractDisplay part, BlockPos pos, float partialTicks) {
 		if(part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()){
 			return;
 		}
@@ -69,9 +69,9 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		translate(pos.getX() - 0.5, pos.getY(), pos.getZ() - 0.5);
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
-			InfoRenderer.rotateDisplayRendering(part.face, EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject());
+			InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject());
 		} else {
-			InfoRenderer.rotateDisplayRendering(part.face, EnumFacing.NORTH, 0, 0);
+			InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, 0, 0);
 		}
 		GL11.glTranslated(-0.0625, 0, 0);
 		// part.container().renderContainer();

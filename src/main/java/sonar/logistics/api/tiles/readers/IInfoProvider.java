@@ -5,7 +5,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.viewers.ILogicListenable;
 
-public interface IInfoProvider extends ILogicListenable<PlayerListener> {
+public interface IInfoProvider extends ILogicListenable {
 	
 	public IInfo getMonitorInfo(int pos);
 

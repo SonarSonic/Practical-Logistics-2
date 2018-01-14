@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
+import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 
 public class GuiDataEmitter extends GuiLogistics {
 	public TileDataEmitter part;

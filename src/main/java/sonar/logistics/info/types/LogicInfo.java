@@ -23,9 +23,9 @@ import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.connections.handlers.InfoNetworkHandler;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.networking.handlers.InfoNetworkHandler;
 
 /** default info type, created by the LogicRegistry */
 @LogicInfoType(id = LogicInfo.id, modid = PL2Constants.MODID)
@@ -165,6 +165,9 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 
 	@Override
 	public LogicInfo copy() {
+		if(this.isCategory.getObject()){
+			return buildCategoryInfo(regType.getObject());
+		}
 		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get()).setPath(getPath() != null ? getPath().dupe() : null);
 	}
 

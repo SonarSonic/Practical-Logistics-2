@@ -34,18 +34,21 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
+import sonar.logistics.api.lists.EnumListChange;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
-import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.common.multiparts2.TileLogistics;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.connections.channels.ItemNetworkChannels;
+import sonar.logistics.common.multiparts.TileLogistics;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.network.PacketItemInteractionText;
+import sonar.logistics.networking.channels.ItemNetworkChannels;
+import sonar.logistics.packets.PacketItemInteractionText;
 
 public class InfoHelper {
 
@@ -60,11 +63,11 @@ public class InfoHelper {
 	public static final String DELETE = "del";
 	public static final String SYNC = "syn";
 	public static final String REMOVED = "rem";
-	public static final String SPECIAL = "spe";
+	public static final String DEFAULT_SYNC = "spe";
 
 	public static void screenItemStackClicked(StoredItemStack storedItemStack, TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
-		ILogisticsNetwork cache =  part.getNetwork();
+		ILogisticsNetwork cache = part.getNetwork();
 		if (toRemove.a != 0 && cache.isValid()) {
 			switch (toRemove.b) {
 			case ADD:
@@ -76,25 +79,21 @@ public class InfoHelper {
 						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, cache, player.inventory.currentItem);
 					}
 					if (changed > 0) {
-						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack, cache);
-						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack, itemCount, changed), (EntityPlayerMP) player);
+						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), cache);
+						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, changed), (EntityPlayerMP) player);
 						// FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.GREEN + "+" + changed + TextFormatting.RESET + " x " + stack.getDisplayName(), player.getEntityWorld(), player);
 					}
 				}
 				break;
 			case REMOVE:
 				if (storedItemStack != null) {
-					IMultipart part = (IMultipart) hit.hitInfo;
-					if (part != null && part instanceof TileLogistics) {
-						BlockPos pos = hit.getBlockPos();
-						StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, storedItemStack.copy().setStackSize(toRemove.a));
-						if (extract != null) {
-							pos = pos.offset(hit.sideHit);
-							long r = extract.stored;
-							SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), hit.sideHit);
-							long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), cache);
-							PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
-						}
+					StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, storedItemStack.copy().setStackSize(toRemove.a));
+					if (extract != null) {
+						pos = pos.offset(facing);
+						long r = extract.stored;
+						SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), facing);
+						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), cache);
+						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
 					}
 				}
 				break;
@@ -126,112 +125,99 @@ public class InfoHelper {
 		}
 	}
 
-	// FIXME - to use updateWriting for some of the tags, like ILogicInfo
-	public static <T extends IInfo> NBTTagCompound writeMonitoredList(NBTTagCompound tag, boolean lastWasNull, MonitoredList<T> stacks, SyncType type) {
+	public static <T extends IInfo> NBTTagCompound writeMonitoredList(NBTTagCompound tag, AbstractChangeableList<T> stacks, SyncType type) {
 		if (type.isType(SyncType.DEFAULT_SYNC)) {
-			stacks.sizing.writeData(tag, SyncType.SAVE);
-			NBTTagList list = new NBTTagList();
-			stacks.forEach(info -> {
-				if (info != null && info.isValid()) {
-					list.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE));
-				}
-			});
-			if (list.tagCount() != 0) {
-				tag.setTag(SYNC, list);
-				return tag;
-			} else {
-				// if (!lastWasNull)
+			List<IMonitoredValue<T>> values = stacks.getList();
+			if ((values == null || values.isEmpty())) {
 				tag.setBoolean(DELETE, true);
 				return tag;
 			}
-		} else if (type.isType(SyncType.SPECIAL)) {
-			if (!stacks.changed.isEmpty() || !stacks.removed.isEmpty()) {
-				stacks.sizing.writeData(tag, SyncType.DEFAULT_SYNC);
-				if ((stacks == null || stacks.isEmpty())) {
-					if (!lastWasNull)
-						tag.setBoolean(DELETE, true);
-					return tag;
-				}
-				NBTTagList list = new NBTTagList();
-				for (int listType = 0; listType < 2; listType++) {
-					List<T> stackList = listType == 0 ? stacks.changed : stacks.removed;
-					for (int i = 0; i < stackList.size(); i++) {
-						T info = stackList.get(i);
-						if (info != null && info.isValid()) {
-							NBTTagCompound compound = new NBTTagCompound();
-							compound.setBoolean(REMOVED, listType == 1);
-							list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE));
-						}
-					}
-				}
-				if (list.tagCount() != 0) {
-					tag.setTag(SPECIAL, list);
+			NBTTagList list = new NBTTagList();
+			for (IMonitoredValue<T> value : values) {
+				EnumListChange change = value.getChange();
+				if (change.shouldUpdate()) {
+					NBTTagCompound compound = new NBTTagCompound();
+					IInfo info = value.getSaveableInfo();
+					compound.setBoolean(REMOVED, change == EnumListChange.OLD_VALUE);
+					list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE));
 				}
 			}
+			if (list.tagCount() != 0) {
+				tag.setTag(DEFAULT_SYNC, list);
+			}
+		} else if (type.isType(SyncType.SAVE)) {
+			NBTTagList list = new NBTTagList();
+			List<IMonitoredValue<T>> values = stacks.getList();
+			values.forEach(value -> list.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), value.getSaveableInfo(), SyncType.SAVE)));
+			tag.setTag(DEFAULT_SYNC, list);
 		}
+
 		return tag;
 	}
 
-	public static <T extends IInfo> MonitoredList<T> readMonitoredList(NBTTagCompound tag, MonitoredList<T> stacks, SyncType type) {
+	// FIXME - to use updateWriting for some of the tags, like ILogicInfo
+	/* public static <T extends IInfo> NBTTagCompound writeMonitoredList(NBTTagCompound tag, boolean lastWasNull, MonitoredList<T> stacks, SyncType type) { if (type.isType(SyncType.DEFAULT_SYNC)) { stacks.sizing.writeData(tag, SyncType.SAVE); NBTTagList list = new NBTTagList(); stacks.forEach(info -> { if (info != null && info.isValid()) { list.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE)); } }); if (list.tagCount() != 0) { tag.setTag(SYNC, list); return tag; } else { // if (!lastWasNull) tag.setBoolean(DELETE, true); return tag; } } else if (type.isType(SyncType.SPECIAL)) { if (!stacks.changed.isEmpty() || !stacks.removed.isEmpty()) { stacks.sizing.writeData(tag, SyncType.DEFAULT_SYNC); if ((stacks == null || stacks.isEmpty())) { if (!lastWasNull) tag.setBoolean(DELETE, true); return tag; } NBTTagList list = new NBTTagList(); for (int listType = 0; listType < 2; listType++) { List<T> stackList = listType == 0 ? stacks.changed : stacks.removed; for (int i = 0; i < stackList.size(); i++) { T info = stackList.get(i); if (info != null && info.isValid()) { NBTTagCompound compound = new NBTTagCompound(); compound.setBoolean(REMOVED, listType == 1); list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE)); } } } if (list.tagCount() != 0) { tag.setTag(SPECIAL, list); } } } return tag; } */
+	public static <L extends AbstractChangeableList> L readMonitoredList(NBTTagCompound tag, L stacks, SyncType type) {
 		if (tag.hasKey(DELETE)) {
-			stacks.clear();
+			stacks.list.clear();
 			return stacks;
 		}
 		if (type.isType(SyncType.DEFAULT_SYNC)) {
-			if (!tag.hasKey(SYNC)) {
+			if (!tag.hasKey(DEFAULT_SYNC)) {
 				return stacks;
 			}
-			NBTTagList list = tag.getTagList(SYNC, 10);
-			stacks.clear();
+			NBTTagList list = tag.getTagList(DEFAULT_SYNC, 10);
+			stacks.list.clear();
 			for (int i = 0; i < list.tagCount(); i++) {
-				stacks.add((T) InfoHelper.readInfoFromNBT(list.getCompoundTagAt(i)));
+				stacks.add(InfoHelper.readInfoFromNBT(list.getCompoundTagAt(i)));
 			}
-		} else if (type.isType(SyncType.SPECIAL)) {
-			if (!tag.hasKey(SPECIAL)) {
+		} else if (type.isType(SyncType.SAVE)) {
+			if (!tag.hasKey(DEFAULT_SYNC)) {
 				return stacks;
 			}
-			NBTTagList list = tag.getTagList(SPECIAL, 10);
-			tags: for (int i = 0; i < list.tagCount(); i++) {
+			NBTTagList list = tag.getTagList(DEFAULT_SYNC, 10);
+			for (int i = 0; i < list.tagCount(); i++) {
 				NBTTagCompound infoTag = list.getCompoundTagAt(i);
 				boolean removed = infoTag.getBoolean(REMOVED);
-				T stack = (T) InfoHelper.readInfoFromNBT(infoTag);
-				Iterator<T> iterator = stacks.iterator();
-				while (iterator.hasNext()) {
-					T stored = iterator.next();
-					if (stack.isMatchingType(stored) && stack.isMatchingInfo(stored)) {
-						if (removed) {
-							stacks.remove(stored);
-						} else {
-							stored.readData(infoTag, SyncType.SAVE);
-						}
-						continue tags;
+				IInfo stack = InfoHelper.readInfoFromNBT(infoTag);
+				IMonitoredValue value = stacks.find(stack);
+				if (value == null) {
+					if (!removed) {
+						stacks.add(stack);
 					}
+				} else if (removed) {
+					stacks.list.remove(value);
+				} else {
+					value.reset(stack);
 				}
-				stacks.add(stack);
+
 			}
 		}
 		return stacks;
 	}
 
-	public static List<IProvidableInfo> sortInfoList(List<IProvidableInfo> oldInfo) {
-		List<IProvidableInfo> providerInfo = Lists.newArrayList(oldInfo);
-		Collections.sort(providerInfo, new Comparator<IProvidableInfo>() {
-			public int compare(IProvidableInfo str1, IProvidableInfo str2) {
-				return Integer.compare(str1.getRegistryType().sortOrder, str2.getRegistryType().sortOrder);
+	public static AbstractChangeableList<IProvidableInfo> sortInfoList(AbstractChangeableList<IProvidableInfo> updateInfo) {
+		Collections.sort(updateInfo.getList(), new Comparator<IMonitoredValue<IProvidableInfo>>() {
+			public int compare(IMonitoredValue<IProvidableInfo> str1, IMonitoredValue<IProvidableInfo> str2) {
+				return Integer.compare(str1.getSaveableInfo().getRegistryType().sortOrder, str2.getSaveableInfo().getRegistryType().sortOrder);
 			}
 		});
-		List<IProvidableInfo> sortedInfo = Lists.newArrayList();
+		List<IProvidableInfo> info = Lists.newArrayList();
 		IProvidableInfo lastInfo = null;
-		for (IProvidableInfo blockInfo : Lists.newArrayList(providerInfo)) {
+		for (IMonitoredValue<IProvidableInfo> value : updateInfo.getList()) {
+			IProvidableInfo blockInfo = value.getSaveableInfo();
 			if (blockInfo != null && !blockInfo.isHeader()) {
 				if (lastInfo == null || (!lastInfo.isHeader() && !lastInfo.getRegistryType().equals(blockInfo.getRegistryType()))) {
-					sortedInfo.add(LogicInfo.buildCategoryInfo(blockInfo.getRegistryType()));
+					info.add(LogicInfo.buildCategoryInfo(blockInfo.getRegistryType()));
 				}
-				sortedInfo.add(blockInfo);
+				info.add(value.getSaveableInfo());
 				lastInfo = blockInfo;
 			}
 		}
-		return sortedInfo;
+		updateInfo.getList().clear();
+		info.forEach(value -> updateInfo.add(value));
+		
+		return updateInfo;
 	}
 
 	public static double[] getScaling(IDisplay display, DisplayLayout layout, int pos) {

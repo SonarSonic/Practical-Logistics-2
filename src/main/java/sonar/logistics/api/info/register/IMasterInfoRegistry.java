@@ -10,10 +10,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.utils.MonitoredList;
 
 public interface IMasterInfoRegistry {
 
@@ -89,8 +90,8 @@ public interface IMasterInfoRegistry {
 
 	public void addCapabilities(final List<IProvidableInfo> infoList, LogicPath path, Object obj, EnumFacing currentFace, Object... available);
 
-	/**gets the very latest version of the LogicInfo provided from the MonitoredList provided*/
-	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(MonitoredList updateInfo, List<NodeConnection> connections, T monitorInfo);
+	/**gets the very latest version of the LogicInfo provided from the InfoChangeableList provided*/
+	public <T extends IProvidableInfo> Pair<Boolean, T> getLatestInfo(AbstractChangeableList<T> updateInfo, List<NodeConnection> connections, T monitorInfo);
 
 	/**gets the very latest version of the LogicInfo provided from the Node Connection provided*/
 	public <T extends IProvidableInfo > Pair<Boolean, T> getLatestInfo(T info, NodeConnection entry);

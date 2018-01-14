@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
+import com.google.common.collect.Lists;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -31,17 +33,18 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.tiles.readers.InventoryReader;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerStorageViewer;
-import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
+import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
-import sonar.logistics.network.PacketWirelessStorage;
+import sonar.logistics.packets.PacketWirelessStorage;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 
@@ -142,28 +145,30 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	}
 
 	@Override
-	public MonitoredList<IInfo> getGridList() {
+	public List<IInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
-			MonitoredList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
+			AbstractChangeableList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
+			if(currentList==null){
+				return Lists.newArrayList();
+			}
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
-
-			MonitoredList<IInfo> list = MonitoredList.newMonitoredList(networkID);
-			list.addAll(currentList);
 			if (search == null || search.isEmpty() || search.equals(" ")) {
-				return list;
+				List<IInfo> infolist = Lists.newArrayList(currentList.createSaveableList());
+				return infolist;
 			} else {
-				MonitoredList<IInfo> searchList = MonitoredList.newMonitoredList(networkID);
-				for (MonitoredItemStack stack : (List<MonitoredItemStack>) currentList.clone()) {
+				List<IInfo> searchlist = Lists.newArrayList();
+				List<MonitoredItemStack> cached = currentList.createSaveableList();
+				for (MonitoredItemStack stack : cached) {
 					StoredItemStack item = stack.getStoredStack();
 					if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
-						searchList.add(stack);
+						searchlist.add(stack);
 					}
 				}
-				return searchList;
+				return searchlist;
 			}
 		} else {
-			return PL2.getClientManager().getMonitoredList(networkID, new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID));
+			return PL2.getClientManager().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID)).createSaveableList();
 		}
 	}
 

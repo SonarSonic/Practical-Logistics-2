@@ -8,13 +8,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
-import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.lists.types.InfoChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.connections.CacheHandler;
-import sonar.logistics.connections.NetworkUpdate;
+import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.NetworkUpdate;
 
 /**the default version of ILogisticsNetwork when a tile is yet to be connected*/
 public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
@@ -91,8 +92,8 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	}
 
 	@Override
-	public MonitoredList<IInfo> createConnectionsList(CacheType cacheType) {
-		return MonitoredList.EMPTY;
+	public InfoChangeableList<MonitoredBlockCoords> createConnectionsList(CacheType cacheType) {
+		return new InfoChangeableList();
 	}
 
 	@Override

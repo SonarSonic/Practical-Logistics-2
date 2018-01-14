@@ -8,7 +8,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts2.nodes.TileEntityNode;
+import sonar.logistics.common.multiparts.nodes.TileEntityNode;
 
 public class GuiEntityNode extends GuiLogistics {
 	public TileEntityNode part;

@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.common.multiparts2.nodes.TileArray;
+import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class RenderArray extends TileEntitySpecialRenderer<TileArray> {

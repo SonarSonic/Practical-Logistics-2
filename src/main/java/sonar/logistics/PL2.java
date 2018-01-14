@@ -3,8 +3,10 @@ package sonar.logistics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -23,23 +25,21 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.PL2API;
+import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.logic.comparators.ComparatorRegistry;
-import sonar.logistics.managers.CableManager;
-import sonar.logistics.managers.ClientInfoManager;
-import sonar.logistics.managers.DisplayManager;
-import sonar.logistics.managers.NetworkManager;
-import sonar.logistics.managers.ServerInfoManager;
-import sonar.logistics.managers.WirelessManager;
-import sonar.logistics.utils.SapphireOreGen;
+import sonar.logistics.networking.connections.CableConnectionHandler;
+import sonar.logistics.networking.connections.ChunkViewerHandler;
+import sonar.logistics.networking.connections.ClientInfoHandler;
+import sonar.logistics.networking.connections.DisplayScreenHandler;
+import sonar.logistics.networking.connections.LogisticsNetworkHandler;
+import sonar.logistics.networking.connections.ServerInfoHandler;
+import sonar.logistics.networking.connections.WirelessDataHandler;
+import sonar.logistics.worldgen.SapphireOreGen;
 
-@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, 
-	dependencies = 	
-			"required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + 
-			"required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);",
-	version = PL2Constants.VERSION)
+@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
 public class PL2 {
 
 	@SidedProxy(clientSide = "sonar.logistics.PL2Client", serverSide = "sonar.logistics.PL2Common")
@@ -51,11 +51,11 @@ public class PL2 {
 	@Instance(PL2Constants.MODID)
 	public static PL2 instance;
 
-	public NetworkManager networkManager = new NetworkManager();
-	public CableManager cableManager = new CableManager();
-	public DisplayManager displayManager = new DisplayManager();
-	public ServerInfoManager serverManager = new ServerInfoManager();
-	public ClientInfoManager clientManager = new ClientInfoManager();
+	public LogisticsNetworkHandler networkManager = new LogisticsNetworkHandler();
+	public CableConnectionHandler cableManager = new CableConnectionHandler();
+	public DisplayScreenHandler displayManager = new DisplayScreenHandler();
+	public ServerInfoHandler serverManager = new ServerInfoHandler();
+	public ClientInfoHandler clientManager = new ClientInfoHandler();
 	public ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
 	public static CreativeTabs creativeTab = new CreativeTabs(PL2Constants.NAME) {
@@ -110,8 +110,11 @@ public class PL2 {
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		logger.info("Breaking into the pentagon");
-		///PL2Crafting.addRecipes();
+		/// PL2Crafting.addRecipes();
 		logger.info("Registered Crafting Recipes");
+
+		for (EnumDisplayFaceSlot slot : EnumDisplayFaceSlot.values())
+			GameRegistry.findRegistry(IPartSlot.class).register(slot);
 
 		OreDictionary.registerOre("oreSapphire", PL2Blocks.sapphire_ore);
 		OreDictionary.registerOre("gemSapphire", PL2Items.sapphire);
@@ -119,6 +122,7 @@ public class PL2 {
 		logger.info("Registered OreDict");
 
 		MinecraftForge.EVENT_BUS.register(new PL2Events());
+		MinecraftForge.EVENT_BUS.register(new ChunkViewerHandler());
 		logger.info("Registered Events");
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new PL2Common());
 		logger.info("Registered GUI Handler");
@@ -147,7 +151,7 @@ public class PL2 {
 
 	@EventHandler
 	public void serverClose(FMLServerStoppedEvent event) {
-		WirelessManager.removeAll();
+		WirelessDataHandler.removeAll();
 		getNetworkManager().removeAll();
 		getCableManager().removeAll();
 		getDisplayManager().removeAll();
@@ -156,28 +160,31 @@ public class PL2 {
 		getComparatorRegistry().removeAll();
 	}
 
-	public static NetworkManager getNetworkManager() {
+	public static LogisticsNetworkHandler getNetworkManager() {
 		return PL2.instance.networkManager;
 	}
 
-	public static CableManager getCableManager() {
+	public static CableConnectionHandler getCableManager() {
 		return PL2.instance.cableManager;
 	}
 
-	public static DisplayManager getDisplayManager() {
+	public static DisplayScreenHandler getDisplayManager() {
 		return PL2.instance.displayManager;
 	}
-
-	public static ServerInfoManager getServerManager() {
+	
+	public static ServerInfoHandler getServerManager() {
 		return PL2.instance.serverManager;
 	}
 
-	public static ClientInfoManager getClientManager() {
+	public static ClientInfoHandler getClientManager() {
 		return PL2.instance.clientManager;
 	}
-
+	
 	public static IInfoManager getInfoManager(boolean isRemote) {
-		return !isRemote ? getServerManager() : getClientManager();
+		if(!isRemote){
+			return getServerManager();
+		}
+		return getClientManager();
 	}
 
 	public static ComparatorRegistry getComparatorRegistry() {

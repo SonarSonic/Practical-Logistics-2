@@ -6,7 +6,7 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerArray;
-import sonar.logistics.common.multiparts2.nodes.TileArray;
+import sonar.logistics.common.multiparts.nodes.TileArray;
 
 public class GuiArray extends GuiLogistics {
 	public TileArray part;

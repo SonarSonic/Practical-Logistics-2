@@ -2,24 +2,27 @@ package sonar.logistics;
 
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.translate.Localisation;
-import sonar.logistics.common.multiparts2.cables.TileDataCable;
-import sonar.logistics.common.multiparts2.misc.TileClock;
-import sonar.logistics.common.multiparts2.misc.TileRedstoneSignaller;
-import sonar.logistics.common.multiparts2.nodes.TileArray;
-import sonar.logistics.common.multiparts2.nodes.TileEntityNode;
-import sonar.logistics.common.multiparts2.nodes.TileNode;
-import sonar.logistics.common.multiparts2.nodes.TileTransferNode;
-import sonar.logistics.common.multiparts2.readers.TileEnergyReader;
-import sonar.logistics.common.multiparts2.readers.TileFluidReader;
-import sonar.logistics.common.multiparts2.readers.TileInfoReader;
-import sonar.logistics.common.multiparts2.readers.TileInventoryReader;
-import sonar.logistics.common.multiparts2.wireless.TileDataEmitter;
-import sonar.logistics.common.multiparts2.wireless.TileDataReceiver;
+import sonar.logistics.common.multiparts.cables.TileDataCable;
+import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
+import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
+import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
+import sonar.logistics.common.multiparts.misc.TileClock;
+import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
+import sonar.logistics.common.multiparts.nodes.TileArray;
+import sonar.logistics.common.multiparts.nodes.TileEntityNode;
+import sonar.logistics.common.multiparts.nodes.TileNode;
+import sonar.logistics.common.multiparts.nodes.TileTransferNode;
+import sonar.logistics.common.multiparts.readers.TileEnergyReader;
+import sonar.logistics.common.multiparts.readers.TileFluidReader;
+import sonar.logistics.common.multiparts.readers.TileInfoReader;
+import sonar.logistics.common.multiparts.readers.TileInventoryReader;
+import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
+import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
 
 public enum PL2Multiparts {
 	NODE(0.875, 0, 0.0625, "Node", TileNode.class, PL2Translate.NODE), //
 	ARRAY(0.625, 0.0625 * 1, 0.0625 * 4, "Array", TileArray.class, PL2Translate.ARRAY), //
-	ENTITY_NODE(5 * 0.0625, 0.0625 * 1, 0.0625 * 4, "EntityNode", TileEntityNode.class, PL2Translate.ENTITY_NODE),
+	ENTITY_NODE(5 * 0.0625, 0.0625 * 1, 0.0625 * 4, "EntityNode", TileEntityNode.class, PL2Translate.ENTITY_NODE), //
 	DATA_CABLE(0, 0, 0, "DataCable", TileDataCable.class, PL2Translate.CABLE), //
 	INFO_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "InfoReader", TileInfoReader.class, PL2Translate.INFO_READER), //
 	FLUID_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "FluidReader", TileFluidReader.class, PL2Translate.FLUID_READER), //
@@ -29,9 +32,11 @@ public enum PL2Multiparts {
 	DATA_RECEIVER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, "DataReceiver", TileDataReceiver.class, PL2Translate.DATA_RECEIVER), //
 	CLOCK(3 * 0.0625, 0.0625 * 1, 0.0625 * 3, "Clock", TileClock.class, PL2Translate.CLOCK), //
 	REDSTONE_SIGNALLER(3 * 0.0625, 0.0625 * 1, 0.0625 * 6, "RedstoneSignaller", TileRedstoneSignaller.class, PL2Translate.REDSTONE_SIGNALLER), //
-	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, "TransferNode", TileTransferNode.class, PL2Translate.TRANSFER_NODE); //
-	
-	/* /  DISPLAY_SCREEN(0, 0, 0, PL2Translate.DISPLAY_SCREEN), // LARGE_DISPLAY_SCREEN(0, 0, 0, PL2Translate.LARGE_DISPLAY_SCREEN), //  // */
+	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, "TransferNode", TileTransferNode.class, PL2Translate.TRANSFER_NODE), //
+
+	DISPLAY_SCREEN(0, 0, 0, "DisplayScreen", TileDisplayScreen.class, PL2Translate.DISPLAY_SCREEN), //
+	HOLOGRAPHIC_DISPLAY(0, 0, 0, "HolographicDisplay", TileHolographicDisplay.class, PL2Translate.HOLOGRAPHIC_DISPLAY), //
+	LARGE_DISPLAY_SCREEN(0, 0, 0, "LargeDisplayScreen", TileLargeDisplayScreen.class, PL2Translate.LARGE_DISPLAY_SCREEN); // //
 	public double width, heightMin, heightMax;
 	public Class<? extends TileEntity> tile;
 	public String registryName;

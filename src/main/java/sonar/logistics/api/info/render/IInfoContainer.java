@@ -14,9 +14,10 @@ import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.utils.MonitoredList;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 /** used for storing display info to be used on Screens */
 public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListener {
@@ -48,5 +49,5 @@ public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListe
 	
 	public void onInfoChanged(InfoUUID uuid, IInfo list);
 	
-	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList info);
+	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list);
 }

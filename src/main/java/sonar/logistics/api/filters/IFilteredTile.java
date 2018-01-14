@@ -6,7 +6,7 @@ import sonar.logistics.api.tiles.IChannelledTile;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.network.sync.SyncFilterList;
 
-public interface IFilteredTile extends IChannelledTile, ILogicListenable<PlayerListener>, IInventoryFilter {
+public interface IFilteredTile extends IChannelledTile, ILogicListenable, IInventoryFilter {
 
 	public SyncFilterList getFilters();
 	

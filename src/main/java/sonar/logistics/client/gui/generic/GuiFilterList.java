@@ -55,7 +55,7 @@ import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerFilterList;
-import sonar.logistics.network.PacketNodeFilter;
+import sonar.logistics.packets.PacketNodeFilter;
 
 public class GuiFilterList extends GuiSelectionList {
 

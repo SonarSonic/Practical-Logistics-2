@@ -33,8 +33,8 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.connections.CacheHandler;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.networking.CacheHandler;
 
 public class LogisticsHelper {
 
@@ -121,7 +121,8 @@ public class LogisticsHelper {
 
 	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, IBlockAccess world, BlockPos pos, TileAbstractDisplay part) {
 		ILogisticsNetwork networkCache = part.getNetwork();		
-		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(world, pos, EnumFaceSlot.fromFace(part.face), tile -> true);		
+		IBlockAccess actualWorld = SonarMultipartHelper.unwrapBlockAccess(world);
+		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(actualWorld, pos, EnumFaceSlot.fromFace(part.getCableFace()), tile -> true);		
 		if (connectedPart.isPresent() && connectedPart.get() instanceof IInfoProvider) {
 			if (!viewables.contains((IInfoProvider) connectedPart.get())) {
 				viewables.add((IInfoProvider) connectedPart.get());

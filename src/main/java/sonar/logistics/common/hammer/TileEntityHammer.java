@@ -34,9 +34,9 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	
 	public void update() {
 		super.update();
-		if (getWorld().isBlockIndirectlyGettingPowered(pos) == 15) {
-			return;
-		}
+		//if (getWorld().isBlockIndirectlyGettingPowered(pos) == 15) {
+		//	return;
+		//}
 		if (coolDown.getObject() != 0) {
 			coolDown.increaseBy(-1);
 			// if (!this.worldObj.isRemote && coolDown.getObject() == 1)

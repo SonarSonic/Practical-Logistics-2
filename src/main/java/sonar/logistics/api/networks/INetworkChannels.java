@@ -1,6 +1,6 @@
 package sonar.logistics.api.networks;
 
-import sonar.logistics.connections.CacheHandler;
+import sonar.logistics.networking.CacheHandler;
 
 /**network channels are used by {@link ILogisticsNetwork} to perform certain operators for a network,
  * for example channels will update reader info and run the Transfer Node network.

@@ -9,15 +9,20 @@ import sonar.logistics.common.blocks.BlockHammer;
 import sonar.logistics.common.blocks.BlockHammerAir;
 import sonar.logistics.common.blocks.BlockSapphireOre;
 import sonar.logistics.common.hammer.TileEntityHammer;
-import sonar.logistics.common.multiparts2.BlockLogistics;
-import sonar.logistics.common.multiparts2.cables.BlockDataCable;
-import sonar.logistics.common.multiparts2.nodes.BlockArray;
-import sonar.logistics.common.multiparts2.nodes.BlockEntityNode;
-import sonar.logistics.common.multiparts2.nodes.BlockNode;
-import sonar.logistics.common.multiparts2.nodes.BlockTransferNode;
-import sonar.logistics.common.multiparts2.readers.BlockAbstractReader;
-import sonar.logistics.common.multiparts2.wireless.BlockDataEmitter;
-import sonar.logistics.common.multiparts2.wireless.BlockDataReceiver;
+import sonar.logistics.common.multiparts.BlockLogistics;
+import sonar.logistics.common.multiparts.cables.BlockDataCable;
+import sonar.logistics.common.multiparts.displays.BlockDisplayScreen;
+import sonar.logistics.common.multiparts.displays.BlockHolographicDisplay;
+import sonar.logistics.common.multiparts.displays.BlockLargeDisplay;
+import sonar.logistics.common.multiparts.misc.BlockClock;
+import sonar.logistics.common.multiparts.misc.BlockRedstoneSignaller;
+import sonar.logistics.common.multiparts.nodes.BlockArray;
+import sonar.logistics.common.multiparts.nodes.BlockEntityNode;
+import sonar.logistics.common.multiparts.nodes.BlockNode;
+import sonar.logistics.common.multiparts.nodes.BlockTransferNode;
+import sonar.logistics.common.multiparts.readers.BlockAbstractReader;
+import sonar.logistics.common.multiparts.wireless.BlockDataEmitter;
+import sonar.logistics.common.multiparts.wireless.BlockDataReceiver;
 
 public class PL2Blocks extends PL2 {
 
@@ -41,10 +46,17 @@ public class PL2Blocks extends PL2 {
 		entity_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockEntityNode()));
 		transfer_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockTransferNode()));
 
-		data_cable = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataCable(PL2Multiparts.DATA_CABLE)));
+		clock = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockClock()));
+		redstone_signaller = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneSignaller()));
+		
+		display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDisplayScreen()));
+		large_display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockLargeDisplay()));
+		holographic_display = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockHolographicDisplay()));
+		
+		data_cable = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataCable()));
 		node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockNode()));
-		data_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataEmitter(PL2Multiparts.DATA_EMITTER)));
-		data_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataReceiver(PL2Multiparts.DATA_RECEIVER)));
+		data_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataEmitter()));
+		data_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataReceiver()));
 
 	}
 

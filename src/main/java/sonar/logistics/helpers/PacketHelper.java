@@ -21,21 +21,22 @@ import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.tiles.readers.INetworkReader;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.common.multiparts2.misc.TileRedstoneSignaller;
-import sonar.logistics.managers.WirelessManager;
-import sonar.logistics.network.PacketClientEmitters;
-import sonar.logistics.network.PacketInfoUpdates;
-import sonar.logistics.network.PacketLocalProviders;
-import sonar.logistics.network.PacketMonitoredList;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
+import sonar.logistics.networking.connections.WirelessDataHandler;
+import sonar.logistics.packets.PacketClientEmitters;
+import sonar.logistics.packets.PacketInfoUpdates;
+import sonar.logistics.packets.PacketLocalProviders;
+import sonar.logistics.packets.PacketMonitoredList;
 
 public class PacketHelper {
 
@@ -70,8 +71,8 @@ public class PacketHelper {
 		PL2.network.sendTo(new PacketLocalProviders(clientProviders, identity), (EntityPlayerMP) player);
 	}
 
-	public static void addInfoUpdatesToList(Map<PlayerListener, NBTTagList> listenerPackets, List<PlayerListener> listeners, NBTTagCompound updateTag, NBTTagCompound saveTag, boolean fullPacket) {
-		for (PlayerListener listener : listeners) {
+	public static void addInfoUpdatesToList(Map<EntityPlayerMP, NBTTagList> listenerPackets, List<EntityPlayerMP> list2, NBTTagCompound updateTag, NBTTagCompound saveTag, boolean fullPacket) {
+		for (EntityPlayerMP listener : list2) {
 			NBTTagList list = listenerPackets.get(listener);
 			if (list == null) {
 				listenerPackets.put(listener, new NBTTagList());
@@ -81,13 +82,13 @@ public class PacketHelper {
 		}
 	}
 
-	public static void sendInfoUpdatePacket(PlayerListener listener, NBTTagList list, SyncType type) {
+	public static void sendInfoUpdatePacket(EntityPlayerMP player, NBTTagList list, SyncType type) {
 		if (list.hasNoTags()) {
 			return;
 		}
 		NBTTagCompound packetTag = new NBTTagCompound();
 		packetTag.setTag("infoList", list);
-		PL2.network.sendTo(new PacketInfoUpdates(packetTag, type), listener.player);
+		PL2.network.sendTo(new PacketInfoUpdates(packetTag, type), player);
 	}
 
 	public static void receiveInfoUpdate(NBTTagCompound packetTag, SyncType type) {
@@ -109,23 +110,36 @@ public class PacketHelper {
 	}
 
 	public static void sendDataEmittersToPlayer(EntityPlayer player) {
-		PL2.network.sendTo(new PacketClientEmitters(WirelessManager.getClientDataEmitters(player)), (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketClientEmitters(WirelessDataHandler.getClientDataEmitters(player)), (EntityPlayerMP) player);
 	}
 
 	public static void sendNormalProviderInfo(IInfoProvider monitor) {
-		sendReaderToListeners(monitor, null, null, new InfoUUID(monitor.getIdentity(), 0));
+		sendReaderToListeners(monitor, null, new InfoUUID(monitor.getIdentity(), 0)); //FIXME
 	}
 
-	public static void sendReaderFullInfo(List<PlayerListener> listeners, ILogicListenable monitor, MonitoredList saveList, InfoUUID uuid) {
-		NBTTagCompound saveTag = saveList != null ? InfoHelper.writeMonitoredList(new NBTTagCompound(), true, saveList, SyncType.DEFAULT_SYNC) : null;
+	public static void sendReaderFullInfo(List<PlayerListener> listeners, ILogicListenable monitor, AbstractChangeableList b, InfoUUID uuid) {
+		NBTTagCompound saveTag = b != null ? InfoHelper.writeMonitoredList(new NBTTagCompound(), b, SyncType.SAVE) : null;
 		if (saveTag.hasNoTags())
 			return;
-		listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), uuid, monitor.getNetworkID(), saveTag, SyncType.DEFAULT_SYNC), listener.player));
+		listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), uuid, monitor.getNetworkID(), saveTag, SyncType.SAVE), listener.player));
 	}
 
-	public static void sendReaderToListeners(ILogicListenable reader, MonitoredList saveList, MonitoredList lastList, InfoUUID uuid) {
+	public static void sendReaderToListeners(ILogicListenable reader, AbstractChangeableList updateList, InfoUUID uuid) {
+		if(updateList==null){
+			return;
+		}
 		ListenerList<PlayerListener> list = reader.getListenerList();
 		types: for (ListenerType type : ListenerType.ALL) {
+			if(type == ListenerType.INFO){
+				//make sure to get viewers of displays too
+				NBTTagCompound tag = InfoHelper.writeMonitoredList(new NBTTagCompound(), updateList, SyncType.DEFAULT_SYNC);
+				if (tag.hasNoTags()) {
+					continue types;
+				}
+				List<PlayerListener> listeners = reader.getListenerList().getAllListeners(ListenerType.INFO); //gets display viewers also			
+				listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), tag, SyncType.DEFAULT_SYNC), listener.player));				
+				continue;
+			}
 			List<ListenerTally<PlayerListener>> tallies = list.getTallies(type);
 			if (tallies.isEmpty()) {
 				continue types;
@@ -133,52 +147,40 @@ public class PacketHelper {
 			// TODO why isn't Fluid Reader connecting?
 			switch (type) {
 			case FULL_INFO:
-				if (saveList != null) {
-					NBTTagCompound saveTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), true, saveList, SyncType.DEFAULT_SYNC);
-					if (saveTag == null || saveTag.hasNoTags())
-						continue types;
-					tallies.forEach(tally -> {
-						PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), saveTag, SyncType.DEFAULT_SYNC), tally.listener.player);
-						tally.removeTallies(1, ListenerType.FULL_INFO);
-						tally.addTallies(1, ListenerType.INFO);
-						tally.source.updateState();
-					});
-					list.updateState();
-				}
+				NBTTagCompound saveTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), updateList, SyncType.SAVE);
+				if (saveTag == null || saveTag.hasNoTags())
+					continue types;
+				tallies.forEach(tally -> {
+					PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), saveTag, SyncType.SAVE), tally.listener.player);
+					tally.removeTallies(1, ListenerType.FULL_INFO);
+					tally.addTallies(1, ListenerType.INFO);
+					tally.source.updateState();
+				});
+				list.updateState();
 				continue types;
 
 			case INFO:
-				if (saveList == null) {
-					continue types;
-				}
-				NBTTagCompound tag = InfoHelper.writeMonitoredList(new NBTTagCompound(), lastList.isEmpty(), saveList, SyncType.SPECIAL);
-				if (tag.hasNoTags() || (saveList.changed.isEmpty() && saveList.removed.isEmpty())) {
-					continue types;
-				}
-				tallies.forEach(tally -> PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), tag, SyncType.SPECIAL), tally.listener.player));
-				break;
+				continue;
 			case TEMPORARY:
-				if (saveList != null) {
-					NBTTagCompound saveTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), lastList.isEmpty(), saveList, SyncType.DEFAULT_SYNC);
-					NBTTagList tagList = new NBTTagList();
-					if (reader instanceof INetworkReader) {
-						INetworkReader r = (INetworkReader) reader;
-						for (int i = 0; i < r.getMaxInfo(); i++) {
-							InfoUUID infoID = new InfoUUID(reader.getIdentity(), i);
-							IInfo info = PL2.getServerManager().getInfoFromUUID(infoID);
-							if (info != null) {
-								NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
-								nbt = infoID.writeData(nbt, SyncType.SAVE);
-								tagList.appendTag(nbt);
-							}
+				saveTag = InfoHelper.writeMonitoredList(new NBTTagCompound(), updateList, SyncType.SAVE);
+				NBTTagList tagList = new NBTTagList();
+				if (reader instanceof INetworkReader) {
+					INetworkReader r = (INetworkReader) reader;
+					for (int i = 0; i < r.getMaxInfo(); i++) {
+						InfoUUID infoID = new InfoUUID(reader.getIdentity(), i);
+						IInfo info = PL2.getServerManager().getInfoFromUUID(infoID);
+						if (info != null) {
+							NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
+							nbt = infoID.writeData(nbt, SyncType.SAVE);
+							tagList.appendTag(nbt);
 						}
 					}
-					tallies.forEach(tally -> {
-						PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, saveList.networkID, saveTag, SyncType.DEFAULT_SYNC), tally.listener.player);
-						tally.removeTallies(1, ListenerType.TEMPORARY);
-						sendInfoUpdatePacket(tally.listener, tagList, SyncType.SAVE);
-					});
 				}
+				tallies.forEach(tally -> {
+					PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), uuid, reader.getNetworkID(), saveTag, SyncType.SAVE), tally.listener.player);
+					tally.removeTallies(1, ListenerType.TEMPORARY);
+					sendInfoUpdatePacket(tally.listener.player, tagList, SyncType.SAVE);
+				});
 				continue types;
 			default:
 				continue types;

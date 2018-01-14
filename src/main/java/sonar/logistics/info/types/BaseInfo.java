@@ -9,10 +9,13 @@ import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.IMonitoredValueInfo;
+import sonar.logistics.api.lists.values.InfoMonitoredValue;
 import sonar.logistics.api.register.LogicPath;
 
 /** typical implementation of IMonitorInfo which has a sync parts list for all the Info things it also has the required constructor which required empty constructor */
-public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart implements IInfo<T>, ISyncableListener {
+public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart implements IInfo<T>, ISyncableListener, IMonitoredValueInfo<T> {
 
 	private LogicPath path;
 	public boolean setInfoRenderSize = false;
@@ -68,5 +71,10 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 				toCheck.getListener().markChanged(toCheck);
 			}
 		}
+	}
+
+	@Override
+	public IMonitoredValue<T> createMonitoredValue() {
+		return new InfoMonitoredValue(this);
 	}
 }

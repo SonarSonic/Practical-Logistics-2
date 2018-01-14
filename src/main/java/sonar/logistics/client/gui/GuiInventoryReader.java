@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -22,17 +24,18 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.utils.ListPacket;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerInventoryReader;
-import sonar.logistics.common.multiparts2.readers.TileInventoryReader;
+import sonar.logistics.common.multiparts.readers.TileInventoryReader;
+import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
-import sonar.logistics.network.PacketInventoryReader;
-import sonar.logistics.network.PacketNodeFilter;
+import sonar.logistics.packets.PacketInventoryReader;
+import sonar.logistics.packets.PacketNodeFilter;
 
 public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
@@ -172,16 +175,17 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	public List<MonitoredItemStack> getGridList() {
 		String search = searchField.getText();
 		if (search == null || search.isEmpty() || search.equals(" ")) {
-			return part.getMonitoredList();
+			return part.getMonitoredList().createSaveableList();
 		} else {
-			MonitoredList<MonitoredItemStack> searchList = MonitoredList.newMonitoredList(part.getNetworkID());
-			for (MonitoredItemStack stack : (List<MonitoredItemStack>) part.getMonitoredList().clone()) {
+			List<MonitoredItemStack> searchlist = Lists.newArrayList();
+			List<MonitoredItemStack> cached = part.getMonitoredList().createSaveableList();
+			for (MonitoredItemStack stack : cached) {
 				StoredItemStack item = stack.getStoredStack();
 				if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
-					searchList.add(stack);
+					searchlist.add(stack);
 				}
 			}
-			return searchList;
+			return searchlist;
 		}
 	}
 

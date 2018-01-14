@@ -36,11 +36,11 @@ import sonar.logistics.api.utils.ListPacket;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.common.multiparts2.misc.TileRedstoneSignaller;
+import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
-import sonar.logistics.network.PacketEmitterStatement;
+import sonar.logistics.packets.PacketEmitterStatement;
 
 public class GuiStatementList extends GuiSelectionList<Object> {
 

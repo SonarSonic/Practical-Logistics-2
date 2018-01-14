@@ -15,8 +15,9 @@ import sonar.core.network.PacketFlexibleCloseGui;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.lists.types.InfoChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.IChannelledTile;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
@@ -77,7 +78,7 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 	}
 
 	public void setInfo() {
-		infoList = (List<IInfo>) PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), MonitoredList.<IInfo>newMonitoredList(tile.getNetworkID())).clone();
+		infoList = PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), new InfoChangeableList()).createSaveableList();
 	}
 
 	/// INTERACTION \\\

@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 /** implemented on info which can be clicked by the player */
 public interface IBasicClickableInfo{

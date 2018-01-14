@@ -24,8 +24,8 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.common.multiparts2.displays.TileLargeDisplayScreen;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 

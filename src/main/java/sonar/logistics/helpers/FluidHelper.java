@@ -22,6 +22,8 @@ import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.PL2API;
+import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
@@ -143,10 +145,10 @@ public class FluidHelper extends FluidWrapper {
 		}
 	}
 
-	public static void sortFluidList(ArrayList<MonitoredFluidStack> current, final SortingDirection dir, SortingType type) {
-		current.sort(new Comparator<MonitoredFluidStack>() {
-			public int compare(MonitoredFluidStack str1, MonitoredFluidStack str2) {
-				StoredFluidStack flu1 = str1.getStoredStack(), flu2 = str2.getStoredStack();
+	public static void sortFluidList(AbstractChangeableList<MonitoredFluidStack> updateInfo, final SortingDirection dir, SortingType type) {
+		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredFluidStack>>() {
+			public int compare(IMonitoredValue<MonitoredFluidStack> str1, IMonitoredValue<MonitoredFluidStack> str2) {
+				StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
 				int res = String.CASE_INSENSITIVE_ORDER.compare(flu1.getFullStack().getLocalizedName(), flu2.getFullStack().getLocalizedName());
 				if (res == 0) {
 					res = flu1.getFullStack().getLocalizedName().compareTo(flu2.getFullStack().getLocalizedName());
@@ -155,9 +157,9 @@ public class FluidHelper extends FluidWrapper {
 			}
 		});
 
-		current.sort(new Comparator<MonitoredFluidStack>() {
-			public int compare(MonitoredFluidStack str1, MonitoredFluidStack str2) {
-				StoredFluidStack flu1 = str1.getStoredStack(), flu2 = str2.getStoredStack();
+		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredFluidStack>>() {
+			public int compare(IMonitoredValue<MonitoredFluidStack> str1, IMonitoredValue<MonitoredFluidStack> str2) {
+				StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
 				switch (type) {
 				case MODID:
 					return SonarHelper.compareStringsWithDirection(flu1.getFullStack().getFluid().getBlock().getRegistryName().getResourceDomain(), flu2.getFullStack().getFluid().getBlock().getRegistryName().getResourceDomain(), dir);

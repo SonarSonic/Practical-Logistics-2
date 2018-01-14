@@ -39,15 +39,14 @@ import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.network.PacketConnectedDisplayRemove;
-import sonar.logistics.network.PacketConnectedDisplayUpdate;
+import sonar.logistics.packets.PacketConnectedDisplayRemove;
+import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
 public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScaleableDisplay, ISyncPart {
 
-	public ListenableList<PlayerListener> listeners = new ListenableList(this, ListenerType.ALL.size());
 	private int registryID = -1;
 	public ILargeDisplay topLeftScreen = null;
 	public SyncableList syncParts = new SyncableList(this);
@@ -92,7 +91,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	public void update(int registryID) {
 		if (updateListeners) {
-			updateAllListeners();
+			//updateAllListeners(); FIXME
 		}
 		if (hasChanged || this.registryID != registryID) {
 			this.registryID = registryID;
@@ -106,7 +105,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 			updateListeners = true;
 		}
 	}
-
+	/*
 	public void updateAllListeners() {
 		List<PlayerListener> listeners = getListenerList().getListeners(ListenerType.INFO, ListenerType.FULL_INFO);
 		updateListeners = listeners.isEmpty();		
@@ -131,6 +130,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public void removeListener(PlayerListener listener){
 		PL2.network.sendTo(new PacketConnectedDisplayRemove(registryID), listener.player);
 	}
+	*/
 
 	public void setDisplayScaling(ILargeDisplay primary, List<ILargeDisplay> displays) {
 		displays.forEach(display -> display.setConnectedDisplay(this)); // make sure to read the NBT first so WIDTH and HEIGHT arn't altered
@@ -423,27 +423,6 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 			this.getTopLeftScreen().markChanged(this);
 		}
 	}
-
-	@Override
-	public ListenableList<PlayerListener> getListenerList() {
-		return listeners;
-	}
-
-	@Override
-	public void onListenerAdded(ListenerTally<PlayerListener> tally) {
-		updateListener(tally.listener);
-	}
-
-	@Override
-	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {
-		//removeListener(tally.listener);
-	}
-
-	@Override
-	public void onSubListenableAdded(ISonarListenable<PlayerListener> listen) {}
-
-	@Override
-	public void onSubListenableRemoved(ISonarListenable<PlayerListener> listen) {}
 
 	@Override
 	public int getIdentity() {

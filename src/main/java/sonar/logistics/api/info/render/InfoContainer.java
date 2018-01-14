@@ -33,19 +33,19 @@ import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.LogicInfoList;
-import sonar.logistics.network.PacketClickEventClient;
+import sonar.logistics.packets.PacketClickEventClient;
 
 /** used to store {@link IInfo} along with their respective {@link DisplayInfo} for rendering on a {@link IDisplay} */
 public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
@@ -151,13 +151,13 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 				if (!world.isRemote) {
 					IAdvancedClickableInfo clickable = ((IAdvancedClickableInfo) cachedInfo);
 					int hashCode = UUID.randomUUID().hashCode();
-					DisplayInteractionEvent event = new DisplayInteractionEvent(hashCode, cachedInfo, i, player, type, doubleClick, hand, hit);
+					DisplayInteractionEvent event = new DisplayInteractionEvent(hashCode, cachedInfo, i, player, type, doubleClick, hand);
 					PL2.getServerManager().clickEvents.put(hashCode, event);
 					PL2.network.sendTo(new PacketClickEventClient(part.getSlotID(), part.getPos(), event), (EntityPlayerMP) player);
 				}
 			} else if (cachedInfo instanceof IBasicClickableInfo) {
 				IBasicClickableInfo clickable = ((IBasicClickableInfo) cachedInfo);
-				return clickable.onStandardClick(part, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+				return clickable.onStandardClick(part, null, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 		}
 		return true;
@@ -247,10 +247,10 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	}
 
 	@Override
-	public void onMonitoredListChanged(InfoUUID uuid, MonitoredList list) {
+	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
 		DisplayInfo displayInfo = getDisplayMonitoringUUID(uuid);
 		if (displayInfo != null && displayInfo.cachedInfo instanceof LogicInfoList) {
-			((LogicInfoList) displayInfo.cachedInfo).setCachedList((MonitoredList) list.cloneInfo(), uuid);
+			((LogicInfoList) displayInfo.cachedInfo).setCachedList(list, uuid);
 		}
 	}
 

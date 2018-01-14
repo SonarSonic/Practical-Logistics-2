@@ -3,20 +3,20 @@ package sonar.logistics.api.tiles.readers;
 import java.util.List;
 import java.util.Map;
 
-import sonar.core.listener.PlayerListener;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.utils.MonitoredList;
 import sonar.logistics.api.viewers.ILogicListenable;
 
-public interface IListReader<T extends IInfo> extends ILogicListenable<PlayerListener>, INetworkTile {
+public interface IListReader<T extends IInfo> extends ILogicListenable, INetworkTile {
 
-	public MonitoredList<T> sortMonitoredList(MonitoredList<T> updateInfo, int channelID);	
+	AbstractChangeableList<T> sortMonitoredList(AbstractChangeableList<T> updateInfo, int channelID);	
 	
-	public MonitoredList<T> getUpdatedList(InfoUUID uuid, Map<NodeConnection, MonitoredList<T>> channels, List<NodeConnection> usedChannels);	
+	AbstractChangeableList<T> getViewableList(AbstractChangeableList<T> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<T>> channels, List<NodeConnection> usedChannels);	
 
-	public List<INetworkListHandler> getValidHandlers();
+	List<INetworkListHandler> getValidHandlers();
 }

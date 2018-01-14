@@ -9,8 +9,8 @@ import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.common.multiparts2.displays.TileAbstractDisplay;
-import sonar.logistics.common.multiparts2.displays.TileHolographicDisplay;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 
 //TWEAKED FAST MSR
@@ -27,9 +27,9 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
-			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, screen.width.getObject(), screen.height.getObject());
+			InfoRenderer.rotateDisplayRendering(part.getCableFace(), part.rotation, screen.width.getObject(), screen.height.getObject());
 		} else {
-			InfoRenderer.rotateDisplayRendering(part.face, part.rotation, 0, 0);
+			InfoRenderer.rotateDisplayRendering(part.getCableFace(), part.rotation, 0, 0);
 		}
 
 		if (part instanceof TileHolographicDisplay) {
