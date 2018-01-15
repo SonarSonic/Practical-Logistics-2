@@ -11,12 +11,6 @@ public interface ICable extends IWorldPosition {
 	/** is the cable limited by the number of channels, true for Channelled Cables, false for Data Cables */
 	public ConnectableType getConnectableType();
 
-	/** called when the cable is added to the world */
-	//public void addConnection();
-
-	/** called when the cable is removed to the world */
-	//public void removeConnection();
-
 	/** returns the ID of this connection's network */
 	public int getRegistryID();
 
@@ -24,12 +18,12 @@ public interface ICable extends IWorldPosition {
 	public void setRegistryID(int id);
 
 	/** can the Tile connect to cables on the given direction
-	 * @param networkID the id of the connection trying to connect
+	 * @param registryID the id of the connection trying to connect
+	 * @param type TODO
 	 * @param dir the direction it is connecting from
 	 * @param internal if this cable is within the bounds of this block.
 	 * @return if the tile can connect. */
-	//public boolean canConnectOnSide(int networkID, EnumFacing dir, boolean internal); //REPLACED WITH INETWORKCONNECTION METHOD
-	public NetworkConnectionType canConnect(int networkID, EnumFacing dir, boolean internal);
+	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal);
 	
 	public boolean isBlocked(EnumFacing dir);
 	

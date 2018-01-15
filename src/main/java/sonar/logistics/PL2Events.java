@@ -2,7 +2,6 @@ package sonar.logistics;
 
 import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -11,8 +10,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.networking.connections.CableConnectionHandler;
 import sonar.logistics.networking.connections.WirelessDataHandler;
+import sonar.logistics.worlddata.ConnectedDisplayData;
 import sonar.logistics.worlddata.IdentityCountData;
-import sonar.logistics.worlddata.LockedDisplayData;
 
 public class PL2Events {
 
@@ -35,7 +34,7 @@ public class PL2Events {
 	public void onWorldLoad(WorldEvent.Load event) {
 		if (!event.getWorld().isRemote && event.getWorld().provider.getDimension() == saveDimension) {
 			MapStorage storage = event.getWorld().getPerWorldStorage();
-			storage.getOrLoadData(LockedDisplayData.class, LockedDisplayData.tag);
+			storage.getOrLoadData(ConnectedDisplayData.class, ConnectedDisplayData.tag);
 			storage.getOrLoadData(IdentityCountData.class, IdentityCountData.tag);
 
 		}
@@ -45,9 +44,9 @@ public class PL2Events {
 	public void onWorldSave(WorldEvent.Save event) {
 		if (!event.getWorld().isRemote && event.getWorld().provider.getDimension() == saveDimension) {
 			MapStorage storage = event.getWorld().getPerWorldStorage();
-			LockedDisplayData displayData = (LockedDisplayData) storage.getOrLoadData(LockedDisplayData.class, LockedDisplayData.tag);
-			if (displayData == null && !PL2.getDisplayManager().lockedIDs.isEmpty()) {
-				storage.setData(LockedDisplayData.tag, new LockedDisplayData(LockedDisplayData.tag));
+			ConnectedDisplayData displayData = (ConnectedDisplayData) storage.getOrLoadData(ConnectedDisplayData.class, ConnectedDisplayData.tag);
+			if (displayData == null) {
+				storage.setData(ConnectedDisplayData.tag, new ConnectedDisplayData(ConnectedDisplayData.tag));
 			}
 
 			IdentityCountData countData = (IdentityCountData) storage.getOrLoadData(IdentityCountData.class, IdentityCountData.tag);

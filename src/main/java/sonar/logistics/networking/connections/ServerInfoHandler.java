@@ -71,7 +71,7 @@ public class ServerInfoHandler implements IInfoManager {
 		info.clear();
 		monitoredLists.clear();
 		identityTiles.clear();
-		// connectedDisplays.clear();
+		connectedDisplays.clear();
 		clickEvents.clear();
 		chunksToUpdate.clear();
 	}
@@ -172,11 +172,7 @@ public class ServerInfoHandler implements IInfoManager {
 		return null;
 	}
 
-	/* public void updateChunks() { for (Entry<Integer, List<ChunkPos>> dims : chunksToUpdate.entrySet()) { MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance(); WorldServer world = server.getWorld(dims.getKey()); PlayerChunkMap chunkMap = world.getPlayerChunkMap(); for (ChunkPos chunkPos : dims.getValue()) { PlayerChunkMapEntry entry = chunkMap.getEntry(chunkPos.x, chunkPos.z); //MAY NOT BE CORRECT CHOORDS List<EntityPlayerMP> players = SonarHelper.getPlayersWatchingChunk(entry); if (players.isEmpty()) { continue; } for (IDisplay d : getDisplaysInChunk(dims.getKey(), chunkPos)) { ListenerList list = d.getListenerList(); players.forEach(p -> list.addListener(p, ListenerType.TEMPORARY, ListenerType.FULL_INFO)); } } } chunksToUpdate.clear(); newChunks = false; } */
 	public void onServerTick() {
-		// if (newChunks) {
-		// updateChunks();
-		// }
 		if (updateViewingMonitors) {
 			updateViewingMonitors = false;
 			identityTiles.values().forEach(tile -> tile.getListenerList().getDisplayListeners().clear());

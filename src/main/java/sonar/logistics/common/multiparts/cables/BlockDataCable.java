@@ -54,7 +54,7 @@ public class BlockDataCable extends BlockLogistics {
 	public List<AxisAlignedBB> getSelectionBoxes(World world, BlockPos pos, List<AxisAlignedBB> collidingBoxes) {
 		collidingBoxes.add(cableBox);
 		
-		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
+		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable != null) {
 			for (EnumFacing face : EnumFacing.values()) {
 				CableRenderType connect = cable.getRenderType(face);
@@ -77,7 +77,7 @@ public class BlockDataCable extends BlockLogistics {
 	@Deprecated
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		super.neighborChanged(state, world, pos, blockIn, fromPos);
-		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
+		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable != null && !world.isRemote) {
 			CableConnectionHandler.instance().onNeighbourBlockStateChanged(cable, pos, fromPos);
 		}
@@ -85,7 +85,7 @@ public class BlockDataCable extends BlockLogistics {
 
 	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
 		super.onNeighborChange(world, pos, neighbor);
-		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
+		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable != null && !cable.getWorld().isRemote) {
 			CableConnectionHandler.instance().onNeighbourTileEntityChanged(cable, pos, neighbor);
 		}
@@ -121,7 +121,7 @@ public class BlockDataCable extends BlockLogistics {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		
-		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
+		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable == null) {
 			return state;
 		}

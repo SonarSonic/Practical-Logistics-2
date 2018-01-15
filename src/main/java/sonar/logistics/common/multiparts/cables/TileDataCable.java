@@ -12,6 +12,7 @@ import net.minecraft.util.text.TextFormatting;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.integration.multipart.TileSonarMultipart;
+import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
@@ -33,7 +34,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	public int registryID = -1;
 
 	public ILogisticsNetwork getNetwork() {
-		return PL2API.getCableHelper().getNetwork(registryID);
+		return PL2.instance.getNetworkManager().getNetwork(registryID);
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	}
 
 	@Override
-	public NetworkConnectionType canConnect(int networkID, EnumFacing dir, boolean internal) {
+	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
 		boolean internallyBlocked = isInternallyBlocked(dir);
 		if (isBlocked(dir) || (!internal && internallyBlocked)) {
 			return NetworkConnectionType.NONE;

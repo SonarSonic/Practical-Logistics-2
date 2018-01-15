@@ -10,4 +10,15 @@ public enum NetworkConnectionType {
 	public boolean canShowConnection() {
 		return this == VISUAL || canConnect();
 	}
+	
+	public boolean matches(NetworkConnectionType type){
+		switch(this){
+		case NETWORK:
+			return type.canConnect();
+		case VISUAL:
+			return type.canShowConnection();
+		default:
+			return this == type;		
+		}
+	}
 }

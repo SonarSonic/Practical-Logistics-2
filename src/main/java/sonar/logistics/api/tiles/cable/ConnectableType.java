@@ -7,6 +7,7 @@ public enum ConnectableType {
 	/** for {@link ILogicTile} which can connect to a network */
 	TILE,
 	/** for when there is no type of connection whatsoever, null should not be used! */
+	SCREEN,
 	NONE;
 
 	/** @param type given CableType

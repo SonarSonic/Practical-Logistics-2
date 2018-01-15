@@ -52,6 +52,10 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	{
 		syncList.addPart(defaultData);
 	}
+	
+	public SyncType getUpdateTagType(){
+		return SyncType.SAVE;
+	}
 
 	public void update() {
 		super.update();
@@ -105,11 +109,6 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 		PL2.getInfoManager(world.isRemote).removeDisplay(this);
 	}
 
-	//// STATE \\\\
-	/* @Override public void addOcclusionBoxes(List<AxisAlignedBB> list) { this.addSelectionBoxes(list); }
-	 * @Override public void harvest(EntityPlayer player, PartMOP hit) { if (hit.sideHit == face) { container().onClicked(this, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, getWorld(), player, player.getActiveHand(), player.getActiveItemStack(), hit); return; } super.harvest(player, hit); } */
-	//// SAVE \\\\
-
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
 		super.writeData(tag, type);
@@ -134,8 +133,6 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, player);
 		}
 	}
-
-	/* public void onSyncPacketRequested(EntityPlayer player) { super.onSyncPacketRequested(player); if (isServer()) { getListenerList().addListener(new PlayerListener(player), ListenerType.FULL_INFO); PL2.getServerManager().sendViewablesToClientFromScreen(this, player); } } */
 
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
@@ -173,9 +170,6 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 			break;
 		}
 	}
-	/* @Override public void writeUpdatePacket(PacketBuffer buf) { super.writeUpdatePacket(buf); buf.writeByte((byte) rotation.ordinal()); buf.writeByte((byte) face.ordinal()); }
-	 * @Override public void readUpdatePacket(PacketBuffer buf) { super.readUpdatePacket(buf); rotation = EnumFacing.VALUES[buf.readByte()]; face = EnumFacing.VALUES[buf.readByte()]; } */
-
 	public RayTraceResult getPartHit(EntityPlayer player) {
 
 		Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);

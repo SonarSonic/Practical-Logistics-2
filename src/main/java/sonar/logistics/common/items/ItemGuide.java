@@ -15,16 +15,15 @@ import sonar.logistics.common.containers.ContainerGuide;
 
 public class ItemGuide extends SonarItem implements IFlexibleGui<ItemStack> {
 
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		ItemStack stack = player.getHeldItem(hand);
 		if (!world.isRemote) {
 			SonarCore.instance.guiHandler.openBasicItemStack(false, stack, player, world, player.getPosition(), 0);
-		} else {
-			//RenderHelper.resetLanguageRegistry();
 		}
 		return new ActionResult(EnumActionResult.SUCCESS, stack);
 
 	}
-	
+
 	//// GUI \\\\
 
 	@Override

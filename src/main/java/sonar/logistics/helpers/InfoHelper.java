@@ -61,9 +61,9 @@ public class InfoHelper {
 	}
 
 	public static final String DELETE = "del";
-	public static final String SYNC = "syn";
+	public static final String SAVED = "saved";
 	public static final String REMOVED = "rem";
-	public static final String DEFAULT_SYNC = "spe";
+	public static final String SYNCED = "spe";
 
 	public static void screenItemStackClicked(StoredItemStack storedItemStack, TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
@@ -143,13 +143,13 @@ public class InfoHelper {
 				}
 			}
 			if (list.tagCount() != 0) {
-				tag.setTag(DEFAULT_SYNC, list);
+				tag.setTag(SYNCED, list);
 			}
 		} else if (type.isType(SyncType.SAVE)) {
 			NBTTagList list = new NBTTagList();
 			List<IMonitoredValue<T>> values = stacks.getList();
 			values.forEach(value -> list.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), value.getSaveableInfo(), SyncType.SAVE)));
-			tag.setTag(DEFAULT_SYNC, list);
+			tag.setTag(SAVED, list);
 		}
 
 		return tag;
@@ -162,20 +162,20 @@ public class InfoHelper {
 			stacks.list.clear();
 			return stacks;
 		}
-		if (type.isType(SyncType.DEFAULT_SYNC)) {
-			if (!tag.hasKey(DEFAULT_SYNC)) {
+		if (type.isType(SyncType.SAVE)) {
+			if (!tag.hasKey(SAVED)) {
 				return stacks;
 			}
-			NBTTagList list = tag.getTagList(DEFAULT_SYNC, 10);
+			NBTTagList list = tag.getTagList(SAVED, 10);
 			stacks.list.clear();
 			for (int i = 0; i < list.tagCount(); i++) {
 				stacks.add(InfoHelper.readInfoFromNBT(list.getCompoundTagAt(i)));
 			}
-		} else if (type.isType(SyncType.SAVE)) {
-			if (!tag.hasKey(DEFAULT_SYNC)) {
+		} else if (type.isType(SyncType.DEFAULT_SYNC)) {
+			if (!tag.hasKey(SYNCED)) {
 				return stacks;
 			}
-			NBTTagList list = tag.getTagList(DEFAULT_SYNC, 10);
+			NBTTagList list = tag.getTagList(SYNCED, 10);
 			for (int i = 0; i < list.tagCount(); i++) {
 				NBTTagCompound infoTag = list.getCompoundTagAt(i);
 				boolean removed = infoTag.getBoolean(REMOVED);

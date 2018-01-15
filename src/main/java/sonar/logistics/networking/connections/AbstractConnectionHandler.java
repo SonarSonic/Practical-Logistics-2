@@ -60,7 +60,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 		BlockPos pos = coords.getBlockPos();
 
 		for (EnumFacing dir : EnumFacing.values()) {
-			if (cable.canConnect(cable.getRegistryID(), dir, false).canConnect()) {
+			if (cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, false).canConnect()) {
 				Pair<ConnectableType, Integer> connection = getConnectionType(cable, world, pos, dir, cable.getConnectableType());
 				if (connection.a != ConnectableType.NONE && connection.b != -1) {
 					List<T> cables = getConnections(connection.b);
@@ -85,12 +85,12 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 	public void addConnection(int registryID, T connection, boolean refreshCache) {
 		if (registryID != -1 && connection != null) {
 			List<T> network = connections.computeIfAbsent(registryID, FunctionHelper.ARRAY);
-			if (network != null && network.contains(connection))
-				return;
-			connection.setRegistryID(registryID);
-			network.add(connection);
-			if (refreshCache) {
-				onConnectionAdded(registryID, connection);
+			if (!network.contains(connection)) {
+				connection.setRegistryID(registryID);
+				network.add(connection);
+				if (refreshCache) {
+					onConnectionAdded(registryID, connection);
+				}
 			}
 		}
 	}
@@ -128,7 +128,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 		BlockCoords coords = cable.getCoords();
 		for (EnumFacing dir : EnumFacing.values()) {
 			Pair<ConnectableType, Integer> connection = getConnectionType(cable, coords.getWorld(), coords.getBlockPos(), dir, cable.getConnectableType());
-			boolean canConnect = cable.canConnect(cable.getRegistryID(), dir, false).canConnect();
+			boolean canConnect = cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, false).canConnect();
 			if ((!canConnect && connection.a.canConnect(cable.getConnectableType()))) {
 				removeConnectionToNetwork(cable);
 				addConnectionToNetwork(cable);

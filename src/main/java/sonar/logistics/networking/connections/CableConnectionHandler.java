@@ -84,7 +84,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	//// NETWORK TILES \\\\
 
 	public void onNeighbourAdded(IDataCable cable, INetworkTile networkTile, EnumFacing cableSide, boolean internal) {
-		if (cable.canConnect(networkTile.getNetworkID(), cableSide, internal).canConnect()) {
+		if (cable.canConnect(networkTile.getNetworkID(), cable.getConnectableType(), cableSide, internal).canConnect()) {
 			addConnectionToNetwork(cable, networkTile);
 		}
 	}

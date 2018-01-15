@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -33,8 +32,8 @@ import sonar.logistics.logic.comparators.ComparatorRegistry;
 import sonar.logistics.networking.connections.CableConnectionHandler;
 import sonar.logistics.networking.connections.ChunkViewerHandler;
 import sonar.logistics.networking.connections.ClientInfoHandler;
-import sonar.logistics.networking.connections.DisplayScreenHandler;
 import sonar.logistics.networking.connections.LogisticsNetworkHandler;
+import sonar.logistics.networking.connections.ScreenConnectionHandler;
 import sonar.logistics.networking.connections.ServerInfoHandler;
 import sonar.logistics.networking.connections.WirelessDataHandler;
 import sonar.logistics.worldgen.SapphireOreGen;
@@ -53,7 +52,7 @@ public class PL2 {
 
 	public LogisticsNetworkHandler networkManager = new LogisticsNetworkHandler();
 	public CableConnectionHandler cableManager = new CableConnectionHandler();
-	public DisplayScreenHandler displayManager = new DisplayScreenHandler();
+	public ScreenConnectionHandler displayManager = new ScreenConnectionHandler();
 	public ServerInfoHandler serverManager = new ServerInfoHandler();
 	public ClientInfoHandler clientManager = new ClientInfoHandler();
 	public ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
@@ -168,7 +167,7 @@ public class PL2 {
 		return PL2.instance.cableManager;
 	}
 
-	public static DisplayScreenHandler getDisplayManager() {
+	public static ScreenConnectionHandler getDisplayManager() {
 		return PL2.instance.displayManager;
 	}
 	

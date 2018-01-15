@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.logistics.PL2;
-
+/*
 public class LockedDisplayData extends WorldSavedData {
 
 	public static final String tag = "sonar.logistics.networks.lockedID";
@@ -39,3 +39,4 @@ public class LockedDisplayData extends WorldSavedData {
 		return compound;
 	}
 }
+*/

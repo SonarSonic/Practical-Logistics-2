@@ -29,6 +29,7 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 		registryID = buf.readInt();
 		screen = PL2.getClientManager().connectedDisplays.get(registryID);
 		savedBuf = buf;
+		buf.retain();
 
 	}
 
@@ -52,6 +53,7 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 					ILargeDisplay topLeft = message.screen.getTopLeftScreen();
 					if (topLeft != null)
 						topLeft.setConnectedDisplay(message.screen);
+					message.savedBuf.release();
 				});
 			}
 			return null;

@@ -32,12 +32,16 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.cable.CableRenderType;
+import sonar.logistics.api.tiles.cable.ConnectableType;
+import sonar.logistics.api.tiles.cable.NetworkConnectionType;
+import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
+import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.network.sync.SyncMonitoredType;
@@ -63,7 +67,13 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
 		return dir == this.getCableFace() ? CableRenderType.HALF // internal
-				: CableRenderType.NONE; // external
+				: CableRenderType.CABLE; // external
+	}
+
+	@Override
+	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+		EnumFacing toCheck = internal ? dir : dir.getOpposite();
+		return toCheck == getCableFace() ? NetworkConnectionType.NETWORK : toCheck == getCableFace().getOpposite() ? NetworkConnectionType.VISUAL : NetworkConnectionType.NONE;
 	}
 
 	public abstract List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers);
@@ -100,7 +110,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 		}
 		return validHandlers;
 	}
-	
+
 	@Nullable
 	public AbstractChangeableList<T> getMonitoredList() {
 		InfoUUID id = new InfoUUID(getIdentity(), 0);
@@ -153,7 +163,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public void onFirstTick() {
 		super.onFirstTick();
 		if (isServer()) {
-			hasMonitor.setObject(PL2API.getCableHelper().getDisplayScreen(getCoords(), getCableFace()) != null);
+			hasMonitor.setObject(CableHelper.getDisplay(world, this.getPos(), EnumDisplayFaceSlot.fromFace(getCableFace())) != null);
 		}
 	}
 

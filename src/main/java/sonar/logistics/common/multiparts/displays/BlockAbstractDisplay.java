@@ -36,6 +36,11 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 	public IPartSlot getSlotForPlacement(World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ, EntityLivingBase placer) {
 		return EnumDisplayFaceSlot.fromFace(facing);
 	}
+
+	@Override
+	public IPartSlot getSlotFromWorld(IBlockAccess world, BlockPos pos, IBlockState state) {
+		return EnumDisplayFaceSlot.fromFace(getFaceFromState(state));
+	}
 	
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (canOpenGui(player) && !world.isRemote) {

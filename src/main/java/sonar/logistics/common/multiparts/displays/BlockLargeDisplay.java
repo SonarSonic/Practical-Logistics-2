@@ -1,9 +1,12 @@
 package sonar.logistics.common.multiparts.displays;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 
+import mcmultipart.api.multipart.IMultipartTile;
+import mcmultipart.api.multipart.MultipartHelper;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -21,11 +24,13 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
+import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.tiles.displays.DisplayConnections;
 import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 
@@ -91,8 +96,12 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 				if (face == screen.getCableFace() || face == screen.getCableFace().getOpposite()) {
 					continue;
 				}
-				IDisplay display = PL2API.getCableHelper().getDisplayScreen(BlockCoords.translateCoords(screen.getCoords(), face), screen.getCableFace());
-				if (display != null && display.getDisplayType() == DisplayType.LARGE && ((ILargeDisplay) display).getRegistryID() == display.getNetworkID()) {
+				IDisplay display = null;
+				Optional<IMultipartTile> multipartTile = MultipartHelper.getPartTile(w, pos.offset(face), EnumDisplayFaceSlot.fromFace(screen.getCableFace()));
+				if(multipartTile.isPresent() && multipartTile.get() instanceof IDisplay){
+					display = (IDisplay) multipartTile.get();
+				}
+				if (display != null && display.getDisplayType() == DisplayType.LARGE  && ((ILargeDisplay) display).getRegistryID() == screen.getRegistryID()) {
 					switch (display.getCableFace()) {
 					case DOWN:
 						EnumFacing toAdd = face;

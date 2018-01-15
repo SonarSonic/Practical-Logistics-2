@@ -34,7 +34,9 @@ import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.IDataCable;
+import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -44,70 +46,64 @@ import sonar.logistics.common.multiparts.cables.TileDataCable;
 public class CableHelper extends CablingWrapper {
 
 	public static INetworkConnection getNetworkTile(int networkID, TileEntity tile, EnumFacing dir, boolean internal, boolean cableOnly) {
-		TileEntity actualTile = tile instanceof TileSonarMultipart && ((TileSonarMultipart) tile).info != null ? (TileEntity) ((TileSonarMultipart) tile).info.getContainer() : tile;
-		
-		
+		TileEntity actualTile = tile;
+		if (tile instanceof TileSonarMultipart && ((TileSonarMultipart) tile).info != null) {
+			actualTile = (TileEntity) ((TileSonarMultipart) tile).info.getContainer();
+		}
 		if (actualTile instanceof IMultipartContainer) {
-			IMultipartContainer container = (IMultipartContainer) actualTile;	
-			
+			IMultipartContainer container = (IMultipartContainer) actualTile;
+
 			if (!cableOnly) {// check side slot first if a cable isn't the only target
 				Optional<IMultipartTile> part = container.getPartTile(EnumFaceSlot.fromFace(dir));
 				if (part.isPresent() && part.get() instanceof INetworkConnection) {
 					return (INetworkConnection) part.get();
 				}
+				Optional<IMultipartTile> display = container.getPartTile(EnumDisplayFaceSlot.fromFace(dir));
+				if (display.isPresent() && display.get() instanceof INetworkConnection) {
+					return (INetworkConnection) display.get();
+				}
 			}
-			
 			if (!internal) { // don't want the cable to return itself
 				Optional<IMultipartTile> cable = container.getPartTile(EnumCenterSlot.CENTER);
 				if (cable.isPresent() && cable.get() instanceof INetworkConnection) {
 					return (INetworkConnection) cable.get();
 				}
 			}
-
 		} else if (!internal && actualTile instanceof INetworkConnection) {
 			return (INetworkConnection) actualTile;
 		}
-		
+
+		return null;
+	}
+
+	public static INetworkConnection getConnection(ICable cable, EnumFacing dir, NetworkConnectionType type, boolean isInternal, boolean cableOnly) {
+		if (type.matches(cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, isInternal))) {
+			World world = getWorldFromCable(cable);
+			TileEntity tile = world.getTileEntity(isInternal ? cable.getCoords().getBlockPos() : cable.getCoords().getBlockPos().offset(dir));
+			if (tile != null) {
+				EnumFacing actualDir = isInternal ? dir : dir.getOpposite();
+				INetworkConnection connection = getNetworkTile(cable.getRegistryID(), tile, actualDir, isInternal, cableOnly);
+				if (connection !=null && type.matches(connection.canConnect(cable.getRegistryID(), cable.getConnectableType(), actualDir, isInternal))) {
+					return connection;
+				}
+			}
+		}
 		return null;
 	}
 
 	@Nullable
-	public static INetworkConnection getConnectionType(int networkID, World world, BlockPos pos, EnumFacing dir, boolean internal, boolean cableOnly) {
-		TileEntity tile = world.getTileEntity(pos);
-		return tile == null ? null : getConnectionType(networkID, tile, dir, internal, cableOnly);
-	}
-
-	@Nullable
-	public static INetworkConnection getConnectionType(int networkID, TileEntity tile, EnumFacing dir, boolean internal, boolean cableOnly) {
-		INetworkConnection networkTile = getNetworkTile(networkID, tile, dir, internal, cableOnly);
-		if (networkTile != null && networkTile.canConnect(networkID, dir, internal).canConnect()) {
-			return networkTile;
-		}
-		return null;
-	}
-
-	@Nullable
-	public static INetworkConnection checkBlockInDirection(ICable cable, EnumFacing dir) {
-		if (!cable.canConnect(cable.getRegistryID(), dir, true).canConnect()) {
-			return null;
-		}
-		World actualWorld = getWorldFromCable(cable);
-		INetworkConnection internal = getConnectionType(cable.getRegistryID(), actualWorld, cable.getCoords().getBlockPos(), dir, true, false);
-
-		if (internal != null || !cable.canConnect(cable.getRegistryID(), dir, false).canConnect()) {
-			return internal;
-		}
-		return getConnectionType(cable.getRegistryID(), actualWorld, cable.getCoords().getBlockPos().offset(dir), dir.getOpposite(), false, false);
-
+	public static INetworkConnection getConnection(ICable cable, EnumFacing dir, NetworkConnectionType type, boolean cableOnly) {
+		INetworkConnection internal = getConnection(cable, dir, type, true, cableOnly);
+		return internal != null ? internal : getConnection(cable, dir, type, false, cableOnly);
 	}
 
 	public static CableRenderType getConnectionRenderType(ICable cable, EnumFacing dir) {
-		INetworkConnection connection = checkBlockInDirection(cable, dir);
+		INetworkConnection connection = getConnection(cable, dir, NetworkConnectionType.VISUAL, false);
 		return connection == null ? CableRenderType.NONE : connection.getCableRenderSize(dir);
 	}
 
 	public static ConnectableType getConnectableType(ICable cable, EnumFacing dir) {
-		INetworkConnection connection = CableHelper.checkBlockInDirection(cable, dir);
+		INetworkConnection connection = getConnection(cable, dir, NetworkConnectionType.NETWORK, false);
 		return getConnectableType(connection);
 	}
 
@@ -115,9 +111,18 @@ public class CableHelper extends CablingWrapper {
 		return connection == null ? ConnectableType.NONE : (connection instanceof IDataCable ? ConnectableType.CONNECTABLE : ConnectableType.TILE);
 	}
 
+	public static IDisplay getDisplay(World world, BlockPos pos, EnumDisplayFaceSlot slot) {
+		IDisplay display = null;
+		Optional<IMultipartTile> multipartTile = MultipartHelper.getPartTile(world, pos, slot);
+		if (multipartTile.isPresent() && multipartTile.get() instanceof IDisplay) {
+			display = (IDisplay) multipartTile.get();
+		}
+		return display;
+	}
+
 	/** to see if there is a neighbouring cable to connect to, (only checks external connections) */
 	public static Pair<ConnectableType, Integer> getCableConnection(ICable source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
-		INetworkConnection external = getConnectionType(source.getRegistryID(), getWorldFromCable(source), source.getCoords().getBlockPos().offset(dir), dir.getOpposite(), false, true);
+		INetworkConnection external = getConnection(source, dir, NetworkConnectionType.NETWORK, false, true);
 		ConnectableType type = getConnectableType(external);
 		return new Pair(type, type == cableType ? ((IDataCable) external).getRegistryID() : -1);
 	}
@@ -131,7 +136,7 @@ public class CableHelper extends CablingWrapper {
 		return null;// oh dear
 	}
 
-	public TileDataCable getCable(IBlockAccess world, BlockPos pos) {
+	public static TileDataCable getCable(IBlockAccess world, BlockPos pos) {
 		IBlockAccess actualWorld = world;
 		TileEntity tile = actualWorld.getTileEntity(pos);
 		if (tile != null) {
@@ -150,12 +155,10 @@ public class CableHelper extends CablingWrapper {
 	public static List<IInfoProvider> getLocalMonitors(IDataCable cable) {
 		List<IInfoProvider> logicTiles = Lists.newArrayList();
 		for (EnumFacing face : EnumFacing.values()) {
-			if (cable.canConnect(cable.getRegistryID(), face.getOpposite(), false).canConnect()) {
-				BlockCoords offset = BlockCoords.translateCoords(cable.getCoords(), face.getOpposite());
-				INetworkTile tile = PL2API.getCableHelper().getMultipart(offset, face);
-				if (tile instanceof IInfoProvider) {
-					logicTiles.add((IInfoProvider) tile);
-				}
+			INetworkConnection connect = getConnection(cable, face, NetworkConnectionType.VISUAL, false, false);
+			if (connect instanceof IInfoProvider) {
+				// FIXME should we check it isn't on this network?
+				logicTiles.add((IInfoProvider) connect);
 			}
 		}
 		return logicTiles;
@@ -350,12 +353,10 @@ public class CableHelper extends CablingWrapper {
 	public static <T> List<T> getConnectedTiles(IDataCable cable, SonarValidation validate) {
 		List<T> logicTiles = Lists.newArrayList();
 		for (EnumFacing face : EnumFacing.values()) {
-			INetworkConnection connection = checkBlockInDirection(cable, face);
-
+			INetworkConnection connection = getConnection(cable, face, NetworkConnectionType.NETWORK, false);
 			if (connection != null && !(connection instanceof IDataCable) && validate.isValid(connection)) {
 				logicTiles.add((T) connection);
 			}
-
 		}
 		return logicTiles;
 	}
