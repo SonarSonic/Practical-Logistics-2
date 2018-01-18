@@ -29,7 +29,7 @@ public class ScreenConnectionHandler extends AbstractConnectionHandler<ILargeDis
 		return PL2.getDisplayManager();
 	}
 
-	public List<Integer> lockedIDs = Lists.newArrayList();
+	//public List<Integer> lockedIDs = Lists.newArrayList();
 	public final List<ILargeDisplay> addedScreens = Lists.newArrayList();
 	public final List<ILargeDisplay> removedScreens = Lists.newArrayList();
 

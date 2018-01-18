@@ -36,6 +36,7 @@ import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -146,7 +147,7 @@ public class InfoRenderer {
 			int ordinal = rotation.ordinal();
 			ordinal = ordinal == 4 ? 5 : ordinal == 5 ? 4 : ordinal;
 			GL11.glRotated(rotate[ordinal], 0, 0, 1);
-			translate = getDownMatrix(ordinal, width, height);
+			translate = getDownMatrix(ordinal, Math.max(1, width),  Math.max(1, height));
 
 			break;
 		case UP:
@@ -236,6 +237,7 @@ public class InfoRenderer {
 		final float scaleFactor = 0.5F;
 		final float inverseScaleFactor = 1.0f / scaleFactor;
 		scale(scaleFactor, scaleFactor, scaleFactor);
+		
 		for (int i = start; i < stop; i++) {
 			MonitoredItemStack stack = cachedList.get(i);
 			int current = i - start;
@@ -249,7 +251,7 @@ public class InfoRenderer {
 			RenderHelper.fontRenderer.drawStringWithShadow(s, X, Y, 16777215);
 			popMatrix();
 		}
-
+		
 		popMatrix();
 		depthMask(true);
 		RenderHelper.restoreBlendState();

@@ -35,7 +35,6 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
@@ -49,15 +48,15 @@ import sonar.logistics.info.types.InfoError;
 public class ServerInfoHandler implements IInfoManager {
 
 	// server side
-	private int IDENTITY_COUNT = 0; // gives unique identity to all PL2 Tiles ( which connect to networks), they can then be retrieved via their identity.
+	private int IDENTITY_COUNT; // gives unique identity to all PL2 Tiles ( which connect to networks), they can then be retrieved via their identity.
 	public List<InfoUUID> changedInfo = Lists.newArrayList();
-	public List<IDisplay> displays = Lists.newArrayList();
+	public Map<Integer, IDisplay> displays = Maps.newLinkedHashMap();
 	public boolean markDisplaysDirty = true;
 	private Map<InfoUUID, IInfo> info = Maps.newLinkedHashMap();
 	public Map<InfoUUID, AbstractChangeableList> monitoredLists = Maps.newLinkedHashMap();
 	public Map<Integer, ILogicListenable> identityTiles = Maps.newLinkedHashMap();
 	public Map<Integer, ConnectedDisplay> connectedDisplays = new ConcurrentHashMap<Integer, ConnectedDisplay>();
-	public Map<Integer, DisplayInteractionEvent> clickEvents = Maps.newHashMap();
+	// public Map<Integer, DisplayInteractionEvent> clickEvents = Maps.newHashMap();
 	public Map<Integer, List<ChunkPos>> chunksToUpdate = Maps.newHashMap();
 
 	public boolean newChunks = false;
@@ -72,8 +71,9 @@ public class ServerInfoHandler implements IInfoManager {
 		monitoredLists.clear();
 		identityTiles.clear();
 		connectedDisplays.clear();
-		clickEvents.clear();
+		// clickEvents.clear();
 		chunksToUpdate.clear();
+		IDENTITY_COUNT=0;
 	}
 
 	public int getNextIdentity() {
@@ -86,7 +86,7 @@ public class ServerInfoHandler implements IInfoManager {
 
 	/** warning do not use unless reading WorldSavedData, or your world will be corrupted!!!! */
 	public int setIdentityCount(int count) {
-		return count = IDENTITY_COUNT;
+		return IDENTITY_COUNT = count;
 	}
 
 	public boolean enableEvents() {
@@ -131,17 +131,21 @@ public class ServerInfoHandler implements IInfoManager {
 	}
 
 	public void addDisplay(IDisplay display) {
-		if (!displays.contains(display) && displays.add(display)) {
+		if (!displays.containsValue(display)) {
+			displays.put(display.getIdentity(), display);
 			ChunkViewerHandler.instance().onDisplayAdded(display);
 			updateViewingMonitors = true;
 		}
 	}
 
 	public void removeDisplay(IDisplay display) {
-		if (displays.remove(display)) {
-			ChunkViewerHandler.instance().onDisplayRemoved(display);
-			updateViewingMonitors = true;
-		}
+		identityTiles.remove(display);
+		ChunkViewerHandler.instance().onDisplayRemoved(display);
+		updateViewingMonitors = true;
+	}
+
+	public IDisplay getDisplay(int iden) {
+		return displays.get(iden);
 	}
 
 	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
@@ -177,8 +181,8 @@ public class ServerInfoHandler implements IInfoManager {
 			updateViewingMonitors = false;
 			identityTiles.values().forEach(tile -> tile.getListenerList().getDisplayListeners().clear());
 
-			displays.forEach(display -> display.container().forEachValidUUID(uuid -> {
-				ILogicListenable monitor = CableHelper.getMonitorFromIdentity(uuid.getIdentity(), false);
+			displays.values().forEach(display -> display.container().forEachValidUUID(uuid -> {
+				ILogicListenable monitor = getIdentityTile(uuid.getIdentity());
 				if (monitor != null && monitor instanceof ILogicListenable) {
 					monitor.getListenerList().getDisplayListeners().addListener(display, 0);
 				}
@@ -199,7 +203,7 @@ public class ServerInfoHandler implements IInfoManager {
 				NBTTagCompound updateTag = InfoHelper.writeInfoToNBT(new NBTTagCompound(), monitorInfo, SyncType.SAVE);
 				NBTTagCompound saveTag = InfoHelper.writeInfoToNBT(new NBTTagCompound(), monitorInfo, SyncType.SAVE);
 				boolean shouldUpdate = !updateTag.hasNoTags();
-				for (IDisplay display : displays) {
+				for (IDisplay display : displays.values()) {
 					if (display.container().isDisplayingUUID(id)) {
 						if (shouldUpdate) {
 							List<EntityPlayerMP> list = ChunkViewerHandler.instance().getWatchingPlayers(display);

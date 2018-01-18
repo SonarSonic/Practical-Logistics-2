@@ -262,7 +262,7 @@ public class ItemHelper extends ItemWrapper {
 				remove.stored -= used;
 				if (!action.shouldSimulate()) {
 					if (stack.getCount() == 0) {
-						stack = null;
+						stack = ItemStack.EMPTY;
 					}
 					inv.setInventorySlotContents(i, stack);
 				}

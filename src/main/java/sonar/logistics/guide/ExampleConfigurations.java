@@ -89,7 +89,7 @@ public class ExampleConfigurations {
 
 			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.info_reader.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileInfoReader());
 			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_receiver.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.WEST), new TileDataReceiver());
-			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_cable.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.WEST), new TileDataCable());
+			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.WEST, CableRenderType.INTERNAL), new TileDataCable());
 
 			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.redstone_signaller.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileRedstoneSignaller());
 			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.NORTH, CableRenderType.HALF).withProperty(PL2Properties.SOUTH, CableRenderType.INTERNAL), new TileDataCable());

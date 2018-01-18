@@ -46,17 +46,18 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 		stack.setTagCompound(nbt);
 	}
 
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
-		if (!world.isRemote) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		ItemStack stack = player.getHeldItem(hand);
+		if (!world.isRemote && !stack.isEmpty()) {
 			NBTTagCompound nbt = stack.getTagCompound();
 			if (nbt == null) {
 				nbt = new NBTTagCompound();
 			}
 			Integer identity = getEmitterIdentity(stack);
-			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(identity);			
+			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(identity);
 			if (emitter != null) {
-				if(!emitter.getCoords().isChunkLoaded()){
-					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);					
+				if (!emitter.getCoords().isChunkLoaded()) {
+					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);
 					return new ActionResult(EnumActionResult.SUCCESS, stack);
 				}
 				NBTTagCompound tag = new NBTTagCompound();
@@ -64,7 +65,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 				tag.setInteger(EMITTER_UUID, emitter.getIdentity());
 				tag.setInteger(NETWORK_ID, emitter.getNetworkID());
 				SonarCore.instance.guiHandler.openGui(false, player, world, player.getPosition(), 0, tag);
-			}else{
+			} else {
 				SonarCore.instance.guiHandler.openBasicItemStack(false, stack, player, world, player.getPosition(), 1);
 			}
 		}
@@ -76,10 +77,10 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 		switch (id) {
 		case 0:
 			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(getEmitterIdentity(obj));
-			if(emitter!=null){
+			if (emitter != null) {
 				emitter.sendRapidUpdate(player);
 				emitter.getListenerList().addListener(player, ListenerType.INFO);
-			}			
+			}
 			break;
 		case 1:
 			WirelessDataHandler.addViewer(player);
@@ -119,7 +120,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			}
 			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(getEmitterIdentity(stack));
 			ItemHelper.onNetworkItemInteraction(emitter, emitter.getNetwork(), emitter.getServerItems(), player, selected, buf.readInt());
-			
+
 			break;
 		case 1:
 			int entityUUID = buf.readInt();

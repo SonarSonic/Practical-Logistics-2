@@ -1,6 +1,10 @@
 package sonar.logistics.info.types;
 
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,6 +13,7 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.ISuffixable;
@@ -16,11 +21,12 @@ import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = ProgressInfo.id, modid = PL2Constants.MODID)
-public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable {
+public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable, IComparableInfo<ProgressInfo> {
 
 	public static final String id = "progress";
 	public LogicInfo first, second;
@@ -187,6 +193,19 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	public void onInfoStored() {
 		first.onInfoStored();
 		second.onInfoStored();
+	}
+
+	@Override
+	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
+		if (first != null) {
+			List<ComparableObject> firstObj = first.getComparableObjects(Lists.newArrayList());
+			firstObj.forEach(obj -> objects.add(new ComparableObject(this, "First: " + obj.string, obj.object)));
+		}
+		if (second != null) {
+			List<ComparableObject> firstObj = second.getComparableObjects(Lists.newArrayList());
+			firstObj.forEach(obj -> objects.add(new ComparableObject(this, "Second: " + obj.string, obj.object)));
+		}
+		return objects;
 	}
 
 }

@@ -2,18 +2,22 @@ package sonar.logistics.guide;
 
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import javax.vecmath.Vector3d;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
+import sonar.core.client.gui.GuiBlockRenderer3D.GuiBlockRenderCache;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
@@ -24,55 +28,24 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 	public Logistics3DRenderer(int cubeSize) {
 		super(cubeSize);
 	}
-	/*
-	public void doMultipartRenderPass(Vector3d trans) {
 
-		BufferBuilder wr = Tessellator.getInstance().getBuffer();
-		wr.begin(7, DefaultVertexFormats.BLOCK);
-
-		Tessellator.getInstance().getBuffer().setTranslation(trans.x, trans.y, trans.z);
-
-		for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) {
-			BlockPos pos = entry.getKey();
-			for (MultipartStateOverride part : entry.getValue()) {
-				IBlockState state = part.getActualState(MultipartRegistry.getDefaultState(part.part).getBaseState(), this, pos);
-				renderMultipart(state, pos, this, Tessellator.getInstance().getBuffer());
-
-			}
+	/* public void doMultipartRenderPass(Vector3d trans) { BufferBuilder wr = Tessellator.getInstance().getBuffer(); wr.begin(7, DefaultVertexFormats.BLOCK); Tessellator.getInstance().getBuffer().setTranslation(trans.x, trans.y, trans.z); for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) { BlockPos pos = entry.getKey(); for (MultipartStateOverride part : entry.getValue()) { IBlockState state = part.getActualState(MultipartRegistry.getDefaultState(part.part).getBaseState(), this, pos); renderMultipart(state, pos, this, Tessellator.getInstance().getBuffer()); } } Tessellator.getInstance().draw(); Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0); for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) { BlockPos pos = entry.getKey(); for (MultipartStateOverride part : entry.getValue()) { if (part.part instanceof AbstractDisplayPart) { try { renderScreenAt((AbstractDisplayPart) part.part, pos, 0); } catch (Throwable t) { } } } } mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE); } */
+	public void doSpecialRender(GuiBlockRenderCache cache, Vector3d at) {
+		if (cache.tile instanceof TileAbstractDisplay) {
+			renderScreenAt((TileAbstractDisplay) cache.tile, cache.pos, 0);
+		} else {
+			super.doSpecialRender(cache, at);
 		}
-
-		Tessellator.getInstance().draw();
-		Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
-
-		for (Entry<BlockPos, List<MultipartStateOverride>> entry : multiparts.entrySet()) {
-			BlockPos pos = entry.getKey();
-			for (MultipartStateOverride part : entry.getValue()) {
-				if (part.part instanceof AbstractDisplayPart) {
-					try {
-						renderScreenAt((AbstractDisplayPart) part.part, pos, 0);
-					} catch (Throwable t) {
-
-					}
-				}
-			}
-		}
-		mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
-	*/
 
 	public void renderScreenAt(TileAbstractDisplay part, BlockPos pos, float partialTicks) {
-		if(part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()){
+		if (part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()) {
 			return;
 		}
 		GlStateManager.pushMatrix();
 		GlStateManager.pushAttrib();
 		translate(pos.getX() - 0.5, pos.getY(), pos.getZ() - 0.5);
-		if (part instanceof ILargeDisplay) {
-			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
-			InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject());
-		} else {
-			InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, 0, 0);
-		}
+		/* if (part instanceof ILargeDisplay) { ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen(); InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject()); } else { InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, 0, 0); } */
 		GL11.glTranslated(-0.0625, 0, 0);
 		// part.container().renderContainer();
 		if (part.getDisplayType() == DisplayType.LARGE) {

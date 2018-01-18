@@ -3,19 +3,20 @@ package sonar.logistics.common.multiparts.readers;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
+import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncCoords;
@@ -23,25 +24,22 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
-import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
+import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
-import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.network.sync.SyncMonitoredType;
@@ -163,7 +161,9 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public void onFirstTick() {
 		super.onFirstTick();
 		if (isServer()) {
-			hasMonitor.setObject(CableHelper.getDisplay(world, this.getPos(), EnumDisplayFaceSlot.fromFace(getCableFace())) != null);
+			Optional<IMultipartTile> display = info.getContainer().getPartTile(EnumDisplayFaceSlot.fromFace(getCableFace()));
+			hasMonitor.setObject(display.isPresent() && display.get() instanceof IDisplay);
+			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 		}
 	}
 

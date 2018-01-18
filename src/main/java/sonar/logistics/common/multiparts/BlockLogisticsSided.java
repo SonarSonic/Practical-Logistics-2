@@ -24,7 +24,7 @@ public class BlockLogisticsSided extends BlockLogistics {
 	}
 
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return PL2Properties.getStandardBox(getFaceFromState(state), getMultipart());
+		return PL2Properties.getStandardBox(getOrientation(state), getMultipart());
 	}
 	
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
@@ -38,10 +38,10 @@ public class BlockLogisticsSided extends BlockLogistics {
 
 	@Override
 	public IPartSlot getSlotFromWorld(IBlockAccess world, BlockPos pos, IBlockState state) {
-		return EnumFaceSlot.fromFace(getFaceFromState(state));
+		return EnumFaceSlot.fromFace(getOrientation(state));
 	}
 	
-	public EnumFacing getFaceFromState(IBlockState state) {
+	public EnumFacing getOrientation(IBlockState state) {
 		return state.getValue(SonarProperties.ORIENTATION);
 	}
 
@@ -52,7 +52,7 @@ public class BlockLogisticsSided extends BlockLogistics {
 
 	@Override
 	public int getMetaFromState(IBlockState state) {
-		return getFaceFromState(state).ordinal();
+		return getOrientation(state).ordinal();
 	}
 
 	@Override

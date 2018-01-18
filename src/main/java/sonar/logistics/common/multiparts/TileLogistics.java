@@ -71,7 +71,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	//// ILogicTile \\\\
 
 	public int getIdentity() {
-		if (identity.getObject() == -1) {
+		if (identity.getObject() == -1 && this.isServer()) {
 			identity.setObject(PL2.getServerManager().getNextIdentity());
 		}
 		return identity.getObject();
@@ -145,7 +145,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			info.add(TextFormatting.UNDERLINE + multipart.getDisplayName());
 		info.add("Network ID: " + networkID.getObject());
 		info.add("Has channels: " + (this instanceof TileInfoReader));
-		info.add("IDENTITY: " + this.getIdentity());
+		info.add("IDENTITY: " + identity.getObject());
 	}
 
 	@Override

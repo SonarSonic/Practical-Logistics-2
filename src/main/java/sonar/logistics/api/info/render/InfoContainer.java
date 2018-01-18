@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -35,17 +34,17 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.LogicInfoList;
-import sonar.logistics.packets.PacketClickEventClient;
+import sonar.logistics.packets.PacketClickEventServer;
 
 /** used to store {@link IInfo} along with their respective {@link DisplayInfo} for rendering on a {@link IDisplay} */
 public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
@@ -71,8 +70,8 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	public void resetRenderProperties() {
 		for (int i = 0; i < storedInfo.size(); i++) {
 			DisplayInfo info = storedInfo.get(i);
-			double[] scaling = InfoHelper.getScaling(display, display.getLayout(), i);
-			double[] translation = InfoHelper.getTranslation(display, display.getLayout(), i);
+			double[] scaling = InteractionHelper.getScaling(display, display.getLayout(), i);
+			double[] translation = InteractionHelper.getTranslation(display, display.getLayout(), i);
 			info.setRenderInfoProperties(new RenderInfoProperties(this, i, scaling, translation), i);
 		}
 	}
@@ -137,27 +136,33 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 
 	@Override
 	public boolean onClicked(TileAbstractDisplay part, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		boolean doubleClick = false;
-		if (world.getTotalWorldTime() - lastClickTime < 10 && player.getPersistentID().equals(lastClickUUID)) {
-			doubleClick = true;
-		}
-		lastClickTime = world.getTotalWorldTime();
-		lastClickUUID = player.getPersistentID();
+		if (world.isRemote) { // only clicks on client side, like a GUI, positioning may not be the same on server
+			boolean doubleClick = false;
+			if (world.getTotalWorldTime() - lastClickTime < 10 && player.getPersistentID().equals(lastClickUUID)) {
+				doubleClick = true;
+			}
+			lastClickTime = world.getTotalWorldTime();
+			lastClickUUID = player.getPersistentID();
+			DisplayScreenClick click = InteractionHelper.getClickPosition(part, pos, type, facing, hitX, hitY, hitZ);
+			click.setDoubleClick(doubleClick);
+			for (int i = 0; i < display.maxInfo(); i++) {
+				DisplayInfo renderInfo = storedInfo.get(i);
+				IInfo cachedInfo = renderInfo.getSidedCachedInfo(world.isRemote);
 
-		for (int i = 0; i < display.maxInfo(); i++) {
-			IDisplayInfo info = storedInfo.get(i);
-			IInfo cachedInfo = info.getSidedCachedInfo(world.isRemote);
-			if (cachedInfo instanceof IAdvancedClickableInfo) {
-				if (!world.isRemote) {
+				if (cachedInfo instanceof IAdvancedClickableInfo) {
 					IAdvancedClickableInfo clickable = ((IAdvancedClickableInfo) cachedInfo);
-					int hashCode = UUID.randomUUID().hashCode();
-					DisplayInteractionEvent event = new DisplayInteractionEvent(hashCode, cachedInfo, i, player, type, doubleClick, hand);
-					PL2.getServerManager().clickEvents.put(hashCode, event);
-					PL2.network.sendTo(new PacketClickEventClient(part.getSlotID(), part.getPos(), event), (EntityPlayerMP) player);
+					if (clickable.canClick(click, renderInfo, player, hand)) {
+						NBTTagCompound clickTag = clickable.createClickPacket(click, renderInfo, player, hand);
+						if (!clickTag.hasNoTags()){
+							PL2.network.sendToServer(new PacketClickEventServer(part.getIdentity(), renderInfo.getInfoPosition(), click, renderInfo.getInfoUUID(), clickTag));
+						}
+						return true;
+					}
+
+				} else if (cachedInfo instanceof IBasicClickableInfo) {
+					IBasicClickableInfo clickable = ((IBasicClickableInfo) cachedInfo);
+					return clickable.onStandardClick(part, null, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 				}
-			} else if (cachedInfo instanceof IBasicClickableInfo) {
-				IBasicClickableInfo clickable = ((IBasicClickableInfo) cachedInfo);
-				return clickable.onStandardClick(part, null, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 		}
 		return true;

@@ -10,27 +10,20 @@ import sonar.logistics.PL2Multiparts;
 
 public class BlockHolographicDisplay extends BlockAbstractDisplay {
 
+	public static final double depth = 0.0625, height = depth * 16, width = 0, length = depth * 1;
+	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(0, 0, 0, 1, depth, 1);
+	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - depth, 1);
+	public static final AxisAlignedBB NORTH_AXIS = new AxisAlignedBB((width) / 2, depth * 4, length, 1 - width / 2, 1 - depth * 4, 0);
+	public static final AxisAlignedBB SOUTH_AXIS = new AxisAlignedBB((width) / 2, depth * 4, 1, 1 - width / 2, 1 - depth * 4, 1 - length);
+	public static final AxisAlignedBB WEST_AXIS = new AxisAlignedBB(length, depth * 4, (width) / 2, 0, 1 - depth * 4, 1 - width / 2);
+	public static final AxisAlignedBB EAST_AXIS = new AxisAlignedBB(1, depth * 4, (width) / 2, 1 - length, 1 - depth * 4, 1 - width / 2);
+	public static final AxisAlignedBB[] AXIS = new AxisAlignedBB[] { DOWN_AXIS, UP_AXIS, NORTH_AXIS, SOUTH_AXIS, WEST_AXIS, EAST_AXIS };
+
 	public BlockHolographicDisplay() {
 		super(PL2Multiparts.HOLOGRAPHIC_DISPLAY);
 	}
 
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		double p = 0.0625;
-		double height = p * 16, width = 0, length = p * 1;
-		EnumFacing face = state.getValue(SonarProperties.ORIENTATION);
-		switch (face) {
-		case EAST:
-			return new AxisAlignedBB(1, p * 4, (width) / 2, 1 - length, 1 - p * 4, 1 - width / 2);
-		case NORTH:
-			return new AxisAlignedBB((width) / 2, p * 4, length, 1 - width / 2, 1 - p * 4, 0);
-		case SOUTH:
-			return new AxisAlignedBB((width) / 2, p * 4, 1, 1 - width / 2, 1 - p * 4, 1 - length);
-		case WEST:
-			return new AxisAlignedBB(length, p * 4, (width) / 2, 0, 1 - p * 4, 1 - width / 2);
-		case UP:
-			return new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - 0.0625, 1);
-		default:
-			return new AxisAlignedBB(0, 0, 0, 1, 0.0625, 1);
-		}
+		return AXIS[getOrientation(state).ordinal()];
 	}
 }

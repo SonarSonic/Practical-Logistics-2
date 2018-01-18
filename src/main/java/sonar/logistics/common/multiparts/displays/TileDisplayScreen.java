@@ -84,7 +84,7 @@ public class TileDisplayScreen extends TileAbstractDisplay {
 
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
-		return CableRenderType.HALF;
+		return CableRenderType.INTERNAL;
 	}
 	//// PACKETS \\\\
 	/*

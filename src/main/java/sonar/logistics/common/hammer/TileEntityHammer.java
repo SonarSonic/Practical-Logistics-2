@@ -4,8 +4,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 import sonar.core.SonarCore;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.common.tileentity.TileEntityInventory;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.SonarInventory;
@@ -13,11 +16,10 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.core.recipes.RecipeHelperV2;
-import sonar.core.utils.IGuiTile;
 import sonar.logistics.client.gui.GuiHammer;
 import sonar.logistics.common.containers.ContainerHammer;
 
-public class TileEntityHammer extends TileEntityInventory implements ISidedInventory, IByteBufTile, IGuiTile {
+public class TileEntityHammer extends TileEntityInventory implements ISidedInventory, IByteBufTile, IFlexibleGui {
 
 	public SyncTagType.INT progress = new SyncTagType.INT(0);
 	public SyncTagType.INT coolDown = new SyncTagType.INT(1);
@@ -189,14 +191,14 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	}
 	
 	//// GUI \\\\
-	
+
 	@Override
-	public Object getGuiContainer(EntityPlayer player) {
+	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return new ContainerHammer(player, this);
 	}
 
 	@Override
-	public Object getGuiScreen(EntityPlayer player) {
+	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return new GuiHammer(player, this);
 	}
 }

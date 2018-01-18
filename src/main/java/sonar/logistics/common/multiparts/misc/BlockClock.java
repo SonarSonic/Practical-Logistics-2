@@ -20,18 +20,20 @@ public class BlockClock extends BlockLogisticsSided {
 		super(PL2Multiparts.CLOCK);
 	}
 
-	@Override
-	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
-		return side != state.getValue(SonarProperties.ORIENTATION).getOpposite();
+	public boolean isPowering(IBlockAccess world, BlockPos pos) {
+		TileEntity tile = world.getTileEntity(pos);
+		if (tile != null && tile instanceof TileClock) {
+			return ((TileClock) tile).powering;
+		}
+		return false;
 	}
 
+	//// REDSTONE \\\\
+	
 	@Override
 	public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
-		if (side != state.getValue(SonarProperties.ORIENTATION).getOpposite()) {
-			TileEntity tile = world.getTileEntity(pos);
-			if (tile != null && tile instanceof TileClock) {
-				return ((TileClock) tile).powering ? 15 : 0;
-			}
+		if (side != getOrientation(state).getOpposite()) {
+			return isPowering(world, pos) ? 15 : 0;
 		}
 		return 0;
 	}
@@ -39,6 +41,11 @@ public class BlockClock extends BlockLogisticsSided {
 	@Override
 	public int getStrongPower(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
 		return getWeakPower(state, world, pos, side);
+	}
+
+	@Override
+	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
+		return side != getOrientation(state).getOpposite();
 	}
 
 	//// STATE \\\\

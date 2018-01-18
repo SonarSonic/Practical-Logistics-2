@@ -19,11 +19,8 @@ public class BlockRedstoneSignaller extends BlockLogisticsSided {
 	public BlockRedstoneSignaller() {
 		super(PL2Multiparts.REDSTONE_SIGNALLER);
 	}
-
-	@Override
-	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
-		return true;
-	}
+	
+	//// REDSTONE \\\\
 
 	@Override
 	public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
@@ -37,6 +34,11 @@ public class BlockRedstoneSignaller extends BlockLogisticsSided {
 	@Override
 	public int getStrongPower(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
 		return getWeakPower(state, world, pos, side);
+	}
+
+	@Override
+	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
+		return true;
 	}
 
 	//// STATE \\\\

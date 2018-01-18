@@ -33,11 +33,21 @@ import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.helpers.InteractionHelper;
 
 public class BlockLargeDisplay extends BlockAbstractDisplay {
 
 	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.<DisplayConnections>create("type", DisplayConnections.class);
 
+	public static final double depth = 0.0625, height = depth * 16, width = 0, length = depth * 1;
+	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(0, 0, 0, 1, length, 1);
+	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - length, 1);
+	public static final AxisAlignedBB NORTH_AXIS = new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0);
+	public static final AxisAlignedBB SOUTH_AXIS =new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length);
+	public static final AxisAlignedBB WEST_AXIS = new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2);
+	public static final AxisAlignedBB EAST_AXIS = new AxisAlignedBB(1, 0, (width) / 2, 1 - length, height, 1 - width / 2);
+	public static final AxisAlignedBB[] AXIS = new AxisAlignedBB[] { DOWN_AXIS, UP_AXIS, NORTH_AXIS, SOUTH_AXIS, WEST_AXIS, EAST_AXIS };
+	
 	public BlockLargeDisplay() {
 		super(PL2Multiparts.LARGE_DISPLAY_SCREEN);
 	}
@@ -47,41 +57,23 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 		if (stack != null && stack.getItem() instanceof IOperatorTool) {
 			return false;
 		}
-		if (canOpenGui(player) && !world.isRemote) {
+		if (canOpenGui(player)) {
 			TileEntity tile = world.getTileEntity(pos);
 			if (tile != null && tile instanceof TileLargeDisplayScreen) {
 				TileLargeDisplayScreen display = (TileLargeDisplayScreen) ((TileLargeDisplayScreen) tile).getDisplayScreen().getTopLeftScreen();
 				if (facing != state.getValue(SonarProperties.ORIENTATION)) {
-					display.openFlexibleGui(player, 0);
+					if (!world.isRemote) {
+						display.openFlexibleGui(player, 0);
+					}
 				} else {
-					return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+					if (world.isRemote) {
+						return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+					}
+					return true;
 				}
 			}
 		}
 		return true;
-	}
-
-	//// MULTIPART \\\\
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		double p = 0.0625;
-		double height = p * 16, width = 0, length = p * 1;
-
-		EnumFacing face = state.getValue(SonarProperties.ORIENTATION);
-		switch (face) {
-		case EAST:
-			return new AxisAlignedBB(1, 0, (width) / 2, 1 - length, height, 1 - width / 2);
-		case NORTH:
-			return new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0);
-		case SOUTH:
-			return new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length);
-		case WEST:
-			return new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2);
-		case UP:
-			return new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - length, 1);
-		default:
-			return new AxisAlignedBB(0, 0, 0, 1, length, 1);
-
-		}
 	}
 
 	//// STATE \\\\
@@ -98,10 +90,10 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 				}
 				IDisplay display = null;
 				Optional<IMultipartTile> multipartTile = MultipartHelper.getPartTile(w, pos.offset(face), EnumDisplayFaceSlot.fromFace(screen.getCableFace()));
-				if(multipartTile.isPresent() && multipartTile.get() instanceof IDisplay){
+				if (multipartTile.isPresent() && multipartTile.get() instanceof IDisplay) {
 					display = (IDisplay) multipartTile.get();
 				}
-				if (display != null && display.getDisplayType() == DisplayType.LARGE  && ((ILargeDisplay) display).getRegistryID() == screen.getRegistryID()) {
+				if (display != null && display.getDisplayType() == DisplayType.LARGE && ((ILargeDisplay) display).getRegistryID() == screen.getRegistryID()) {
 					switch (display.getCableFace()) {
 					case DOWN:
 						EnumFacing toAdd = face;
@@ -144,6 +136,10 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 		}
 		DisplayConnections type = DisplayConnections.getType(faces);
 		return currentState.withProperty(SonarProperties.ROTATION, EnumFacing.NORTH).withProperty(TYPE, type);
+	}
+
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		return AXIS[getOrientation(state).ordinal()];
 	}
 
 	@Override

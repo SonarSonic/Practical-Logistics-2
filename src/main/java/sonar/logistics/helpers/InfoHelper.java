@@ -41,6 +41,7 @@ import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
@@ -65,34 +66,36 @@ public class InfoHelper {
 	public static final String REMOVED = "rem";
 	public static final String SYNCED = "spe";
 
-	public static void screenItemStackClicked(StoredItemStack storedItemStack, TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(type);
-		ILogisticsNetwork cache = part.getNetwork();
-		if (toRemove.a != 0 && cache.isValid()) {
+	public static void screenItemStackClicked(int networkID, StoredItemStack storedItemStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(click.type);
+		EnumFacing facing = displayInfo.container.getDisplay().getCableFace();
+		ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(networkID);
+		if (toRemove.a != 0 && network.isValid()) {
 			switch (toRemove.b) {
 			case ADD:
-				if (storedItemStack != null) {
+				ItemStack stack = player.getHeldItem(player.getActiveHand());
+				if (!stack.isEmpty()) {
 					long changed = 0;
-					if (!part.isDoubleClick()) {
-						changed = PL2API.getItemHelper().insertItemFromPlayer(player, cache, player.inventory.currentItem);
+					if (!click.doubleClick) {
+						changed = PL2API.getItemHelper().insertItemFromPlayer(player, network, player.inventory.currentItem);
 					} else {
-						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, cache, player.inventory.currentItem);
+						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, network, player.inventory.currentItem);
 					}
 					if (changed > 0) {
-						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), cache);
-						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, changed), (EntityPlayerMP) player);
+						long itemCount = PL2API.getItemHelper().getItemCount(stack, network);
+						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
 						// FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.GREEN + "+" + changed + TextFormatting.RESET + " x " + stack.getDisplayName(), player.getEntityWorld(), player);
 					}
 				}
 				break;
 			case REMOVE:
 				if (storedItemStack != null) {
-					StoredItemStack extract = PL2API.getItemHelper().extractItem(cache, storedItemStack.copy().setStackSize(toRemove.a));
+					StoredItemStack extract = PL2API.getItemHelper().extractItem(network, storedItemStack.copy().setStackSize(toRemove.a));
 					if (extract != null) {
-						pos = pos.offset(facing);
+						BlockPos pos = click.clickPos.offset(facing);
 						long r = extract.stored;
 						SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), facing);
-						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), cache);
+						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), network);
 						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
 					}
 				}
@@ -100,21 +103,21 @@ public class InfoHelper {
 			default:
 				break;
 			}
-			ItemNetworkChannels channels = cache.getNetworkChannels(ItemNetworkChannels.class);
+			ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 			if (channels != null)
 				channels.sendFullRapidUpdate();
 
 		}
 	}
 
-	public static void onScreenFluidStackClicked(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, StoredFluidStack fluidStack, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		ILogisticsNetwork network = part.getNetwork();
+	public static void onScreenFluidStackClicked(int networkID, StoredFluidStack fluidStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+		ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(networkID);
 		if (network.isValid()) {
-			if (type == BlockInteractionType.RIGHT) {
-				PL2API.getFluidHelper().drainHeldItem(player, network, part.isDoubleClick() ? Integer.MAX_VALUE : 1000);
-			} else if (fluidStack != null && type == BlockInteractionType.LEFT) {
+			if (click.type == BlockInteractionType.RIGHT) {
+				PL2API.getFluidHelper().drainHeldItem(player, network, click.doubleClick ? Integer.MAX_VALUE : 1000);
+			} else if (fluidStack != null && click.type == BlockInteractionType.LEFT) {
 				PL2API.getFluidHelper().fillHeldItem(player, network, fluidStack.copy().setStackSize(Math.min(fluidStack.stored, 1000)));
-			} else if (fluidStack != null && type == BlockInteractionType.SHIFT_LEFT) {
+			} else if (fluidStack != null && click.type == BlockInteractionType.SHIFT_LEFT) {
 				PL2API.getFluidHelper().fillHeldItem(player, network, fluidStack);
 			}
 
@@ -216,89 +219,8 @@ public class InfoHelper {
 		}
 		updateInfo.getList().clear();
 		info.forEach(value -> updateInfo.add(value));
-		
+
 		return updateInfo;
-	}
-
-	public static double[] getScaling(IDisplay display, DisplayLayout layout, int pos) {
-		DisplayType type = display.getDisplayType();
-		double width = type.width, height = type.height, scale = type.scale;
-		if (display instanceof IScaleableDisplay) {
-			double[] scaling = ((IScaleableDisplay) display).getScaling();
-			width = scaling[0];
-			height = scaling[1];
-			scale = scaling[2];
-		}
-
-		switch (layout) {
-		case DUAL:
-			return new double[] { width, height / 2, scale };
-		case GRID:
-			return new double[] { width / 2, height / 2, scale / 1.5 };
-		case LIST:
-			return new double[] { width, height / 4, scale / 1.5 };
-		default:
-			return new double[] { width, height, scale * 1.2 };
-		}
-	}
-
-	public static double[] getTranslation(IDisplay display, DisplayLayout layout, int pos) {
-		DisplayType type = display.getDisplayType();
-		double width = type.width, height = type.height, scale = type.scale;
-		if (display instanceof IScaleableDisplay) {
-			double[] scaling = ((IScaleableDisplay) display).getScaling();
-			width = scaling[0];
-			height = scaling[1];
-			scale = scaling[2];
-		}
-
-		switch (layout) {
-		case DUAL:
-			return new double[] { 0, pos == 1 ? height / 2 : 0, 0 };
-		case GRID:
-			return new double[] { pos == 1 || pos == 3 ? (double) width / 2 : 0, (double) pos > 1 ? height / 2 : 0, 0 };
-		case LIST:
-			return new double[] { 0, pos * (height / 4), 0 };
-		default:
-			return new double[] { 0, 0, 0 };
-		}
-	}
-
-	public static double[] getIntersect(IDisplay display, DisplayLayout layout, int pos) {
-		DisplayType type = display.getDisplayType();
-		double width = type.width, height = type.height, scale = type.scale;
-		if (display instanceof IScaleableDisplay) {
-			double[] scaling = ((IScaleableDisplay) display).getScaling();
-			width = scaling[0];
-			height = scaling[1];
-			scale = scaling[2];
-		}
-
-		switch (layout) {
-		case DUAL:
-			return new double[] { 0, pos == 1 ? type.height / 2 : 0, pos == 1 ? 1 : type.width / 2, pos == 1 ? 1 : type.height / 2 };
-		case GRID:
-			return new double[] { (pos == 1 || pos == 3 ? type.width / 2 : 0), (pos == 1 || pos == 3 ? type.height / 2 : 0), (pos == 1 || pos == 3 ? 1 : type.width / 2), (pos == 1 || pos == 3 ? 1 : type.height / 2) };
-		case LIST:
-			return new double[] { 0, pos * (type.height / 4), 0, (pos + 1) * (type.height / 4) };
-
-		default:
-			return new double[] { 0, 0, type.width, type.height };
-		}
-	}
-
-	public static boolean canBeClickedStandard(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (renderInfo.container.getMaxCapacity() == 1) {
-			return true;
-		}
-		IDisplay display = renderInfo.container.getDisplay();
-		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.getRenderProperties().infoPos);
-		double x = pos.getX() + hitX;
-		double y = pos.getY() + hitY;
-		if (x >= intersect[0] && x <= intersect[2] && 1 - y >= intersect[1] && 1 - y <= intersect[3]) {
-			return true;
-		}
-		return false;
 	}
 
 	public enum ItemInteractionType {

@@ -98,9 +98,11 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		PL2.getInfoManager(world.isRemote).addDisplay(this);
+		PL2.getInfoManager(world.isRemote).addDisplay(this);	
+				
+		
 		if (isClient()) {
-			this.requestSyncPacket();
+			//this.requestSyncPacket();
 		}
 	}
 

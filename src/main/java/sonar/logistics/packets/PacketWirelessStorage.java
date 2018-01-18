@@ -35,6 +35,7 @@ public class PacketWirelessStorage implements IMessage {
 	public void fromBytes(ByteBuf buf) {
 		this.id = buf.readInt();
 		this.buf = buf;
+		buf.retain();
 	}
 
 	@Override
@@ -69,6 +70,7 @@ public class PacketWirelessStorage implements IMessage {
 					IWirelessStorageReader reader = (IWirelessStorageReader) stack.getItem();
 					reader.readPacket(stack, player, message.buf, message.id);
 				}
+				message.buf.release();
 			});
 			return null;
 		}

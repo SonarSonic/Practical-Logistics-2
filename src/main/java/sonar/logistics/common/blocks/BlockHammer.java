@@ -1,5 +1,7 @@
 package sonar.logistics.common.blocks;
 
+import java.util.function.Consumer;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -9,6 +11,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockInteraction;
 import sonar.core.common.block.SonarMachineBlock;
 import sonar.core.common.block.SonarMaterials;
@@ -25,8 +28,9 @@ public class BlockHammer extends SonarMachineBlock {
 
 	@Override
 	public boolean operateBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, BlockInteraction interact) {
-		if (!world.isRemote && player != null) {
-			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY(), pos.getZ());
+		TileEntity tile = world.getTileEntity(pos);
+		if (!world.isRemote && tile != null) {
+			SonarCore.instance.guiHandler.openBasicTile(false, tile, player, world, pos, 0);
 			return true;
 		}
 		return false;
@@ -47,28 +51,23 @@ public class BlockHammer extends SonarMachineBlock {
 		return true;
 	}
 
-	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 3.0F, 1.0F);
-	}
-
-	private void setBlocks(World world, BlockPos pos) {
-		world.setBlockState(pos.offset(EnumFacing.UP), PL2Blocks.hammer_air.getDefaultState(), 2);
-		world.setBlockState(pos.offset(EnumFacing.UP, 2), PL2Blocks.hammer_air.getDefaultState(), 2);
-	}
-
 	//// EVENTS \\\\
 
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		super.breakBlock(world, pos, state);
-		world.setBlockToAir(pos.offset(EnumFacing.UP));
-		world.setBlockToAir(pos.offset(EnumFacing.UP, 2));
+		forEachPosition(pos, p -> world.setBlockToAir(p));
 	}
 
 	@Override
 	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
 		super.onBlockAdded(world, pos, state);
-		setBlocks(world, pos);
+		forEachPosition(pos, p -> world.setBlockState(p, PL2Blocks.hammer_air.getDefaultState(), 2));
+	}
+
+	public void forEachPosition(BlockPos pos, Consumer<BlockPos> consumer) {
+		consumer.accept(pos.offset(EnumFacing.UP, 1));
+		consumer.accept(pos.offset(EnumFacing.UP, 2));
 	}
 
 	//// RENDERING \\\\

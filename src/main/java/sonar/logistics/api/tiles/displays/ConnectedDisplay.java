@@ -82,12 +82,10 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	public void lock() {
 		isLocked.setObject(true);
-		PL2.getDisplayManager().lockedIDs.add(registryID);
 	}
 
 	public void unlock() {
 		isLocked.setObject(false);
-		PL2.getDisplayManager().lockedIDs.remove(registryID);
 	}
 
 	public void update(int registryID) {
@@ -119,10 +117,6 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	public void updateListener(EntityPlayerMP player) {
 		PL2.network.sendTo(new PacketConnectedDisplayUpdate(this, registryID), player);
-	}
-
-	public void removeListener(EntityPlayerMP player) {
-		PL2.network.sendTo(new PacketConnectedDisplayRemove(registryID), player);
 	}
 
 	public void setDisplayScaling(ILargeDisplay primary, List<ILargeDisplay> displays) {

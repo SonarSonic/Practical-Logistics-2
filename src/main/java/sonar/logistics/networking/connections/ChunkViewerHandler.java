@@ -32,27 +32,13 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 public class ChunkViewerHandler {
 
 	private static final ChunkViewerHandler INSTANCE = new ChunkViewerHandler();
-	//public Map<Integer, List<ChunkPos>> changedChunks = Maps.newHashMap();
-	public Map<IDisplay, List<EntityPlayerMP>> displayWatchers = Maps.newHashMap();
 	public Map<IDisplay, List<ChunkPos>> displayChunks = Maps.newHashMap();
 
 	public static final ChunkViewerHandler instance() {
 		return INSTANCE;
 	}
 
-	@SubscribeEvent
-	public void onChunkWatched(ChunkWatchEvent.Watch event) {
-		//markChunkChange(event.getPlayer().getEntityWorld().provider.getDimension(), event.getChunk());
-	}
-
-	@SubscribeEvent
-	public void onChunkUnwatched(ChunkWatchEvent.UnWatch event) {
-		//markChunkChange(event.getPlayer().getEntityWorld().provider.getDimension(), event.getChunk());
-	}
-
-	public void onDisplayAdded(IDisplay display) {
-
-	}
+	public void onDisplayAdded(IDisplay display) {}
 
 	public void onDisplayRemoved(IDisplay display) {
 		displayChunks.remove(display);
@@ -117,7 +103,7 @@ public class ChunkViewerHandler {
 
 	public List<IDisplay> getDisplaysInChunk(int dim, ChunkPos pos) {
 		List<IDisplay> inChunk = Lists.newArrayList();
-		for (IDisplay display : PL2.getServerManager().displays) {
+		for (IDisplay display : PL2.getServerManager().displays.values()) {
 			BlockCoords coords = display.getCoords();
 			if (coords.getDimension() == dim && coords.insideChunk(pos)) {
 				inChunk.add(display);

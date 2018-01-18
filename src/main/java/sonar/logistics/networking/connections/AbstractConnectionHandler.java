@@ -106,7 +106,6 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 			allConnections.remove(connection);
 			onConnectionRemoved(registryID, connection);
 
-			int newID = getNextAvailableID();
 			allConnections = Lists.newArrayList(allConnections); // save all the
 																	// current
 																	// cables.
@@ -114,13 +113,21 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 			connections.remove(registryID); // clear all cables currently
 											// connected
 
-			List<Integer> newNetworks = Lists.newArrayList();
-			allConnections.forEach(oldCable -> oldCable.setRegistryID(-1));
-			allConnections.forEach(oldCable -> {
-				addConnectionToNetwork(oldCable);
-				newNetworks.add(oldCable.getRegistryID());
-			});
-			onNetworksDisconnected(newNetworks);
+			if (!allConnections.isEmpty()) {
+				List<Integer> newNetworks = Lists.newArrayList();
+				allConnections.forEach(oldCable -> oldCable.setRegistryID(-1));
+
+				if (!allConnections.isEmpty()) {
+					T cable = allConnections.remove(0); // removes first element
+					cable.setRegistryID(registryID == -1 ? getNextAvailableID() : registryID); // ensures original id is kept
+					addConnectionToNetwork(cable);
+				}
+				allConnections.forEach(oldCable -> {
+					addConnectionToNetwork(oldCable);
+					newNetworks.add(oldCable.getRegistryID());
+				});
+				onNetworksDisconnected(newNetworks);
+			}
 		}
 	}
 

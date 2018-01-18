@@ -7,7 +7,7 @@ import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.BaseInfoPage;
 import sonar.logistics.guide.elements.ElementInfo;
 
-//W.I.P
+//FIXME W.I.P
 public class InfoTypesPages extends BaseInfoPage {
 	public String displayKey;
 

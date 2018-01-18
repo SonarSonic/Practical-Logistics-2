@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
+import sonar.logistics.PL2;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.CableHelper;
@@ -24,7 +25,7 @@ public class PacketAddListener implements IMessage {
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		monitor = CableHelper.getMonitorFromIdentity(buf.readInt(), false);
+		monitor = PL2.getServerManager().getIdentityTile(buf.readInt());
 		type = ListenerType.values()[buf.readInt()];
 	}
 

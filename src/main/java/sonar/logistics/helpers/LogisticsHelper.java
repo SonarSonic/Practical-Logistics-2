@@ -109,7 +109,7 @@ public class LogisticsHelper {
 	public List<IInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
 		List<IInfo> infoList = Lists.newArrayList();
 		for (InfoUUID id : ids) {
-			ILogicListenable monitor = CableHelper.getMonitorFromIdentity(id.getIdentity(), false);
+			ILogicListenable monitor = PL2.getServerManager().getIdentityTile(id.getIdentity());
 			if (monitor != null && monitor instanceof IInfoProvider) {
 				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
 				if (info != null)

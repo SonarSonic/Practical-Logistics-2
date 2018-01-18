@@ -109,7 +109,7 @@ public class PL2 {
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		logger.info("Breaking into the pentagon");
-		/// PL2Crafting.addRecipes();
+		PL2Crafting.addRecipes();
 		logger.info("Registered Crafting Recipes");
 
 		for (EnumDisplayFaceSlot slot : EnumDisplayFaceSlot.values())
@@ -121,7 +121,6 @@ public class PL2 {
 		logger.info("Registered OreDict");
 
 		MinecraftForge.EVENT_BUS.register(new PL2Events());
-		MinecraftForge.EVENT_BUS.register(new ChunkViewerHandler());
 		logger.info("Registered Events");
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new PL2Common());
 		logger.info("Registered GUI Handler");

@@ -36,8 +36,8 @@ public class ClientInfoHandler implements IInfoManager {
 	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, List<Object>>();
 	public Map<Integer, List<ClientLocalProvider>> clientLogicMonitors = new ConcurrentHashMap<Integer, List<ClientLocalProvider>>();
 
-	public Map<InfoUUID, AbstractChangeableList> monitoredLists = Maps.newLinkedHashMap();
-	public Map<Integer, ILogicListenable> monitors = Maps.newLinkedHashMap();
+	public Map<InfoUUID, AbstractChangeableList> changeableLists = Maps.newLinkedHashMap();
+	public Map<Integer, ILogicListenable> identityTiles = Maps.newLinkedHashMap();
 	public Map<Integer, InfoChangeableList> channelMap = new ConcurrentHashMap<Integer, InfoChangeableList>();
 
 	// emitters
@@ -50,8 +50,8 @@ public class ClientInfoHandler implements IInfoManager {
 		info.clear();
 		sortedLogicMonitors.clear();
 		clientLogicMonitors.clear();
-		monitoredLists.clear();
-		monitors.clear();
+		changeableLists.clear();
+		identityTiles.clear();
 		channelMap.clear();
 		clientEmitters.clear();
 	}
@@ -66,16 +66,19 @@ public class ClientInfoHandler implements IInfoManager {
 		onInfoChanged(uuid, newInfo);
 	}
 
-
 	public void addIdentityTile(ILogicListenable infoProvider) {
-		if (monitors.containsValue(infoProvider) || infoProvider.getIdentity() == -1) {
+		if (identityTiles.containsValue(infoProvider) || infoProvider.getIdentity() == -1) {
 			return;
 		}
-		monitors.put(infoProvider.getIdentity(), infoProvider);
+		identityTiles.put(infoProvider.getIdentity(), infoProvider);
 	}
 
 	public void removeIdentityTile(ILogicListenable monitor) {
-		monitors.remove(monitor.getIdentity());
+		identityTiles.remove(monitor.getIdentity());
+	}
+
+	public ILogicListenable getIdentityTile(int iden) {
+		return identityTiles.get(iden);
 	}
 	
 	public void addDisplay(IDisplay display) {
@@ -90,7 +93,7 @@ public class ClientInfoHandler implements IInfoManager {
 	
 	@Override
 	public Map<Integer,ILogicListenable> getMonitors() {
-		return monitors;
+		return identityTiles;
 	}
 
 	@Override
@@ -116,7 +119,7 @@ public class ClientInfoHandler implements IInfoManager {
 	
 	@Nullable
 	public <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid) {
-		for (Entry<InfoUUID, AbstractChangeableList> entry : monitoredLists.entrySet()) {
+		for (Entry<InfoUUID, AbstractChangeableList> entry : changeableLists.entrySet()) {
 			if (entry.getKey().equals(uuid)) {
 				return entry.getValue();
 			}

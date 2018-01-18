@@ -38,6 +38,7 @@ import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wrappers.CablingWrapper;
@@ -45,22 +46,26 @@ import sonar.logistics.common.multiparts.cables.TileDataCable;
 
 public class CableHelper extends CablingWrapper {
 
-	public static INetworkConnection getNetworkTile(int networkID, TileEntity tile, EnumFacing dir, boolean internal, boolean cableOnly) {
-		TileEntity actualTile = tile;
-		if (tile instanceof TileSonarMultipart && ((TileSonarMultipart) tile).info != null) {
-			actualTile = (TileEntity) ((TileSonarMultipart) tile).info.getContainer();
+	public static INetworkConnection getNetworkTile(ICable source, TileEntity tile, EnumFacing dir, boolean internal, boolean cableOnly) {
+		IMultipartContainer container = null;
+		if (!(tile instanceof IMultipartContainer)) {
+			Optional<IMultipartContainer> cont = MultipartHelper.getContainer(tile.getWorld(), tile.getPos());
+			container = cont.isPresent() ? cont.get() : null;
+		} else {
+			container = (IMultipartContainer) tile;
 		}
-		if (actualTile instanceof IMultipartContainer) {
-			IMultipartContainer container = (IMultipartContainer) actualTile;
-
+		if (container != null) {
 			if (!cableOnly) {// check side slot first if a cable isn't the only target
 				Optional<IMultipartTile> part = container.getPartTile(EnumFaceSlot.fromFace(dir));
 				if (part.isPresent() && part.get() instanceof INetworkConnection) {
 					return (INetworkConnection) part.get();
 				}
-				Optional<IMultipartTile> display = container.getPartTile(EnumDisplayFaceSlot.fromFace(dir));
-				if (display.isPresent() && display.get() instanceof INetworkConnection) {
-					return (INetworkConnection) display.get();
+				if (!internal || !(source instanceof ILargeDisplay)) { // don't want the screen to return itself
+					EnumFacing displaySlot = source instanceof ILargeDisplay ? ((ILargeDisplay) source).getCableFace() : dir;
+					Optional<IMultipartTile> display = container.getPartTile(EnumDisplayFaceSlot.fromFace(displaySlot));
+					if (display.isPresent() && display.get() instanceof INetworkConnection) {
+						return (INetworkConnection) display.get();
+					}
 				}
 			}
 			if (!internal) { // don't want the cable to return itself
@@ -69,8 +74,8 @@ public class CableHelper extends CablingWrapper {
 					return (INetworkConnection) cable.get();
 				}
 			}
-		} else if (!internal && actualTile instanceof INetworkConnection) {
-			return (INetworkConnection) actualTile;
+		} else if (!internal && tile instanceof INetworkConnection) {
+			return (INetworkConnection) tile;
 		}
 
 		return null;
@@ -78,12 +83,12 @@ public class CableHelper extends CablingWrapper {
 
 	public static INetworkConnection getConnection(ICable cable, EnumFacing dir, NetworkConnectionType type, boolean isInternal, boolean cableOnly) {
 		if (type.matches(cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, isInternal))) {
-			World world = getWorldFromCable(cable);
+			World world = cable.getCoords().getWorld();
 			TileEntity tile = world.getTileEntity(isInternal ? cable.getCoords().getBlockPos() : cable.getCoords().getBlockPos().offset(dir));
 			if (tile != null) {
 				EnumFacing actualDir = isInternal ? dir : dir.getOpposite();
-				INetworkConnection connection = getNetworkTile(cable.getRegistryID(), tile, actualDir, isInternal, cableOnly);
-				if (connection !=null && type.matches(connection.canConnect(cable.getRegistryID(), cable.getConnectableType(), actualDir, isInternal))) {
+				INetworkConnection connection = getNetworkTile(cable, tile, actualDir, isInternal, cableOnly);
+				if (connection != null && type.matches(connection.canConnect(cable.getRegistryID(), cable.getConnectableType(), actualDir, isInternal))) {
 					return connection;
 				}
 			}
@@ -127,15 +132,6 @@ public class CableHelper extends CablingWrapper {
 		return new Pair(type, type == cableType ? ((IDataCable) external).getRegistryID() : -1);
 	}
 
-	public static World getWorldFromCable(ICable cable) {
-		if (cable instanceof TileEntity) {
-			return ((TileEntity) cable).getWorld();
-		} else if (cable instanceof TileSonarMultipart) {
-			return ((TileSonarMultipart) cable).getPartWorld();
-		}
-		return null;// oh dear
-	}
-
 	public static TileDataCable getCable(IBlockAccess world, BlockPos pos) {
 		IBlockAccess actualWorld = world;
 		TileEntity tile = actualWorld.getTileEntity(pos);
@@ -164,180 +160,6 @@ public class CableHelper extends CablingWrapper {
 		return logicTiles;
 	}
 
-	public static double[] getPos(IDisplay display, RenderInfoProperties renderInfo) {
-		if (display instanceof ConnectedDisplay) {
-			ConnectedDisplay connected = (ConnectedDisplay) display;
-			if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) {
-				BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos();
-				double[] translation = renderInfo.getTranslation();
-				switch (display.getCableFace()) {
-				case DOWN:
-					break;
-				case EAST:
-					break;
-				case NORTH:
-					return new double[] { leftPos.getX() - translation[0], leftPos.getY() - translation[1], leftPos.getZ() };
-				case SOUTH:
-					break;
-				case UP:
-					break;
-				case WEST:
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() };
-	}
-
-	public static int getSlot(IDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, int xSize, int ySize) {
-		double[] pos = CableHelper.getPos(display, renderInfo);
-		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
-		int minH = 0;
-		int maxY = (int) Math.ceil(renderInfo.getScaling()[1]);
-		int minY = 0;
-		int hSlots = Math.max(1, (Math.round(maxH - minH) * xSize));
-		int yPos = (int) ((1 - (hitVec.y - pos[1])) * Math.ceil(display.getDisplayType().height * ySize)), hPos = 0;
-		switch (display.getCableFace()) {
-		case DOWN:
-			switch (display.getRotation()) {
-			case EAST:
-				hPos = (int) ((maxH - minH - (hitVec.z - pos[2])) * xSize);
-				yPos = (int) ((maxH - minH - (hitVec.x - pos[0])) * 2);
-				return ((yPos * hSlots) + hPos);
-			case NORTH:
-				hPos = (int) ((maxH - minH - (hitVec.x - pos[0])) * xSize);
-				yPos = (int) ((minH + (hitVec.z - pos[2])) * 2);
-				return ((yPos * hSlots) + hPos);
-			case SOUTH:
-				hPos = (int) ((minH + (hitVec.x - pos[0])) * xSize);
-				yPos = (int) ((maxH - minH - (hitVec.z - pos[2])) * 2);
-				return ((yPos * hSlots) + hPos);
-			case WEST:
-				hPos = (int) ((minH + (hitVec.z - pos[2])) * xSize);
-				yPos = (int) ((minH + (hitVec.x - pos[0])) * 2);
-				return ((yPos * hSlots) + hPos);
-			default:
-				break;
-			}
-			break;
-		case EAST:
-			hPos = (int) ((1 + minH - (hitVec.z - pos[2])) * xSize);
-			return ((yPos * hSlots) + hPos);
-		case NORTH:
-			hPos = (int) ((1 - (hitVec.x - pos[0])) * xSize);
-			return ((yPos * hSlots) + hPos);
-		case SOUTH:
-			hPos = (int) ((maxH - minH + (hitVec.x - pos[0])) * xSize);
-			return ((yPos * hSlots) + hPos) - maxH * 2;
-		case UP:
-			switch (display.getRotation()) {
-			case EAST:
-				hPos = (int) ((maxH - minH - (hitVec.z - pos[2])) * xSize);
-				yPos = (int) ((minH + (hitVec.x - pos[0])) * 2);
-				return ((yPos * hSlots) + hPos);
-			case NORTH:
-				hPos = (int) ((maxH - minH - (hitVec.x - pos[0])) * xSize);
-				yPos = (int) ((maxH - (hitVec.z - pos[2])) * 2);
-				return ((yPos * hSlots) + hPos);
-			case SOUTH:
-				hPos = (int) ((maxH - minH + (hitVec.x - pos[0])) * xSize);
-				yPos = (int) ((minH + (hitVec.z - pos[2])) * 2);
-				return ((yPos * hSlots) + hPos) - maxH * 2;
-			case WEST:
-				hPos = (int) ((maxH - minH + (hitVec.z - pos[2])) * xSize);
-				yPos = (int) ((minH - (hitVec.x - pos[0])) * 2);
-				return ((yPos * hSlots) + hPos);
-			default:
-				break;
-			}
-
-			break;
-		case WEST:
-			hPos = (int) ((maxH - minH + (hitVec.z - pos[2])) * xSize);
-			return ((yPos * hSlots) + hPos) - maxH * 2;
-		default:
-			break;
-		}
-		return -1;
-	}
-
-	public static int getListSlot(IDisplay display, RenderInfoProperties renderInfo, Vec3d hitVec, double elementSize, double spacing, int maxPageSize) {
-		double[] pos = CableHelper.getPos(display, renderInfo);
-
-		int maxH = (int) Math.ceil(renderInfo.getScaling()[0]);
-		int minH = 0;
-		int maxY = (int) Math.ceil(renderInfo.getScaling()[1]);
-		int minY = 0;
-		int hSlots = 1;
-		double yClick = (1 - (hitVec.y - pos[1])) * Math.ceil(display.getDisplayType().height);
-
-		switch (display.getCableFace()) {
-		case DOWN:
-			switch (display.getRotation()) {
-			case EAST:
-				yClick = ((maxH - minH - (hitVec.x - pos[0])) * 2);
-				break;
-			case NORTH:
-				yClick = ((minH + (hitVec.z - pos[2])) * 2);
-				break;
-			case SOUTH:
-				yClick = ((maxH - minH - (hitVec.z - pos[2])) * 2);
-				break;
-			case WEST:
-				yClick = ((minH + (hitVec.x - pos[0])) * 2);
-				break;
-			default:
-				break;
-			}
-			break;
-		case UP:
-			switch (display.getRotation()) {
-			case EAST:
-				yClick = ((minH + (hitVec.x - pos[0])) * 2);
-				break;
-			case NORTH:
-				yClick = ((maxH - (hitVec.z - pos[2])) * 2);
-				break;
-			case SOUTH:
-				yClick = ((minH + (hitVec.z - pos[2])) * 2);
-				break;
-			case WEST:
-				yClick = ((minH - (hitVec.x - pos[0])) * 2);
-				break;
-			default:
-				break;
-			}
-			break;
-
-		default:
-			break;
-		}
-
-		for (int i = 0; i < maxPageSize; i++) {
-			double yStart = (i * elementSize) + (Math.max(0, (i - 1) * spacing)) + 0.0625;
-			double yEnd = yStart + elementSize;
-			if (yClick > yStart && yClick < yEnd) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	public IDataCable getCableFromCoords(BlockCoords coords) {
-		if (coords.getWorld() != null) {
-			return getCable(coords.getWorld(), coords.getBlockPos());// FIXME no
-																		// need
-																		// to
-																		// have
-																		// two
-																		// methods!
-		}
-		return null;
-	}
-
 	public static List<INetworkTile> getConnectedTiles(IDataCable cable) {
 		return getConnectedTiles(cable, new SonarValidation.CLASS(INetworkTile.class));
 	}
@@ -360,7 +182,7 @@ public class CableHelper extends CablingWrapper {
 		}
 		return logicTiles;
 	}
-
+	/*
 	public ILogisticsNetwork getNetwork(TileEntity tile, EnumFacing dir) {
 		// watch out for this null :P
 		Pair<ConnectableType, Integer> connection = PL2.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTABLE);
@@ -372,19 +194,11 @@ public class CableHelper extends CablingWrapper {
 		}
 		return EmptyLogisticsNetwork.INSTANCE;
 	}
-
+	
 	public ILogisticsNetwork getNetwork(int registryID) {
 		return PL2.instance.networkManager.getNetwork(registryID);
 	}
-
-	public static ILogicListenable getMonitorFromIdentity(int identity, boolean isRemote) {
-		for (ILogicListenable monitor : Maps.newHashMap(PL2.getInfoManager(isRemote).getMonitors()).values()) {
-			if (monitor.getIdentity() != -1 && monitor.getIdentity() == identity) {
-				return monitor;
-			}
-		}
-		return null;
-	}
+	*/
 
 	/* public static <T extends ICable> Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) { BlockPos offset = pos.offset(dir); IMultipartContainer container = MultipartHelper.getPartContainer(world, offset); if (container != null) { return getConnectionType(source, container, dir, cableType); } else { TileEntity tile = world.getTileEntity(offset); if (tile != null) { return getConnectionTypeFromObject(source, tile, dir, cableType); } } return new Pair(ConnectableType.NONE, -1); } /** checks what cable type can be connected via a certain direction, assumes the other block can connect from this side public static <T extends ICable> Pair<ConnectableType, Integer> getConnectionType(T source, IMultipartContainer container, EnumFacing dir, ConnectableType cableType) { ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(dir.getOpposite())); if (part != null) { return getConnectionTypeFromObject(source, part, dir, cableType); } else { ISlottedPart centre = container.getPartInSlot(PartSlot.CENTER); if (centre != null && centre instanceof IDataCable) { return getConnectionTypeFromObject(source, centre, dir, cableType); } } return new Pair(ConnectableType.NONE, -1); } public static <T extends ICable> Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType) { if (connection instanceof IDataCable) { IDataCable cable = (IDataCable) connection; if (cable.getConnectableType().canConnect(cableType)) { return cable.canConnectOnSide(cable.getRegistryID(), dir.getOpposite(), false) ? new Pair(cable.getConnectableType(), cable.getRegistryID()) : new Pair(ConnectableType.NONE, -1); } } else if (connection instanceof INetworkTile) { return ((INetworkTile) connection).canConnect(dir.getOpposite()).canShowConnection() ? new Pair(ConnectableType.TILE, -1) : new Pair(ConnectableType.NONE, -1); } return new Pair(ConnectableType.NONE, -1); } */
 }

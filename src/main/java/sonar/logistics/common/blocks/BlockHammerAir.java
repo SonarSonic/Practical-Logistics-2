@@ -14,9 +14,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import sonar.core.SonarCore;
 import sonar.core.utils.IGuiTile;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
+import sonar.logistics.common.hammer.TileEntityHammer;
 
 public class BlockHammerAir extends Block {
 
@@ -26,12 +28,13 @@ public class BlockHammerAir extends Block {
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (world.getBlockState(pos.offset(EnumFacing.DOWN)).getBlock() == PL2Blocks.hammer) {
-			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 1, pos.getZ());
-			return true;
-		} else if (world.getBlockState(pos.offset(EnumFacing.DOWN, 2)).getBlock() == PL2Blocks.hammer) {
-			player.openGui(PL2.instance, IGuiTile.ID, world, pos.getX(), pos.getY() - 2, pos.getZ());
-			return true;
+		for (int i = 1; i < 3; i++) {
+			BlockPos adj = pos.offset(EnumFacing.DOWN, i);
+			TileEntity tile = world.getTileEntity(adj);
+			if (tile != null && tile instanceof TileEntityHammer) {
+				SonarCore.instance.guiHandler.openBasicTile(false, tile, player, world, adj, 0);
+				return true;
+			}
 		}
 		return false;
 
@@ -42,19 +45,15 @@ public class BlockHammerAir extends Block {
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		world.setBlockToAir(pos);
-		IBlockState hammerState;
-		if ((hammerState = world.getBlockState(pos.offset(EnumFacing.DOWN))).getBlock() == PL2Blocks.hammer) {
-			TileEntity i = world.getTileEntity(pos.offset(EnumFacing.DOWN));
-			Block bi = hammerState.getBlock();
-			bi.dropBlockAsItem(world, pos.offset(EnumFacing.DOWN), hammerState, 0);
-			world.setBlockToAir(pos.offset(EnumFacing.DOWN));
-		} else if ((hammerState = world.getBlockState(pos.offset(EnumFacing.DOWN, 2))).getBlock() == PL2Blocks.hammer) {
-			TileEntity i = world.getTileEntity(pos.offset(EnumFacing.DOWN, 2));
-			Block bi = hammerState.getBlock();
-			bi.dropBlockAsItem(world, pos.offset(EnumFacing.DOWN, 2), hammerState, 0);
-			world.setBlockToAir(pos.offset(EnumFacing.DOWN, 2));
+		for (int i = 1; i < 3; i++) {
+			BlockPos adj = pos.offset(EnumFacing.DOWN, i);
+			IBlockState hammerState = world.getBlockState(adj);
+			Block block = hammerState.getBlock();
+			if (block == PL2Blocks.hammer) {
+				block.dropBlockAsItem(world, adj, hammerState, 0);
+				world.setBlockToAir(adj);
+			}
 		}
-
 	}
 
 	//// RENDERING \\\\

@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
@@ -34,6 +35,7 @@ import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.client.gui.GuiDisplayScreen;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
@@ -125,6 +127,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	@Override
 	public void setRegistryID(int id) {
 		registryID.setObject(id);
+		SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 	}
 
 	@Override
@@ -288,12 +291,25 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		}
 	}
 
+
+	@Override
+	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		TileAbstractDisplay part = (TileAbstractDisplay) getDisplayScreen().getTopLeftScreen();
+		return id == 0 ? new ContainerMultipartSync(part) : null;
+	}
+
+	@Override
+	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		TileAbstractDisplay part = (TileAbstractDisplay) getDisplayScreen().getTopLeftScreen();
+		return id == 0 ? new GuiDisplayScreen(part) : null;
+	}
+	
 	@Override
 	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
 			TileAbstractDisplay part = (TileAbstractDisplay) getDisplayScreen().getTopLeftScreen();
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
+			SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);
 			PL2.network.sendTo(new PacketConnectedDisplayUpdate(getDisplayScreen(), getRegistryID()), (EntityPlayerMP) player);
 			PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player);
 			break;
@@ -302,7 +318,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
-		return CableRenderType.CABLE;
+		return CableRenderType.INTERNAL;
 	}
 
 	@Override

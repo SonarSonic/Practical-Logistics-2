@@ -93,6 +93,10 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		return uuid.getObject();
 	}
 
+	public int getInfoPosition() {
+		return getRenderProperties().infoPos;
+	}
+
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());

@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
+import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -15,8 +17,8 @@ public class ConnectedDisplayData extends WorldSavedData {
 
 	public static final String tag = "sonar.logistics.networks.displays";
 
-	public ConnectedDisplayData(String name) {
-		super(name);
+	public ConnectedDisplayData(String string) {
+		super(tag);
 	}
 
 	@Override
@@ -48,5 +50,16 @@ public class ConnectedDisplayData extends WorldSavedData {
 
 	public boolean isDirty() {
 		return true;
+	}
+
+	public static ConnectedDisplayData get(World world) {
+		MapStorage storage = world.getMapStorage();
+		ConnectedDisplayData instance = (ConnectedDisplayData) storage.getOrLoadData(ConnectedDisplayData.class, tag);
+
+		if (instance == null) {
+			instance = new ConnectedDisplayData(tag);
+			storage.setData(tag, instance);
+		}
+		return instance;
 	}
 }

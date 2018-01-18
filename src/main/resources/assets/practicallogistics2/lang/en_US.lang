@@ -7,34 +7,36 @@ tile.Hammer.name=Forging Hammer
 tile.Hammer_Air.name=Forging Hammer
 
 //multiparts
-item.Node.name=Node
-item.FluidReader.name=Fluid Reader
-item.InfoReader.name=Info Reader
-item.EnergyReader.name=Energy Reader
-item.InventoryReader.name=Inventory Reader
-item.Array.name=Array
-item.DataCable.name=Data Cable
-item.EntityNode.name=Entity Node
-item.RedstoneSignaller.name=Redstone Signaller
-item.DataReceiver.name=Data Receiver
-item.DataEmitter.name=Data Emitter
-item.TransferNode.name=Transfer Node
-item.Clock.name=Clock
-item.EtchedPlate.name=Etched Plate
+tile.Node.name=Node
+tile.FluidReader.name=Fluid Reader
+tile.InfoReader.name=Info Reader
+tile.EnergyReader.name=Energy Reader
+tile.InventoryReader.name=Inventory Reader
+tile.Array.name=Array
+tile.DataCable.name=Data Cable
+tile.EntityNode.name=Entity Node
+tile.RedstoneSignaller.name=Redstone Signaller
+tile.DataReceiver.name=Data Receiver
+tile.DataEmitter.name=Data Emitter
+tile.TransferNode.name=Transfer Node
+tile.Clock.name=Clock
+
 
 //items
-item.DisplayScreenItem.name=Display Screen
+tile.DisplayScreen.name=Display Screen
+tile.HolographicDisplay.name=Holographic Display
+tile.LargeDisplayScreen.name=Large Display Screen
+
+
 item.Sapphire.name=Sapphire
 item.SapphireDust.name=Sapphire Dust
 item.StonePlate.name=Stone Plate
 item.Transceiver.name=Transceiver
 item.EntityTransceiver.name=Entity Transceiver
 item.Operator.name=Operator Tool
-item.DisplayScreen.name=Display Screen
-item.HolographicDisplay.name=Holographic Display
-item.LargeDisplayScreen.name=Large Display Screen
 item.PLGuide.name=Practical Logistics Guide
 item.WirelessStorage.name=Wireless Storage Reader
+item.EtchedPlate.name=Etched Plate
 
 //messages
 dataBlock.denied=Access Denied

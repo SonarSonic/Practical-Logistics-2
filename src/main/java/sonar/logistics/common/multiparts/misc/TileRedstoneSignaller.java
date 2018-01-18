@@ -61,7 +61,7 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 		Map<InfoUUID, IInfo> infoList = Maps.newHashMap();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				ILogicListenable monitor = CableHelper.getMonitorFromIdentity(id.getIdentity(), false);
+				ILogicListenable monitor = PL2.getServerManager().getIdentityTile(id.getIdentity());
 				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
 					IInfo monitorInfo = PL2.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
@@ -238,6 +238,6 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
-		return CableRenderType.HALF;
+		return CableRenderType.NONE;
 	}
 }

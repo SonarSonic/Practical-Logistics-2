@@ -59,10 +59,10 @@ public class PacketMonitoredList implements IMessage {
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
 			if (message.list != null) {
-				ILogicListenable viewable = PL2.getClientManager().monitors.get(message.identity);
+				ILogicListenable viewable = PL2.getClientManager().identityTiles.get(message.identity);
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 					AbstractChangeableList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
-					PL2.getClientManager().monitoredLists.put(message.id, list);
+					PL2.getClientManager().changeableLists.put(message.id, list);
 					PL2.getClientManager().onMonitoredListChanged(message.id, list);
 				});
 			}

@@ -11,8 +11,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
@@ -35,11 +36,13 @@ import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.tiles.displays.DisplayInteractionEvent;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.InteractionHelper;
 
 @LogicInfoType(id = LogicInfoList.id, modid = PL2Constants.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList>, IAdvancedClickableInfo {
@@ -233,9 +236,9 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	@Override
-	public NBTTagCompound onClientClick(DisplayInteractionEvent event, DisplayInfo renderInfo, EntityPlayer player, ItemStack stack, InfoContainer container) {
+	public NBTTagCompound createClickPacket(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
 		NBTTagCompound clickTag = new NBTTagCompound();
-		if (event.type == BlockInteractionType.SHIFT_RIGHT) {
+		if (click.type == BlockInteractionType.SHIFT_RIGHT) {
 			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list.size() > perPage * (pageCount + 1)) {
 				this.pageCount++;
@@ -246,8 +249,8 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			return clickTag;
 		}
 		/* if (displayMenu) { return clickTag; } */
-		if (infoID.getObject().equals(MonitoredItemStack.id) && event.hit != null) {
-			int slot = (perPage * pageCount) + CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 2, 2);
+		if (infoID.getObject().equals(MonitoredItemStack.id)) {
+			int slot = (perPage * pageCount) + InteractionHelper.getSlot(click, renderInfo, 2, 2);
 			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null) {
 				boolean hasItem = false;
@@ -261,8 +264,8 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				clickTag.setBoolean(ITEM_CLICK, hasItem);
 				return clickTag;
 			}
-		} else if (infoID.getObject().equals(MonitoredFluidStack.id) && event.hit != null) {
-			int slot = (perPage * pageCount) + CableHelper.getSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 1, 1);
+		} else if (infoID.getObject().equals(MonitoredFluidStack.id)) {
+			int slot = (perPage * pageCount) + InteractionHelper.getSlot(click, renderInfo, 1, 1);
 			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredFluidStack fluidStack = (MonitoredFluidStack) list.get(slot);
@@ -271,13 +274,13 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 				}
 				return clickTag;
 			}
-		} else if (infoID.getObject().equals(MonitoredEnergyStack.id) && event.hit != null) {
-			int slot = (int) ((perPage * pageCount) + CableHelper.getListSlot(container.getDisplay(), renderInfo.getRenderProperties(), event.hit.hitVec, 0.0625 * 6, 0.0625 * 1, perPage));
+		} else if (infoID.getObject().equals(MonitoredEnergyStack.id)) {
+			int slot = (int) ((perPage * pageCount) + InteractionHelper.getListSlot(click, renderInfo, 0.0625 * 6, 0.0625 * 1, perPage));
 			List<?> list = getCachedList(renderInfo.getInfoUUID());
 			if (list != null && slot >= 0 && slot < list.size()) {
 				MonitoredEnergyStack energyStack = (MonitoredEnergyStack) list.get(slot);
 				if (energyStack != null) {
-					if (event.type == BlockInteractionType.RIGHT) {
+					if (click.type == BlockInteractionType.RIGHT) {
 						RenderBlockSelection.addPosition(energyStack.getMonitoredCoords().getCoords(), false);
 						player.sendMessage(new TextComponentTranslation(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "'" + energyStack.getMonitoredCoords().getClientIdentifier() + "'" + " has been highlighted"));
 						
@@ -294,11 +297,15 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	}
 
 	@Override
-	public void onClickEvent(InfoContainer container, DisplayInfo displayInfo, DisplayInteractionEvent event, NBTTagCompound clickTag) {
+	public boolean canClick(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
+		return InteractionHelper.canBeClickedStandard(renderInfo, click);
+	}
+
+	@Override
+	public void runClickPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
 		if (infoID.getObject().equals(MonitoredItemStack.id)) {
 			MonitoredItemStack clicked = clickTag.getBoolean(ITEM_CLICK) ? NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag) : null;
-			//FIXME InfoHelper.screenItemStackClicked(clicked == null ? null : clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
-
+			InfoHelper.screenItemStackClicked(networkID.getObject(), clicked!=null ? clicked.getStoredStack() : null, click, displayInfo, player, clickTag);
 		} else if (infoID.getObject().equals(MonitoredFluidStack.id)) {
 			MonitoredFluidStack clicked = NBTHelper.instanceNBTSyncable(MonitoredFluidStack.class, clickTag);
 			//FIXME InfoHelper.screenFluidStackClicked(clicked.getStoredStack(), networkID.getObject(), event.type, event.doubleClick, displayInfo.getRenderProperties(), event.player, event.hand, event.player.getHeldItem(event.hand), event.hit);
