@@ -16,5 +16,9 @@ public interface IMonitoredValue<T> {
 
 	public boolean canCombine(T combine);
 	
+	public void setNew();
+	
+	public boolean shouldDelete(EnumListChange change);
+	
 	public T getSaveableInfo();
 }

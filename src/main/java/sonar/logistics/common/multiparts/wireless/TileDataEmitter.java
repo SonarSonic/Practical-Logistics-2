@@ -100,7 +100,7 @@ public class TileDataEmitter extends TileAbstractWireless implements IDataEmitte
 			part.readFromBuf(buf);
 
 		if (id == 5) {
-			WirelessDataHandler.onEmitterSecurityChanged(this, oldSetting);
+			PL2.getWirelessManager().onEmitterSecurityChanged(this, oldSetting);
 		}
 	}
 

@@ -14,6 +14,7 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
+import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
@@ -54,7 +55,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 				nbt = new NBTTagCompound();
 			}
 			Integer identity = getEmitterIdentity(stack);
-			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(identity);
+			IDataEmitter emitter = PL2.getWirelessManager().getDataEmitter(identity);
 			if (emitter != null) {
 				if (!emitter.getCoords().isChunkLoaded()) {
 					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);
@@ -76,14 +77,14 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 	public void onGuiOpened(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(getEmitterIdentity(obj));
+			IDataEmitter emitter = PL2.getWirelessManager().getDataEmitter(getEmitterIdentity(obj));
 			if (emitter != null) {
 				emitter.sendRapidUpdate(player);
-				emitter.getListenerList().addListener(player, ListenerType.INFO);
+				emitter.getListenerList().addListener(player, ListenerType.LISTENER);
 			}
 			break;
 		case 1:
-			WirelessDataHandler.addViewer(player);
+			PL2.getWirelessManager().addViewer(player);
 			break;
 		}
 	}
@@ -118,7 +119,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			if (buf.readBoolean()) {
 				selected = ByteBufUtils.readItemStack(buf);
 			}
-			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(getEmitterIdentity(stack));
+			IDataEmitter emitter = PL2.getWirelessManager().getDataEmitter(getEmitterIdentity(stack));
 			ItemHelper.onNetworkItemInteraction(emitter, emitter.getNetwork(), emitter.getServerItems(), player, selected, buf.readInt());
 
 			break;

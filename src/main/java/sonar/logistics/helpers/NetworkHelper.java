@@ -5,10 +5,12 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import net.minecraft.tileentity.TileEntity;
+import sonar.logistics.PL2;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.api.viewers.ILogicListenable;
 
 public class NetworkHelper {
 
@@ -31,4 +33,11 @@ public class NetworkHelper {
 		return true;
 	}
 
+	public static ILogisticsNetwork getNetwork(int networkID){
+		return PL2.getNetworkManager().getNetwork(networkID);
+	}
+
+	public static ILogicListenable getIdentityTile(int identity){
+		return PL2.getServerManager().getIdentityTile(identity);
+	}
 }

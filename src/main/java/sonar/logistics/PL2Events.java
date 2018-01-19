@@ -41,7 +41,7 @@ public class PL2Events {
 			CableConnectionHandler.instance().tick();
 			PL2.getNetworkManager().tick();
 			PL2.getServerManager().onServerTick();
-			WirelessDataHandler.tick();
+			PL2.getWirelessManager().tick();
 			PL2.getDisplayManager().tick();
 			TileArray.entityChanged = false;
 

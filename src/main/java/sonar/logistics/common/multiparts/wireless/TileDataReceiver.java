@@ -15,6 +15,7 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.utils.IByteBufTile;
+import sonar.logistics.PL2;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.wireless.ClientDataEmitter;
 import sonar.logistics.api.wireless.DataEmitterSecurity;
@@ -22,7 +23,6 @@ import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.common.containers.ContainerDataReceiver;
-import sonar.logistics.networking.connections.WirelessDataHandler;
 
 public class TileDataReceiver extends TileAbstractWireless implements IDataReceiver, IFlexibleGui, IByteBufTile {
 
@@ -53,17 +53,17 @@ public class TileDataReceiver extends TileAbstractWireless implements IDataRecei
 	}
 
 	public void addEmitterFromClient(ClientDataEmitter emitter) {
-		IDataEmitter tile = WirelessDataHandler.getDataEmitter(emitter.getIdentity());
+		IDataEmitter tile = PL2.getWirelessManager().getDataEmitter(emitter.getIdentity());
 		ClientDataEmitter cachedEmitter = getCachedEmitter(emitter.getIdentity());
 		boolean found = cachedEmitter != null;
 		if (!found) {
 			clientEmitters.addObject(emitter);
 			refreshConnectedNetworks();
-			WirelessDataHandler.connectNetworks(getNetwork(), tile.getNetwork());
+			PL2.getWirelessManager().connectNetworks(getNetwork(), tile.getNetwork());
 		} else {
 			clientEmitters.removeObject(cachedEmitter);
 			refreshConnectedNetworks();
-			WirelessDataHandler.disconnectNetworks(getNetwork(), tile.getNetwork());
+			PL2.getWirelessManager().disconnectNetworks(getNetwork(), tile.getNetwork());
 		}
 		sendSyncPacket();
 	}
@@ -96,7 +96,7 @@ public class TileDataReceiver extends TileAbstractWireless implements IDataRecei
 	public List<IDataEmitter> getEmitters() {
 		List<IDataEmitter> emitters = Lists.newArrayList();
 		for (ClientDataEmitter dataEmitter : clientEmitters.getObjects()) {
-			IDataEmitter emitter = WirelessDataHandler.getDataEmitter(dataEmitter.getIdentity());
+			IDataEmitter emitter = PL2.getWirelessManager().getDataEmitter(dataEmitter.getIdentity());
 			if (emitter != null && emitter.canPlayerConnect(playerUUID.getUUID())) {
 				emitters.add(emitter);
 			}
@@ -146,7 +146,7 @@ public class TileDataReceiver extends TileAbstractWireless implements IDataRecei
 		switch (id) {
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			WirelessDataHandler.addViewer(player);
+			PL2.getWirelessManager().addViewer(player);
 			break;
 		}
 	}
@@ -164,9 +164,9 @@ public class TileDataReceiver extends TileAbstractWireless implements IDataRecei
 			if (wasConnected != canConnect) {
 				refreshConnectedNetworks();
 				if (wasConnected) {
-					WirelessDataHandler.disconnectNetworks(getNetwork(), emitter.getNetwork());
+					PL2.getWirelessManager().disconnectNetworks(getNetwork(), emitter.getNetwork());
 				} else {
-					WirelessDataHandler.connectNetworks(getNetwork(), emitter.getNetwork());
+					PL2.getWirelessManager().connectNetworks(getNetwork(), emitter.getNetwork());
 				}
 			}
 		}

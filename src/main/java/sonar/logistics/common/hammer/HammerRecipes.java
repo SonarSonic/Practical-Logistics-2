@@ -23,7 +23,7 @@ public class HammerRecipes extends DefinedRecipeHelper<ISonarRecipe> {
 		this.addRecipe("gemSapphire", new ItemStack(PL2Items.sapphire_dust));
 		this.addRecipe("stone", new ItemStack(PL2Items.stone_plate, 4));
 		this.addRecipe("oreSapphire", new ItemStack(PL2Items.sapphire_dust, 2));
-		this.addRecipe(new RecipeOreStack("gemDiamond", 4), new ItemStack(PL2Items.etched_plate, 1));
+		this.addRecipe(new RecipeOreStack("gemDiamond", 1), new ItemStack(PL2Items.etched_plate, 4));
 	}
 
 	@Override

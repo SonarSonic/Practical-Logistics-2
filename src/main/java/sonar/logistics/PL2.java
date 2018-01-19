@@ -51,6 +51,7 @@ public class PL2 {
 	public static PL2 instance;
 
 	public LogisticsNetworkHandler networkManager = new LogisticsNetworkHandler();
+	public WirelessDataHandler wirelessManager = new WirelessDataHandler();
 	public CableConnectionHandler cableManager = new CableConnectionHandler();
 	public ScreenConnectionHandler displayManager = new ScreenConnectionHandler();
 	public ServerInfoHandler serverManager = new ServerInfoHandler();
@@ -149,7 +150,7 @@ public class PL2 {
 
 	@EventHandler
 	public void serverClose(FMLServerStoppedEvent event) {
-		WirelessDataHandler.removeAll();
+		getWirelessManager().removeAll();
 		getNetworkManager().removeAll();
 		getCableManager().removeAll();
 		getDisplayManager().removeAll();
@@ -168,6 +169,10 @@ public class PL2 {
 
 	public static ScreenConnectionHandler getDisplayManager() {
 		return PL2.instance.displayManager;
+	}
+
+	public static WirelessDataHandler getWirelessManager() {
+		return PL2.instance.wirelessManager;
 	}
 	
 	public static ServerInfoHandler getServerManager() {

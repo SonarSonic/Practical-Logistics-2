@@ -53,7 +53,7 @@ public class FluidCount implements IMonitoredValue<MonitoredFluidStack> {
 
 	@Override
 	public boolean canCombine(MonitoredFluidStack combine) {
-        return fluid.getStoredStack().equalStack(combine.getStoredStack().fluid);
+		return fluid.getStoredStack().equalStack(combine.getStoredStack().fluid);
 	}
 
 	@Override
@@ -69,7 +69,16 @@ public class FluidCount implements IMonitoredValue<MonitoredFluidStack> {
 	@Override
 	public void reset(MonitoredFluidStack fullInfo) {
 		fluid = fullInfo.copy();
-		
+	}
+
+	@Override
+	public void setNew() {
+		this.isNew = true;
+	}
+
+	@Override
+	public boolean shouldDelete(EnumListChange change) {
+		return change.shouldDelete() || fluid == null || fluid.getStored() == 0;
 	}
 
 }

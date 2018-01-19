@@ -42,7 +42,7 @@ public class PacketMonitoredList implements IMessage {
 		networkID = buf.readInt();
 		id = InfoUUID.getUUID(buf);
 		type = SyncType.values()[buf.readInt()];
-		list = InfoHelper.readMonitoredList(ByteBufUtils.readTag(buf), PL2.getClientManager().getMonitoredList(id), type);
+		listTag = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
@@ -58,10 +58,11 @@ public class PacketMonitoredList implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
-			if (message.list != null) {
+			if (message.listTag != null) {
 				ILogicListenable viewable = PL2.getClientManager().identityTiles.get(message.identity);
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					AbstractChangeableList list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(message.list, message.id.channelID) : message.list;
+					AbstractChangeableList list = InfoHelper.readMonitoredList(message.listTag, PL2.getClientManager().getMonitoredList(message.id), message.type);
+					list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(list, message.id.channelID) : list;
 					PL2.getClientManager().changeableLists.put(message.id, list);
 					PL2.getClientManager().onMonitoredListChanged(message.id, list);
 				});

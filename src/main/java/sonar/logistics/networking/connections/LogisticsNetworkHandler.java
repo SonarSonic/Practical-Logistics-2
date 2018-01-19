@@ -44,6 +44,7 @@ public class LogisticsNetworkHandler {
 		}
 	}
 
+	/**will never be null*/
 	public ILogisticsNetwork getNetwork(int networkID) {
 		ILogisticsNetwork networkCache = cache.get(networkID);
 		return networkCache != null ? networkCache : EmptyLogisticsNetwork.INSTANCE;

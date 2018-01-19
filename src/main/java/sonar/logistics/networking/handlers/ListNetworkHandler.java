@@ -34,6 +34,10 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 	public int getReaderID(IListReader reader) {
 		return 0;
 	}
+	
+	public InfoUUID getReaderUUID(IListReader reader){
+		return new InfoUUID(reader.getIdentity(), getReaderID(reader));
+	}
 
 	public boolean canHandleTiles() {
 		if (tiles == null) {
@@ -89,18 +93,18 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 		return newList;
 	}
 
-	public Pair<InfoUUID, L> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, L> channelLists, boolean send) {
-		InfoUUID uuid = new InfoUUID(reader.getIdentity(), getReaderID(reader));
+	public Pair<InfoUUID, AbstractChangeableList<I>> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, AbstractChangeableList<I>> channelLists, boolean send) {
+		InfoUUID uuid = getReaderUUID(reader);
 		if (network.validateTile(reader)) {
 			List<NodeConnection> usedChannels = Lists.newArrayList();
-			AbstractChangeableList<I> updateList = (updateList = PL2.getServerManager().getMonitoredList(uuid)) == null ? this.newChangeableList() : updateList;
+			AbstractChangeableList<I> updateList = (updateList = PL2.getServerManager().getMonitoredList(uuid)) == null ? newChangeableList() : updateList;
 			updateList.saveStates();
-			AbstractChangeableList<I> viewableList = reader.getViewableList(updateList, uuid, (Map<NodeConnection, AbstractChangeableList<I>>) channelLists, usedChannels);
+			AbstractChangeableList<I> viewableList = reader.getViewableList(updateList, uuid, channelLists, usedChannels);
 			if (reader instanceof INetworkReader) {
 				((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels, uuid);
 			}
 			PL2.getServerManager().monitoredLists.put(uuid, updateList);
-			if (send)
+			if (send && (!updateList.wasLastListNull || updateList.wasLastListNull != updateList.getList().isEmpty()))
 				PacketHelper.sendReaderToListeners(reader, updateList, uuid);
 			return new Pair(uuid, updateList);
 		}

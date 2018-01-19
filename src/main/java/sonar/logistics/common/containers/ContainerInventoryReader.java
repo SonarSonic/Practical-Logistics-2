@@ -104,7 +104,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			part.getListenerList().removeListener(player, true, ListenerType.INFO);
+			part.getListenerList().removeListener(player, true, ListenerType.LISTENER);
 	}
 
 	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {

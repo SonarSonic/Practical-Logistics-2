@@ -51,7 +51,7 @@ public class ItemCount implements IMonitoredValue<MonitoredItemStack> {
 		return item.getStoredStack().equalStack(combine.getStoredStack().item);
 	}
 
-	public boolean canCombine(ItemStack combine, long stored) {
+	public boolean canCombine(ItemStack combine) {
 		return item.getStoredStack().equalStack(combine);
 	}
 
@@ -68,6 +68,16 @@ public class ItemCount implements IMonitoredValue<MonitoredItemStack> {
 	@Override
 	public void reset(MonitoredItemStack fullInfo) {
 		this.item = fullInfo.copy();
+	}
+
+	@Override
+	public void setNew() {
+		this.isNew = true;
+	}
+
+	@Override
+	public boolean shouldDelete(EnumListChange change) {
+		return change.shouldDelete() || item ==null || item.getStored() == 0; //rapid updates cause item counts to be "new" even if they have been completely removed
 	}
 
 }

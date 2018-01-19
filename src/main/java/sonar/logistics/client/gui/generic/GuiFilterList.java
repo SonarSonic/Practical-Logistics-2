@@ -416,13 +416,13 @@ public class GuiFilterList extends GuiSelectionList {
 			break;
 		case LIST:
 			INodeFilter selection = (INodeFilter) info;
-			if (selection instanceof ItemFilter && this.player.inventory.getItemStack() != null) {
+			if (selection instanceof ItemFilter && !this.player.inventory.getItemStack().isEmpty()) {
 				ItemFilter filter = (ItemFilter) selection;
 				filter.addItem(new StoredItemStack(this.player.inventory.getItemStack(), 1));
 				PL2.network.sendToServer(new PacketNodeFilter(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
 				return;
 			}
-			if (selection instanceof FluidFilter && this.player.inventory.getItemStack() != null) {
+			if (selection instanceof FluidFilter && !this.player.inventory.getItemStack().isEmpty()) {
 				addFluidToFilter(selection, this.player.inventory.getItemStack());
 				PL2.network.sendToServer(new PacketNodeFilter(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.ADD, selection));
 				return;
@@ -545,7 +545,7 @@ public class GuiFilterList extends GuiSelectionList {
 			}
 			if (itemSlot != null) {
 				ItemStack itemstack = itemSlot.getStack();
-				if (itemstack != null) {
+				if (!itemstack.isEmpty()) {
 					if (state == GuiState.ITEM_FILTER) {
 						((ItemFilter) currentFilter).addItem(new StoredItemStack(itemstack, 1));
 					} else if (state == GuiState.FLUID_FILTER) {

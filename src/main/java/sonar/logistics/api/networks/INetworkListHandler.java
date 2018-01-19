@@ -13,6 +13,7 @@ import sonar.logistics.api.tiles.readers.IListReader;
 public interface INetworkListHandler<I extends IInfo, L extends AbstractChangeableList> extends INetworkHandler {
 
 	//public String id();
+	public InfoUUID getReaderUUID(IListReader<I> reader);
 	
 	public int updateRate();
 
@@ -24,6 +25,6 @@ public interface INetworkListHandler<I extends IInfo, L extends AbstractChangeab
 	
 	public Map<NodeConnection, L> getAllChannels(Map<NodeConnection, L> list, ILogisticsNetwork network);
 
-	public Pair<InfoUUID, L> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, L> channelLists, boolean send);
+	public Pair<InfoUUID, AbstractChangeableList<I>> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, AbstractChangeableList<I>> channelLists, boolean send);
 
 }

@@ -64,8 +64,7 @@ public class PacketInventoryReader extends PacketMultipart {
 					ILogisticsNetwork network = reader.getNetwork();
 					if (network.isValid()){
 						ItemHelper.onNetworkItemInteraction(reader, network, reader.getMonitoredList(), player, message.selected, message.button);
-					}
-					
+					}					
 				});
 			}
 			return null;

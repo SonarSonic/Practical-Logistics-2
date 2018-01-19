@@ -8,6 +8,7 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.slots.SlotLimiter;
+import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
@@ -32,7 +33,7 @@ public class ContainerStorageViewer extends Container {
 		this.identity = identity;
 		this.player = player;
 		if (!player.getEntityWorld().isRemote) {
-			emitter = WirelessDataHandler.getDataEmitter(identity);
+			emitter = PL2.getWirelessManager().getDataEmitter(identity);
 		}
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
@@ -46,7 +47,7 @@ public class ContainerStorageViewer extends Container {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
@@ -96,7 +97,7 @@ public class ContainerStorageViewer extends Container {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote && emitter != null) {
-			emitter.getListenerList().removeListener(player, true, ListenerType.INFO);
+			emitter.getListenerList().removeListener(player, true, ListenerType.LISTENER);
 		}
 	}
 

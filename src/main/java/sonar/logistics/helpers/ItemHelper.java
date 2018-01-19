@@ -127,10 +127,10 @@ public class ItemHelper extends ItemWrapper {
 			channels.updateAllChannels();
 			channels.updateLargeInventory = false;
 			ItemChangeableList updateList = new ItemChangeableList();
-			for (Entry<NodeConnection, AbstractChangeableList> entry : channels.channels.entrySet()) {
-				AbstractChangeableList list = entry.getValue();
+			for (Entry<NodeConnection, AbstractChangeableList<MonitoredItemStack>> entry : channels.channels.entrySet()) {
+				AbstractChangeableList<MonitoredItemStack> list = entry.getValue();
 				if (!list.getList().isEmpty() && list instanceof ItemChangeableList) {
-					for (IMonitoredValue<MonitoredItemStack> coordInfo : ((ItemChangeableList)list).getList()) {
+					for (IMonitoredValue<MonitoredItemStack> coordInfo : ((ItemChangeableList) list).getList()) {
 						updateList.add((MonitoredItemStack) coordInfo.getSaveableInfo().copy());
 					}
 				}
@@ -201,7 +201,7 @@ public class ItemHelper extends ItemWrapper {
 		List<Integer> empty = Lists.newArrayList();
 		for (int i = 0; i < size; i++) {
 			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				if (!(stack.getCount() >= stack.getMaxStackSize()) && add.equalStack(stack) && stack.getCount() < inv.getInventoryStackLimit()) {
 					long used = (long) Math.min(add.item.getMaxStackSize(), Math.min(add.stored, inv.getInventoryStackLimit() - stack.getCount()));
 					stack.grow((int) used);
@@ -336,7 +336,7 @@ public class ItemHelper extends ItemWrapper {
 		ItemStack returned = StoredItemStack.getActualStack(stack);
 		if (!ItemStack.areItemStacksEqual(returned, player.inventory.getStackInSlot(slot))) {
 			player.inventory.setInventorySlotContents(slot, returned);
-			return (returned == null ? original : original - returned.getCount());
+			return (returned.isEmpty() ? original : original - returned.getCount());
 		} else {
 			FontHelper.sendMessage(TextFormatting.BLUE + "Logistics: " + TextFormatting.RESET + "The item cannot be inserted", player.getEntityWorld(), player);
 			return 0;
@@ -347,17 +347,20 @@ public class ItemHelper extends ItemWrapper {
 		boolean change = false;
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			ItemStack add = player.inventory.getStackInSlot(i);
-			if (add == null || add.getItem() instanceof IWirelessStorageReader)
+			if (add.isEmpty() || add.getItem() instanceof IWirelessStorageReader)
 				continue;
 			StoredItemStack stack = transferItems(cache, new StoredItemStack(add), NodeTransferMode.ADD, ActionType.PERFORM, null);
 			if (stack == null || stack.stored == 0) {
-				add = null;
+				add = ItemStack.EMPTY;
 			} else {
 				add.setCount((int) stack.stored);
 			}
 			if (!ItemStack.areItemStacksEqual(add, player.inventory.getStackInSlot(i))) {
 				change = true;
 				player.inventory.setInventorySlotContents(i, add);
+				if (stack != null){
+					PacketHelper.createRapidItemUpdate(Lists.newArrayList(stack.getItemStack()), cache.getNetworkID());
+				}
 			}
 		}
 		return change;
@@ -366,9 +369,10 @@ public class ItemHelper extends ItemWrapper {
 	public void dumpNetworkToPlayer(AbstractChangeableList<MonitoredItemStack> items, EntityPlayer player, ILogisticsNetwork cache) {
 		for (IMonitoredValue<MonitoredItemStack> value : items.getList()) {
 			MonitoredItemStack stack = value.getSaveableInfo();
-			StoredItemStack returned = removeToPlayerInventory(stack.getStoredStack(), stack.getStored(), cache, player, ActionType.SIMULATE);
+			StoredItemStack returned = removeToPlayerInventory(stack.getStoredStack().copy(), stack.getStored(), cache, player, ActionType.SIMULATE);
 			if (returned != null) {
 				removeToPlayerInventory(stack.getStoredStack(), returned.stored, cache, player, ActionType.PERFORM);
+				PacketHelper.createRapidItemUpdate(Lists.newArrayList(returned.getItemStack()), cache.getNetworkID());
 			}
 		}
 	}
@@ -382,7 +386,6 @@ public class ItemHelper extends ItemWrapper {
 			TileEntity from = mode.shouldRemove() ? filterTile : netTile;
 			TileEntity to = !mode.shouldRemove() ? filterTile : netTile;
 			ConnectionFilters filters = new ConnectionFilters(override, filter, connection);
-
 			SonarAPI.getItemHelper().transferItems(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), filters);
 		}
 	}
@@ -467,17 +470,21 @@ public class ItemHelper extends ItemWrapper {
 				return;
 			}
 			PL2API.getItemHelper().removeToPlayerInventory(new StoredItemStack(selected), (long) 64, network, player, ActionType.PERFORM);
-		} else if (player.inventory.getItemStack() != null) {
+			PacketHelper.createRapidItemUpdate(Lists.newArrayList(selected), network.getNetworkID());
+		} else if (!player.inventory.getItemStack().isEmpty()) {
+
 			StoredItemStack add = new StoredItemStack(player.inventory.getItemStack().copy());
 			int stackSize = Math.min(button == 1 ? 1 : 64, add.getValidStackSize());
 			StoredItemStack stack = PL2API.getItemHelper().transferItems(network, add.copy().setStackSize(stackSize), NodeTransferMode.ADD, ActionType.PERFORM, null);
 			StoredItemStack remove = SonarAPI.getItemHelper().getStackToAdd(stackSize, add, stack);
 			ItemStack actualStack = add.copy().setStackSize(add.stored - SonarAPI.getItemHelper().getStackToAdd(stackSize, add, stack).stored).getActualStack();
-			if (actualStack == null || (actualStack.getCount() != add.stored && !(actualStack.getCount() <= 0)) && !ItemStack.areItemStacksEqual(StoredItemStack.getActualStack(stack), player.inventory.getItemStack())) {
+			if (actualStack.isEmpty() || (actualStack.getCount() != add.stored && !(actualStack.getCount() <= 0)) && !ItemStack.areItemStacksEqual(StoredItemStack.getActualStack(stack), player.inventory.getItemStack())) {
 				player.inventory.setItemStack(actualStack);
 				SonarCore.network.sendTo(new PacketStackUpdate(actualStack), (EntityPlayerMP) player);
+				PacketHelper.createRapidItemUpdate(Lists.newArrayList(add.getItemStack()), network.getNetworkID());
 			}
-		} else if (player.inventory.getItemStack() == null) {
+
+		} else if (player.inventory.getItemStack().isEmpty()) {
 			if (selected == null) {
 				return;
 			}
@@ -493,18 +500,16 @@ public class ItemHelper extends ItemWrapper {
 				if (storedStack != null && storedStack.stored != 0) {
 					player.inventory.setItemStack(storedStack.getFullStack());
 					SonarCore.network.sendTo(new PacketStackUpdate(storedStack.getFullStack()), (EntityPlayerMP) player);
+					PacketHelper.createRapidItemUpdate(Lists.newArrayList(storedStack.getItemStack()), network.getNetworkID());
 				}
 			}
 
 		}
-		ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
-		if (channels != null) // TODO shouldn't have to ever do this.
-			channels.sendLocalRapidUpdate(reader, player);
 	}
 
 	public static void sortItemList(AbstractChangeableList<MonitoredItemStack> updateInfo, final SortingDirection dir, SortingType type) {
 		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-			public int compare(IMonitoredValue<MonitoredItemStack> str1,IMonitoredValue<MonitoredItemStack> str2) {
+			public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
 				StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
 				return SonarHelper.compareStringsWithDirection(item1.getItemStack().getDisplayName(), item2.getItemStack().getDisplayName(), dir);
 			}

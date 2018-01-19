@@ -76,14 +76,26 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 
 	//// ILogicReader \\\\
 	@Override
+	public AbstractChangeableList<MonitoredItemStack> getViewableList(AbstractChangeableList<MonitoredItemStack> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredItemStack>> channels, List<NodeConnection> usedChannels) {
+		if (updateList instanceof ItemChangeableList) {
+			channels.values().forEach(list -> {
+				if (list instanceof ItemChangeableList) {
+					((ItemChangeableList) updateList).sizing.add(((ItemChangeableList) list).sizing);
+				}
+			});
+		}
+		return super.getViewableList(updateList, uuid, channels, usedChannels);
+	}
+
+	@Override
 	public AbstractChangeableList<MonitoredItemStack> sortMonitoredList(AbstractChangeableList<MonitoredItemStack> updateInfo, int channelID) {
 		ItemHelper.sortItemList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
 		return updateInfo;
 	}
 
-	public boolean canMonitorInfo(MonitoredItemStack info, int infoID, Map<NodeConnection, UniversalChangeableList<?>> channels, List<NodeConnection> usedChannels) {
+	public boolean canMonitorInfo(IMonitoredValue<MonitoredItemStack> info, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredItemStack>> channels, List<NodeConnection> usedChannels) {
 		if (this.setting.getObject() == Modes.FILTERED) {
-			return filters.matches(info.getStoredStack(), NodeTransferMode.ADD_REMOVE);
+			return filters.matches(info.getSaveableInfo().getStoredStack(), NodeTransferMode.ADD_REMOVE);
 		}
 		return true;
 	}
@@ -130,11 +142,11 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 			if (stack != null) {
 				MonitoredItemStack dummyInfo = new MonitoredItemStack(new StoredItemStack(stack.copy(), 0), network.getNetworkID());
 				IMonitoredValue<MonitoredItemStack> value = updateInfo.find(dummyInfo);
-				info = value==null? dummyInfo : value.getSaveableInfo(); //FIXME had set network srouce, should check EnumlistChange
+				info = value == null ? dummyInfo : value.getSaveableInfo(); // FIXME had set network srouce, should check EnumlistChange
 			}
 			break;
 		case STORAGE:
-			StorageSize size = updateInfo instanceof ItemChangeableList? ((ItemChangeableList)updateInfo).sizing :new StorageSize(0,0);
+			StorageSize size = updateInfo instanceof ItemChangeableList ? ((ItemChangeableList) updateInfo).sizing : new StorageSize(0, 0);
 			info = new ProgressInfo(LogicInfo.buildDirectInfo("item.storage", RegistryType.TILE, size.getStored()), LogicInfo.buildDirectInfo("max", RegistryType.TILE, size.getMaxStored()));
 			break;
 		default:
@@ -162,7 +174,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 		if (id == 5 || id == 6) {
 			ItemNetworkChannels list = network.getNetworkChannels(ItemNetworkChannels.class);
 			if (list != null) {
-				List<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
+				List<PlayerListener> players = listeners.getListeners(ListenerType.LISTENER);
 				players.forEach(player -> list.sendLocalRapidUpdate(this, player.player));
 			}
 		}
@@ -173,19 +185,29 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:	return new ContainerInventoryReader(this, player);
-		case 1:	return new ContainerChannelSelection(this);
-		case 2:	return new ContainerFilterList(player, this);
-		default: return null;}
+		case 0:
+			return new ContainerInventoryReader(this, player);
+		case 1:
+			return new ContainerChannelSelection(this);
+		case 2:
+			return new ContainerFilterList(player, this);
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:	return new GuiInventoryReader(this, player);
-		case 1:	return new GuiChannelSelection(player, this, 0);
-		case 2:	return new GuiFilterList(player, this, 0);
-		default: return null;}
+		case 0:
+			return new GuiInventoryReader(this, player);
+		case 1:
+			return new GuiChannelSelection(player, this, 0);
+		case 2:
+			return new GuiFilterList(player, this, 0);
+		default:
+			return null;
+		}
 	}
 
 	@Override

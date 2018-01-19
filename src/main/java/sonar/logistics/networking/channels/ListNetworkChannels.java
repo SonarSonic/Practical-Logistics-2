@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,8 +34,8 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 	protected Iterator<IListReader<M>> readerIterator;
 	protected int readersPerTick = 0;
 
-	public Map<NodeConnection, AbstractChangeableList> channels = Maps.newHashMap();
-	protected Iterator<Entry<NodeConnection, AbstractChangeableList>> channelIterator;
+	public Map<NodeConnection, AbstractChangeableList<M>> channels = Maps.newHashMap();
+	protected Iterator<Entry<NodeConnection, AbstractChangeableList<M>>> channelIterator;
 	protected int channelsPerTick = 0;
 
 	protected boolean hasListeners = false;
@@ -80,7 +81,7 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 	public void updateTickLists() {
 		this.readersPerTick = readers.size() > handler.updateRate() ? (int) Math.ceil(readers.size() / Math.max(1, handler.updateRate())) : 1;
 		this.channelsPerTick = channels.size() > handler.updateRate() ? (int) Math.ceil(channels.size() / Math.max(1, handler.updateRate())) : 1;
-		
+
 		this.channelIterator = channels.entrySet().iterator();
 		this.readerIterator = readers.iterator();
 	}
@@ -114,8 +115,8 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 	public void updateChannels() {
 		int used = 0;
 		while (channelIterator.hasNext() && used != channelsPerTick) {
-			Entry<NodeConnection, AbstractChangeableList> entry = channelIterator.next();
-			AbstractChangeableList newList = handler.updateConnection(this, entry.getValue(), entry.getKey());
+			Entry<NodeConnection, AbstractChangeableList<M>> entry = channelIterator.next();
+			AbstractChangeableList<M> newList = handler.updateConnection(this, entry.getValue(), entry.getKey());
 			channels.put(entry.getKey(), newList);
 			used++;
 		}
@@ -133,11 +134,10 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 	}
 
 	public void updateAllChannels() {
-		for (Entry<NodeConnection, AbstractChangeableList> entry : channels.entrySet()) {
+		for (Entry<NodeConnection, AbstractChangeableList<M>> entry : channels.entrySet()) {
 			channels.put(entry.getKey(), handler.updateConnection(this, entry.getValue(), entry.getKey()));
 		}
 	}
-
 	public void updateAllReaders(boolean send) {
 		readers.forEach(reader -> handler.updateAndSendList(network, reader, channels, send));
 	}

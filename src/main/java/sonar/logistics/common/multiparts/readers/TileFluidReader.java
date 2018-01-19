@@ -1,6 +1,7 @@
 package sonar.logistics.common.multiparts.readers;
 
 import java.util.List;
+import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.FluidChangeableList;
+import sonar.logistics.api.lists.types.ItemChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.register.RegistryType;
@@ -37,6 +39,7 @@ import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredFluidStack;
+import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 import sonar.logistics.networking.channels.FluidNetworkChannels;
@@ -64,6 +67,17 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	}
 
 	//// ILogicReader \\\\
+	@Override
+	public AbstractChangeableList<MonitoredFluidStack> getViewableList(AbstractChangeableList<MonitoredFluidStack> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredFluidStack>> channels, List<NodeConnection> usedChannels) {
+		if (updateList instanceof FluidChangeableList) {
+			channels.values().forEach(list -> {
+				if (list instanceof FluidChangeableList) {
+					((FluidChangeableList) updateList).sizing.add(((FluidChangeableList) list).sizing);
+				}
+			});
+		}
+		return super.getViewableList(updateList, uuid, channels, usedChannels);
+	}
 	@Override
 	public AbstractChangeableList<MonitoredFluidStack> sortMonitoredList(AbstractChangeableList<MonitoredFluidStack> updateInfo, int channelID) {
 		FluidHelper.sortFluidList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
@@ -113,7 +127,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 		if (id == 5 || id == 6) {
 			FluidNetworkChannels list = network.getNetworkChannels(FluidNetworkChannels.class);
 			if (list != null) {
-				List<PlayerListener> players = listeners.getListeners(ListenerType.INFO);
+				List<PlayerListener> players = listeners.getListeners(ListenerType.LISTENER);
 				players.forEach(player -> list.sendLocalRapidUpdate(this, player.player));
 			}
 		}

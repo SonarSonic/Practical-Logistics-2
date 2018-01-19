@@ -233,7 +233,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				return;
 			}
 			List list = storedStack.item.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-			list.add(1, PL2Translate.BUTTON_STORED + ": " + storedStack.stored);
+			list.add(1, PL2Translate.BUTTON_STORED.t() + ": " + storedStack.stored);
 			for (int k = 0; k < list.size(); ++k) {
 				if (k == 0) {
 					list.set(k, storedStack.item.getRarity().rarityColor + (String) list.get(k));

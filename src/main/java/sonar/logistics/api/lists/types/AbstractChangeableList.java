@@ -19,22 +19,22 @@ import sonar.logistics.api.lists.IMonitoredValue;
 public abstract class AbstractChangeableList<T> {
 
 	public static final Consumer<? super IMonitoredValue> saveState = IMonitoredValue::resetChange;
-	public List<IMonitoredValue<T>> list = Lists.newArrayList();
+	public List<IMonitoredValue<T>> values = Lists.newArrayList();
 	public boolean wasLastListNull = false;
 
 	public AbstractChangeableList() {}
 
 	public List<IMonitoredValue<T>> getList() {
-		return list;
+		return values;
 	}
 
 	public int getValueCount() {
-		return list.size();
+		return values.size();
 	}
 
 	public T getActualValue(int i) {
 		if (i < getValueCount()) {
-			return list.get(i).getSaveableInfo();
+			return values.get(i).getSaveableInfo();
 		}
 		return null;
 	}
@@ -42,7 +42,7 @@ public abstract class AbstractChangeableList<T> {
 	public void add(T obj) {
 		IMonitoredValue<T> found = find(obj);
 		if (found == null) {
-			list.add(createMonitoredValue(obj));
+			values.add(createMonitoredValue(obj));
 		} else {
 			doCombine(found, obj);
 		}
@@ -50,7 +50,7 @@ public abstract class AbstractChangeableList<T> {
 
 	@Nullable
 	public IMonitoredValue<T> find(T obj) {
-		for (IMonitoredValue<T> value : list) {
+		for (IMonitoredValue<T> value : values) {
 			if (value.canCombine(obj)) {
 				return value;
 			}
@@ -60,15 +60,15 @@ public abstract class AbstractChangeableList<T> {
 
 	public void saveStates() {
 		List<IMonitoredValue<T>> toDelete = Lists.newArrayList();
-		list.forEach(value -> {
+		values.forEach(value -> {
 			if (value.getChange().shouldDelete()) {
 				toDelete.add(value);
 			} else {
 				value.resetChange();
 			}
 		});
-		toDelete.forEach(value -> list.remove(value));
-		wasLastListNull = list.isEmpty();
+		toDelete.forEach(value -> values.remove(value));
+		wasLastListNull = values.isEmpty();
 	}
 
 	public void doCombine(IMonitoredValue<T> value, T obj) {
@@ -76,9 +76,9 @@ public abstract class AbstractChangeableList<T> {
 	}
 
 	public List<T> createSaveableList() {
-		List<T> values = Lists.newArrayList();
-		list.forEach(value -> values.add(value.getSaveableInfo()));
-		return values;
+		List<T> saveable = Lists.newArrayList();
+		values.forEach(value -> saveable.add(value.getSaveableInfo()));
+		return saveable;
 	}
 
 	public abstract IMonitoredValue<T> createMonitoredValue(T obj);

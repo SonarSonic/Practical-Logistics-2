@@ -34,7 +34,7 @@ public class PL2Translate {
 	public static final Localisation TRANSFER_NODE = t("tile.TransferNode.name");
 	public static final Localisation TRANSCEIVER = t("item.Transceiver.name");
 	public static final Localisation ENTITY_TRANSCEIVER = t("item.EntityTransceiver.name");
-	public static final Localisation WIRELESS_STORAGE_READER = t("item.WirelessStorageReader.name");
+	public static final Localisation WIRELESS_STORAGE_READER = t("item.WirelessStorage.name");
 	public static final Localisation REDSTONE_SIGNALLER = t("tile.RedstoneSignaller.name"); 
 	public static final Localisation CLOCK = t("tile.Clock.name");
 	public static final Localisation DISPLAY_SCREEN = t("tile.DisplayScreen.name"); 
@@ -136,7 +136,7 @@ public class PL2Translate {
 	public static final Localisation ENTITY_NODE_RANGE = t("pl.entitynode.range");
 
 	/// WIRELESS STORAGE READER
-	public static final Localisation WIRELESS_STORAGE_READER_EMITTER = t("pl.wirelessStorage.emitter");
+	public static final Localisation WIRELESS_STORAGE_READER_EMITTER = t("pl.wirelessstorage.emitter");
 
 	public static Localisation get(String original) {
 		for (Localisation l : locals) {

@@ -84,7 +84,7 @@ public class InfoHelper {
 					if (changed > 0) {
 						long itemCount = PL2API.getItemHelper().getItemCount(stack, network);
 						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
-						// FontHelper.sendMessage(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + itemCount + TextFormatting.GREEN + "+" + changed + TextFormatting.RESET + " x " + stack.getDisplayName(), player.getEntityWorld(), player);
+						PacketHelper.createRapidItemUpdate(Lists.newArrayList(stack), networkID);
 					}
 				}
 				break;
@@ -97,15 +97,13 @@ public class InfoHelper {
 						SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), facing);
 						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), network);
 						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
+						PacketHelper.createRapidItemUpdate(Lists.newArrayList(storedItemStack.getItemStack()), networkID);
 					}
 				}
 				break;
 			default:
 				break;
 			}
-			ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
-			if (channels != null)
-				channels.sendFullRapidUpdate();
 
 		}
 	}
@@ -120,10 +118,6 @@ public class InfoHelper {
 			} else if (fluidStack != null && click.type == BlockInteractionType.SHIFT_LEFT) {
 				PL2API.getFluidHelper().fillHeldItem(player, network, fluidStack);
 			}
-
-			ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
-			if (channels != null)
-				channels.sendFullRapidUpdate();
 
 		}
 	}
@@ -141,8 +135,9 @@ public class InfoHelper {
 				if (change.shouldUpdate()) {
 					NBTTagCompound compound = new NBTTagCompound();
 					IInfo info = value.getSaveableInfo();
-					compound.setBoolean(REMOVED, change == EnumListChange.OLD_VALUE);
-					list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE));
+					list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE));// change to sync so info can do it's update
+					if (value.shouldDelete(change))
+						compound.setBoolean(REMOVED, true);
 				}
 			}
 			if (list.tagCount() != 0) {
@@ -154,7 +149,6 @@ public class InfoHelper {
 			values.forEach(value -> list.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), value.getSaveableInfo(), SyncType.SAVE)));
 			tag.setTag(SAVED, list);
 		}
-
 		return tag;
 	}
 
@@ -162,7 +156,7 @@ public class InfoHelper {
 	/* public static <T extends IInfo> NBTTagCompound writeMonitoredList(NBTTagCompound tag, boolean lastWasNull, MonitoredList<T> stacks, SyncType type) { if (type.isType(SyncType.DEFAULT_SYNC)) { stacks.sizing.writeData(tag, SyncType.SAVE); NBTTagList list = new NBTTagList(); stacks.forEach(info -> { if (info != null && info.isValid()) { list.appendTag(InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE)); } }); if (list.tagCount() != 0) { tag.setTag(SYNC, list); return tag; } else { // if (!lastWasNull) tag.setBoolean(DELETE, true); return tag; } } else if (type.isType(SyncType.SPECIAL)) { if (!stacks.changed.isEmpty() || !stacks.removed.isEmpty()) { stacks.sizing.writeData(tag, SyncType.DEFAULT_SYNC); if ((stacks == null || stacks.isEmpty())) { if (!lastWasNull) tag.setBoolean(DELETE, true); return tag; } NBTTagList list = new NBTTagList(); for (int listType = 0; listType < 2; listType++) { List<T> stackList = listType == 0 ? stacks.changed : stacks.removed; for (int i = 0; i < stackList.size(); i++) { T info = stackList.get(i); if (info != null && info.isValid()) { NBTTagCompound compound = new NBTTagCompound(); compound.setBoolean(REMOVED, listType == 1); list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE)); } } } if (list.tagCount() != 0) { tag.setTag(SPECIAL, list); } } } return tag; } */
 	public static <L extends AbstractChangeableList> L readMonitoredList(NBTTagCompound tag, L stacks, SyncType type) {
 		if (tag.hasKey(DELETE)) {
-			stacks.list.clear();
+			stacks.values.clear();
 			return stacks;
 		}
 		if (type.isType(SyncType.SAVE)) {
@@ -170,7 +164,7 @@ public class InfoHelper {
 				return stacks;
 			}
 			NBTTagList list = tag.getTagList(SAVED, 10);
-			stacks.list.clear();
+			stacks.values.clear();
 			for (int i = 0; i < list.tagCount(); i++) {
 				stacks.add(InfoHelper.readInfoFromNBT(list.getCompoundTagAt(i)));
 			}
@@ -189,7 +183,7 @@ public class InfoHelper {
 						stacks.add(stack);
 					}
 				} else if (removed) {
-					stacks.list.remove(value);
+					stacks.values.remove(value);
 				} else {
 					value.reset(stack);
 				}

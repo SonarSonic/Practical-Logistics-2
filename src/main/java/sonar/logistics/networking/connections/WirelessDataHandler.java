@@ -7,6 +7,10 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
+import sonar.core.listener.ISonarListenable;
+import sonar.core.listener.ListenableList;
+import sonar.core.listener.ListenerTally;
+import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.wireless.ClientDataEmitter;
@@ -17,39 +21,38 @@ import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.NetworkUpdate;
 
-public class WirelessDataHandler {
+public class WirelessDataHandler implements ISonarListenable<PlayerListener> {
 
 	/** a cache of all Data Emitters which currently belong to a network */
-	public static List<IDataEmitter> data_emitters = new ArrayList<IDataEmitter>();
+	public List<IDataEmitter> data_emitters = new ArrayList<IDataEmitter>();
 	/** a cache of all Data Receivers which currently belong to a network */
-	public static List<IDataReceiver> data_receivers = new ArrayList<IDataReceiver>();
-	/** players which are currently viewing the selection menu in the {@link IDataReceiver}'s GUI */
-	public static List<EntityPlayer> player_viewers = new ArrayList<EntityPlayer>();
+	public List<IDataReceiver> data_receivers = new ArrayList<IDataReceiver>();
+	/// ** players which are currently viewing the selection menu in the {@link IDataReceiver}'s GUI */
+	public ListenableList<PlayerListener> player_viewers = new ListenableList(this, 1);
 
 	/** used to mark if new viewers have been added, which will require the latest packet */
-	private static boolean dirty;
+	private boolean dirty;
 
-	public static void removeAll() {
+	public void removeAll() {
 		data_emitters.clear();
 		data_receivers.clear();
-		player_viewers.clear();
 	}
 
 	/** connects two {@link ILogisticsNetwork}'s so the {@link IDataReceiver}'s network can read the {@link IDataEmitter}'s network
 	 * @param watcher the {@link IDataReceiver}'s Network (which watches the emitters network)
 	 * @param connected the Data Emitter's Network (which is connected to by the receivers network) */
-	public static void connectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
+	public void connectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
 		watcher.getListenerList().addListener(connected, ILogisticsNetwork.CONNECTED_NETWORK);
-		connected.getListenerList().addListener(watcher, ILogisticsNetwork.WATCHING_NETWORK);	
+		connected.getListenerList().addListener(watcher, ILogisticsNetwork.WATCHING_NETWORK);
 		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);
 	}
 
 	/** disconnects two {@link ILogisticsNetwork}'s so the {@link IDataReceiver}'s network can no longer read the {@link IDataEmitter}'s network, however if multiple receivers/emitters between the two networks exist the networks will remain connected
 	 * @param watcher the {@link IDataReceiver}'s Network (which watches the emitters network)
 	 * @param connected the {@link IDataEmitters}'s Network (which is connected to by the receivers network) */
-	public static void disconnectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
+	public void disconnectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
 		watcher.getListenerList().removeListener(connected, true, ILogisticsNetwork.CONNECTED_NETWORK);
-		connected.getListenerList().removeListener(watcher, true, ILogisticsNetwork.WATCHING_NETWORK);		
+		connected.getListenerList().removeListener(watcher, true, ILogisticsNetwork.WATCHING_NETWORK);
 		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);
 	}
 
@@ -58,7 +61,7 @@ public class WirelessDataHandler {
 	/** called by the {@link CacheHandler} when a {@link IDataReceiver} is connected to a network
 	 * @param network the {@link ILogisticsNetwork} the {@link IDataReceiver} is connected to
 	 * @param emitter the {@link IDataReceiver} which has been connected */
-	public static void connectDataReceiver(ILogisticsNetwork network, IDataReceiver receiver) {
+	public void connectDataReceiver(ILogisticsNetwork network, IDataReceiver receiver) {
 		if (!data_receivers.contains(receiver)) {
 			data_receivers.add(receiver);
 			receiver.refreshConnectedNetworks();
@@ -69,16 +72,16 @@ public class WirelessDataHandler {
 	/** called by the {@link CacheHandler} when a {@link IDataReceiver} is disconnected from network
 	 * @param network the {@link ILogisticsNetwork} the {@link IDataReceiver} has disconnected from
 	 * @param emitter the {@link IDataReceiver} which has been disconnected */
-	public static void disconnectDataReceiver(ILogisticsNetwork network, IDataReceiver receiver) {
+	public void disconnectDataReceiver(ILogisticsNetwork network, IDataReceiver receiver) {
 		if (data_receivers.remove(receiver)) {
 			onDataReceiverDisconnected(network, receiver);
 		}
 	}
-	
+
 	/** called by the {@link CacheHandler} when a {@link IDataEmitter} is connected to a network
 	 * @param network the {@link ILogisticsNetwork} the {@link IDataEmitter} is connected to
 	 * @param emitter the {@link IDataEmitter} which has been connected */
-	public static void connectDataEmitter(ILogisticsNetwork network, IDataEmitter emitter) {
+	public void connectDataEmitter(ILogisticsNetwork network, IDataEmitter emitter) {
 		if (!data_emitters.contains(emitter)) {
 			data_emitters.add(emitter);
 			onDataEmitterConnected(network, emitter);
@@ -88,7 +91,7 @@ public class WirelessDataHandler {
 	/** called by the {@link CacheHandler} when a {@link IDataEmitter} is disconnected from network
 	 * @param network the {@link ILogisticsNetwork} the {@link IDataEmitter} has disconnected from
 	 * @param emitter the {@link IDataEmitter} which has been disconnected */
-	public static void disconnectDataEmitter(ILogisticsNetwork network, IDataEmitter emitter) {
+	public void disconnectDataEmitter(ILogisticsNetwork network, IDataEmitter emitter) {
 		if (data_emitters.remove(emitter)) {
 			onDataEmitterDisconnected(network, emitter);
 		}
@@ -97,7 +100,7 @@ public class WirelessDataHandler {
 	/** connects a {@link IDataReceiver} to a {@link ILogisticsNetwork}'s
 	 * @param main the {@link IDataReceiver}'s network
 	 * @param receiver the {@link IDataReceiver} which has been connected */
-	public static void onDataReceiverConnected(ILogisticsNetwork main, IDataReceiver receiver) {
+	public void onDataReceiverConnected(ILogisticsNetwork main, IDataReceiver receiver) {
 		List<Integer> connected = receiver.getConnectedNetworks();
 		connected.iterator().forEachRemaining(networkID -> {
 			ILogisticsNetwork sub = PL2.getNetworkManager().getNetwork(networkID);
@@ -110,7 +113,7 @@ public class WirelessDataHandler {
 	/** disconnects a {@link IDataReceiver} from a {@link ILogisticsNetwork}'s
 	 * @param main the {@link IDataReceiver}'s network
 	 * @param receiver the {@link IDataReceiver} which has been disconnected */
-	public static void onDataReceiverDisconnected(ILogisticsNetwork network, IDataReceiver receiver) {
+	public void onDataReceiverDisconnected(ILogisticsNetwork network, IDataReceiver receiver) {
 		List<Integer> connected = receiver.getConnectedNetworks();
 		connected.iterator().forEachRemaining(networkID -> {
 			ILogisticsNetwork sub = PL2.getNetworkManager().getNetwork(networkID);
@@ -123,7 +126,7 @@ public class WirelessDataHandler {
 	/** connects a {@link IDataEmitter} to a {@link ILogisticsNetwork}'s
 	 * @param main the {@link IDataEmitter}'s network
 	 * @param emitter the {@link IDataEmitter} which has been connected */
-	public static void onDataEmitterConnected(ILogisticsNetwork network, IDataEmitter emitter) {
+	public void onDataEmitterConnected(ILogisticsNetwork network, IDataEmitter emitter) {
 		data_receivers.forEach(receiver -> {
 			if (receiver.canAccess(emitter)) {
 				receiver.onEmitterConnected(emitter);
@@ -135,7 +138,7 @@ public class WirelessDataHandler {
 	/** disconnects a {@link IDataEmitter} from a {@link ILogisticsNetwork}'s
 	 * @param main the {@link IDataEmitter}'s network
 	 * @param emitter the {@link IDataEmitter} which has been disconnected */
-	public static void onDataEmitterDisconnected(ILogisticsNetwork network, IDataEmitter emitter) {
+	public void onDataEmitterDisconnected(ILogisticsNetwork network, IDataEmitter emitter) {
 		data_receivers.forEach(receiver -> {
 			if (receiver.canAccess(emitter)) {
 				receiver.onEmitterDisconnected(emitter);
@@ -147,7 +150,7 @@ public class WirelessDataHandler {
 	/** alerts all connected {@link IDataReceiver}s of a {@link IDataEmitter}'s security change
 	 * @param emitter the {@link IDataEmitter} which has had it's security changed
 	 * @param oldSetting the original {@link IDataEmitter}'s security setting */
-	public static void onEmitterSecurityChanged(IDataEmitter emitter, DataEmitterSecurity oldSetting) {
+	public void onEmitterSecurityChanged(IDataEmitter emitter, DataEmitterSecurity oldSetting) {
 		data_receivers.forEach(receiver -> {
 			if (receiver.canEmitterAccessReceiver(emitter))
 				receiver.onEmitterSecurityChanged(emitter, oldSetting);
@@ -157,7 +160,7 @@ public class WirelessDataHandler {
 
 	//// HELPER METHODS \\\\
 
-	public static List<IDataEmitter> getEmitters(UUID uuid) {
+	public List<IDataEmitter> getEmitters(UUID uuid) {
 		List<IDataEmitter> emitters = Lists.newArrayList();
 		for (IDataEmitter emitter : emitters) {
 			if (emitter.canPlayerConnect(uuid)) {
@@ -167,8 +170,8 @@ public class WirelessDataHandler {
 		return emitters;
 	}
 
-	/**returns a {@link IDataEmitter} with a matching unique identity*/
-	public static IDataEmitter getDataEmitter(int identity) {
+	/** returns a {@link IDataEmitter} with a matching unique identity */
+	public IDataEmitter getDataEmitter(int identity) {
 		for (IDataEmitter e : data_emitters) {
 			if (e.getIdentity() == identity) {
 				return e;
@@ -177,8 +180,8 @@ public class WirelessDataHandler {
 		return null;
 	}
 
-	/**returns a {@link IDataReceiver} with a matching unique identity*/
-	public static IDataReceiver getDataReceiver(int identity) {
+	/** returns a {@link IDataReceiver} with a matching unique identity */
+	public IDataReceiver getDataReceiver(int identity) {
 		for (IDataReceiver r : data_receivers) {
 			if (r.getIdentity() == identity) {
 				return r;
@@ -189,35 +192,56 @@ public class WirelessDataHandler {
 
 	//// UPDATE TICK \\\\
 
-	public static void tick() {
+	public void tick() {
 		if (dirty) {
-			player_viewers.forEach(player -> PacketHelper.sendDataEmittersToPlayer(player));
+			player_viewers.forEach(player -> PacketHelper.sendDataEmittersToPlayer(player.listener.player));
 			dirty = false;
 		}
 	}
 
 	//// PLAYER VIEWERS \\\\
-
-	public static void addViewer(EntityPlayer player) {
-		if (!player_viewers.contains(player)) {
-			player_viewers.add(player);
-			PacketHelper.sendDataEmittersToPlayer(player);
-		}
+	
+	
+	public void addViewer(EntityPlayer player) {
+		player_viewers.addListener(player, 0);
 	}
 
-	public static void removeViewer(EntityPlayer player) {
-		if (player_viewers.contains(player)) {
-			player_viewers.remove(player);
-		}
+	public void removeViewer(EntityPlayer player) {
+		player_viewers.removeListener(player, true, 0);
 	}
-
-	public static ArrayList<ClientDataEmitter> getClientDataEmitters(EntityPlayer player) {
+	
+	
+	public ArrayList<ClientDataEmitter> getClientDataEmitters(EntityPlayer player) {
 		List<IDataEmitter> emitters = getEmitters(player.getGameProfile().getId());
 		ArrayList<ClientDataEmitter> clientEmitters = Lists.newArrayList();
-		for (IDataEmitter emitter : WirelessDataHandler.data_emitters) {
+		for (IDataEmitter emitter : data_emitters) {
 			clientEmitters.add(new ClientDataEmitter(emitter));
 		}
 		return clientEmitters;
 	}
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public ListenableList<PlayerListener> getListenerList() {
+		return player_viewers;
+	}
+
+	@Override
+	public void onListenerAdded(ListenerTally<PlayerListener> tally) {
+		PacketHelper.sendDataEmittersToPlayer(tally.listener.player);
+	}
+
+	@Override
+	public void onListenerRemoved(ListenerTally<PlayerListener> tally) {}
+
+	@Override
+	public void onSubListenableAdded(ISonarListenable<PlayerListener> listen) {}
+
+	@Override
+	public void onSubListenableRemoved(ISonarListenable<PlayerListener> listen) {}
 
 }

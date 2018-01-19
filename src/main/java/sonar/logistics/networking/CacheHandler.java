@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import sonar.logistics.PL2;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
@@ -34,13 +35,13 @@ public abstract class CacheHandler<T> {
 		@Override
 		public void onConnectionAdded(LogisticsNetwork network, IDataReceiver connection) {
 			connection.onNetworkConnect(network); // if we don't do this they effectively would have no network
-			WirelessDataHandler.connectDataReceiver(network, connection);
+			PL2.getWirelessManager().connectDataReceiver(network, connection);
 		}
 
 		@Override
 		public void onConnectionRemoved(LogisticsNetwork network, IDataReceiver connection) {
 			connection.onNetworkDisconnect(network);
-			WirelessDataHandler.disconnectDataReceiver(network, connection);
+			PL2.getWirelessManager().disconnectDataReceiver(network, connection);
 		}
 
 		@Override
@@ -53,12 +54,12 @@ public abstract class CacheHandler<T> {
 
 		public void onConnectionAdded(LogisticsNetwork network, IDataEmitter emitter) {
 			emitter.onNetworkConnect(network); // if we don't do this they effectively would have no network
-			WirelessDataHandler.connectDataEmitter(network, emitter);
+			PL2.getWirelessManager().connectDataEmitter(network, emitter);
 		}
 
 		public void onConnectionRemoved(LogisticsNetwork network, IDataEmitter emitter) {
 			emitter.onNetworkDisconnect(network);
-			WirelessDataHandler.disconnectDataEmitter(network, emitter);
+			PL2.getWirelessManager().disconnectDataEmitter(network, emitter);
 		}
 
 		@Override

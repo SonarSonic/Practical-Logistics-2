@@ -66,7 +66,7 @@ public abstract class TileAbstractListReader<T extends IInfo> extends TileAbstra
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			sendRapidUpdate(player);
-			listeners.addListener(player, ListenerType.INFO);
+			listeners.addListener(player, ListenerType.LISTENER);
 			break;
 		}
 	}

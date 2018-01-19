@@ -54,7 +54,7 @@ public class CachedInventoryRenderer {
 		int currentX = 0, currentY = 0;
 		int pageCount = info.pageCount;
 		for (int i = info.perPage * pageCount; i < Math.min(info.perPage + info.perPage * pageCount, list.getList().size()); i++) {
-			ItemCount m = (ItemCount) list.list.get(i);
+			ItemCount m = (ItemCount) list.values.get(i);
 			StoredItemStack s = m.item.getStoredStack();
 			int current = i - info.perPage * pageCount;
 			int xLevel = (int) (current - ((Math.floor((current / info.xSlots))) * info.xSlots));

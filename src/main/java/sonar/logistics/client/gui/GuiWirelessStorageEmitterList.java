@@ -28,6 +28,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 
 	public EntityPlayer player;
 	public ItemStack reader;
+	public int clickedIdentity = -1;
 
 	public GuiWirelessStorageEmitterList(ItemStack reader, EntityPlayer player) {
 		super(new ContainerEmitterList(player), null);
@@ -56,6 +57,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 				}
 
 			}));
+			clickedIdentity = identity;
 		}
 	}
 
@@ -75,10 +77,14 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 
 	@Override
 	public boolean isSelectedInfo(ClientDataEmitter info) {
+		if (info.getIdentity() == clickedIdentity) {
+			return true;
+		}
+
 		ItemStack current = player.getHeldItemMainhand();
-		if(current!=null && current.hasTagCompound()){
+		if (current != null && current.hasTagCompound()) {
 			int uuid = current.getTagCompound().getInteger(WirelessStorageReader.EMITTER_UUID);
-			if(uuid == info.getIdentity()){
+			if (uuid == info.getIdentity()) {
 				return true;
 			}
 		}

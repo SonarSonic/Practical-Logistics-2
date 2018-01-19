@@ -16,7 +16,7 @@ public class ContainerInfoReader extends ContainerMultipartSync {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			reader.getListenerList().removeListener(player, true, ListenerType.INFO);
+			reader.getListenerList().removeListener(player, true, ListenerType.LISTENER);
 	}
 
 	public boolean syncInventory() {

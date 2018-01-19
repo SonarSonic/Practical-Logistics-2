@@ -8,12 +8,12 @@ public class InfoMonitoredValue<I extends IInfo<I>> implements IMonitoredValue<I
 
 	public I cachedInfo;
 	public EnumListChange currentState;
-	
-	public InfoMonitoredValue(I fullInfo){
+
+	public InfoMonitoredValue(I fullInfo) {
 		reset(fullInfo);
 		currentState = EnumListChange.NEW_VALUE;
 	}
-	
+
 	@Override
 	public void reset(I fullInfo) {
 		cachedInfo = fullInfo.copy();
@@ -26,20 +26,20 @@ public class InfoMonitoredValue<I extends IInfo<I>> implements IMonitoredValue<I
 
 	@Override
 	public void resetChange() {
-		currentState = EnumListChange.OLD_VALUE;		
+		currentState = EnumListChange.OLD_VALUE;
 	}
 
 	@Override
 	public void combine(I combine) {
 		EnumListChange newState;
-		if(!cachedInfo.isIdenticalInfo(combine)){	
-			cachedInfo.identifyChanges(combine);//FIXME should we be doing this on a monitoredlist everytime?
+		if (!cachedInfo.isIdenticalInfo(combine)) {
+			cachedInfo.identifyChanges(combine);// FIXME should we be doing this on a monitoredlist everytime?
 			reset(combine);
 			newState = EnumListChange.INCREASED;
-		}else{
+		} else {
 			newState = EnumListChange.EQUAL;
 		}
-		if(currentState!=EnumListChange.NEW_VALUE){
+		if (currentState != EnumListChange.NEW_VALUE) {
 			currentState = newState;
 		}
 	}
@@ -57,6 +57,16 @@ public class InfoMonitoredValue<I extends IInfo<I>> implements IMonitoredValue<I
 	@Override
 	public I getSaveableInfo() {
 		return cachedInfo;
+	}
+
+	@Override
+	public void setNew() {
+		this.currentState = EnumListChange.NEW_VALUE;
+	}
+
+	@Override
+	public boolean shouldDelete(EnumListChange change) {
+		return change.shouldDelete();
 	}
 
 }

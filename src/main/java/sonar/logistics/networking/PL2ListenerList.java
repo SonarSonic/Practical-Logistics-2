@@ -35,7 +35,7 @@ public class PL2ListenerList extends ListenableList<PlayerListener> {
 	public List<PlayerListener> getAllListeners(ListenerType... enums) {
 		List<PlayerListener> listeners = super.getListeners(enums);
 		for (ListenerType type : enums) {
-			if (type == ListenerType.INFO) {
+			if (type == ListenerType.LISTENER) {
 				List<IDisplay> displays = displayListeners.getListeners(0);
 				List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(displays);
 				players.forEach(player -> {
