@@ -6,8 +6,7 @@ import java.util.Map;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -18,5 +17,5 @@ public interface IListReader<T extends IInfo> extends ILogicListenable, INetwork
 	
 	AbstractChangeableList<T> getViewableList(AbstractChangeableList<T> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<T>> channels, List<NodeConnection> usedChannels);	
 
-	List<INetworkListHandler> getValidHandlers();
+	List<INetworkHandler> getValidHandlers();
 }

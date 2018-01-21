@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -15,7 +14,6 @@ import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.INetworkListHandler;
@@ -27,11 +25,12 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.CacheHandler;
 
-public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels<H> implements INetworkListChannels<H> {
+public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels implements INetworkListChannels<H> {
 
 	public final H handler;
 	public List<IListReader<M>> readers = Lists.newArrayList();
 	protected Iterator<IListReader<M>> readerIterator;
+	public boolean shouldRapidUpdate;
 	protected int readersPerTick = 0;
 
 	public Map<NodeConnection, AbstractChangeableList<M>> channels = Maps.newHashMap();
@@ -108,8 +107,9 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 
 	@Override
 	public void onChannelsChanged() {
-		channels = handler.getAllChannels(channels, network);
+		channels = handler.getAllChannels(Maps.newHashMap(), network);
 		updateTicks();
+		//sendFullRapidUpdate();
 	}
 
 	public void updateChannels() {
@@ -138,6 +138,7 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 			channels.put(entry.getKey(), handler.updateConnection(this, entry.getValue(), entry.getKey()));
 		}
 	}
+	
 	public void updateAllReaders(boolean send) {
 		readers.forEach(reader -> handler.updateAndSendList(network, reader, channels, send));
 	}

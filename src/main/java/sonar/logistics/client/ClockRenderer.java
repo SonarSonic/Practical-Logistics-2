@@ -9,11 +9,13 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import sonar.core.common.block.properties.SonarProperties;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.common.multiparts.misc.TileClock;
@@ -32,7 +34,11 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 			GlStateManager.enableDepth();
 			GlStateManager.depthMask(true);
 			BufferBuilder wr = Tessellator.getInstance().getBuffer();
-			switch (te.getCableFace()) {
+			
+
+			//wr.setTranslation(-pos.getX() - 0.5, -pos.getY() - 0.5, -pos.getZ()- 0.5);
+			
+			switch (te.getCableFace().getOpposite()) {
 			case UP:
 			case DOWN:
 				GlStateManager.translate(0.5, 0, 0.5);
@@ -55,9 +61,11 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 				break;
 
 			}
+
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 			wr.begin(7, DefaultVertexFormats.BLOCK);
 			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-			IBlockState state = te.getBlockType().getActualState(te.getBlockType().getDefaultState(), te.getWorld(), pos).withProperty(PL2Properties.CLOCK_HAND, true);
+			IBlockState state = te.getBlockType().getDefaultState().withProperty(SonarProperties.ORIENTATION, te.getCableFace()).withProperty(PL2Properties.CLOCK_HAND, true);
 			EnumBlockRenderType type = state.getRenderType();
 			if (type != EnumBlockRenderType.MODEL) {
 				blockrendererdispatcher.renderBlock(state, pos, world, wr);

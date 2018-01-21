@@ -1,8 +1,8 @@
 {
     "display": {
         "gui": {
-            "rotation": [ 30, 225, 0 ],
-            "translation": [ 0, 7, 0],
+            "rotation": [ 210, 225, 0 ],
+            "translation": [ 0, -8, 0],
             "scale":[ 1.5, 1.5, 1.5 ]
         },
         "ground": {

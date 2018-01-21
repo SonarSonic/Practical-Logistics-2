@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -18,11 +19,14 @@ import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.NBTHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
@@ -34,14 +38,16 @@ import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.FluidCount;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.networking.handlers.FluidNetworkHandler;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = PL2Constants.MODID)
-public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IBasicClickableInfo, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {
+public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IAdvancedClickableInfo, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
 	private SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
@@ -143,17 +149,6 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	}
 
 	@Override
-	public boolean onStandardClick(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (InfoHelper.canBeClickedStandard(part, renderInfo, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ)) {
-			if (!player.getEntityWorld().isRemote) {
-				InfoHelper.onScreenFluidStackClicked(part, renderInfo, type, fluidStack.getObject(), world, pos, state, player, hand, facing, hitX, hitY, hitZ);
-			}
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		StoredFluidStack stack = fluidStack.getObject();
 		objects.add(new ComparableObject(this, "Stored", stack.stored));
@@ -180,6 +175,22 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	@Override
 	public IMonitoredValue<MonitoredFluidStack> createMonitoredValue() {
 		return new FluidCount(this);
+	}
+
+	@Override
+	public boolean canClick(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
+		return InteractionHelper.canBeClickedStandard(renderInfo, click);
+	}
+
+	@Override
+	public NBTTagCompound createClickPacket(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
+		return fluidStack.writeData(new NBTTagCompound(), SyncType.SAVE);
+	}
+
+	@Override
+	public void runClickPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {	
+		MonitoredFluidStack clicked = NBTHelper.instanceNBTSyncable(MonitoredFluidStack.class, clickTag);
+		InfoHelper.onScreenFluidStackClicked(networkID.getObject(), clicked!=null ? clicked.getStoredStack() : null, click, displayInfo, player, clickTag);
 	}
 
 }

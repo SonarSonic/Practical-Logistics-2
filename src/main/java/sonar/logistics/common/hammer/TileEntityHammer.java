@@ -47,7 +47,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		} else if (canProcess()) {
 			if (progress.getObject() < speed) {
 				if(progress.getObject()==0){
-					SonarCore.sendPacketAround(this, 64, 2);
+					SonarCore.sendFullSyncAround(this, 64);
 				}
 				progress.increaseBy(1);				
 			} else {
@@ -55,7 +55,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 				progress.setObject(0);
 				if (!this.getWorld().isRemote) {
 					finishProcess();	
-					SonarCore.sendPacketAround(this, 64, 2);
+					SonarCore.sendFullSyncAround(this, 64);
 				}
 			}
 			// SonarCore.sendPacketAround(this, 64, 0);

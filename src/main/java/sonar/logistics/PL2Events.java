@@ -3,9 +3,6 @@ package sonar.logistics;
 import mcmultipart.MCMultiPart;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -18,15 +15,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.common.multiparts.displays.BlockAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.networking.connections.CableConnectionHandler;
-import sonar.logistics.networking.connections.WirelessDataHandler;
 import sonar.logistics.worlddata.ConnectedDisplayData;
 import sonar.logistics.worlddata.IdentityCountData;
 
@@ -40,8 +36,8 @@ public class PL2Events {
 		if (event.side == Side.SERVER && event.phase == Phase.END) {
 			CableConnectionHandler.instance().tick();
 			PL2.getNetworkManager().tick();
-			PL2.getServerManager().onServerTick();
-			PL2.getWirelessManager().tick();
+			PL2.getServerManager().tick();
+			PL2.getWirelessDataManager().tick();
 			PL2.getDisplayManager().tick();
 			TileArray.entityChanged = false;
 
@@ -83,7 +79,7 @@ public class PL2Events {
 			IBlockState state = world.getBlockState(pos);
 			Block block = state.getBlock();
 			if (block == MCMultiPart.multipart) {
-				RayTraceResult result = InteractionHelper.getRayTraceEyes(event.getEntityPlayer(), event.getWorld());
+				//RayTraceResult result = RayTraceHelper.getRayTraceEyes(event.getEntityPlayer(), event.getWorld());
 				IDisplay display = CableHelper.getDisplay(world, pos, EnumDisplayFaceSlot.fromFace(event.getFace()));
 				if (display != null && display instanceof TileAbstractDisplay) {
 					Vec3d vec = event.getHitVec();

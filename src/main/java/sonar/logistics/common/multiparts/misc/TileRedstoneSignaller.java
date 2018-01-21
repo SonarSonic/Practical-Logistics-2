@@ -2,14 +2,17 @@ package sonar.logistics.common.multiparts.misc;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
@@ -29,9 +32,9 @@ import sonar.logistics.api.tiles.signaller.EmitterStatement;
 import sonar.logistics.api.tiles.signaller.ILogisticsTile;
 import sonar.logistics.api.tiles.signaller.SignallerModes;
 import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.client.gui.generic.GuiStatementList;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
-import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.PacketHelper;
 
 public class TileRedstoneSignaller extends TileSidedLogistics implements ILogisticsTile, IByteBufTile, IFlexibleGui {
@@ -41,6 +44,8 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 	public SyncTagType.BOOLEAN isActive = new SyncTagType.BOOLEAN(1);
 	public SyncNBTAbstractList<EmitterStatement> statements = new SyncNBTAbstractList(EmitterStatement.class, 2);
 	public SyncEnum<SignallerModes> mode = new SyncEnum(SignallerModes.values(), 3);
+	public static final Function<EmitterStatement, Boolean> statement_func = s -> s.wasTrue.getObject();
+
 	{
 		syncList.addParts(isActive, statements, mode);
 	}
@@ -62,62 +67,19 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
 				ILogicListenable monitor = PL2.getServerManager().getIdentityTile(id.getIdentity());
-				if (monitor != null && this.network.getLocalInfoProviders().contains(monitor)) {
+				if (monitor != null && this.network.getGlobalInfoProviders().contains(monitor)) {
 					IInfo monitorInfo = PL2.getServerManager().getInfoFromUUID(id);
 					if (monitorInfo != null)
 						infoList.put(id, monitorInfo);
 				}
 			}
 		}
-		switch (mode.getObject()) {
-		case ALL_FALSE:
-			for (EmitterStatement statement : statements.getObjects()) {
-				boolean matching = statement.isMatching(infoList).getBool();
-				statement.wasTrue.setObject(matching);
-				if (matching) {
-					isActive.setObject(false);
-					return;
-				}
-			}
-			isActive.setObject(true);
-			break;
-		case ALL_TRUE:
-			for (EmitterStatement statement : statements.getObjects()) {
-				boolean matching = statement.isMatching(infoList).getBool();
-				statement.wasTrue.setObject(matching);
-				if (!matching) {
-					isActive.setObject(false);
-					return;
-				}
-			}
-			isActive.setObject(true);
-			break;
-		case ONE_FALSE:
-			for (EmitterStatement statement : statements.getObjects()) {
-				boolean matching = statement.isMatching(infoList).getBool();
-				statement.wasTrue.setObject(matching);
-				if (!matching) {
-					isActive.setObject(true);
-					return;
-				}
-			}
-			isActive.setObject(false);
-			break;
-		case ONE_TRUE:
-			for (EmitterStatement statement : statements.getObjects()) {
-				boolean matching = statement.isMatching(infoList).getBool();
-				statement.wasTrue.setObject(matching);
-				if (matching) {
-					isActive.setObject(true);
-					return;
-				}
-			}
-			isActive.setObject(false);
-			break;
-		default:
-			break;
-
+		for (EmitterStatement s : statements.getObjects()) {
+			boolean matching = s.isMatching(infoList).getBool();
+			s.wasTrue.setObject(matching);
 		}
+		boolean isValid = mode.getObject().checkList(statements.getObjects(), statement_func);
+		isActive.setObject(isValid);
 
 	}
 
@@ -147,7 +109,9 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 	public void markChanged(IDirtyPart part) {
 		super.markChanged(part);
 		if (part == isActive && this.getWorld() != null) {
-			SonarMultipartHelper.sendMultipartPacketAround(this, 0, 128);	
+			IBlockState state = world.getBlockState(pos);
+			world.notifyNeighborsOfStateChange(pos, blockType, true);
+			SonarMultipartHelper.sendMultipartPacketAround(this, 0, 128);
 		}
 	}
 
@@ -155,20 +119,9 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 		super.onSyncPacketRequested(player);
 		PacketHelper.sendLocalProviders(this, getIdentity(), player);
 	}
-/*
-	@Override
-	public void writeUpdatePacket(PacketBuffer buf) {
-		super.writeUpdatePacket(buf);
-		isActive.writeToBuf(buf);
-	}
 
-	@Override
-	public void readUpdatePacket(PacketBuffer buf) {
-		super.readUpdatePacket(buf);
-		isActive.readFromBuf(buf);
-	}	
-	
-	*/
+	/* @Override public void writeUpdatePacket(PacketBuffer buf) { super.writeUpdatePacket(buf); isActive.writeToBuf(buf); }
+	 * @Override public void readUpdatePacket(PacketBuffer buf) { super.readUpdatePacket(buf); isActive.readFromBuf(buf); } */
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {

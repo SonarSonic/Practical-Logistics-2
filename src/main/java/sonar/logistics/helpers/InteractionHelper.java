@@ -1,30 +1,23 @@
 package sonar.logistics.helpers;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.utils.Pair;
 import sonar.logistics.api.info.render.DisplayInfo;
-import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 public class InteractionHelper {
 
@@ -51,6 +44,9 @@ public class InteractionHelper {
 					clickPosition[1] += z;
 				}
 			}
+		} else {
+			//clickPosition[0] = clickPosition[0] - ((display.getDisplayType().width / 2));
+			clickPosition[1] = clickPosition[1] - ((display.getDisplayType().height / 2));
 		}
 		position.setClickPosition(clickPosition);
 		position.type = type;
@@ -171,15 +167,5 @@ public class InteractionHelper {
 			scale = scaling[2];
 		}
 		return new double[] { width, height, scale };
-	}
-
-	public static RayTraceResult getRayTraceEyes(EntityPlayer player, World world) {
-		float blockReachDistance = 0;
-		if (world.isRemote) {
-			blockReachDistance = Minecraft.getMinecraft().playerController.getBlockReachDistance() + 1;
-		} else {
-			blockReachDistance = (float) ((EntityPlayerMP) player).interactionManager.getBlockReachDistance() + 1;
-		}
-		return ForgeHooks.rayTraceEyes(player, blockReachDistance + 1);
 	}
 }

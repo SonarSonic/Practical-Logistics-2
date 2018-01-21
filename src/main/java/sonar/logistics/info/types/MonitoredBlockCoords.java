@@ -2,8 +2,11 @@ package sonar.logistics.info.types;
 
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.network.sync.SyncCoords;
+import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
@@ -21,16 +24,16 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 
 	public static final String id = "coords";
 	private SyncCoords syncCoords = new SyncCoords(1);
-	private SyncTagType.STRING unlocalizedName = new SyncTagType.STRING(2);
+	private final SyncNBTAbstract<StoredItemStack> blockStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 2);
 	{
-		syncList.addParts(syncCoords, unlocalizedName);
+		syncList.addParts(syncCoords, blockStack);
 	}
 
 	public MonitoredBlockCoords() {}
 
-	public MonitoredBlockCoords(BlockCoords coords, String unlocalizedName) {
+	public MonitoredBlockCoords(BlockCoords coords, ItemStack blockStack) {
 		this.syncCoords.setCoords(coords);
-		this.unlocalizedName.setObject(unlocalizedName);
+		this.blockStack.setObject(new StoredItemStack(blockStack));
 	}
 
 	@Override
@@ -49,8 +52,8 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 	}
 
 	@Override
-	public String getClientIdentifier() {
-		return unlocalizedName.getObject();
+	public String getClientIdentifier() {		
+		return blockStack.getObject().getItemStack().getDisplayName();
 	}
 
 
@@ -84,7 +87,7 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 
 	@Override
 	public MonitoredBlockCoords copy() {
-		return new MonitoredBlockCoords(getCoords(), unlocalizedName.getObject());
+		return new MonitoredBlockCoords(getCoords(), blockStack.getObject().getItemStack());
 	}
 	
 	public BlockCoords getCoords(){
@@ -92,7 +95,7 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 	}
 	
 	public String getUnlocalizedName(){
-		return unlocalizedName.getObject();
+		return blockStack.getObject().getItemStack().getUnlocalizedName();
 	}
 
 	@Override

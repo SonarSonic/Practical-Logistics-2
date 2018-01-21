@@ -6,15 +6,13 @@ import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 
 public interface INetworkListHandler<I extends IInfo, L extends AbstractChangeableList> extends INetworkHandler {
 
 	//public String id();
-	public InfoUUID getReaderUUID(IListReader<I> reader);
-	
+
 	public int updateRate();
 
 	public Class<? extends INetworkListChannels> getChannelsType();

@@ -20,38 +20,35 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.RayTraceHelper;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.PL2Properties.PropertyCableFace;
-import sonar.logistics.api.networks.EmptyLogisticsNetwork;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.IDataCable;
-import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.common.multiparts.BlockLogistics;
 import sonar.logistics.helpers.CableHelper;
-import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.connections.CableConnectionHandler;
 
 public class BlockDataCable extends BlockLogistics {
 
+	public static double p = 0.0625;
+	public static LabelledAxisAlignedBB cableBox = new LabelledAxisAlignedBB(6 * p, 6 * p, 6 * p, 1 - 6 * p, 1 - 6 * p, 1 - 6 * p).labelAxis("c");
+	
 	public BlockDataCable() {
 		super(PL2Multiparts.DATA_CABLE);
 	}
-
-	public double p = 0.0625;
-	public LabelledAxisAlignedBB cableBox = new LabelledAxisAlignedBB(6 * p, 6 * p, 6 * p, 1 - 6 * p, 1 - 6 * p, 1 - 6 * p).labelAxis("c");
 
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return cableBox;
 	}
 
-	public List<AxisAlignedBB> getSelectionBoxes(World world, BlockPos pos, List<AxisAlignedBB> collidingBoxes) {
+	public static List<AxisAlignedBB> getSelectionBoxes(World world, BlockPos pos, List<AxisAlignedBB> collidingBoxes) {
 		collidingBoxes.add(cableBox);
 		
 		TileDataCable cable = CableHelper.getCable(world, pos);
@@ -71,8 +68,11 @@ public class BlockDataCable extends BlockLogistics {
 		super.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entityIn, isActualState);
 		List<AxisAlignedBB> boxes = getSelectionBoxes(world, pos, Lists.newArrayList());
 		boxes.forEach(box -> addCollisionBoxToList(pos, entityBox, collidingBoxes, box));
-
 	}
+    @Override
+    public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
+    	return RayTraceHelper.rayTraceBoxes(pos, start, end, getSelectionBoxes(world,pos, Lists.newArrayList())).getLeft();
+    }
 
 	@Deprecated
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {

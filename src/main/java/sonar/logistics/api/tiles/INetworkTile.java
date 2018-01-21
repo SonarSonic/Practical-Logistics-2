@@ -1,6 +1,7 @@
 package sonar.logistics.api.tiles;
 
 import sonar.core.utils.IWorldPosition;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.states.TileMessage;
@@ -19,4 +20,6 @@ public interface INetworkTile extends IWorldPosition, INetworkListener, INetwork
 	public int getIdentity();		
 	
 	public TileMessage[] getValidMessages();
+	
+	public PL2Multiparts getMultipart();
 }

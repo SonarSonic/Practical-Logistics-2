@@ -1,13 +1,9 @@
 package sonar.logistics.common.multiparts.displays;
 
-import java.util.List;
-
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
 
 public class BlockDisplayScreen extends BlockAbstractDisplay {

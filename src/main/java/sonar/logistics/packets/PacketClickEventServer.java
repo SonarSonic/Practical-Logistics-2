@@ -17,7 +17,6 @@ import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.viewers.ILogicListenable;
 
 public class PacketClickEventServer implements IMessage {
 

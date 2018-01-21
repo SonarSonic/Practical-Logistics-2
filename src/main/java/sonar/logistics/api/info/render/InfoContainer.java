@@ -117,6 +117,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		DisplayLayout layout = display.getLayout();
 		DisplayType type = display.getDisplayType();
 		for (int pos = 0; pos < layout.maxInfo; pos++) {
+			
 			IDisplayInfo info = storedInfo.get(pos);
 
 			GL11.glPushMatrix();

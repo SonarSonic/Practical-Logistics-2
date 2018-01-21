@@ -1,7 +1,5 @@
 package sonar.logistics.networking.connections;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,22 +8,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.management.PlayerChunkMap;
-import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.event.world.ChunkWatchEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.ChunkHelper;
-import sonar.core.helpers.FunctionHelper;
-import sonar.core.listener.ListenableList;
-import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.displays.IDisplay;
 

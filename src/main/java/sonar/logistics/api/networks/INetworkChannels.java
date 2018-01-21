@@ -5,7 +5,7 @@ import sonar.logistics.networking.CacheHandler;
 /**network channels are used by {@link ILogisticsNetwork} to perform certain operators for a network,
  * for example channels will update reader info and run the Transfer Node network.
  * channels are only created if the type of connections it works with are also connected, this optimises the network*/
-public interface INetworkChannels<H extends INetworkHandler> {
+public interface INetworkChannels {
 	
 	/**the network which created this INetworkChannels and which it links to.*/
 	public ILogisticsNetwork getNetwork();

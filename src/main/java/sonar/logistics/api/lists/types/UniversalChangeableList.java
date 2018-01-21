@@ -1,17 +1,5 @@
 package sonar.logistics.api.lists.types;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.utils.Pair;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 

@@ -2,23 +2,17 @@ package sonar.logistics.helpers;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import mcmultipart.api.multipart.IMultipart;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -33,22 +27,12 @@ import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.render.DisplayInfo;
-import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.lists.EnumListChange;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.IScaleableDisplay;
-import sonar.logistics.common.multiparts.TileLogistics;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.networking.channels.ItemNetworkChannels;
 import sonar.logistics.packets.PacketItemInteractionText;
 
 public class InfoHelper {
@@ -118,7 +102,7 @@ public class InfoHelper {
 			} else if (fluidStack != null && click.type == BlockInteractionType.SHIFT_LEFT) {
 				PL2API.getFluidHelper().fillHeldItem(player, network, fluidStack);
 			}
-
+			
 		}
 	}
 

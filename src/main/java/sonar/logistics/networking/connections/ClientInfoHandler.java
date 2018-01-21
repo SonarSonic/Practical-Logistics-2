@@ -23,7 +23,7 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.wireless.ClientDataEmitter;
+import sonar.logistics.api.wireless.ClientWirelessEmitter;
 
 public class ClientInfoHandler implements IInfoManager {
 
@@ -41,7 +41,8 @@ public class ClientInfoHandler implements IInfoManager {
 	public Map<Integer, InfoChangeableList> channelMap = new ConcurrentHashMap<Integer, InfoChangeableList>();
 
 	// emitters
-	public List<ClientDataEmitter> clientEmitters = new ArrayList<ClientDataEmitter>();
+	public List<ClientWirelessEmitter> clientDataEmitters = new ArrayList<ClientWirelessEmitter>();
+	public List<ClientWirelessEmitter> clientRedstoneEmitters = new ArrayList<ClientWirelessEmitter>();
 
 	@Override
 	public void removeAll() {
@@ -53,7 +54,8 @@ public class ClientInfoHandler implements IInfoManager {
 		changeableLists.clear();
 		identityTiles.clear();
 		channelMap.clear();
-		clientEmitters.clear();
+		clientDataEmitters.clear();
+		clientRedstoneEmitters.clear();
 	}
 
 	@Override

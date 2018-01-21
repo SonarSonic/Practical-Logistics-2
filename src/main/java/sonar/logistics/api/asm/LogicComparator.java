@@ -14,4 +14,10 @@ public @interface LogicComparator {
 
 	/**type of class this comparator can compare*/
 	Class handlingClass();
+
+	/**specify the MODID required for the InfoType to load, note if you want it to always load use the Practical Logistics MODID*/
+	String modid();
+
+	/**the identification string of the InfoType*/
+	String id();
 }

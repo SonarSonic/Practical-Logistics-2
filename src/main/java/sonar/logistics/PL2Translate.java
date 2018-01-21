@@ -26,8 +26,11 @@ public class PL2Translate {
 	public static final Localisation FLUID_READER = t("tile.FluidReader.name");
 	public static final Localisation ENERGY_READER = t("tile.EnergyReader.name");
 	public static final Localisation INVENTORY_READER = t("tile.InventoryReader.name");
+	public static final Localisation NETWORK_READER = t("tile.NetworkReader.name");
 	public static final Localisation DATA_EMITTER = t("tile.DataEmitter.name");
 	public static final Localisation DATA_RECEIVER = t("tile.DataReceiver.name");
+	public static final Localisation REDSTONE_EMITTER = t("tile.RedstoneEmitter.name");
+	public static final Localisation REDSTONE_RECEIVER = t("tile.RedstoneReceiver.name");
 
 	public static final Localisation ENTITY_NODE = t("tile.EntityNode.name");
 	public static final Localisation ARRAY = t("tile.Array.name");
@@ -130,7 +133,8 @@ public class PL2Translate {
 	public static final Localisation RED_SIGNALLER_ONE = t("pl.signaller.one");
 
 	/// DATA RECEIVER
-	public static final Localisation DATA_RECEIVER_HELP = t("pl.receiver.help");
+	public static final Localisation DATA_RECEIVER_HELP = t("pl.datareceiver.help");
+	public static final Localisation REDSTONE_RECEIVER_HELP = t("pl.redstonereceiver.help");
 
 	/// ENTITY MODE
 	public static final Localisation ENTITY_NODE_RANGE = t("pl.entitynode.range");

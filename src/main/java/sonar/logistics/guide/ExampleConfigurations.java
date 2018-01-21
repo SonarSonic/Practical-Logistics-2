@@ -17,9 +17,7 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
@@ -53,7 +51,7 @@ public class ExampleConfigurations {
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
 			screen.container.storedInfo.get(0).cachedInfo = new ProgressInfo(info1, info2);
-			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(SonarProperties.ROTATION, EnumFacing.NORTH), new TileInfoReader());
+			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(SonarProperties.ROTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.LIT_FURNACE.getDefaultState());
 		}
 	}
@@ -70,7 +68,7 @@ public class ExampleConfigurations {
 
 			TileDisplayScreen screen = new TileDisplayScreen();
 			screen.container.storedInfo.get(0).cachedInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
-			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState(), screen);
+			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH), new TileEntityChest());
 		}
 	}
@@ -80,19 +78,20 @@ public class ExampleConfigurations {
 		public WirelessRedstone() {
 			super(16);
 			addBlock(new BlockPos(1, 0, 0), Blocks.REDSTONE_WIRE.getDefaultState().withProperty(BlockRedstoneWire.POWER, 15));
+			addBlock(new BlockPos(-1, 0, -1), Blocks.REDSTONE_WIRE.getDefaultState().withProperty(BlockRedstoneWire.POWER, 15));
 
 			addBlock(new BlockPos(1, 0, -1), Blocks.LEVER.getDefaultState().withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_Z).withProperty(BlockLever.POWERED, true));
 
-			addBlock(new BlockPos(1, 0, 1), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.DOWN), new TileNode());
+			addBlock(new BlockPos(1, 0, 1), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileNode());
 			addBlock(new BlockPos(1, 0, 1), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.EAST, CableRenderType.INTERNAL).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());
 			addBlock(new BlockPos(1, 0, 1), PL2Blocks.data_emitter.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.EAST), new TileDataEmitter());
 
-			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.info_reader.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileInfoReader());
+			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.info_reader.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(PL2Properties.HASDISPLAY, false), new TileInfoReader());
 			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_receiver.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.WEST), new TileDataReceiver());
 			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.WEST, CableRenderType.INTERNAL), new TileDataCable());
 
 			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.redstone_signaller.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileRedstoneSignaller());
-			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.NORTH, CableRenderType.HALF).withProperty(PL2Properties.SOUTH, CableRenderType.INTERNAL), new TileDataCable());
+			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.SOUTH, CableRenderType.CABLE), new TileDataCable());
 
 		}
 
@@ -144,17 +143,17 @@ public class ExampleConfigurations {
 			};
 
 			addBlock(new BlockPos(1, 0, 0), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.DOWN), new TileNode());
-			addBlock(new BlockPos(1, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(BlockLargeDisplay.TYPE, DisplayConnections.ONE_E), screen1);
+			addBlock(new BlockPos(1, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(BlockLargeDisplay.TYPE, DisplayConnections.ONE_E), screen1);
 			addBlock(new BlockPos(1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.WEST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());
 
 			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.DOWN), new TileNode());
-			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(BlockLargeDisplay.TYPE, DisplayConnections.OPPOSITE_2), new TileLargeDisplayScreen());
-			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.EAST, CableRenderType.CABLE).withProperty(PL2Properties.WEST, CableRenderType.CABLE), new TileDataCable());
+			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(BlockLargeDisplay.TYPE, DisplayConnections.ONE_W), new TileLargeDisplayScreen());
+			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.EAST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());
 
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.inventory_reader.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileInventoryReader());
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.DOWN), new TileNode());
-			addBlock(new BlockPos(0, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(BlockLargeDisplay.TYPE, DisplayConnections.ONE_W), new TileLargeDisplayScreen());
-			addBlock(new BlockPos(0, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.EAST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());
+			addBlock(new BlockPos(0, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(BlockLargeDisplay.TYPE, DisplayConnections.OPPOSITE_2), new TileLargeDisplayScreen());
+			addBlock(new BlockPos(0, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.EAST, CableRenderType.CABLE).withProperty(PL2Properties.WEST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());
 
 			IBlockState chestState = Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH);
 			addBlock(new BlockPos(0, -1, 0), chestState, new TileEntityChest());

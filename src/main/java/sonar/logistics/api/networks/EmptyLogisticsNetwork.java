@@ -9,7 +9,6 @@ import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
@@ -108,6 +107,11 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 
 	@Override
 	public List<IInfoProvider> getLocalInfoProviders() {
+		return Lists.newArrayList();
+	}
+
+	@Override
+	public List<IInfoProvider> getGlobalInfoProviders() {
 		return Lists.newArrayList();
 	}
 

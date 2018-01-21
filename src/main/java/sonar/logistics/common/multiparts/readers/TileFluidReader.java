@@ -14,7 +14,6 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.core.utils.Pair;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
@@ -22,9 +21,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.FluidChangeableList;
-import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -39,7 +36,6 @@ import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredFluidStack;
-import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.network.sync.SyncMonitoredType;
 import sonar.logistics.networking.channels.FluidNetworkChannels;
@@ -61,7 +57,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	}
 
 	@Override
-	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
+	public List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers) {
 		handlers.add(FluidNetworkHandler.INSTANCE);
 		return handlers;
 	}

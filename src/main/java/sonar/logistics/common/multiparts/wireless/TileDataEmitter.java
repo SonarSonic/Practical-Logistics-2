@@ -26,54 +26,35 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.api.wireless.DataEmitterSecurity;
+import sonar.logistics.api.wireless.WirelessSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.client.gui.GuiDataEmitter;
+import sonar.logistics.api.wireless.IWirelessManager;
+import sonar.logistics.client.gui.GuiWirelessEmitter;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.PL2ListenerList;
 import sonar.logistics.networking.channels.ListNetworkChannels;
-import sonar.logistics.networking.connections.WirelessDataHandler;
 import sonar.logistics.networking.handlers.FluidNetworkHandler;
 import sonar.logistics.networking.handlers.ItemNetworkHandler;
 
-public class TileDataEmitter extends TileAbstractWireless implements IDataEmitter, IFlexibleGui, IByteBufTile {
+public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter, IFlexibleGui, IByteBufTile {
+
+	@Override
+	public IWirelessManager getWirelessHandler() {
+		return PL2.getWirelessDataManager();
+	}
 
 	public static int STATIC_ITEM_ID = -16;
 	public static int STATIC_FLUID_ID = -17;
-	public static final String UNNAMED = "Unnamed Emitter";
-	public PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
-	public List<INetworkListHandler> validHandlers;
-	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault(UNNAMED);
-	public SyncEnum<DataEmitterSecurity> security = new SyncEnum(DataEmitterSecurity.values(), 5);
-
-	{
-		syncList.addParts(emitterName, security);
-	}
+	public List<INetworkHandler> validHandlers;
 
 	//// IDataEmitter \\\\
-
-	@Override
-	public boolean canPlayerConnect(UUID uuid) {
-		return playerUUID.getUUID().equals(uuid);
-	}
-
-	@Override
-	public String getEmitterName() {
-		return emitterName.getObject();
-	}
-
-	@Override
-	public DataEmitterSecurity getSecurity() {
-		return security.getObject();
-	}
-
+	
 	@Override
 	public AbstractChangeableList<MonitoredItemStack> getServerItems() {
 		return PL2.getInfoManager(world.isRemote).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_ITEM_ID));
@@ -84,50 +65,7 @@ public class TileDataEmitter extends TileAbstractWireless implements IDataEmitte
 		return PL2.getInfoManager(world.isRemote).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_FLUID_ID));
 	}
 
-	//// PACKETS \\\\
-	@Override
-	public void writePacket(ByteBuf buf, int id) {
-		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
-		if (part != null)
-			part.writeToBuf(buf);
-	}
-
-	@Override
-	public void readPacket(ByteBuf buf, int id) {
-		DataEmitterSecurity oldSetting = getSecurity();
-		ISyncPart part = NBTHelper.getSyncPartByID(syncList.getStandardSyncParts(), id);
-		if (part != null)
-			part.readFromBuf(buf);
-
-		if (id == 5) {
-			PL2.getWirelessManager().onEmitterSecurityChanged(this, oldSetting);
-		}
-	}
-
-	//// GUI \\\\
-
-	@Override
-	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new ContainerMultipartSync(this) : null;
-	}
-
-	@Override
-	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new GuiDataEmitter(this) : null;
-	}
-
-	@Override
-	public void onGuiOpened(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			break;
-		}
-	}
-
-	public PL2ListenerList getListenerList() {
-		return listeners;
-	}
+	//// LIST READER \\\\
 
 	@Override
 	public AbstractChangeableList sortMonitoredList(AbstractChangeableList updateInfo, int channelID) {
@@ -158,7 +96,7 @@ public class TileDataEmitter extends TileAbstractWireless implements IDataEmitte
 	}
 
 	@Override
-	public List<INetworkListHandler> getValidHandlers() {
+	public List<INetworkHandler> getValidHandlers() {
 		if (validHandlers == null) {
 			validHandlers = Lists.newArrayList(ItemNetworkHandler.INSTANCE, FluidNetworkHandler.INSTANCE);
 		}

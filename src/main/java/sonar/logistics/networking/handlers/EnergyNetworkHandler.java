@@ -2,16 +2,17 @@ package sonar.logistics.networking.handlers;
 
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.SonarCore;
 import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.networking.channels.EnergyNetworkChannels;
@@ -57,7 +58,7 @@ public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNe
 		}
 		if (maxEnergy != null) {
 			TileEntity tile = connection.coords.getTileEntity();
-			MonitoredEnergyStack coords = new MonitoredEnergyStack(maxEnergy, new MonitoredBlockCoords(connection.coords, tile != null && tile.getDisplayName() != null ? tile.getDisplayName().getFormattedText() : connection.coords.getBlock().getLocalizedName()));
+			MonitoredEnergyStack coords = new MonitoredEnergyStack(maxEnergy, new MonitoredBlockCoords(connection.coords, LogisticsHelper.getCoordItem(connection.coords)));
 			list.add(coords);
 		}
 		return list;

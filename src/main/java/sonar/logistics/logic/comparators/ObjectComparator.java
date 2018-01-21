@@ -2,12 +2,16 @@ package sonar.logistics.logic.comparators;
 
 import java.util.List;
 
+import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicComparator;
+import sonar.logistics.api.tiles.signaller.InputTypes;
 import sonar.logistics.api.tiles.signaller.LogicOperator;
 import sonar.logistics.api.tiles.signaller.LogicState;
 
-@LogicComparator(handlingClass = Object.class)
+@LogicComparator(handlingClass = Object.class, id = ObjectComparator.NAME, modid = PL2Constants.MODID)
 public class ObjectComparator implements ILogicComparator<Object> {
+
+	public static final String NAME = "obj";
 
 	@Override
 	public LogicState getLogicState(LogicOperator operator, Object info, Object object) {
@@ -38,7 +42,7 @@ public class ObjectComparator implements ILogicComparator<Object> {
 
 	@Override
 	public String getName() {
-		return "obj";
+		return NAME;
 	}
 
 }

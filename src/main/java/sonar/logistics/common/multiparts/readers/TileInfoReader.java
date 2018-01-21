@@ -8,8 +8,7 @@ import net.minecraft.world.World;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -21,7 +20,7 @@ import sonar.logistics.networking.handlers.InfoNetworkHandler;
 public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 
 	@Override
-	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
+	public List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers) {
 		handlers.add(InfoNetworkHandler.INSTANCE);
 		return handlers;
 	}

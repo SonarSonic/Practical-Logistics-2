@@ -28,14 +28,13 @@ import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
-import sonar.logistics.logic.comparators.ComparatorRegistry;
 import sonar.logistics.networking.connections.CableConnectionHandler;
-import sonar.logistics.networking.connections.ChunkViewerHandler;
 import sonar.logistics.networking.connections.ClientInfoHandler;
 import sonar.logistics.networking.connections.LogisticsNetworkHandler;
 import sonar.logistics.networking.connections.ScreenConnectionHandler;
 import sonar.logistics.networking.connections.ServerInfoHandler;
-import sonar.logistics.networking.connections.WirelessDataHandler;
+import sonar.logistics.networking.connections.WirelessDataManager;
+import sonar.logistics.networking.connections.WirelessRedstoneManager;
 import sonar.logistics.worldgen.SapphireOreGen;
 
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
@@ -51,12 +50,12 @@ public class PL2 {
 	public static PL2 instance;
 
 	public LogisticsNetworkHandler networkManager = new LogisticsNetworkHandler();
-	public WirelessDataHandler wirelessManager = new WirelessDataHandler();
+	public WirelessDataManager wirelessDataManager = new WirelessDataManager();
+	public WirelessRedstoneManager wirelessRedstoneManager = new WirelessRedstoneManager();
 	public CableConnectionHandler cableManager = new CableConnectionHandler();
 	public ScreenConnectionHandler displayManager = new ScreenConnectionHandler();
 	public ServerInfoHandler serverManager = new ServerInfoHandler();
 	public ClientInfoHandler clientManager = new ClientInfoHandler();
-	public ComparatorRegistry comparatorRegistry = new ComparatorRegistry();
 
 	public static CreativeTabs creativeTab = new CreativeTabs(PL2Constants.NAME) {
 		@Override
@@ -103,7 +102,6 @@ public class PL2 {
 
 		PL2ASMLoader.init(event);
 		LogicInfoRegistry.INSTANCE.init();
-		comparatorRegistry.register();
 		proxy.preInit(event);
 	}
 
@@ -150,13 +148,13 @@ public class PL2 {
 
 	@EventHandler
 	public void serverClose(FMLServerStoppedEvent event) {
-		getWirelessManager().removeAll();
+		getWirelessDataManager().removeAll();
+		getWirelessRedstoneManager().removeAll();
 		getNetworkManager().removeAll();
 		getCableManager().removeAll();
 		getDisplayManager().removeAll();
 		getClientManager().removeAll();
 		getServerManager().removeAll();
-		getComparatorRegistry().removeAll();
 	}
 
 	public static LogisticsNetworkHandler getNetworkManager() {
@@ -171,8 +169,12 @@ public class PL2 {
 		return PL2.instance.displayManager;
 	}
 
-	public static WirelessDataHandler getWirelessManager() {
-		return PL2.instance.wirelessManager;
+	public static WirelessDataManager getWirelessDataManager() {
+		return PL2.instance.wirelessDataManager;
+	}
+
+	public static WirelessRedstoneManager getWirelessRedstoneManager() {
+		return PL2.instance.wirelessRedstoneManager;
 	}
 	
 	public static ServerInfoHandler getServerManager() {
@@ -188,9 +190,5 @@ public class PL2 {
 			return getServerManager();
 		}
 		return getClientManager();
-	}
-
-	public static ComparatorRegistry getComparatorRegistry() {
-		return PL2.instance.comparatorRegistry;
 	}
 }

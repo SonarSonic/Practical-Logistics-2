@@ -18,6 +18,8 @@ tile.EntityNode.name=Entity Node
 tile.RedstoneSignaller.name=Redstone Signaller
 tile.DataReceiver.name=Data Receiver
 tile.DataEmitter.name=Data Emitter
+tile.RedstoneReceiver.name=Wireless Redstone Receiver
+tile.RedstoneEmitter.name=Wireless Redstone Emitter
 tile.TransferNode.name=Transfer Node
 tile.Clock.name=Clock
 
@@ -37,6 +39,8 @@ item.Operator.name=Operator Tool
 item.PLGuide.name=Practical Logistics Guide
 item.WirelessStorage.name=Wireless Storage Reader
 item.EtchedPlate.name=Etched Plate
+item.SignallingPlate.name=Signalling Plate
+item.WirelessPlate.name=Wireless Plate
 
 //messages
 dataBlock.denied=Access Denied
@@ -170,7 +174,8 @@ pl.emitter.private=Private
 pl.entitynode.range=Entity Range
 
 //data receiver
-pl.receiver.help=Select the emitters you wish to connect to
+pl.datareceiver.help=Select the data emitters you wish to connect to
+pl.redstonereceiver.help=Select the redstone emitters you wish to connect to
 
 //display screen
 pl.display.infoselect=Info Selection

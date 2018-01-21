@@ -9,15 +9,12 @@ import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.IDataCable;
-import sonar.logistics.common.multiparts.cables.TileDataCable;
 import sonar.logistics.helpers.CableHelper;
 
 public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable> {

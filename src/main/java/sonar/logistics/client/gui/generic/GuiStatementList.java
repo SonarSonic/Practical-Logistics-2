@@ -38,6 +38,7 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.packets.PacketEmitterStatement;
@@ -163,8 +164,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				currentFilter.incrementInputType();
 				inputField.setText("");
 				currentFilter.obj.set("", ObjectType.STRING);
-				currentFilter.comparatorID.setObject(PL2.getComparatorRegistry().getObjectID(currentFilter.getInputType().comparatorID));
-				currentFilter.comparator = PL2.getComparatorRegistry().getRegisteredObject(currentFilter.getInputType().comparatorID);
+				currentFilter.comparatorID.setObject(currentFilter.getInputType().comparatorID);
 				if (!currentFilter.validOperators().contains(currentFilter.getOperator())) {
 					currentFilter.operator.setObject((LogicOperator) currentFilter.validOperators().get(0));
 				}
@@ -403,7 +403,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				}
 			} else if (info instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) info;
-				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(),"ERROR" /*FIXME monitor.getDisplayName()*/ ), yPos + 1, LogisticsColours.white_text.getRGB());
+				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), LogisticsHelper.getCoordItem(monitor.getCoords())), yPos + 1, LogisticsColours.white_text.getRGB());
 			}
 			break;
 		case LIST:
@@ -577,7 +577,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		}
 
 	}
-	
+
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
 		if (this.getFocusedField() == null && state != GuiState.LIST && (i == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(i))) {

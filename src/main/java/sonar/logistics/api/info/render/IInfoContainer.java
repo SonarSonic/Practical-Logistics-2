@@ -15,7 +15,6 @@ import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 

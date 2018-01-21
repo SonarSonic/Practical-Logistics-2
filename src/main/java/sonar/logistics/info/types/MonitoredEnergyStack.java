@@ -23,6 +23,7 @@ import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.network.sync.SyncMonitoredType;
 import sonar.logistics.networking.handlers.EnergyNetworkHandler;
 
@@ -51,12 +52,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 	public MonitoredEnergyStack(StoredEnergyStack stack, MonitoredBlockCoords coords) {
 		this.energyStack.setObject(stack);
 		this.coords.setInfo(coords);
-
-		Item item = Item.getItemFromBlock(coords.getCoords().getBlockState().getBlock());
-		if (item != null) {
-			this.dropStack.setObject(new StoredItemStack(new ItemStack(item, 1)));
-		}
-
+		this.dropStack.setObject(new StoredItemStack(LogisticsHelper.getCoordItem(coords.getCoords())));
 	}
 
 	@Override

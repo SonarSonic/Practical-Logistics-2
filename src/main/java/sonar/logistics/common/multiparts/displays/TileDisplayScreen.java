@@ -8,8 +8,6 @@ import net.minecraft.util.math.RayTraceResult;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.listener.ListenableList;
-import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncEnum;
 import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.info.render.InfoContainer;
@@ -17,8 +15,6 @@ import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.networking.PL2ListenerList;
 
 public class TileDisplayScreen extends TileAbstractDisplay {
 

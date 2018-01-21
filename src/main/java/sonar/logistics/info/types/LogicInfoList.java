@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
@@ -37,9 +36,7 @@ import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.RenderBlockSelection;
-import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
@@ -106,7 +103,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 	@Override
 	public boolean isMatchingInfo(LogicInfoList info) {
-		return infoID.getObject().equals(info.infoID.getObject());
+		return infoID.getObject().equals(info.infoID.getObject()) && networkID.getObject()==info.networkID.getObject();
 	}
 
 	@Override

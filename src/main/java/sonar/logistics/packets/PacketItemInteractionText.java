@@ -47,7 +47,7 @@ public class PacketItemInteractionText implements IMessage {
 	public static class Handler implements IMessageHandler<PacketItemInteractionText, IMessage> {
 		@Override
 		public IMessage onMessage(PacketItemInteractionText message, MessageContext ctx) {
-			//SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 				GuiNewChat chatGui = Minecraft.getMinecraft().ingameGUI.getChatGUI();
 				if (lastStack == null || !lastStack.isItemEqual(message.stack)) {
 					lastStack = message.stack;
@@ -56,7 +56,7 @@ public class PacketItemInteractionText implements IMessage {
 					lastChanged += message.changed;
 				}
 				chatGui.printChatMessageWithOptionalDeletion(new TextComponentTranslation(TextFormatting.BLUE + "PL2: " + TextFormatting.RESET + "Stored " + message.stored + (lastChanged == 0 ? "" : (lastChanged > 0 ? "" + TextFormatting.GREEN + "+" + lastChanged : "" + TextFormatting.RED + lastChanged)) + TextFormatting.RESET + " x " + lastStack.getDisplayName()), lastStack.getDisplayName().hashCode());
-			//});
+			});
 			return null;
 		}
 	}

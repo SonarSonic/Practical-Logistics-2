@@ -11,11 +11,16 @@ import com.google.common.collect.Maps;
 
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.slot.EnumFaceSlot;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import sonar.core.api.utils.BlockCoords;
+import sonar.core.helpers.ListHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
@@ -120,15 +125,15 @@ public class LogisticsHelper {
 	}
 
 	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, IBlockAccess world, BlockPos pos, TileAbstractDisplay part) {
-		ILogisticsNetwork networkCache = part.getNetwork();		
+		ILogisticsNetwork networkCache = part.getNetwork();
 		IBlockAccess actualWorld = SonarMultipartHelper.unwrapBlockAccess(world);
-		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(actualWorld, pos, EnumFaceSlot.fromFace(part.getCableFace()), tile -> true);		
+		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(actualWorld, pos, EnumFaceSlot.fromFace(part.getCableFace()), tile -> true);
 		if (connectedPart.isPresent() && connectedPart.get() instanceof IInfoProvider) {
 			if (!viewables.contains((IInfoProvider) connectedPart.get())) {
 				viewables.add((IInfoProvider) connectedPart.get());
 			}
 		} else {
-			for (IInfoProvider monitor : networkCache.getLocalInfoProviders()) {
+			for (IInfoProvider monitor : networkCache.getGlobalInfoProviders()) {
 				if (!viewables.contains(monitor)) {
 					viewables.add(monitor);
 				}
@@ -140,6 +145,16 @@ public class LogisticsHelper {
 	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {
 		nodes.stream().filter(n -> n.isValid()).forEach(n -> n.addConnections(channels));
 		return NodeConnection.sortConnections(channels);
+	}
+
+	public static ItemStack getCoordItem(BlockCoords coords) {
+		TileEntity tile = coords.getTileEntity();
+		IBlockState state = coords.getBlockState();
+		ItemStack stack = coords.getBlock().getItem(coords.getWorld(), coords.getBlockPos(), state);
+		if (stack == null || stack.isEmpty()) {
+			stack = new ItemStack(Item.getItemFromBlock(state.getBlock()));
+		}
+		return stack;
 	}
 
 }

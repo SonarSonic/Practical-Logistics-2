@@ -1,10 +1,7 @@
 package sonar.logistics.api.lists.values;
 
-import net.minecraftforge.fluids.FluidStack;
-import sonar.core.api.fluids.StoredFluidStack;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.MonitoredValue;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.EnumListChange;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.MonitoredValueHelper;

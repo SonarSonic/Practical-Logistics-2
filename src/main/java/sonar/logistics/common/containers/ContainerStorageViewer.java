@@ -17,7 +17,6 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.networking.channels.ItemNetworkChannels;
 import sonar.logistics.networking.channels.ListNetworkChannels;
-import sonar.logistics.networking.connections.WirelessDataHandler;
 
 public class ContainerStorageViewer extends Container {
 
@@ -33,7 +32,7 @@ public class ContainerStorageViewer extends Container {
 		this.identity = identity;
 		this.player = player;
 		if (!player.getEntityWorld().isRemote) {
-			emitter = PL2.getWirelessManager().getDataEmitter(identity);
+			emitter = PL2.getWirelessDataManager().getEmitter(identity);
 		}
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {

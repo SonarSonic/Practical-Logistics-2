@@ -16,8 +16,11 @@ import sonar.logistics.common.multiparts.readers.TileEnergyReader;
 import sonar.logistics.common.multiparts.readers.TileFluidReader;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
+import sonar.logistics.common.multiparts.readers.TileNetworkReader;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
+import sonar.logistics.common.multiparts.wireless.TileRedstoneEmitter;
+import sonar.logistics.common.multiparts.wireless.TileRedstoneReceiver;
 
 public enum PL2Multiparts {
 	NODE(0.875, 0, 0.0625, "Node", TileNode.class, PL2Translate.NODE), //
@@ -28,8 +31,11 @@ public enum PL2Multiparts {
 	FLUID_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "FluidReader", TileFluidReader.class, PL2Translate.FLUID_READER), //
 	ENERGY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "EnergyReader", TileEnergyReader.class, PL2Translate.ENERGY_READER), //
 	INVENTORY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "InventoryReader", TileInventoryReader.class, PL2Translate.INVENTORY_READER), //
+	NETWORK_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "NetworkReader", TileNetworkReader.class, PL2Translate.NETWORK_READER), //
 	DATA_EMITTER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, "DataEmitter", TileDataEmitter.class, PL2Translate.DATA_EMITTER), //
 	DATA_RECEIVER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, "DataReceiver", TileDataReceiver.class, PL2Translate.DATA_RECEIVER), //
+	REDSTONE_EMITTER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, "RedstoneEmitter", TileRedstoneEmitter.class, PL2Translate.REDSTONE_EMITTER), //
+	REDSTONE_RECEIVER(0.0625 * 5, 0.0625 / 2, 0.0625 * 4, "RedstoneReceiver", TileRedstoneReceiver.class, PL2Translate.REDSTONE_RECEIVER), //
 	CLOCK(3 * 0.0625, 0.0625 * 1, 0.0625 * 3, "Clock", TileClock.class, PL2Translate.CLOCK), //
 	REDSTONE_SIGNALLER(3 * 0.0625, 0.0625 * 1, 0.0625 * 6, "RedstoneSignaller", TileRedstoneSignaller.class, PL2Translate.REDSTONE_SIGNALLER), //
 	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, "TransferNode", TileTransferNode.class, PL2Translate.TRANSFER_NODE), //

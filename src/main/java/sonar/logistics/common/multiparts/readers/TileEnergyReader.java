@@ -22,8 +22,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.EnergyReader;
@@ -49,7 +48,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	}
 
 	@Override
-	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
+	public List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers) {
 		handlers.add(EnergyNetworkHandler.INSTANCE);
 		return handlers;
 	}
@@ -82,7 +81,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 			info = new LogicInfoList(getIdentity(), MonitoredEnergyStack.id, this.getNetworkID());
 			break;
 		case TOTAL:
-			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(this.getCoords(),PL2Translate.ENERGY_READER.original), new StoredItemStack(new ItemStack(PL2Blocks.energy_reader)));
+			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(getCoords(), new ItemStack(PL2Blocks.energy_reader)), new StoredItemStack(new ItemStack(PL2Blocks.energy_reader)));
 			for (IMonitoredValue<MonitoredEnergyStack> value : updateInfo.getList()) {
 				MonitoredEnergyStack stack = value.getSaveableInfo();
 				MonitoredEnergyStack convert = stack.copy();

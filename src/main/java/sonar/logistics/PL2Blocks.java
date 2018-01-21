@@ -23,11 +23,13 @@ import sonar.logistics.common.multiparts.nodes.BlockTransferNode;
 import sonar.logistics.common.multiparts.readers.BlockAbstractReader;
 import sonar.logistics.common.multiparts.wireless.BlockDataEmitter;
 import sonar.logistics.common.multiparts.wireless.BlockDataReceiver;
+import sonar.logistics.common.multiparts.wireless.BlockRedstoneEmitter;
+import sonar.logistics.common.multiparts.wireless.BlockRedstoneReceiver;
 
 public class PL2Blocks extends PL2 {
 
 	public static Block sapphire_ore, hammer, hammer_air;
-	public static Block info_reader, fluid_reader, energy_reader, inventory_reader, data_cable, node, data_emitter, data_receiver;
+	public static Block info_reader, fluid_reader, energy_reader, inventory_reader, data_cable, node, data_emitter, data_receiver, redstone_emitter, redstone_receiver;
 	public static Block array, entity_node, transfer_node, redstone_signaller, clock;
 	public static Block display_screen, large_display_screen, holographic_display;
 
@@ -57,6 +59,8 @@ public class PL2Blocks extends PL2 {
 		node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockNode()));
 		data_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataEmitter()));
 		data_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataReceiver()));
+		redstone_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneEmitter()));
+		redstone_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneReceiver()));
 
 	}
 

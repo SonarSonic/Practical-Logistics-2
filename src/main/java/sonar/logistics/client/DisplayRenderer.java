@@ -2,12 +2,16 @@ package sonar.logistics.client;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
@@ -23,6 +27,15 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 		if (part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender()) {
 			return;
 		}
+		if (part.getDisplayType() != DisplayType.HOLOGRAPHIC) {
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			EnumFacing face = player.getHorizontalFacing().getOpposite();
+			if (face == part.getCableFace().getOpposite()) {
+				//only renders the display if the player is looking the correct way. 
+				return;
+			}
+		}
+		GL11.glFlush();
 		RenderHelper.offsetRendering(part.getPos(), partialTicks);
 
 		if (part instanceof ILargeDisplay) {
@@ -33,7 +46,6 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 		}
 
 		if (part instanceof TileHolographicDisplay) {
-
 			this.bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));
 			GL11.glPushMatrix();
 			RenderHelper.saveBlendState();
@@ -52,13 +64,14 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 			GL11.glPopMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.translate(-0.0625, 0, 0);
-
 		}
+		
 		GlStateManager.translate(-0.0625, 0, 0);
 		part.container().renderContainer();
 
 		GlStateManager.depthMask(true);
 		GlStateManager.popMatrix();
 
+		GL11.glFinish();
 	}
 }

@@ -16,32 +16,37 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.wireless.ClientDataEmitter;
+import sonar.logistics.api.wireless.ClientWirelessEmitter;
+import sonar.logistics.api.wireless.WirelessConnectionType;
 
 public class PacketClientEmitters implements IMessage {
 
-	public List<ClientDataEmitter> emitters;
+	public WirelessConnectionType type;
+	public List<ClientWirelessEmitter> emitters;
 
 	public PacketClientEmitters() {}
 
-	public PacketClientEmitters(List<ClientDataEmitter> emitters) {
+	public PacketClientEmitters(WirelessConnectionType type, List<ClientWirelessEmitter> emitters) {
+		this.type = type;
 		this.emitters = emitters;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
+		type = WirelessConnectionType.values()[buf.readInt()];
 		NBTTagCompound tag = ByteBufUtils.readTag(buf);
 		emitters = Lists.newArrayList();
 		if (tag.hasKey("emitters")) {
 			NBTTagList tagList = tag.getTagList("emitters", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
-				emitters.add(NBTHelper.instanceNBTSyncable(ClientDataEmitter.class, tagList.getCompoundTagAt(i)));
+				emitters.add(NBTHelper.instanceNBTSyncable(ClientWirelessEmitter.class, tagList.getCompoundTagAt(i)));
 			}
 		}
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
+		buf.writeInt(type.ordinal());
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagList tagList = new NBTTagList();
 		emitters.forEach(emitter -> tagList.appendTag(emitter.writeData(new NBTTagCompound(), SyncType.SAVE)));
@@ -55,7 +60,18 @@ public class PacketClientEmitters implements IMessage {
 	public static class Handler implements IMessageHandler<PacketClientEmitters, IMessage> {
 		@Override
 		public IMessage onMessage(PacketClientEmitters message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> PL2.getClientManager().clientEmitters = message.emitters);
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				switch(message.type){
+				case DATA:
+					PL2.getClientManager().clientDataEmitters = message.emitters;
+					break;
+				case REDSTONE:
+					PL2.getClientManager().clientRedstoneEmitters = message.emitters;
+					break;
+				default:
+					break;
+				}
+			});
 			return null;
 		}
 	}

@@ -5,10 +5,8 @@ import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -18,6 +16,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
+import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.PL2Events;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
@@ -75,7 +74,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 	}
 
 	public boolean canPlayerDestroy(IBlockState state, World world, BlockPos pos, EntityPlayer player) {
-		RayTraceResult rayResult = InteractionHelper.getRayTraceEyes(player, world);
+		RayTraceResult rayResult = RayTraceHelper.getRayTraceEyes(player, world);
 		if (rayResult == null || state.getValue(SonarProperties.ORIENTATION).getOpposite() == rayResult.sideHit) {
 			return true;
 		}
@@ -95,7 +94,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
 		if (PL2Events.coolDownClick == 0) {
 			PL2Events.coolDownClick = 2;
-			RayTraceResult rayResult = InteractionHelper.getRayTraceEyes(player, world);
+			RayTraceResult rayResult = RayTraceHelper.getRayTraceEyes(player, world);
 			TileAbstractDisplay display = (TileAbstractDisplay) world.getTileEntity(pos);
 			if (world.isRemote) {
 				float hitX = (float) (rayResult.hitVec.x - (double) pos.getX());

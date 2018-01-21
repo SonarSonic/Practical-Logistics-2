@@ -13,8 +13,8 @@ import sonar.core.helpers.ASMLoader;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.asm.EntityInfoProvider;
 import sonar.logistics.api.asm.InfoRegistry;
+import sonar.logistics.api.asm.LogicComparator;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.asm.MonitoredValue;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.filters.INodeFilter;
@@ -22,7 +22,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
-import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
@@ -32,6 +31,10 @@ public class PL2ASMLoader {
 	public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, Class<? extends IInfo>> infoClasses = Maps.newLinkedHashMap();
 
+	public static LinkedHashMap<Integer, String> comparatorNames = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, Integer> comparatorIds = Maps.newLinkedHashMap();
+	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
+	
 	//public static LinkedHashMap<Integer, String> monitoredValueNames = Maps.newLinkedHashMap();
 	////public static LinkedHashMap<String, Integer> monitoredValueIds = Maps.newLinkedHashMap();
 	//public static LinkedHashMap<String, Class<? extends IMonitoredValue>> monitoredValueClasses = Maps.newLinkedHashMap();
@@ -39,15 +42,14 @@ public class PL2ASMLoader {
 	// public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
 	// public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
+	//public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
 
-	private PL2ASMLoader() {
-	}
+	private PL2ASMLoader() {}
 
 	public static void init(FMLPreInitializationEvent event) {
 		ASMDataTable asmDataTable = event.getAsmData();
 		PL2ASMLoader.loadInfoTypes(asmDataTable);
-		//PL2ASMLoader.loadNetworkHandlers(asmDataTable);
+		PL2ASMLoader.loadComparatorTypes(asmDataTable);
 		PL2ASMLoader.loadNodeFilters(asmDataTable);
 		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
 		LogicInfoRegistry.INSTANCE.tileProviders.addAll(PL2ASMLoader.getTileProviders(asmDataTable));
@@ -65,40 +67,23 @@ public class PL2ASMLoader {
 	public static List<IEntityInfoProvider> getEntityProviders(@Nonnull ASMDataTable asmDataTable) {
 		return ASMLoader.getInstances(asmDataTable, EntityInfoProvider.class, IEntityInfoProvider.class, true, false);
 	}
-	/*
-	public static void loadNetworkHandlers(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends INetworkHandler>>> infoTypes = ASMLoader.getClasses(asmDataTable, NetworkHandler.class, INetworkHandler.class, true);
-		for (Pair<ASMDataTable.ASMData, Class<? extends INetworkHandler>> info : infoTypes) {
-			String name = (String) info.a.getAnnotationInfo().get("handlerID");
-			try {
-				networkHandlers.put(name, info.b.newInstance());
-			} catch (InstantiationException | IllegalAccessException e) {
-				PL2.logger.error("FAILED: To Load Network Handler - " + name);
-			}
-		}
-		PL2.logger.info("Loaded: " + networkHandlers.size() + " Network Handlers");
 
-		ASMLoader.injectInstances(asmDataTable, NetworkHandlerField.class, INetworkHandler.class, asm -> {
-			String name = (String) asm.getAnnotationInfo().get("handlerID");
-			return networkHandlers.get(name);
-		});
-
-	}
-
-	*/
-	/*
-	public static void loadMonitoredValues(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IMonitoredValue>>> infoTypes = ASMLoader.getClasses(asmDataTable, MonitoredValue.class, IMonitoredValue.class, true);
-		for (Pair<ASMDataTable.ASMData, Class<? extends IMonitoredValue>> info : infoTypes) {
+	public static void loadComparatorTypes(@Nonnull ASMDataTable asmDataTable) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicComparator.class, ILogicComparator.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
-			monitoredValueNames.put(hashCode, name);
-			monitoredValueIds.put(name, hashCode);
-			monitoredValueClasses.put(name, info.b);
+			comparatorNames.put(hashCode, name);
+			comparatorIds.put(name, hashCode);
+			try {
+				comparatorClasses.put(name, info.b.newInstance());
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
 		}
-		PL2.logger.info("Loaded: " + monitoredValueIds.size() + " Monitored Value Types");
+		PL2.logger.info("Loaded: " + comparatorIds.size() + " Comparator Types");
 	}
-	*/
+
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
 		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicInfoType.class, IInfo.class, true);

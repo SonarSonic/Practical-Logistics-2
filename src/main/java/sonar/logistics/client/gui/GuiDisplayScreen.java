@@ -27,6 +27,7 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
@@ -301,7 +302,9 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			}
 		} else if (info instanceof IInfoProvider) {
 			IInfoProvider monitor = (IInfoProvider) info;
-			InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), "ERROR"/*FIXME monitor.getDisplayName()*/), yPos + 1, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.getMultipart().getDisplayName(), InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.getCoords().toString(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text("position", InfoRenderer.kindLeft, yPos, LogisticsColours.white_text.getRGB());
 		}
 	}
 

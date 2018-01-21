@@ -1,7 +1,6 @@
 package sonar.logistics.networking.handlers;
 
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.collect.Lists;
 
@@ -14,16 +13,12 @@ import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
 import sonar.logistics.PL2Config;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.IEntityMonitorHandler;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListChannels;
 import sonar.logistics.api.networks.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
-import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;

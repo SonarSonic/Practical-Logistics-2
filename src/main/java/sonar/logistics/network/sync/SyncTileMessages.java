@@ -63,7 +63,6 @@ public class SyncTileMessages extends SyncPart {
 	public @Nullable TileMessage canOpenGui() {
 		for (int i = 0; i < types; i++) {
 			if (states[i] > 0 && !TileMessage.values()[i].canOpenTile()) {
-
 				return TileMessage.values()[i];
 			}
 		}

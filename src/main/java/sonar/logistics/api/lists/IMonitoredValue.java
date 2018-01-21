@@ -1,7 +1,5 @@
 package sonar.logistics.api.lists;
 
-import sonar.logistics.api.info.IInfo;
-
 public interface IMonitoredValue<T> {
 
 	public void reset(T fullInfo);

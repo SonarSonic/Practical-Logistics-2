@@ -15,7 +15,7 @@ public class ContainerEmitterList extends Container {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			PL2.getWirelessManager().removeViewer(player);
+			PL2.getWirelessDataManager().removeViewer(player);
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {

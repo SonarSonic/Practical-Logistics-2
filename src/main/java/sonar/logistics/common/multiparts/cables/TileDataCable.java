@@ -2,16 +2,24 @@ package sonar.logistics.common.multiparts.cables;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
+import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.integration.multipart.TileSonarMultipart;
+import sonar.core.utils.LabelledAxisAlignedBB;
+import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2API;
@@ -76,6 +84,10 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 		return isBlocked[dir.ordinal()] == 1;
 	}
 
+	public void invertBlock(EnumFacing dir) {
+		isBlocked[dir.ordinal()] = isBlocked[dir.ordinal()] == 1 ? 0 : 1;
+	}
+
 	public boolean isInternallyBlocked(EnumFacing dir) {
 		return info == null || dir == null ? false : info.getContainer().getPart(EnumFaceSlot.fromFace(dir)).isPresent();
 	}
@@ -124,8 +136,48 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 
 	@Override
 	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		/* if (mode == OperatorMode.DEFAULT) { List<AxisAlignedBB> bounds = Lists.newArrayList(); addSelectionBoxes(bounds); for (AxisAlignedBB bound : bounds) { if (bound instanceof LabelledAxisAlignedBB && bound.equals(rayTrace.bounds)) { if (isClient()) { return true; } String label = ((LabelledAxisAlignedBB) bound).label; EnumFacing face = null; face = !label.equals("c") ? EnumFacing.valueOf(label.toUpperCase()) : facing; isBlocked[face.ordinal()] = !isBlocked[face.ordinal()]; IDataCable cable = PL2API.getCableHelper().getCableFromCoords(BlockCoords. translateCoords(getCoords(), face)); removeConnection(); addConnection(); if (cable != null && cable instanceof DataCablePart) { DataCablePart part = (DataCablePart) cable; part.isBlocked[face.getOpposite().ordinal()] = isBlocked[face.ordinal()]; part.sendUpdatePacket(true); part.markDirty(); // it's messy, but there is no easier way to check if the cables are connected properly. part.removeConnection(); part.addConnection(); } sendUpdatePacket(true); markDirty(); return true; } } } */
+		if (mode == OperatorMode.DEFAULT) {
+			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player, world);
+			Pair<RayTraceResult, AxisAlignedBB> trace = RayTraceHelper.rayTraceBoxes(pos, look.getLeft(), look.getRight(), BlockDataCable.getSelectionBoxes(world, pos, Lists.newArrayList()));
+
+			if (trace.b instanceof LabelledAxisAlignedBB) {
+				if (isClient()) {
+					return true;
+				}
+				String label = ((LabelledAxisAlignedBB) trace.b).label;
+				EnumFacing face = null;
+				face = !label.equals("c") ? EnumFacing.valueOf(label.toUpperCase()) : facing;
+				TileDataCable adjCable = CableHelper.getCable(world, pos.offset(face));
+				if (adjCable != null) {
+					//remove both cables
+					CableConnectionHandler.instance().removeConnection(this);
+					CableConnectionHandler.instance().removeConnection(adjCable);
+					
+					//change blocked settings						
+					invertBlock(face);					
+					adjCable.isBlocked[face.getOpposite().ordinal()] = isBlocked[face.ordinal()];					
+					
+					//add both cables back again
+					CableConnectionHandler.instance().addConnection(adjCable);
+					CableConnectionHandler.instance().addConnection(this);
+					
+					//update networks
+
+					ILogisticsNetwork thisNet = PL2.getNetworkManager().getOrCreateNetwork(getRegistryID());
+					ILogisticsNetwork adjNetNet = PL2.getNetworkManager().getOrCreateNetwork(adjCable.getRegistryID());
+					thisNet.onCablesChanged();
+					adjNetNet.onCablesChanged();
+					
+					//update cable render
+					SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
+					SonarMultipartHelper.sendMultipartUpdateSyncAround(adjCable, 128);
+				}
+				return true;
+
+			}
+		}
 		return false;
+
 	}
 
 	//// SAVING \\\\

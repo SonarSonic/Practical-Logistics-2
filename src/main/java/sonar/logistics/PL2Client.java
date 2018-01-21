@@ -16,7 +16,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.network.SonarClient;
 import sonar.core.translate.ILocalisationHandler;
 import sonar.core.translate.Localisation;
-import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.client.ClockRenderer;
 import sonar.logistics.client.DisplayRenderer;

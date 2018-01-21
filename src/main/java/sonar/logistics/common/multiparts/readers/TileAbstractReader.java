@@ -28,7 +28,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
@@ -40,6 +41,7 @@ import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
+import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.network.sync.SyncMonitoredType;
@@ -51,7 +53,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 
 	public final PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
 	public final ChannelList list = new ChannelList(getIdentity(), this.channelType(), -2);
-	protected List<INetworkListHandler> validHandlers = null;
+	protected List<INetworkHandler> validHandlers = null;
 	public SyncMonitoredType<T> selectedInfo = new SyncMonitoredType<T>(-5);
 	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-4);
 	public int lastPos = -1;
@@ -74,8 +76,15 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 		return toCheck == getCableFace() ? NetworkConnectionType.NETWORK : toCheck == getCableFace().getOpposite() ? NetworkConnectionType.VISUAL : NetworkConnectionType.NONE;
 	}
 
-	public abstract List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers);
+	public abstract List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers);
 
+	@Override
+	public void onNetworkDisconnect(ILogisticsNetwork network) {
+		super.onNetworkDisconnect(network);
+		for (int i = 0; i < getMaxInfo(); i++) {
+			PL2.getServerManager().changeInfo(new InfoUUID(this, i), InfoError.noData);
+		}
+	}
 	//// ILogicMonitor \\\\
 
 	@Override
@@ -102,7 +111,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	}
 
 	@Override
-	public List<INetworkListHandler> getValidHandlers() {
+	public List<INetworkHandler> getValidHandlers() {
 		if (validHandlers == null) {
 			validHandlers = addValidHandlers(Lists.newArrayList());
 		}
@@ -161,7 +170,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public void onFirstTick() {
 		super.onFirstTick();
 		if (isServer()) {
-			Optional<IMultipartTile> display = info.getContainer().getPartTile(EnumDisplayFaceSlot.fromFace(getCableFace()));
+			Optional<IMultipartTile> display = info == null ? Optional.empty() : info.getContainer().getPartTile(EnumDisplayFaceSlot.fromFace(getCableFace()));
 			hasMonitor.setObject(display.isPresent() && display.get() instanceof IDisplay);
 			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 		}

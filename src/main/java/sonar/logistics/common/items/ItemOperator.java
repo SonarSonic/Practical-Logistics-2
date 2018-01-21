@@ -1,7 +1,15 @@
 package sonar.logistics.common.items;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import mcmultipart.api.container.IMultipartContainer;
+import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.IMultipartTile;
+import mcmultipart.api.multipart.MultipartHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,16 +19,25 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.RayTraceHelper;
 import sonar.core.helpers.SonarHelper;
+import sonar.core.integration.multipart.SonarMultipartHelper;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
+import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.tiles.IChannelledTile;
+import sonar.logistics.helpers.InteractionHelper;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
 
@@ -36,22 +53,26 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 
 	//// INTERACTIONS \\\\
 
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		/*
-		IMultipartContainer container = (IMultipartContainer) MultipartHelper.getPartContainer(world, pos);
-		if (container != null) {
-			
-			Vec3d start = RayTraceUtils.getStart(player);
-			Vec3d end = RayTraceUtils.getEnd(player);
-			AdvancedRayTraceResultPart result = SonarMultipartHelper.collisionRayTrace(container, start, end);
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		Optional<IMultipartContainer> c = MultipartHelper.getContainer(world, pos);
+		if (c.isPresent()) {
+			IBlockState state = world.getBlockState(pos);
+			RayTraceResult result = RayTraceHelper.getRayTraceEyes(player, world);
+
+			IMultipartContainer container = c.get();
 			if (result == null) {
 				return EnumActionResult.PASS;
 			}
-			IMultipart part = result.hit.partHit;
-			OperatorMode mode = getOperatorMode(stack);
+			Optional<IMultipartTile> multipartTile = SonarMultipartHelper.getMultipartTileFromSlotID(world, pos, result.subHit);
+			Object part = multipartTile.isPresent() ? multipartTile.get() : world.getTileEntity(pos);
+			
+			if (part == null) {
+				return EnumActionResult.PASS;
+			}
+			OperatorMode mode = getOperatorMode(player.getHeldItem(hand));
 			switch (mode) {
 			case ANALYSE:
-
+				// FIXME
 				// DO ERROR CHECKING.
 				break;
 			case DEFAULT:
@@ -85,15 +106,13 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			case INFO:
 				break;
 			case ROTATE:
-				//return (part != null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS; //FIXME
+				// return (part != null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS; //FIXME
 				return EnumActionResult.PASS;
 			default:
 				break;
 
 			}
 		}
-		*/
-		//FIXME
 		return EnumActionResult.PASS;
 	}
 
@@ -132,43 +151,13 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 
 	@Override
 	public Object getServerElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		/* FIXME
-		switch (id) {
-		case 0:
-			int hash = tag.getInteger("hash");
-			BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
-			IMultipartContainer container = MultipartHelper.getPartContainer(world, pos);
-			for (IMultipart part : container.getParts()) {
-				if (part != null && part instanceof IChannelledTile) {
-					IChannelledTile tile = (IChannelledTile) part;
-					if (tile.getIdentity() == hash) {
-						return new ContainerChannelSelection(tile);
-					}
-				}
-			}
-		}
-		*/
+		/* FIXME switch (id) { case 0: int hash = tag.getInteger("hash"); BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")); IMultipartContainer container = MultipartHelper.getPartContainer(world, pos); for (IMultipart part : container.getParts()) { if (part != null && part instanceof IChannelledTile) { IChannelledTile tile = (IChannelledTile) part; if (tile.getIdentity() == hash) { return new ContainerChannelSelection(tile); } } } } */
 		return null;
 	}
 
 	@Override
 	public Object getClientElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-	/*
-		switch (id) {
-		case 0:
-			int hash = tag.getInteger("hash");
-			BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
-			IMultipartContainer container = MultipartHelper.getPartContainer(world, pos);
-			for (IMultipart part : container.getParts()) {
-				if (part != null && part instanceof IChannelledTile) {
-					IChannelledTile tile = (IChannelledTile) part;
-					if (tile.getIdentity() == hash) {
-						return new GuiChannelSelection(player, tile, 0);
-					}
-				}
-			}
-		}
-		*/
+		/* switch (id) { case 0: int hash = tag.getInteger("hash"); BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")); IMultipartContainer container = MultipartHelper.getPartContainer(world, pos); for (IMultipart part : container.getParts()) { if (part != null && part instanceof IChannelledTile) { IChannelledTile tile = (IChannelledTile) part; if (tile.getIdentity() == hash) { return new GuiChannelSelection(player, tile, 0); } } } } */
 		return null;
 	}
 

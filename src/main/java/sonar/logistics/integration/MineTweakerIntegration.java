@@ -1,7 +1,5 @@
 package sonar.logistics.integration;
 
-import java.util.function.BiFunction;
-
 import com.google.common.collect.Lists;
 
 import appeng.api.recipes.IIngredient;

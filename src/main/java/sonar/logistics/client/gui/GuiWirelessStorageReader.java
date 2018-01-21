@@ -34,7 +34,6 @@ import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.tiles.readers.InventoryReader;

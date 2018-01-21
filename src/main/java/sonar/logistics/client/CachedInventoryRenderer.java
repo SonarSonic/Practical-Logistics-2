@@ -34,11 +34,9 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.lists.values.ItemCount;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
-import sonar.logistics.info.types.MonitoredItemStack;
 
 /**W.I.P not fully implemented yet as I don't know how much of a performance increase it will offer. In fact it may be worse.*/
 public class CachedInventoryRenderer {

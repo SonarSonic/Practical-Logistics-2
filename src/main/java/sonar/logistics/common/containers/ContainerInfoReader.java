@@ -2,15 +2,17 @@ package sonar.logistics.common.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.viewers.ListenerType;
+import sonar.logistics.common.multiparts.readers.TileAbstractLogicReader;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 
 public class ContainerInfoReader extends ContainerMultipartSync {
-	public TileInfoReader reader;
+	public TileAbstractLogicReader<IProvidableInfo> reader;
 
-	public ContainerInfoReader(EntityPlayer player, TileInfoReader reader) {
-		super(reader);
-		this.reader = reader;
+	public ContainerInfoReader(EntityPlayer player, TileAbstractLogicReader<IProvidableInfo> tile) {
+		super(tile);
+		this.reader = tile;
 	}
 
 	public void onContainerClosed(EntityPlayer player) {

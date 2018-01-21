@@ -15,7 +15,7 @@ import sonar.core.network.utils.ByteBufWritable;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
-import sonar.logistics.api.wireless.ClientDataEmitter;
+import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
@@ -24,7 +24,7 @@ import sonar.logistics.common.items.WirelessStorageReader;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.packets.PacketWirelessStorage;
 
-public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEmitter> {
+public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirelessEmitter> {
 
 	public EntityPlayer player;
 	public ItemStack reader;
@@ -44,7 +44,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 		FontHelper.textCentre(PL2Translate.WIRELESS_STORAGE_READER_EMITTER.t(), xSize, 18, LogisticsColours.grey_text);
 	}
 
-	public void selectionPressed(GuiButton button, int infoPos, int buttonID, ClientDataEmitter info) {
+	public void selectionPressed(GuiButton button, int infoPos, int buttonID, ClientWirelessEmitter info) {
 		if (buttonID == 1) {
 			RenderBlockSelection.addPosition(info.coords.getCoords(), false);
 		} else {
@@ -62,11 +62,11 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	}
 
 	public void setInfo() {
-		infoList = Lists.newArrayList(PL2.getClientManager().clientEmitters);
+		infoList = Lists.newArrayList(PL2.getClientManager().clientDataEmitters);
 	}
 
 	@Override
-	public boolean isCategoryHeader(ClientDataEmitter info) {
+	public boolean isCategoryHeader(ClientWirelessEmitter info) {
 		if (!RenderBlockSelection.positions.isEmpty()) {
 			if (RenderBlockSelection.isPositionRenderered(info.coords.getCoords())) {
 				return true;
@@ -76,7 +76,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	}
 
 	@Override
-	public boolean isSelectedInfo(ClientDataEmitter info) {
+	public boolean isSelectedInfo(ClientWirelessEmitter info) {
 		if (info.getIdentity() == clickedIdentity) {
 			return true;
 		}
@@ -92,7 +92,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	}
 
 	@Override
-	public void renderInfo(ClientDataEmitter info, int yPos) {
+	public void renderInfo(ClientWirelessEmitter info, int yPos) {
 		int colour = LogisticsColours.white_text.getRGB();
 		FontHelper.text(info.name.getObject(), InfoRenderer.identifierLeft, yPos, colour);
 		FontHelper.text(info.coords.getCoords().toString(), (int) ((1.0 / 0.75) * (130)), yPos, colour);
@@ -104,7 +104,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientDataEm
 	}
 
 	@Override
-	public boolean isPairedInfo(ClientDataEmitter info) {
+	public boolean isPairedInfo(ClientWirelessEmitter info) {
 		return false;
 	}
 

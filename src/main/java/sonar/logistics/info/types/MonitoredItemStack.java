@@ -12,16 +12,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.RenderHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.info.IAdvancedClickableInfo;
 import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
@@ -36,14 +38,16 @@ import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.ItemCount;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.networking.handlers.ItemNetworkHandler;
 
 @LogicInfoType(id = MonitoredItemStack.id, modid = PL2Constants.MODID)
-public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, IBasicClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack>, IMonitoredValueInfo<MonitoredItemStack> {
+public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, IAdvancedClickableInfo, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack>, IMonitoredValueInfo<MonitoredItemStack> {
 
 	public static final String id = "item";
 	private final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 0);
@@ -52,8 +56,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 		syncList.addParts(itemStack, networkID);
 	}
 
-	public MonitoredItemStack() {
-	}
+	public MonitoredItemStack() {}
 
 	public MonitoredItemStack(StoredItemStack stack, int networkID) {
 		this(stack);
@@ -66,12 +69,12 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	@Override
 	public boolean isIdenticalInfo(MonitoredItemStack info) {
-		return getStoredStack().equals(info.getStoredStack());// && networkID.getObject().equals(networkID.getObject());
+		return getStoredStack().equals(info.getStoredStack());
 	}
 
 	@Override
 	public boolean isMatchingInfo(MonitoredItemStack info) {
-		return getStoredStack().equalStack(info.getStoredStack().getItemStack());
+		return getStoredStack().equalStack(info.getStoredStack().getItemStack()) && networkID.getObject().equals(networkID.getObject());
 	}
 
 	@Override
@@ -122,12 +125,12 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	public long getStored() {
 		return this.itemStack.getObject().stored;
 	}
-	
-	public int getNetworkSource(){
+
+	public int getNetworkSource() {
 		return networkID.getObject();
 	}
-	
-	public void setNetworkSource(int id){
+
+	public void setNetworkSource(int id) {
 		networkID.setObject(id);
 	}
 
@@ -145,12 +148,10 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 			GlStateManager.pushAttrib();
 			GL11.glPushMatrix();
 			GlStateManager.enableDepth();
-
 			GL11.glTranslated(-(1 - width / 2 - 0.0625), -0.68 + height / 2, 0.00);
 			GL11.glRotated(180, 0, 1, 0);
 			GL11.glScaled(-1, 1, 1);
 			double actualScale = type == DisplayType.LARGE ? scale * 3 : scale * 2;
-
 			GL11.glScaled(actualScale, actualScale, 0.01);
 			double trans = type == DisplayType.SMALL ? 4 : -(7);
 			GL11.glTranslated(-8, -8, 0);
@@ -163,23 +164,11 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 			GlStateManager.translate(0, 0, 2);
 			GlStateManager.depthMask(false);
 			RenderHelper.renderStoredItemStackOverlay(item, 0, 0, 0, "" + stack.stored, false);
-			GlStateManager.depthMask(true);
-
+			GlStateManager.depthMask(true);			
 			GlStateManager.disableDepth();
 			GL11.glPopMatrix();
 			GlStateManager.popAttrib();
 		}
-	}
-
-	@Override
-	public boolean onStandardClick(TileAbstractDisplay part, DisplayInfo renderInfo, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (InfoHelper.canBeClickedStandard(part, renderInfo, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ)) {
-			if (!player.getEntityWorld().isRemote){
-				InfoHelper.screenItemStackClicked(itemStack.getObject(), part, renderInfo, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -218,8 +207,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	}
 
 	@Override
-	public void setFromReturn(LogicPath path, Object returned) {
-	}
+	public void setFromReturn(LogicPath path, Object returned) {}
 
 	public static MonitoredItemStack findItemStack(List<MonitoredItemStack> stacks, ItemStack item) {
 		for (MonitoredItemStack i : stacks) {
@@ -233,6 +221,22 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	@Override
 	public IMonitoredValue<MonitoredItemStack> createMonitoredValue() {
 		return new ItemCount(this);
+	}
+
+	@Override
+	public boolean canClick(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
+		return InteractionHelper.canBeClickedStandard(renderInfo, click);
+	}
+
+	@Override
+	public NBTTagCompound createClickPacket(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
+		return itemStack.writeData(new NBTTagCompound(), SyncType.SAVE);
+	}
+
+	@Override
+	public void runClickPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+		MonitoredItemStack clicked = NBTHelper.instanceNBTSyncable(MonitoredItemStack.class, clickTag);
+		InfoHelper.screenItemStackClicked(networkID.getObject(), clicked != null ? clicked.getStoredStack() : null, click, displayInfo, player, clickTag);
 	}
 
 }

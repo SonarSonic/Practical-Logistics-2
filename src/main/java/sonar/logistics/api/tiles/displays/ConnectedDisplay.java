@@ -1,9 +1,6 @@
 package sonar.logistics.api.tiles.displays;
 
 import java.util.List;
-import java.util.function.Consumer;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,10 +13,6 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.listener.ISonarListenable;
-import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerTally;
-import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
@@ -28,7 +21,7 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
 import sonar.logistics.PL2;
-import sonar.logistics.api.PL2API;
+import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
@@ -39,12 +32,10 @@ import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.networking.connections.ChunkViewerHandler;
-import sonar.logistics.packets.PacketConnectedDisplayRemove;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
@@ -460,5 +451,10 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	@Override
 	public void updateCableRenders() {}
+
+	@Override
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.LARGE_DISPLAY_SCREEN;
+	}
 
 }

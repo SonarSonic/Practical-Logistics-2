@@ -9,16 +9,15 @@ import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 
 public class TileAbstractWireless extends TileSidedLogistics {
+	
 	public SyncUUID playerUUID = new SyncUUID(3);
 
-	{
-		syncList.addParts(playerUUID);
-	}
+	{syncList.addParts(playerUUID);}
 
 	public UUID getOwner() {
 		return playerUUID.getUUID();
 	}
-	
+
 	public boolean isOwner(EntityPlayer player) {
 		return player != null && playerUUID.getUUID().equals(player.getGameProfile().getId());
 	}

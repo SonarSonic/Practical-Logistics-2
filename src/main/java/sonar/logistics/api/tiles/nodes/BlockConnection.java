@@ -1,9 +1,13 @@
 package sonar.logistics.api.tiles.nodes;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.api.utils.BlockCoords;
 import sonar.logistics.api.tiles.INetworkTile;
+import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {
@@ -30,8 +34,7 @@ public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {
 
 	@Override
 	public MonitoredBlockCoords getChannel() {
-		TileEntity tile = coords.getTileEntity();
-		return new MonitoredBlockCoords(coords, tile != null && tile.getDisplayName() != null ? tile.getDisplayName().getFormattedText() : coords.getBlock().getLocalizedName());
+		return new MonitoredBlockCoords(coords, LogisticsHelper.getCoordItem(coords));
 	}
 
 	@Override

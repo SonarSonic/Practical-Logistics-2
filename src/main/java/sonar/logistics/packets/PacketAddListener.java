@@ -9,7 +9,6 @@ import sonar.core.SonarCore;
 import sonar.logistics.PL2;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.helpers.CableHelper;
 
 public class PacketAddListener implements IMessage {
 

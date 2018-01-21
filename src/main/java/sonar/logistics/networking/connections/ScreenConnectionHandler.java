@@ -5,21 +5,15 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 
-import mcmultipart.api.container.IPartInfo;
-import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.INetworkConnection;
-import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.cable.ConnectableType;
 import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.helpers.CableHelper;
 

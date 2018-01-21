@@ -9,9 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.helpers.InfoHelper;
 
 public class PacketChannels implements IMessage {

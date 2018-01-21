@@ -1,6 +1,7 @@
 package sonar.logistics.common.hammer;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import sonar.core.recipes.DefinedRecipeHelper;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.core.recipes.RecipeOreStack;
@@ -20,10 +21,12 @@ public class HammerRecipes extends DefinedRecipeHelper<ISonarRecipe> {
 
 	@Override
 	public void addRecipes() {
-		this.addRecipe("gemSapphire", new ItemStack(PL2Items.sapphire_dust));
-		this.addRecipe("stone", new ItemStack(PL2Items.stone_plate, 4));
-		this.addRecipe("oreSapphire", new ItemStack(PL2Items.sapphire_dust, 2));
-		this.addRecipe(new RecipeOreStack("gemDiamond", 1), new ItemStack(PL2Items.etched_plate, 4));
+		addRecipe("gemSapphire", new ItemStack(PL2Items.sapphire_dust));
+		addRecipe("oreSapphire", new ItemStack(PL2Items.sapphire_dust, 2));
+		addRecipe("stone", new ItemStack(PL2Items.stone_plate, 4));
+		addRecipe(new RecipeOreStack("gemDiamond", 1), new ItemStack(PL2Items.etched_plate, 4));
+		addRecipe(new RecipeOreStack("dustRedstone", 1), new ItemStack(PL2Items.signalling_plate, 4));
+		addRecipe(new RecipeOreStack("enderpearl", 1), new ItemStack(PL2Items.wireless_plate, 4));
 	}
 
 	@Override

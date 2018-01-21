@@ -10,23 +10,23 @@ import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.client.HelpOverlays;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
+import sonar.logistics.common.multiparts.readers.TileAbstractLogicReader;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 
-	public TileInfoReader part;
+	public TileAbstractLogicReader<IProvidableInfo> part;
 	public EntityPlayer player;
 
 	public GuiHelpOverlay<GuiInfoReader> overlay = HelpOverlays.infoReader;
 
-	public GuiInfoReader(EntityPlayer player, TileInfoReader tile) {
+	public GuiInfoReader(EntityPlayer player, TileAbstractLogicReader<IProvidableInfo> tile) {
 		super(new ContainerInfoReader(player, tile), tile);
 		this.player = player;
 		this.part = tile;

@@ -15,8 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import sonar.core.SonarCore;
-import sonar.core.utils.IGuiTile;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.hammer.TileEntityHammer;
 

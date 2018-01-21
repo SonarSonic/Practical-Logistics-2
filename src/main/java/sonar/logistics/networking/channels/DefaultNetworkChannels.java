@@ -8,7 +8,7 @@ import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.networking.CacheHandler;
 
-public abstract class DefaultNetworkChannels<H extends INetworkHandler> implements INetworkChannels<H> {
+public abstract class DefaultNetworkChannels implements INetworkChannels {
 
 	private final CacheHandler[] caches;
 	public final ILogisticsNetwork network;

@@ -21,8 +21,6 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.FluidReader.Modes;
 import sonar.logistics.client.LogisticsButton;

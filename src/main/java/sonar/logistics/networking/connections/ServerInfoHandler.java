@@ -14,20 +14,10 @@ import com.google.common.collect.Maps;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerChunkMap;
-import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.helpers.SonarHelper;
-import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
-import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.info.IInfo;
@@ -39,8 +29,6 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
@@ -176,7 +164,7 @@ public class ServerInfoHandler implements IInfoManager {
 		return null;
 	}
 
-	public void onServerTick() {
+	public void tick() {
 		if (updateViewingMonitors) {
 			updateViewingMonitors = false;
 			identityTiles.values().forEach(tile -> tile.getListenerList().getDisplayListeners().clear());

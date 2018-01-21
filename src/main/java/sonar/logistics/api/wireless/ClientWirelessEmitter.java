@@ -15,7 +15,7 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 
 /** used when syncing Data Emitters for display in the Data Receiver with the client, since some may not be loaded on client side. */
-public class ClientDataEmitter implements INBTSyncable {
+public class ClientWirelessEmitter implements INBTSyncable {
 
 	public List<ISyncPart> syncParts = new ArrayList<ISyncPart>();
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
@@ -25,16 +25,16 @@ public class ClientDataEmitter implements INBTSyncable {
 		syncParts.addAll(Lists.newArrayList(identity, coords, name));
 	}
 
-	public ClientDataEmitter() {
+	public ClientWirelessEmitter() {
 	}
 
-	public ClientDataEmitter(IDataEmitter emitter) {
+	public ClientWirelessEmitter(IWirelessEmitter emitter) {
 		this.identity.setObject(emitter.getIdentity());
 		this.coords.setCoords(emitter.getCoords());
 		this.name.setObject(emitter.getEmitterName());
 	}
 
-	public ClientDataEmitter(int uuid, BlockCoords coords, String name) {
+	public ClientWirelessEmitter(int uuid, BlockCoords coords, String name) {
 		this.identity.setObject(uuid);
 		this.coords.setCoords(coords);
 		this.name.setObject(name);
@@ -44,8 +44,8 @@ public class ClientDataEmitter implements INBTSyncable {
 		return identity.getObject();
 	}
 
-	public ClientDataEmitter copy() {
-		return new ClientDataEmitter(identity.getObject(), coords.getCoords(), name.getObject());
+	public ClientWirelessEmitter copy() {
+		return new ClientWirelessEmitter(identity.getObject(), coords.getCoords(), name.getObject());
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class ClientDataEmitter implements INBTSyncable {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ClientDataEmitter) {
-			return hashCode() == obj.hashCode() && coords.getCoords().equals(((ClientDataEmitter) obj).coords.getCoords());
+		if (obj != null && obj instanceof ClientWirelessEmitter) {
+			return hashCode() == obj.hashCode() && coords.getCoords().equals(((ClientWirelessEmitter) obj).coords.getCoords());
 		}
 		return false;
 	}

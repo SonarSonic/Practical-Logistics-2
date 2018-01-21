@@ -21,7 +21,7 @@ import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.networking.CacheHandler;
 
 //TODO make it possible to have one without a handler that is linked some other wayy
-public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler> extends DefaultNetworkChannels<H> {
+public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler> extends DefaultNetworkChannels {
 
 	private List<ITransferFilteredTile> nodes = Lists.newArrayList();
 	private Iterator<ITransferFilteredTile> nodeIterator;

@@ -21,19 +21,15 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.tiles.displays.DisplayConnections;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.helpers.InteractionHelper;
 
 public class BlockLargeDisplay extends BlockAbstractDisplay {
 

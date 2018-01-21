@@ -6,13 +6,14 @@ import net.minecraft.client.gui.GuiButton;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.logistics.common.multiparts.wireless.TileAbstractEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 
-public class GuiDataEmitter extends GuiLogistics {
-	public TileDataEmitter part;
+public class GuiWirelessEmitter extends GuiLogistics {
+	public TileAbstractEmitter part;
 	private SonarTextField nameField;
 
-	public GuiDataEmitter(TileDataEmitter part) {
+	public GuiWirelessEmitter(TileAbstractEmitter part) {
 		super(new ContainerMultipartSync(part), part);
 		this.part = part;
 		this.ySize = 60;

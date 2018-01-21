@@ -11,7 +11,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.nodes.NodeConnection;

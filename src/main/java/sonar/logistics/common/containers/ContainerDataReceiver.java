@@ -3,18 +3,20 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2;
+import sonar.logistics.common.multiparts.wireless.TileAbstractReceiver;
 import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
-import sonar.logistics.networking.connections.WirelessDataHandler;
 
 public class ContainerDataReceiver extends ContainerMultipartSync {
+	public TileAbstractReceiver receiver;
 
-	public ContainerDataReceiver(TileDataReceiver tileDataReceiver) {
-		super(tileDataReceiver);
+	public ContainerDataReceiver(TileAbstractReceiver receiver) {
+		super(receiver);
+		this.receiver = receiver;
 	}
-	
+
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			PL2.getWirelessManager().removeViewer(player);
+			receiver.getWirelessHandler().removeViewer(player);
 	}
 }

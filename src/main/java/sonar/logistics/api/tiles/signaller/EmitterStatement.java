@@ -15,13 +15,14 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.helpers.ComparatorHelper;
 import sonar.logistics.logic.comparators.ILogicComparator;
 
 public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsStatement {
 
-	public ILogicComparator<T> comparator;
+	private ILogicComparator<T> comparator;
 	public SyncTagType.INT hashCode = new SyncTagType.INT(-1);
-	public SyncTagType.INT comparatorID = new SyncTagType.INT(0);
+	public SyncTagType.STRING comparatorID = new SyncTagType.STRING(0);
 	public SyncEnum<LogicOperator> operator = new SyncEnum(LogicOperator.values(), 1);
 
 	/** if true, compare to bits of info, if false compare info to an object */
@@ -45,8 +46,8 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	}
 
 	public EmitterStatement(ILogicComparator<T> comparator) {
-		this.comparator = comparator;
-		this.comparatorID.setObject(PL2.getComparatorRegistry().getObjectID(comparator.getName()));
+		//this.comparator = comparator;
+		this.comparatorID.setObject(comparator.getName());
 		this.operator.setObject(comparator.getValidOperators().get(0));
 		this.hashCode.setObject(UUID.randomUUID().hashCode());
 	}
@@ -63,10 +64,10 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	}
 
 	public ILogicComparator<T> getComparator() {
-		if (comparator == null) {
-			comparator = PL2.getComparatorRegistry().getRegisteredObject(comparatorID.getObject());
-		}
-		return comparator;
+		//if (comparator == null) {
+		//	comparator = ComparatorHelper.getComparator(comparatorID.getObject());
+		//}
+		return ComparatorHelper.getComparator(comparatorID.getObject());
 	}
 
 	public Object getObject(Map<InfoUUID, IInfo> info, int pos) {

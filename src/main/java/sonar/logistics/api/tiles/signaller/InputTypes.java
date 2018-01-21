@@ -1,7 +1,14 @@
 package sonar.logistics.api.tiles.signaller;
 
+import sonar.logistics.logic.comparators.BooleanComparator;
+import sonar.logistics.logic.comparators.NumberComparator;
+import sonar.logistics.logic.comparators.ObjectComparator;
+
 public enum InputTypes {
-	STRING("obj"), BOOLEAN("bool"), NUMBER("num"), INFO("obj");
+	STRING(ObjectComparator.NAME), //
+	BOOLEAN(BooleanComparator.NAME), //
+	NUMBER(NumberComparator.NAME), //
+	INFO(ObjectComparator.NAME); //
 
 	public String comparatorID;
 

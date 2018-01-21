@@ -6,6 +6,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.logistics.api.tiles.INetworkTile;
+import sonar.logistics.api.viewers.ILogicListenable;
 
 /** used to identify info and find the monitor which created it */
 public class InfoUUID implements INBTSyncable {
@@ -15,6 +17,11 @@ public class InfoUUID implements INBTSyncable {
 
 	public InfoUUID() {}
 
+	public InfoUUID(INetworkTile tile, int channelID) {
+		this.identity = tile.getIdentity();
+		this.channelID = channelID;
+	}
+	
 	public InfoUUID(int identity, int channelID) {
 		this.identity = identity;
 		this.channelID = channelID;

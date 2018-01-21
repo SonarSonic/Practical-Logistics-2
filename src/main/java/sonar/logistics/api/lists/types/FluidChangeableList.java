@@ -1,8 +1,6 @@
 package sonar.logistics.api.lists.types;
 
 import sonar.core.api.StorageSize;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.values.FluidCount;
 import sonar.logistics.info.types.MonitoredFluidStack;
 

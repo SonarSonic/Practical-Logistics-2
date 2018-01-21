@@ -105,6 +105,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 			// remove the connection
 			allConnections.remove(connection);
 			onConnectionRemoved(registryID, connection);
+			connection.setRegistryID(-1);
 
 			allConnections = Lists.newArrayList(allConnections); // save all the
 																	// current

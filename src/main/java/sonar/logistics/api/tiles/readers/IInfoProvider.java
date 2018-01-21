@@ -1,6 +1,5 @@
 package sonar.logistics.api.tiles.readers;
 
-import sonar.core.listener.PlayerListener;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.viewers.ILogicListenable;

@@ -15,8 +15,7 @@ import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.wireless.ClientDataEmitter;
-import sonar.logistics.helpers.CableHelper;
+import sonar.logistics.api.wireless.ClientWirelessEmitter;
 
 /** used when syncing Logic Monitors for display in the Display Screen with the
  * client, since some may not be loaded on client side. */
@@ -66,8 +65,8 @@ public class ClientLocalProvider implements INBTSyncable {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ClientDataEmitter) {
-			return hashCode() == obj.hashCode() && coords.getCoords().equals(((ClientDataEmitter) obj).coords.getCoords());
+		if (obj != null && obj instanceof ClientWirelessEmitter) {
+			return hashCode() == obj.hashCode() && coords.getCoords().equals(((ClientWirelessEmitter) obj).coords.getCoords());
 		}
 		return false;
 	}

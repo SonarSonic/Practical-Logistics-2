@@ -15,8 +15,6 @@ import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockInteraction;
 import sonar.core.common.block.SonarMachineBlock;
 import sonar.core.common.block.SonarMaterials;
-import sonar.core.utils.IGuiTile;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.hammer.TileEntityHammer;
 

@@ -1,7 +1,6 @@
 package sonar.logistics.networking.channels;
 
 import java.util.List;
-import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
@@ -9,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;

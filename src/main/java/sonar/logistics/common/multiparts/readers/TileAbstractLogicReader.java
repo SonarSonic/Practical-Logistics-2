@@ -11,7 +11,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.helpers.InfoHelper;

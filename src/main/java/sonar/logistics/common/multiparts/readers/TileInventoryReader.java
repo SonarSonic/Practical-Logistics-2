@@ -25,8 +25,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
@@ -69,7 +68,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	}
 
 	@Override
-	public List<INetworkListHandler> addValidHandlers(List<INetworkListHandler> handlers) {
+	public List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers) {
 		handlers.add(ItemNetworkHandler.INSTANCE);
 		return handlers;
 	}
@@ -141,8 +140,8 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 			ItemStack stack = inventory.getStackInSlot(0);
 			if (stack != null) {
 				MonitoredItemStack dummyInfo = new MonitoredItemStack(new StoredItemStack(stack.copy(), 0), network.getNetworkID());
-				IMonitoredValue<MonitoredItemStack> value = updateInfo.find(dummyInfo);
-				info = value == null ? dummyInfo : value.getSaveableInfo(); // FIXME had set network srouce, should check EnumlistChange
+				IMonitoredValue<MonitoredItemStack> value = updateInfo.find(dummyInfo);				
+				info = value == null ? dummyInfo : new MonitoredItemStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); // FIXME had set network srouce, should check EnumlistChange
 			}
 			break;
 		case STORAGE:

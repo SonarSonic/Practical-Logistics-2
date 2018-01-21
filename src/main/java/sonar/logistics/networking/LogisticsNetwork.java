@@ -18,10 +18,9 @@ import sonar.core.helpers.SonarHelper;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
+import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkListener;
@@ -40,7 +39,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public final ListenableList<ILogisticsNetwork> subNetworks = new ListenableList(this, 2);
 	public final Map<Class, INetworkChannels> handlers = Maps.newLinkedHashMap();
-	public final List<IInfoProvider> localProviders = Lists.newArrayList();
+	public List<IInfoProvider> localProviders = Lists.newArrayList();
+	public List<IInfoProvider> globalProviders = Lists.newArrayList();
 	private List<NetworkUpdate> toUpdate = SonarHelper.convertArray(NetworkUpdate.values());
 	private List<CacheHandler> changedCaches = Lists.newArrayList(CacheHandler.handlers);
 	private Map<CacheHandler, List> caches = LogisticsHelper.getCachesMap();
@@ -213,7 +213,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public void onCablesChanged() {
 		if (PL2.instance.cableManager.getConnections(getNetworkID()).size() == 0) {
-			this.onNetworkRemoved();
+			onNetworkRemoved();
 		} else {
 			markUpdate(NetworkUpdate.CABLES);
 		}
@@ -246,16 +246,18 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 			cache_list.forEach(tile -> cache_handler.onConnectionRemoved(this, tile));
 		});
 		caches = LogisticsHelper.getCachesMap();
-
+		subNetworks.invalidateList();
+		subNetworks.validateList();
 		List<IDataCable> cables = PL2.getCableManager().getConnections(networkID);
 		cables.forEach(cable -> CableConnectionHandler.instance().addAllConnectionsToNetwork(cable, this));
-		updateChannels();
+		markUpdate(NetworkUpdate.LOCAL, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
 
 	}
 
 	public void updateChannels() {
 		updateLocalChannels();
 		updateGlobalChannels();
+		// updateHandlerChannels();
 	}
 
 	public void updateLocalChannels() {
@@ -275,6 +277,11 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		ListHelper.addWithCheck(all, globalChannels);
 		ListHelper.addWithCheck(all, localChannels);
 		NodeConnection.sortConnections(all);
+		this.globalProviders = Lists.newArrayList(localProviders);
+		getAllNetworks(ILogisticsNetwork.CONNECTED_NETWORK).forEach(network -> {
+			ListHelper.addWithCheck(globalProviders, network.getLocalInfoProviders());
+		});
+
 		this.allChannels = all;
 	}
 
@@ -299,6 +306,11 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	@Override
 	public List<IInfoProvider> getLocalInfoProviders() {
 		return localProviders;
+	}
+
+	@Override
+	public List<IInfoProvider> getGlobalInfoProviders() {
+		return globalProviders;
 	}
 
 	@Override

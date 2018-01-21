@@ -64,11 +64,11 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 			if (start > tickTime.getObject()) {
 				this.lastMillis = currentMillis;
 				powering = true;
-				world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
+				world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 1);
 			} else {
 				if (powering) {
 					powering = false;
-					world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
+					world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 1);
 				}
 			}
 			markDirty();

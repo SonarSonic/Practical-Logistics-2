@@ -3,7 +3,6 @@ package sonar.logistics.worlddata;
 import java.util.Map.Entry;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;

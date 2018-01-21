@@ -115,6 +115,8 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	/**gets a list of all connected local info providers*/
 	List<IInfoProvider> getLocalInfoProviders();
 
+	List<IInfoProvider> getGlobalInfoProviders();
+
 	/**gets the first local info provider from the stored list provided in {@link #getLocalInfoProvider()}*/
 	IInfoProvider getLocalInfoProvider();
 

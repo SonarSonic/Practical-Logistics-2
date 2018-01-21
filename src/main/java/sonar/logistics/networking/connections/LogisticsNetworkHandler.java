@@ -7,13 +7,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Lists;
-
-import sonar.logistics.PL2;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
-import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.LogisticsNetwork;

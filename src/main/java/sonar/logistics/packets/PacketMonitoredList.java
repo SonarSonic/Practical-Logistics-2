@@ -11,7 +11,6 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.helpers.InfoHelper;

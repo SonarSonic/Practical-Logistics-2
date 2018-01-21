@@ -3,7 +3,7 @@ package sonar.logistics.api.networks;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 
-public interface INetworkListChannels<H extends INetworkListHandler> extends INetworkChannels<H>{
+public interface INetworkListChannels<H extends INetworkListHandler> extends INetworkChannels{
 	
 	public H getHandler();
 	/* W.I.P

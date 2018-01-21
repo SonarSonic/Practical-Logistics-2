@@ -2,7 +2,6 @@ package sonar.logistics.api.networks;
 
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 
 /** implemented on {@link INetworkHandler}s which can provide info for Entities */

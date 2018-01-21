@@ -18,7 +18,6 @@ import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.info.types.MonitoredItemStack;
 

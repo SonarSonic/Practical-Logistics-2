@@ -2,7 +2,6 @@ package sonar.logistics.client.gui.generic;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +15,6 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.IChannelledTile;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
