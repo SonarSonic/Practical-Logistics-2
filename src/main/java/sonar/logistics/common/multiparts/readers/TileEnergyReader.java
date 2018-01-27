@@ -17,7 +17,6 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
-import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
@@ -29,11 +28,11 @@ import sonar.logistics.api.tiles.readers.EnergyReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiEnergyReader;
 import sonar.logistics.common.containers.ContainerEnergyReader;
-import sonar.logistics.helpers.EnergyHelper;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
-import sonar.logistics.networking.handlers.EnergyNetworkHandler;
+import sonar.logistics.networking.energy.EnergyHelper;
+import sonar.logistics.networking.energy.EnergyNetworkHandler;
 
 public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStack> implements IByteBufTile {
 
@@ -56,8 +55,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	//// ILogicReader \\\\
 	@Override
 	public AbstractChangeableList<MonitoredEnergyStack> sortMonitoredList(AbstractChangeableList<MonitoredEnergyStack> updateInfo, int channelID) {
-		EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), EnergyReader.SortingType.NAME);
-		return updateInfo;
+		return EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), EnergyReader.SortingType.NAME);
 	}
 
 	@Override
@@ -94,7 +92,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 			break;
 
 		}
-		PL2.getServerManager().changeInfo(uuid, info);
+		PL2.getServerManager().changeInfo(this, uuid, info);
 	}
 
 	//// IChannelledTile \\\\

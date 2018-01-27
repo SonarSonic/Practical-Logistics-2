@@ -11,6 +11,8 @@ public class PL2Crafting extends PL2 {
 
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Items.guide, 1), new Object[] { "gemSapphire", Items.BOOK });
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.data_cable, 16), new Object[] { "PPP", "DDD", "PPP", 'P', PL2Items.stone_plate, 'D', "dustSapphire" });
+		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.redstone_cable, 16), new Object[] { "SSS", "DDD", "SSS", 'D', "dustRedstone", 'S', PL2Items.signalling_plate });
+		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.redstone_node, 1), new Object[] { "   ", " C ", "PDP", 'P', PL2Items.signalling_plate, 'D', "dustRedstone", 'C', PL2Blocks.redstone_cable });
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.display_screen, 1), new Object[] { PL2Items.stone_plate, "dustSapphire", PL2Blocks.data_cable });
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.large_display_screen, 1), new Object[] { PL2Items.stone_plate, "dustSapphire", PL2Blocks.display_screen });
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.holographic_display, 1), new Object[] { "   ", "PDP", " C ", 'P', PL2Items.stone_plate, 'D', PL2Blocks.display_screen, 'C', PL2Blocks.data_cable });
@@ -23,6 +25,7 @@ public class PL2Crafting extends PL2 {
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.inventory_reader, 1), new Object[] { PL2Blocks.info_reader, "chestWood" });
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.fluid_reader, 1), new Object[] { PL2Blocks.info_reader, Items.BUCKET });
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.energy_reader, 1), new Object[] { PL2Blocks.info_reader, "gemSapphire" });
+		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.network_reader, 1), new Object[] { PL2Blocks.info_reader, PL2Items.signalling_plate });
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.node, 1), new Object[] { "   ", " C ", "PDP", 'P', PL2Items.stone_plate, 'D', "dustSapphire", 'C', PL2Blocks.data_cable });
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.transfer_node, 1), new Object[] { "   ", " C ", "PDP", 'P', PL2Items.stone_plate, 'D', PL2Items.etched_plate, 'C', PL2Blocks.node });
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.hammer, 1), new Object[] { "ADA", "B B", "ACA", 'A', "logWood", 'B', "stickWood", 'C', "stone", 'D', "slabWood" });

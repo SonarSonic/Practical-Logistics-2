@@ -18,8 +18,8 @@ import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.utils.ListPacket;
-import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.network.sync.SyncFilterList;
+import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.packets.sync.SyncFilterList;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketNodeFilter extends PacketMultipart {

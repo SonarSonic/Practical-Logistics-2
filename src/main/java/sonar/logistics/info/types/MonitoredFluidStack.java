@@ -2,56 +2,29 @@ package sonar.logistics.info.types;
 
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.NBTHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.info.IAdvancedClickableInfo;
-import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.render.DisplayInfo;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.FluidCount;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.networking.handlers.FluidNetworkHandler;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = PL2Constants.MODID)
-public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IAdvancedClickableInfo, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {
+public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
-	private SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
-	private final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
+	public SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
+	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 
 	{
 		syncList.addParts(fluidStack, networkID);
@@ -84,11 +57,6 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	}
 
 	@Override
-	public FluidNetworkHandler getHandler() {
-		return FluidNetworkHandler.INSTANCE;
-	}
-
-	@Override
 	public boolean canJoinInfo(MonitoredFluidStack info) {
 		return isMatchingInfo(info);
 	}
@@ -112,25 +80,6 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 	@Override
 	public MonitoredFluidStack copy() {
 		return new MonitoredFluidStack(fluidStack.getObject().copy(), networkID.getObject());
-	}
-
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		FluidStack stack = fluidStack.getObject().fluid;
-		if (stack != null) {
-			GL11.glPushMatrix();
-			GL11.glPushMatrix();
-			GlStateManager.disableLighting();
-			GL11.glTranslated(-1, -0.0625 * 12, +0.004);
-			TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(stack.getFluid().getStill().toString());
-			Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			InfoRenderer.renderProgressBarWithSprite(sprite, width, height, scale, fluidStack.getObject().stored, fluidStack.getObject().capacity);
-			GlStateManager.enableLighting();
-			GL11.glTranslated(0, 0, -0.001);
-			GL11.glPopMatrix();
-			InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
-			GL11.glPopMatrix();
-		}
 	}
 
 	@Override
@@ -172,25 +121,13 @@ public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implement
 		return this.fluidStack.getObject().stored;
 	}
 
+	public int getNetworkSource() {
+		return networkID.getObject();
+	}
+
 	@Override
 	public IMonitoredValue<MonitoredFluidStack> createMonitoredValue() {
 		return new FluidCount(this);
-	}
-
-	@Override
-	public boolean canClick(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
-		return InteractionHelper.canBeClickedStandard(renderInfo, click);
-	}
-
-	@Override
-	public NBTTagCompound createClickPacket(DisplayScreenClick click, DisplayInfo renderInfo, EntityPlayer player, EnumHand hand) {
-		return fluidStack.writeData(new NBTTagCompound(), SyncType.SAVE);
-	}
-
-	@Override
-	public void runClickPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {	
-		MonitoredFluidStack clicked = NBTHelper.instanceNBTSyncable(MonitoredFluidStack.class, clickTag);
-		InfoHelper.onScreenFluidStackClicked(networkID.getObject(), clicked!=null ? clicked.getStoredStack() : null, click, displayInfo, player, clickTag);
 	}
 
 }

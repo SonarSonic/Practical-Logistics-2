@@ -14,6 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.core.helpers.RayTraceHelper;
@@ -21,13 +23,20 @@ import sonar.logistics.PL2Events;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.common.multiparts.BlockLogisticsSided;
-import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.helpers.ScreenHelper;
+import sonar.logistics.networking.displays.ScreenHelper;
 
 public class BlockAbstractDisplay extends BlockLogisticsSided {
 
 	public BlockAbstractDisplay(PL2Multiparts multipart) {
 		super(multipart);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, net.minecraft.client.particle.ParticleManager manager) {
+		if(target.sideHit==state.getValue(SonarProperties.ORIENTATION)){
+			return true;
+		}
+		return super.addHitEffects(state,world,target,manager);
 	}
 
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {

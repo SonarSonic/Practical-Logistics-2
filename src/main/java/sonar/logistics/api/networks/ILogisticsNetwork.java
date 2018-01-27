@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ISonarListener;
+import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
@@ -121,5 +121,12 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	IInfoProvider getLocalInfoProvider();
 
 	void onConnectedNetworkCacheChanged(ILogisticsNetwork network);
+	
+	//// MONITORING \\\\
+	
+	public default long getNetworkTickTime(){
+		return 0;
+	}
+	
 
 }

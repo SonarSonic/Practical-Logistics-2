@@ -1,6 +1,7 @@
 package sonar.logistics.api.wireless;
 
-public interface IRedstoneEmitter extends IWirelessEmitter, IWirelessRedstoneTile {
+import sonar.logistics.api.cabling.IRedstoneConnectable;
 
+public interface IRedstoneEmitter extends IWirelessEmitter, IWirelessRedstoneTile, IRedstoneConnectable {
 	
 }

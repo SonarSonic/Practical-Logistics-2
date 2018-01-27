@@ -22,20 +22,20 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncableList;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
+import sonar.logistics.api.cabling.CableConnectionType;
+import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.ICable;
 import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.api.tiles.ICable;
-import sonar.logistics.api.tiles.cable.CableRenderType;
-import sonar.logistics.api.tiles.cable.ConnectableType;
-import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.CableHelper;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.networking.connections.ChunkViewerHandler;
+import sonar.logistics.networking.cabling.CableHelper;
+import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
@@ -73,10 +73,13 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	public void lock() {
 		isLocked.setObject(true);
+		PL2.getDisplayManager().getConnections(registryID).forEach(display -> display.setLocked(true));
 	}
 
 	public void unlock() {
 		isLocked.setObject(false);
+		PL2.getDisplayManager().getConnections(registryID).forEach(display -> display.setLocked(false)); 
+		//displays sometimes attach to others when locked, as the larger display hasn't been loaded yet, also storing the locking on the displays stops this
 	}
 
 	public void update(int registryID) {
@@ -300,7 +303,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	@Override
 	public BlockCoords getCoords() {
-		return topLeftScreen != null ? topLeftScreen.getCoords() : null;
+		return topLeftScreen != null ? topLeftScreen.getCoords() : topLeftCoords.getCoords();
 	}
 
 	@Override
@@ -435,8 +438,8 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	}
 
 	@Override
-	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
-		return NetworkConnectionType.NETWORK;
+	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+		return CableConnectionType.NETWORK;
 	}
 
 	@Override

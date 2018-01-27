@@ -15,7 +15,7 @@ import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
-import sonar.logistics.helpers.ItemHelper;
+import sonar.logistics.networking.items.ItemHelper;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketInventoryReader extends PacketMultipart {

@@ -6,8 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.api.tiles.INetworkTile;
-import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.api.cabling.INetworkTile;
 
 /** used to identify info and find the monitor which created it */
 public class InfoUUID implements INBTSyncable {

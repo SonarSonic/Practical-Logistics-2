@@ -5,7 +5,7 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import sonar.core.network.sync.SyncUUID;
-import sonar.logistics.api.tiles.cable.CableRenderType;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 
 public class TileAbstractWireless extends TileSidedLogistics {

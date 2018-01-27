@@ -25,13 +25,13 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.IChannelledTile;
-import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -47,8 +47,8 @@ import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
-import sonar.logistics.network.sync.SyncFilterList;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.packets.sync.SyncFilterList;
 
 public class TileTransferNode extends TileSidedLogistics implements INode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
 

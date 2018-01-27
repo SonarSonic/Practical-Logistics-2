@@ -9,7 +9,12 @@ import sonar.logistics.PL2Constants;
 
 public enum EnumDisplayFaceSlot implements IPartSlot {// , IPartSlot.IFaceSlot {
 
-	DOWN_DISPLAY(EnumFacing.DOWN), UP_DISPLAY(EnumFacing.UP), NORTH_DISPLAY(EnumFacing.NORTH), SOUTH_DISPLAY(EnumFacing.SOUTH), WEST_DISPLAY(EnumFacing.WEST), EAST_DISPLAY(EnumFacing.EAST);
+	DOWN_DISPLAY(EnumFacing.DOWN), //
+	UP_DISPLAY(EnumFacing.UP), //
+	NORTH_DISPLAY(EnumFacing.NORTH), //
+	SOUTH_DISPLAY(EnumFacing.SOUTH), //
+	WEST_DISPLAY(EnumFacing.WEST), //
+	EAST_DISPLAY(EnumFacing.EAST);//
 
 	public static final EnumDisplayFaceSlot[] VALUES = values();
 

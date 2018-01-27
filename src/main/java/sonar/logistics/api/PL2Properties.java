@@ -9,7 +9,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.tiles.cable.CableRenderType;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 
 public class PL2Properties {
@@ -26,6 +26,9 @@ public class PL2Properties {
 	public static final PropertyCableFace[] PROPS = new PropertyCableFace[] { NORTH, EAST, SOUTH, WEST, DOWN, UP };
 
 	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.<NodeTransferMode>create("transfer", NodeTransferMode.class);
+
+	public static double p = 0.0625;
+	public static LabelledAxisAlignedBB cableBox = new LabelledAxisAlignedBB(6 * p, 6 * p, 6 * p, 1 - 6 * p, 1 - 6 * p, 1 - 6 * p).labelAxis("c");
 	
 	public static class PropertyCableFace extends PropertyEnum<CableRenderType> {
 		public EnumFacing face;

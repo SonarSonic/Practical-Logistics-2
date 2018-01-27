@@ -42,14 +42,14 @@ import sonar.logistics.client.gui.generic.GuiFilterList;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.common.containers.ContainerInventoryReader;
-import sonar.logistics.helpers.ItemHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
-import sonar.logistics.network.sync.SyncFilterList;
-import sonar.logistics.networking.channels.ItemNetworkChannels;
-import sonar.logistics.networking.handlers.ItemNetworkHandler;
+import sonar.logistics.networking.items.ItemHelper;
+import sonar.logistics.networking.items.ItemNetworkChannels;
+import sonar.logistics.networking.items.ItemNetworkHandler;
+import sonar.logistics.packets.sync.SyncFilterList;
 
 public class TileInventoryReader extends TileAbstractListReader<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
 
@@ -88,8 +88,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 
 	@Override
 	public AbstractChangeableList<MonitoredItemStack> sortMonitoredList(AbstractChangeableList<MonitoredItemStack> updateInfo, int channelID) {
-		ItemHelper.sortItemList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
-		return updateInfo;
+		return ItemHelper.sortItemList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
 	}
 
 	public boolean canMonitorInfo(IMonitoredValue<MonitoredItemStack> info, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredItemStack>> channels, List<NodeConnection> usedChannels) {
@@ -141,7 +140,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 			if (stack != null) {
 				MonitoredItemStack dummyInfo = new MonitoredItemStack(new StoredItemStack(stack.copy(), 0), network.getNetworkID());
 				IMonitoredValue<MonitoredItemStack> value = updateInfo.find(dummyInfo);				
-				info = value == null ? dummyInfo : new MonitoredItemStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); // FIXME had set network srouce, should check EnumlistChange
+				info = value == null ? dummyInfo : new MonitoredItemStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); // FIXME should check EnumlistChange
 			}
 			break;
 		case STORAGE:
@@ -151,7 +150,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 		default:
 			break;
 		}
-		PL2.getServerManager().changeInfo(uuid, info);
+		PL2.getServerManager().changeInfo(this, uuid, info);
 	}
 
 	//// IChannelledTile \\\\
@@ -173,7 +172,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 		if (id == 5 || id == 6) {
 			ItemNetworkChannels list = network.getNetworkChannels(ItemNetworkChannels.class);
 			if (list != null) {
-				List<PlayerListener> players = listeners.getListeners(ListenerType.LISTENER);
+				List<PlayerListener> players = listeners.getListeners(ListenerType.OLD_GUI_LISTENER);
 				players.forEach(player -> list.sendLocalRapidUpdate(this, player.player));
 			}
 		}

@@ -2,55 +2,56 @@ package sonar.logistics.common.multiparts.readers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
+import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.networking.handlers.InfoNetworkHandler;
-import sonar.logistics.networking.handlers.NetworkWatcherHandler;
+import sonar.logistics.info.types.InfoError;
+import sonar.logistics.info.types.ProgressInfo;
+import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.networking.subnetworks.NetworkWatcherHandler;
 
 public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> {
 
 	@Override
 	public AbstractChangeableList<IProvidableInfo> getViewableList(AbstractChangeableList<IProvidableInfo> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<IProvidableInfo>> channels, List<NodeConnection> usedChannels) {
 		//everything should be viewable
-		
-		/*ChannelList readerChannels = getChannels();
-		
-		AbstractChangeableList<IProvidableInfo> list = channels
-		for (Entry<NodeConnection, AbstractChangeableList<T>> entry : channels.entrySet()) {
-			if (readerChannels.isMonitored(entry.getKey())) {
-				for (IMonitoredValue<T> coordInfo : entry.getValue().getList()) {
-					if (canMonitorInfo(coordInfo, uuid, channels, usedChannels)) {
-						updateList.add(coordInfo.getSaveableInfo());
-					}
-				}
-				usedChannels.add(entry.getKey());
-				if (channelType() == ChannelType.SINGLE) {
-					break;
-				}
-			}
-		}
-		*/
 		return updateList;
 	}
-	
+
+	@Override
+	public void setMonitoredInfo(AbstractChangeableList<IProvidableInfo> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid) {
+		List<IProvidableInfo> selected = getSelectedInfo();
+		List<IProvidableInfo> paired = getPairedInfo();
+		for (int i = 0; i < getMaxInfo(); i++) {
+			IInfo latestInfo = null;
+			InfoUUID id = new InfoUUID(getIdentity(), i);
+			IMonitoredValue<IProvidableInfo> info = updateInfo.find(selected.get(i));
+			IMonitoredValue<IProvidableInfo> pair = updateInfo.find(paired.get(i));
+			if (info != null) {
+				if (pair != null && ProgressInfo.isStorableInfo(pair.getSaveableInfo()) && ProgressInfo.isStorableInfo(info.getSaveableInfo())) {
+					latestInfo = new ProgressInfo(info.getSaveableInfo(), pair.getSaveableInfo());
+				} else {
+					latestInfo = info != null ? info.getSaveableInfo() : InfoError.noData;
+				}
+			}
+			PL2.getServerManager().changeInfo(this, id, latestInfo);
+		}
+	}
 	@Override
 	public List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers) {
 		handlers.add(NetworkWatcherHandler.INSTANCE);

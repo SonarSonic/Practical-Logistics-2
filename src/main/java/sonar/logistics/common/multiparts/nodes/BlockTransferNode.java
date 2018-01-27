@@ -1,11 +1,16 @@
 package sonar.logistics.common.multiparts.nodes;
 
+import mcmultipart.api.slot.EnumFaceSlot;
+import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2Properties;
@@ -16,6 +21,15 @@ public class BlockTransferNode extends BlockLogisticsSided {
 
 	public BlockTransferNode() {
 		super(PL2Multiparts.TRANSFER_NODE);
+	}
+	
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		return getStateFromMeta(facing.getOpposite().ordinal());
+	}
+
+	@Override
+	public IPartSlot getSlotForPlacement(World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ, EntityLivingBase placer) {
+		return EnumFaceSlot.fromFace(facing.getOpposite());
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package sonar.logistics.api.lists.values;
 
+import net.minecraftforge.fluids.FluidStack;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.MonitoredValue;
 import sonar.logistics.api.lists.EnumListChange;
@@ -48,9 +49,18 @@ public class FluidCount implements IMonitoredValue<MonitoredFluidStack> {
 		fluid.getStoredStack().capacity += combine.getStoredStack().capacity;
 	}
 
+	public void combine(long stored, long capacity) {
+		fluid.getStoredStack().stored += stored;
+		fluid.getStoredStack().capacity += capacity;
+	}
+
 	@Override
 	public boolean canCombine(MonitoredFluidStack combine) {
 		return fluid.getStoredStack().equalStack(combine.getStoredStack().fluid);
+	}
+
+	public boolean canCombine(FluidStack combine) {
+		return fluid.getStoredStack().equalStack(combine);
 	}
 
 	@Override

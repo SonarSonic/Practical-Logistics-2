@@ -2,12 +2,8 @@ package sonar.logistics.info.types;
 
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -17,13 +13,9 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.ISuffixable;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.info.InfoHelper;
 
 @LogicInfoType(id = ProgressInfo.id, modid = PL2Constants.MODID)
 public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable, IComparableInfo<ProgressInfo> {
@@ -133,11 +125,6 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	}
 
 	@Override
-	public INetworkHandler getHandler() {
-		return null;
-	}
-
-	@Override
 	public boolean isValid() {
 		return first != null && second != null && first.isValid() && second.isValid();
 	}
@@ -150,24 +137,6 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	@Override
 	public ProgressInfo copy() {
 		return new ProgressInfo(first.copy(), second.copy());
-	}
-
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double displayWidth, double displayHeight, double displayScale, int infoPos) {
-		GL11.glPushMatrix();
-		GL11.glPushMatrix();
-		GlStateManager.disableLighting();
-		GL11.glTranslated(-1, -+0.0625 * 12, +0.004);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(infoPos));
-		double num1 = (compare == 1 ? secondNum : firstNum);
-		double num2 = (compare == 1 ? firstNum : secondNum);
-		InfoRenderer.renderProgressBar(displayWidth, displayHeight, displayScale, num1 < 0 ? 0 : num1, num2);
-		GlStateManager.enableLighting();
-		GL11.glTranslated(0, 0, -0.001);
-		GL11.glPopMatrix();
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), displayWidth, displayHeight, displayScale, displayInfo.getFormattedStrings());
-		GL11.glPopMatrix();
-
 	}
 
 	@Override
@@ -185,10 +154,7 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	public ProgressInfo setPath(LogicPath path) {
 		return this;
 	}
-
-	@Override
-	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
-
+	
 	@Override
 	public void onInfoStored() {
 		first.onInfoStored();

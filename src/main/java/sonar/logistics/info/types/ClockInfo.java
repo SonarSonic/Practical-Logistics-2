@@ -15,10 +15,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.networking.handlers.InfoNetworkHandler;
 
 @LogicInfoType(id = ClockInfo.id, modid = PL2Constants.MODID)
 public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, INBTSyncable, INameableInfo<ClockInfo>, IComparableInfo<ClockInfo> {
@@ -32,8 +30,7 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, 
 		syncList.addParts(firstNum, secondNum, clockString);
 	}
 
-	public ClockInfo() {
-	}
+	public ClockInfo() {}
 
 	public ClockInfo(double firstNum, double secondNum, String clockString) {
 		this.firstNum.setObject(firstNum);
@@ -75,16 +72,6 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, 
 	}
 
 	@Override
-	public boolean isHeader() {
-		return false;
-	}
-
-	@Override
-	public INetworkHandler getHandler() {
-		return InfoNetworkHandler.INSTANCE;
-	}
-
-	@Override
 	public boolean isValid() {
 		return firstNum.getObject() != null && firstNum.getObject() != null && clockString.getObject() != null;
 	}
@@ -97,22 +84,6 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, 
 	@Override
 	public ClockInfo copy() {
 		return new ClockInfo(firstNum.getObject(), secondNum.getObject(), clockString.getObject());
-	}
-
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double displayWidth, double displayHeight, double displayScale, int infoPos) {
-		GL11.glPushMatrix();
-		GL11.glPushMatrix();
-		GlStateManager.disableLighting();
-		GL11.glTranslated(-1, -+0.0625 * 12, +0.004);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(infoPos));
-		InfoRenderer.renderProgressBar(displayWidth, displayHeight, displayScale, (compare == 1 ? secondNum.getObject() : firstNum.getObject()), (compare == 1 ? firstNum.getObject() : secondNum.getObject()));
-		GlStateManager.enableLighting();
-		GL11.glTranslated(0, 0, -0.001);
-		GL11.glPopMatrix();
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), displayWidth, displayHeight, displayScale, displayInfo.getFormattedStrings());
-		GL11.glPopMatrix();
-
 	}
 
 	@Override

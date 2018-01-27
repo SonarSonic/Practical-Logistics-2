@@ -1,0 +1,223 @@
+package sonar.logistics.networking.cabling;
+
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
+import sonar.core.helpers.ListHelper;
+import sonar.core.listener.ISonarListenable;
+import sonar.core.listener.ListenableList;
+import sonar.core.listener.ListenerTally;
+import sonar.logistics.PL2;
+import sonar.logistics.api.cabling.IRedstoneCable;
+import sonar.logistics.api.cabling.IRedstoneConnectable;
+import sonar.logistics.api.cabling.IRedstonePowerProvider;
+import sonar.logistics.api.wireless.IRedstoneEmitter;
+import sonar.logistics.api.wireless.IRedstoneReceiver;
+
+/**FIXME : BROKEN**/
+public class RedstoneNetwork implements IRedstoneNetwork {
+
+	public final List<IRedstonePowerProvider> providers = Lists.newArrayList(); // local providers
+	public final List<IRedstoneReceiver> receivers = Lists.newArrayList(); // receivers
+	public final List<IRedstoneEmitter> emitters = Lists.newArrayList(); // emitters
+	public final ListenableList<IRedstoneNetwork> subNetworks = new ListenableList(this, 2); // FIXME REMOVE ME?
+	public final List<IRedstoneConnectable> toAdd = Lists.newArrayList();
+	public final List<IRedstoneConnectable> toRemove = Lists.newArrayList();
+	public int registryID = -1;
+	public int localPower = 0, globalPower = 0, actualPower = 0;
+	public boolean cablesChanged = true;
+
+	public RedstoneNetwork(int registryID) {
+		this.registryID = registryID;
+	}
+
+	public int getNetworkID() {
+		return registryID;
+	}
+
+	@Override
+	public void markCablesChanged() {
+		cablesChanged = true;
+	}
+
+	@Override
+	public boolean doCablesNeedUpdate() {
+		return cablesChanged;
+	}
+
+	public void tick() {
+		toAdd.forEach(add -> doAddConnection(add));
+		toRemove.forEach(remove -> doRemoveConnection(remove));
+		if (doCablesNeedUpdate()) {
+			updateCables();
+		}
+
+	}
+
+	public void updateCables() {
+		Lists.newArrayList(providers).forEach(connectable -> removeConnection(connectable));
+		Lists.newArrayList(receivers).forEach(connectable -> removeConnection(connectable));
+		Lists.newArrayList(emitters).forEach(connectable -> removeConnection(connectable));
+		List<IRedstoneCable> cables = RedstoneConnectionHandler.instance().getConnections(registryID);
+		cables.forEach(cable -> RedstoneCableHelper.getConnectables(cable).forEach(connection -> addConnection(connection)));
+		
+		cablesChanged = false;
+	}
+
+	@Override
+	public void addConnection(IRedstoneConnectable connectable) {
+		ListHelper.addWithCheck(toAdd, connectable);
+		toRemove.remove(connectable);
+	}
+
+	@Override
+	public void removeConnection(IRedstoneConnectable connectable) {
+		ListHelper.addWithCheck(toRemove, connectable);
+		toAdd.remove(connectable);
+	}
+
+	public void doAddConnection(IRedstoneConnectable connection) {
+		if (connection instanceof IRedstoneReceiver) {
+			ListHelper.addWithCheck(receivers, (IRedstoneReceiver) connection);
+			PL2.getWirelessRedstoneManager().connectReceiver(this, (IRedstoneReceiver) connection);
+		} else if (connection instanceof IRedstoneEmitter) {
+			ListHelper.addWithCheck(emitters, (IRedstoneEmitter) connection);
+			PL2.getWirelessRedstoneManager().connectEmitter(this, (IRedstoneEmitter) connection);
+		} else if (connection instanceof IRedstonePowerProvider) {
+			ListHelper.addWithCheck(providers, (IRedstonePowerProvider) connection);
+		}
+		connection.onNetworkConnect(this);
+		RedstoneConnectionHandler.instance().markPowerForUpdate(registryID);
+	}
+
+	public void doRemoveConnection(IRedstoneConnectable connection) {
+		if (connection instanceof IRedstoneReceiver) {
+			receivers.remove(connection);
+			PL2.getWirelessRedstoneManager().disconnectReceiver(this, (IRedstoneReceiver) connection);
+		} else if (connection instanceof IRedstoneEmitter) {
+			emitters.remove(connection);
+			PL2.getWirelessRedstoneManager().disconnectEmitter(this, (IRedstoneEmitter) connection);
+		} else if (connection instanceof IRedstonePowerProvider) {
+			providers.remove(connection);
+		}
+		connection.onNetworkDisconnect(this);
+		RedstoneConnectionHandler.instance().markPowerForUpdate(registryID);
+	}
+
+	@Override
+	public int getActualPower() {
+		return actualPower;
+	}
+
+	@Override
+	public int getLocalPower() {
+		return localPower;
+	}
+
+	@Override
+	public int getGlobalPower() {
+		return globalPower;
+	}
+
+	@Override
+	public int updateActualPower() {
+		int newPower = getLocalPower();
+		if (newPower == 0) {
+			newPower = getGlobalPower();
+		}
+		if (newPower != this.actualPower) {
+			this.actualPower = newPower;
+			notifyWatchingNetworksOfChange();
+			RedstoneConnectionHandler.instance().powerCache.put(registryID, actualPower);
+		}
+		List<IRedstoneCable> cables = RedstoneConnectionHandler.instance().getConnections(registryID);
+		cables.forEach(cable -> cable.setNetworkPower(actualPower)); // we set it regardless of if it changed, as may be new cables
+		return actualPower;
+
+	}
+
+	@Override
+	public int updateLocalPower() {
+		int newPower = 0;
+		for (IRedstonePowerProvider provider : providers) {
+			newPower = provider.getCurrentPower();
+			if (newPower > 0) {
+				break;
+			}
+		}
+		return localPower = newPower;
+	}
+
+	@Override
+	public int updateGlobalPower() {
+		int newPower = 0;
+		for (IRedstoneReceiver receiver : receivers) {
+			receiver.updatePower();
+			newPower = receiver.getRedstonePower();
+			if (newPower > 0) {
+				break;
+			}
+		}
+		return globalPower = newPower;
+	}
+
+	public void notifyWatchingNetworksOfChange() {
+		List<IRedstoneNetwork> networks = getAllNetworks(this, IRedstoneNetwork.WATCHING_NETWORK);
+		for (IRedstoneNetwork network : networks) {
+			if (network != this)
+				network.onNetworkPowerChanged(this);
+		}
+	}
+
+	@Override
+	public void onNetworkPowerChanged(IRedstoneNetwork network) {
+		if (isActive(Math.max(getLocalPower(), getGlobalPower())) != isActive(Math.max(network.getLocalPower(), network.getGlobalPower()))) {
+			updateGlobalPower();
+		}
+	}
+
+	public static List<IRedstoneNetwork> getAllNetworks(IRedstoneNetwork network, int networkType) {
+		List<IRedstoneNetwork> networks = Lists.newArrayList();
+		addSubNetworks(networks, network, networkType);
+		return networks;
+	}
+
+	public static void addSubNetworks(List<IRedstoneNetwork> building, IRedstoneNetwork network, int networkType) {
+		building.add(network);
+		List<IRedstoneNetwork> subNetworks = network.getListenerList().getListeners(networkType);
+		for (IRedstoneNetwork sub : subNetworks) {
+			if (sub.isValid() && !building.contains(sub)) {
+				addSubNetworks(building, sub, networkType);
+			}
+		}
+	}
+
+	/** just to check if it's more than 0, quick and dirty */
+	public boolean isActive(int power) {
+		return power > 0;
+	}
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public ListenableList<IRedstoneNetwork> getListenerList() {
+		return subNetworks;
+	}
+
+	@Override
+	public void onListenerAdded(ListenerTally<IRedstoneNetwork> tally) {}
+
+	@Override
+	public void onListenerRemoved(ListenerTally<IRedstoneNetwork> tally) {}
+
+	@Override
+	public void onSubListenableAdded(ISonarListenable<IRedstoneNetwork> listen) {}
+
+	@Override
+	public void onSubListenableRemoved(ISonarListenable<IRedstoneNetwork> listen) {}
+
+}

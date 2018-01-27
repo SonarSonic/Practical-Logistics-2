@@ -9,6 +9,7 @@ import sonar.core.utils.CustomColour;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
+import sonar.logistics.client.gsi.IGSI;
 
 /** used within a IInfoContainer */
 public interface IDisplayInfo extends INBTSyncable {
@@ -24,6 +25,8 @@ public interface IDisplayInfo extends INBTSyncable {
 	/** the currently cached info UUID, obtained via the Client Cache, this can be null */
 	@Nullable
 	public InfoUUID getInfoUUID();
+	
+	public IGSI getGSI();
 
 	/** the current text colour */
 	public CustomColour getTextColour();

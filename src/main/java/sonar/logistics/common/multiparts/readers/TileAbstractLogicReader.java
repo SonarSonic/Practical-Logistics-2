@@ -13,11 +13,11 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.ProgressInfo;
-import sonar.logistics.network.sync.SyncMonitoredType;
+import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends TileAbstractListReader<T> {
 
@@ -91,10 +91,8 @@ public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends
 				} else {
 					latestInfo = info != null ? info.b : InfoError.noData;
 				}
-				// this.selected.get(i).info = info.b;
-				// this.paired.get(i).info = pair.b;
 			}
-			PL2.getServerManager().changeInfo(id, latestInfo);
+			PL2.getServerManager().changeInfo(this, id, latestInfo);
 		}
 	}
 

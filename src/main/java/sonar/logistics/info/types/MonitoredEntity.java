@@ -13,7 +13,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
@@ -89,11 +88,6 @@ public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INamea
 	}
 
 	@Override
-	public INetworkHandler getHandler() {
-		return null; //TODO
-	}
-
-	@Override
 	public boolean isValid() {
 		return uuid.getUUID() != null;
 	}
@@ -106,11 +100,6 @@ public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INamea
 	@Override
 	public MonitoredEntity copy() {
 		return new MonitoredEntity(uuid.getUUID(), unlocalizedName.getObject(), dimension.getObject());
-	}
-
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, getClientIdentifier(), getClientObject());
 	}
 
 	public UUID getUUID() {

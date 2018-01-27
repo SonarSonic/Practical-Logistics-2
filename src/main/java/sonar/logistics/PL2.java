@@ -28,13 +28,15 @@ import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
-import sonar.logistics.networking.connections.CableConnectionHandler;
-import sonar.logistics.networking.connections.ClientInfoHandler;
-import sonar.logistics.networking.connections.LogisticsNetworkHandler;
-import sonar.logistics.networking.connections.ScreenConnectionHandler;
-import sonar.logistics.networking.connections.ServerInfoHandler;
-import sonar.logistics.networking.connections.WirelessDataManager;
-import sonar.logistics.networking.connections.WirelessRedstoneManager;
+import sonar.logistics.networking.ClientInfoHandler;
+import sonar.logistics.networking.LogisticsNetworkHandler;
+import sonar.logistics.networking.ServerInfoHandler;
+import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
+import sonar.logistics.networking.cabling.WirelessDataManager;
+import sonar.logistics.networking.cabling.WirelessRedstoneManager;
+import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.ConnectedDisplayHandler;
 import sonar.logistics.worldgen.SapphireOreGen;
 
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
@@ -53,7 +55,8 @@ public class PL2 {
 	public WirelessDataManager wirelessDataManager = new WirelessDataManager();
 	public WirelessRedstoneManager wirelessRedstoneManager = new WirelessRedstoneManager();
 	public CableConnectionHandler cableManager = new CableConnectionHandler();
-	public ScreenConnectionHandler displayManager = new ScreenConnectionHandler();
+	public RedstoneConnectionHandler redstoneManager = new RedstoneConnectionHandler();
+	public ConnectedDisplayHandler displayManager = new ConnectedDisplayHandler();
 	public ServerInfoHandler serverManager = new ServerInfoHandler();
 	public ClientInfoHandler clientManager = new ClientInfoHandler();
 
@@ -120,9 +123,8 @@ public class PL2 {
 		logger.info("Registered OreDict");
 
 		MinecraftForge.EVENT_BUS.register(new PL2Events());
+		MinecraftForge.EVENT_BUS.register(ChunkViewerHandler.instance());
 		logger.info("Registered Events");
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new PL2Common());
-		logger.info("Registered GUI Handler");
 		proxy.load(event);
 	}
 
@@ -165,7 +167,11 @@ public class PL2 {
 		return PL2.instance.cableManager;
 	}
 
-	public static ScreenConnectionHandler getDisplayManager() {
+	public static RedstoneConnectionHandler getRedstoneManager() {
+		return PL2.instance.redstoneManager;
+	}
+
+	public static ConnectedDisplayHandler getDisplayManager() {
 		return PL2.instance.displayManager;
 	}
 

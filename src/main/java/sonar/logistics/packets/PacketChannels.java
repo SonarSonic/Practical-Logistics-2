@@ -10,7 +10,7 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.helpers.InfoHelper;
+import sonar.logistics.networking.info.InfoHelper;
 
 public class PacketChannels implements IMessage {
 

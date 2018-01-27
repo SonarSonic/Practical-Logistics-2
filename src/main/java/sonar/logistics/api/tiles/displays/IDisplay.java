@@ -3,8 +3,8 @@ package sonar.logistics.api.tiles.displays;
 import net.minecraft.util.EnumFacing;
 import sonar.core.listener.ISonarListener;
 import sonar.core.network.sync.ISyncableListener;
+import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.info.render.IInfoContainer;
-import sonar.logistics.api.tiles.INetworkTile;
 
 /** implemented by any Display Screen TileEntity */
 public interface IDisplay extends INetworkTile, /* ILogicListenable<PlayerListener>, */ ISyncableListener, ISonarListener {	

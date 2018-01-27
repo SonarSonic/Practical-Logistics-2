@@ -6,8 +6,8 @@ import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -25,6 +25,8 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gsi.GSIHelper;
+import sonar.logistics.client.gsi.IGSI;
 
 /** default implementation of the Display Info used on displays */
 public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableListener {
@@ -36,13 +38,13 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	public SyncNBTAbstract<CustomColour> textColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 2), backgroundColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 3);
 	public InfoContainer container;
 	public boolean isList = false;
+	public IGSI gsi = null;
 
 	public SyncableList syncParts = new SyncableList(this);
 	{
 		textColour.setObject(LogisticsColours.white_text);
 		backgroundColour.setObject(LogisticsColours.grey_base);
 		syncParts.addParts(formatList, uuid, textColour, backgroundColour);
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	public DisplayInfo(InfoContainer container, int id) {
@@ -52,9 +54,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 
 	public RenderInfoProperties setRenderInfoProperties(RenderInfoProperties renderInfo, int pos) {
 		this.renderInfo = renderInfo;
-		if (cachedInfo != null) {
-			cachedInfo.renderSizeChanged(container, this, renderInfo.scaling[0], renderInfo.scaling[1], renderInfo.scaling[2], pos);
-		}
+		//FIXME DID WE NEED SOMETHING HERE?
 		return renderInfo;
 	}
 
@@ -70,12 +70,31 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		if (cachedInfo == null) {
 			cachedInfo = PL2.getInfoManager(isClient).getInfoList().get(id);
 			cachedInfo = cachedInfo != null ? cachedInfo.copy() : null;
+			updateGSI();
 		}
 		return cachedInfo;
 	}
 
 	public void setCachedInfo(IInfo info) {
-		this.cachedInfo = info.copy();//we copy it so page counts work and to avoid stuff being altered
+		this.cachedInfo = info.copy();// we copy it so page counts work and to avoid stuff being altered
+		updateGSI();
+	}
+
+	public IGSI getGSI() {
+		if (gsi == null) {
+			updateGSI();
+		}
+		return gsi;
+	}
+
+	public void updateGSI() {
+		//World world = container.getWorld();
+		//if (world.isRemote) {
+		if(FMLCommonHandler.instance().getEffectiveSide().isClient()){//FIXME
+			gsi = GSIHelper.getGSIForInfo(cachedInfo, this);
+			gsi.resetGSI();
+		}
+		//}
 	}
 
 	@Override
@@ -100,15 +119,20 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
-		if (!tag.hasNoTags())
+		if (!tag.hasNoTags()) {
 			NBTHelper.readSyncParts(tag, type, syncParts);
+			if (container.getWorld().isRemote) {
+				getGSI().resetGSI();
+			}
+		}
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		NBTTagCompound tag = NBTHelper.writeSyncParts(new NBTTagCompound(), type, syncParts, type == SyncType.SYNC_OVERRIDE);
-		if (!tag.hasNoTags())
+		if (!tag.hasNoTags()) {
 			nbt.setTag(this.getTagName(), tag);
+		}
 		return nbt;
 	}
 
@@ -157,7 +181,6 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	public void markChanged(IDirtyPart part) {
 		syncParts.markSyncPartChanged(part);
 		container.markChanged(this);
-
 	}
 
 	@Override

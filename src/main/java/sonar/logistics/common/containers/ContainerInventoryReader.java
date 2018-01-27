@@ -16,7 +16,7 @@ import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
-import sonar.logistics.networking.channels.ItemNetworkChannels;
+import sonar.logistics.networking.items.ItemNetworkChannels;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
 
@@ -104,7 +104,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			part.getListenerList().removeListener(player, true, ListenerType.LISTENER);
+			part.getListenerList().removeListener(player, true, ListenerType.OLD_GUI_LISTENER);
 	}
 
 	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {

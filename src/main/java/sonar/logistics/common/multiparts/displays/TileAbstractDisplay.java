@@ -36,7 +36,7 @@ import sonar.logistics.client.gui.GuiDisplayScreen;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
-import sonar.logistics.networking.connections.ChunkViewerHandler;
+import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 public abstract class TileAbstractDisplay extends TileSidedLogistics implements IByteBufTile, IDisplay, IOperatorTile, IFlexibleGui<TileAbstractDisplay> {
 
@@ -44,14 +44,14 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 
 	public SyncTagType.BOOLEAN defaultData = new SyncTagType.BOOLEAN(2); // set default info
 	public INetworkReader monitor = null;
-	public EnumFacing rotation = EnumFacing.NORTH; //FIXME - when it's placed set the rotation
+	public EnumFacing rotation = EnumFacing.NORTH; // FIXME - when it's placed set the rotation
 	public BlockCoords lastSelected = null;
 	public int currentSelected = -1;
 	{
 		syncList.addPart(defaultData);
 	}
-	
-	public SyncType getUpdateTagType(){
+
+	public SyncType getUpdateTagType() {
 		return SyncType.SAVE;
 	}
 
@@ -79,6 +79,11 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 					}
 					defaultData.setObject(true);
 					sendSyncPacket();
+					List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
+					players.forEach(player -> {
+						PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
+						SonarMultipartHelper.sendMultipartSyncToPlayer(this, player);
+					});
 				}
 			}
 		}
@@ -96,12 +101,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 
 	public void onFirstTick() {
 		super.onFirstTick();
-		PL2.getInfoManager(world.isRemote).addDisplay(this);	
-				
-		
-		if (isClient()) {
-			//this.requestSyncPacket();
-		}
+		PL2.getInfoManager(world.isRemote).addDisplay(this);
 	}
 
 	public void invalidate() {
@@ -123,14 +123,14 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	}
 
 	//// PACKETS \\\\
-	
+
 	public void markChanged(IDirtyPart part) {
 		super.markChanged(part);
-		//FIXME should we get all the players in the chunk
-		
-		List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
-		for (EntityPlayerMP player : players) {
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, player);
+		if (isServer()) {
+			List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
+			for (EntityPlayerMP player : players) {
+				SonarMultipartHelper.sendMultipartSyncToPlayer(this, player);
+			}
 		}
 	}
 
@@ -156,7 +156,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 			InfoUUID uuid = InfoUUID.getUUID(buf);
 			container().setUUID(uuid, currentSelected);
 			if (isServer()) {
-				PL2.getServerManager().updateViewingMonitors = true;
+				PL2.getServerManager().updateListenerDisplays = true;
 				this.sendSyncPacket();
 			}
 			break;
@@ -170,6 +170,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 			break;
 		}
 	}
+
 	public RayTraceResult getPartHit(EntityPlayer player) {
 
 		Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);

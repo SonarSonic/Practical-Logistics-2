@@ -3,19 +3,20 @@ package sonar.logistics.client.gui;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.GuiSonarTile;
+import sonar.core.helpers.FontHelper;
 import sonar.logistics.PL2Constants;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.common.containers.ContainerHammer;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
 public class GuiHammer extends GuiSonarTile {
-	public TileEntityHammer entity;
 	public static final ResourceLocation bground = new ResourceLocation(PL2Constants.MODID + ":textures/gui/hammer.png");
-
+	
+	public TileEntityHammer entity;
+	
 	public GuiHammer(EntityPlayer player, TileEntityHammer entity) {
 		super(new ContainerHammer(player, entity), entity);
-
 		this.entity = entity;
-
 		this.xSize = 176;
 		this.ySize = 143;
 	}
@@ -23,7 +24,7 @@ public class GuiHammer extends GuiSonarTile {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		//FontHelper.textCentre(PL2Translate.HAMMER.t(), xSize, 6, 0); FIXME
+		FontHelper.textCentre(PL2Translate.HAMMER.t(), xSize, 6, 0);
 	}
 
 	@Override

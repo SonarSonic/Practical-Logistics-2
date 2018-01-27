@@ -32,14 +32,14 @@ import sonar.logistics.client.gui.GuiFluidReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFluidReader;
-import sonar.logistics.helpers.FluidHelper;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.ProgressInfo;
-import sonar.logistics.network.sync.SyncMonitoredType;
-import sonar.logistics.networking.channels.FluidNetworkChannels;
-import sonar.logistics.networking.handlers.FluidNetworkHandler;
+import sonar.logistics.networking.fluids.FluidHelper;
+import sonar.logistics.networking.fluids.FluidNetworkChannels;
+import sonar.logistics.networking.fluids.FluidNetworkHandler;
+import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack> implements IByteBufTile {
 
@@ -76,8 +76,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	}
 	@Override
 	public AbstractChangeableList<MonitoredFluidStack> sortMonitoredList(AbstractChangeableList<MonitoredFluidStack> updateInfo, int channelID) {
-		FluidHelper.sortFluidList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
-		return updateInfo;
+		return FluidHelper.sortFluidList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
 	}
 
 	@Override
@@ -88,12 +87,13 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 			MonitoredFluidStack stack = selected.getMonitoredInfo();
 			if (stack != null && stack.isValid()) {
 				stack.getStoredStack().setStackSize(0);
-				MonitoredFluidStack dummyInfo = stack.copy();
+				MonitoredFluidStack dummyInfo = new MonitoredFluidStack(stack.getStoredStack().copy(), network.getNetworkID());
 				IMonitoredValue<MonitoredFluidStack> value = updateInfo.find(dummyInfo);
-				info = value==null? dummyInfo: value.getSaveableInfo(); //FIXME Make it check the EnumListChange
+				info = value==null? dummyInfo: new MonitoredFluidStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); //FIXME Make it check the EnumListChange
 			}
 			break;
 		case POS:
+			//FIXME
 			break;
 		case STORAGE:
 			StorageSize size = updateInfo instanceof FluidChangeableList? ((FluidChangeableList)updateInfo).sizing :new StorageSize(0,0);
@@ -105,7 +105,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 		default:
 			break;
 		}
-		PL2.getServerManager().changeInfo(uuid, info);
+		PL2.getServerManager().changeInfo(this,uuid, info);
 	}
 
 	//// IChannelledTile \\\\
@@ -123,7 +123,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 		if (id == 5 || id == 6) {
 			FluidNetworkChannels list = network.getNetworkChannels(FluidNetworkChannels.class);
 			if (list != null) {
-				List<PlayerListener> players = listeners.getListeners(ListenerType.LISTENER);
+				List<PlayerListener> players = listeners.getListeners(ListenerType.OLD_GUI_LISTENER);
 				players.forEach(player -> list.sendLocalRapidUpdate(this, player.player));
 			}
 		}

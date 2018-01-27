@@ -21,6 +21,7 @@ public class PL2Translate {
 
 	// MULTIPARTS
 	public static final Localisation CABLE = t("tile.DataCable.name");
+	public static final Localisation REDSTONE_CABLE = t("tile.RedstoneCable.name");
 	public static final Localisation NODE = t("tile.Node.name");
 	public static final Localisation INFO_READER = t("tile.InfoReader.name");
 	public static final Localisation FLUID_READER = t("tile.FluidReader.name");
@@ -35,6 +36,7 @@ public class PL2Translate {
 	public static final Localisation ENTITY_NODE = t("tile.EntityNode.name");
 	public static final Localisation ARRAY = t("tile.Array.name");
 	public static final Localisation TRANSFER_NODE = t("tile.TransferNode.name");
+	public static final Localisation REDSTONE_NODE = t("tile.RedstoneNode.name");
 	public static final Localisation TRANSCEIVER = t("item.Transceiver.name");
 	public static final Localisation ENTITY_TRANSCEIVER = t("item.EntityTransceiver.name");
 	public static final Localisation WIRELESS_STORAGE_READER = t("item.WirelessStorage.name");

@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -18,6 +22,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
+import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
@@ -41,8 +46,9 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerStorageViewer;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
-import sonar.logistics.helpers.ItemHelper;
+import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.packets.PacketWirelessStorage;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
@@ -58,7 +64,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	public static boolean items = true;
 	public static SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 0).addSyncType(SyncType.SPECIAL);
 	public static SyncEnum<InventoryReader.SortingType> sortItems = (SyncEnum) new SyncEnum(InventoryReader.SortingType.values(), 0).addSyncType(SyncType.SPECIAL);
-	public SyncEnum<FluidReader.SortingType> sortfluids = (SyncEnum) new SyncEnum(FluidReader.SortingType.values(), 0).addSyncType(SyncType.SPECIAL);
+	public static SyncEnum<FluidReader.SortingType> sortfluids = (SyncEnum) new SyncEnum(FluidReader.SortingType.values(), 0).addSyncType(SyncType.SPECIAL);
 
 	public GuiWirelessStorageReader(ItemStack reader, int identity, int networkID, EntityPlayer player) {
 		super(new ContainerStorageViewer(identity, player), (IWorldPosition) null);
@@ -69,6 +75,10 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	}
 
 	public void initGui() {
+		eWidth = items ? 18 : 27;
+		eHeight = items ? 18 : 27;
+		gWidth = items ? 12 : 8;
+		gHeight = items ? 7 : 5;
 		super.initGui();
 		initButtons();
 		searchField = new SonarTextField(1, this.fontRenderer, 135, 10, 104, 14);
@@ -80,11 +90,19 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 		super.initButtons();
 		int start = 8;
 		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + start, guiTop + 9));
-		this.buttonList.add(new LogisticsButton.HELP(this, 5, guiLeft + start + 18 * 1, guiTop + 9));
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * sortItems.getObject().ordinal(), sortItems.getObject().getClientName(), ""));
-		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, PL2Translate.BUTTON_DUMP_PLAYER.t(), ""));
-		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, PL2Translate.BUTTON_DUMP_NETWORK.t(), ""));
+		this.buttonList.add(new LogisticsButton.HELP(this, 5, guiLeft + start + 18 * 2, guiTop + 9));
+		if (items) {
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * sortItems.getObject().ordinal(), sortItems.getObject().getClientName(), ""));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 203, guiTop + 174, 32, 0, PL2Translate.BUTTON_DUMP_PLAYER.t(), ""));
+			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 203 + 18, guiTop + 174, 32, 16, PL2Translate.BUTTON_DUMP_NETWORK.t(), ""));
+
+		} else {
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * sortfluids.getObject().ordinal(), sortfluids.getObject().getClientName(), ""));
+		}
+		this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 18 * 1, guiTop + 9, 16, items ? 80 : 96, "Storage Type: " + (items ? "Items" : "Fluids"), "button.StorageType"));
+
 	}
 
 	public void actionPerformed(GuiButton button) {
@@ -127,6 +145,10 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				GuiHelpOverlay.enableHelp = !GuiHelpOverlay.enableHelp;
 				reset();
 				break;
+			case 6:
+				items = !items;
+				reset();
+				break;
 			}
 		}
 	}
@@ -148,7 +170,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 		String search = searchField.getText();
 		if (items) {
 			AbstractChangeableList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
-			if(currentList==null){
+			if (currentList == null) {
 				return Lists.newArrayList();
 			}
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
@@ -177,7 +199,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			button = 2;
 		}
 		final int usedButton = button;
-		if (!empty) {
+		if (!empty && info instanceof MonitoredItemStack) {
 			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
 				@Override
 				public void writeToBuf(ByteBuf buf) {
@@ -192,7 +214,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				}
 			}));
 
-		} else {
+		} else if (empty) {
 			PL2.network.sendToServer(new PacketWirelessStorage((IWirelessStorageReader) reader.getItem(), reader, player, 0, new ByteBufWritable(false) {
 				@Override
 				public void writeToBuf(ByteBuf buf) {
@@ -204,8 +226,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	}
 
 	@Override
-	public void renderStrings(int x, int y) {
-	}
+	public void renderStrings(int x, int y) {}
 
 	@Override
 	public void renderGridElement(IInfo info, int x, int y, int slot) {
@@ -220,6 +241,17 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
 			RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
 			RenderHelper.restoreBlendState();
+		} else if (info instanceof MonitoredFluidStack) {
+			MonitoredFluidStack selection = (MonitoredFluidStack) info;
+			StoredFluidStack fluidStack = selection.getStoredStack();
+			if (fluidStack.fluid != null) {
+				GL11.glPushMatrix();
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(fluidStack.fluid.getFluid().getStill().toString());
+				Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				drawTexturedModalRect(xPos + (x * eWidth), yPos + (y * eHeight), sprite, eWidth - 2, eHeight - 2);
+				GL11.glPopMatrix();
+			}
 		}
 	}
 
@@ -243,6 +275,15 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 
 			FontRenderer font = storedStack.item.getItem().getFontRenderer(storedStack.item);
 			drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
+		} else if (info instanceof MonitoredFluidStack) {
+			MonitoredFluidStack element = (MonitoredFluidStack) info;
+			StoredFluidStack fluidStack = element.getStoredStack();
+			List list = Lists.newArrayList();
+			list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
+			if (fluidStack.stored != 0) {
+				list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
+			}
+			drawHoveringText(list, x, y, fontRenderer);
 		}
 	}
 

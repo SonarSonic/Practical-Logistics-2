@@ -23,7 +23,7 @@ import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.logic.comparators.ILogicComparator;
+import sonar.logistics.info.comparators.ILogicComparator;
 
 public class PL2ASMLoader {
 

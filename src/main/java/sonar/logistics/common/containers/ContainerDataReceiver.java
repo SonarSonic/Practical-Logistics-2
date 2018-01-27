@@ -2,9 +2,7 @@ package sonar.logistics.common.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.PL2;
 import sonar.logistics.common.multiparts.wireless.TileAbstractReceiver;
-import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
 
 public class ContainerDataReceiver extends ContainerMultipartSync {
 	public TileAbstractReceiver receiver;

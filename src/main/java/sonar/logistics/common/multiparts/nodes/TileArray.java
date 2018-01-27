@@ -15,7 +15,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.SonarInventory;
 import sonar.core.network.sync.SyncTagType;
-import sonar.logistics.api.tiles.cable.CableRenderType;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.wireless.ITransceiver;

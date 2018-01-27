@@ -13,7 +13,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -22,17 +21,16 @@ import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2API;
+import sonar.logistics.api.cabling.CableConnectionType;
+import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.tiles.cable.CableRenderType;
-import sonar.logistics.api.tiles.cable.ConnectableType;
-import sonar.logistics.api.tiles.cable.IDataCable;
-import sonar.logistics.api.tiles.cable.NetworkConnectionType;
-import sonar.logistics.helpers.CableHelper;
-import sonar.logistics.networking.connections.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableHelper;
 
 public class TileDataCable extends TileSonarMultipart implements IDataCable, IOperatorTile, IOperatorProvider {
 
@@ -93,12 +91,15 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	}
 
 	@Override
-	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+		if (type != this.getConnectableType()) {
+			return CableConnectionType.NONE;
+		}
 		boolean internallyBlocked = isInternallyBlocked(dir);
 		if (isBlocked(dir) || (!internal && internallyBlocked)) {
-			return NetworkConnectionType.NONE;
+			return CableConnectionType.NONE;
 		}
-		return NetworkConnectionType.NETWORK;
+		return CableConnectionType.NETWORK;
 	}
 
 	@Override

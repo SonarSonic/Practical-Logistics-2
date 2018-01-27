@@ -21,16 +21,17 @@ public final class PL2API {
 	public static void init() {
 		if (Loader.isModLoaded("practicallogistics2") || Loader.isModLoaded("PracticalLogistics2")) {
 			try {
-				cables = (CablingWrapper) Class.forName("sonar.logistics.helpers.CableHelper").newInstance();
-				energy = (EnergyWrapper) Class.forName("sonar.logistics.helpers.EnergyHelper").newInstance();
-				fluids = (FluidWrapper) Class.forName("sonar.logistics.helpers.FluidHelper").newInstance();
-				items = (ItemWrapper) Class.forName("sonar.logistics.helpers.ItemHelper").newInstance();
+				cables = (CablingWrapper) Class.forName("sonar.logistics.networking.cabling.CableHelper").newInstance();
+				energy = (EnergyWrapper) Class.forName("sonar.logistics.networking.energy.EnergyHelper").newInstance();
+				fluids = (FluidWrapper) Class.forName("sonar.logistics.networking.fluids.FluidHelper").newInstance();
+				items = (ItemWrapper) Class.forName("sonar.logistics.networking.items.ItemHelper").newInstance();
 			} catch (Exception exception) {
-				System.err.println("Practical Logistics API : FAILED TO INITILISE API" + exception.getMessage());
+				System.err.println("Practical Logistics API : FAILED TO INITILISE API");
+				exception.printStackTrace();
 			}
 		}
 	}
-
+	
 	public static CablingWrapper getCableHelper() {
 		return cables;
 	}

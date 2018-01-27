@@ -19,13 +19,11 @@ import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.ISuffixable;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.networking.handlers.InfoNetworkHandler;
 
 /** default info type, created by the LogicRegistry */
 @LogicInfoType(id = LogicInfo.id, modid = PL2Constants.MODID)
@@ -70,11 +68,6 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 			return null;
 		}
 		return info;
-	}
-
-	@Override
-	public INetworkHandler getHandler() {
-		return InfoNetworkHandler.INSTANCE;
 	}
 
 	@Override
@@ -169,11 +162,6 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 			return buildCategoryInfo(regType.getObject());
 		}
 		return buildDirectInfo(iden.getObject(), regType.getObject(), obj.get()).setPath(getPath() != null ? getPath().dupe() : null);
-	}
-
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
 	}
 
 	@Override

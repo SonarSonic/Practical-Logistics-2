@@ -4,9 +4,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -18,7 +17,7 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 
 public class ContainerFluidReader extends ContainerMultipartSync {
 
-	private static final int INV_START = 1, INV_END = INV_START + 26, HOTBAR_START = INV_END + 1, HOTBAR_END = HOTBAR_START + 8;
+	private static final int INV_START = 0, INV_END = INV_START + 26, HOTBAR_START = INV_END + 1, HOTBAR_END = HOTBAR_START + 8;
 	public boolean stackMode = false;
 	TileFluidReader part;
 
@@ -37,7 +36,6 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 				this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 41 + j * 18, 174 + i * 18));
 			}
 		}
-
 		for (int i = 0; i < 9; ++i) {
 			this.addSlotToContainer(new Slot(player.inventory, i, 41 + i * 18, 232));
 		}
@@ -54,34 +52,12 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 			if (stackMode && par2 >= INV_START) {
 				if (!part.getWorld().isRemote) {
 					ItemStack copy = itemstack1.copy();
-					boolean hasCapability = copy.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-					if(hasCapability){
-						IFluidHandlerItem fluidItem = copy.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-						ItemStack container = fluidItem.getContainer();
-						if(container!=null){
-							for(int i=0;i<fluidItem.getTankProperties().length;i++){
-								IFluidTankProperties tank = fluidItem.getTankProperties()[i];
-								if(tank.getContents()!=null && tank.getContents().amount!=0){
-									part.selected.setInfo(new MonitoredFluidStack(new StoredFluidStack(tank.getContents())));
-								}
-							}
-						}
+					FluidStack fluid = FluidUtil.getFluidContained(copy);
+					if (fluid != null) {
+						part.selected.setInfo(new MonitoredFluidStack(new StoredFluidStack(fluid)));
+						part.sendByteBufPacket(1);
 					}
-					// FIXME
-					/*
-					if (copy != null && copy.getItem() instanceof IFluidHandlerItem) {
-						IFluidContainerItem container = (IFluidContainerItem) copy.getItem();
-						FluidStack stack = container.getFluid(copy);
-						if (stack != null) {
-							// part.current = stack;
-						}
-					} else if (copy != null) {
-						FluidStack fluid = FluidContainerUtils.getFluidForFilledItem(copy);
-						if (fluid != null) {
-							// part.current = fluid;
-						}
-					}
-					*/
+
 				}
 				if (!this.mergeItemStack(itemstack1.copy(), 0, INV_START, false)) {
 					return ItemStack.EMPTY;
@@ -114,7 +90,7 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			part.getListenerList().removeListener(player, true, ListenerType.LISTENER);
+			part.getListenerList().removeListener(player, true, ListenerType.OLD_GUI_LISTENER);
 	}
 
 	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {

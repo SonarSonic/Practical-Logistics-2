@@ -39,6 +39,7 @@ import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
 
 /**W.I.P not fully implemented yet as I don't know how much of a performance increase it will offer. In fact it may be worse.*/
+/*
 public class CachedInventoryRenderer {
 
 	public List<CachedItemRenderer> renders = Lists.newArrayList();
@@ -155,3 +156,4 @@ public class CachedInventoryRenderer {
 	}
 
 }
+*/

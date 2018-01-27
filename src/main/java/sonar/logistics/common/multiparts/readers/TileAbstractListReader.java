@@ -15,7 +15,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.tiles.readers.IReader;
 import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.networking.channels.ListNetworkChannels;
+import sonar.logistics.networking.common.ListNetworkChannels;
 
 public abstract class TileAbstractListReader<T extends IInfo> extends TileAbstractReader<T> implements IReader<T>, IFlexibleGui {
 
@@ -66,7 +66,7 @@ public abstract class TileAbstractListReader<T extends IInfo> extends TileAbstra
 		case 0:
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			sendRapidUpdate(player);
-			listeners.addListener(player, ListenerType.LISTENER);
+			listeners.addListener(player, ListenerType.OLD_GUI_LISTENER);
 			break;
 		}
 	}

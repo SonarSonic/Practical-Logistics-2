@@ -22,12 +22,12 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
+import sonar.logistics.api.cabling.CableConnectionType;
+import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.tiles.cable.CableRenderType;
-import sonar.logistics.api.tiles.cable.ConnectableType;
-import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
@@ -44,10 +44,11 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public NBTTagCompound savedTag = null;
 	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // set default info
 	public SyncTagType.INT registryID = (INT) new SyncTagType.INT(4).setDefault(-1); 
+	public SyncTagType.BOOLEAN isLocked = (BOOLEAN) new SyncTagType.BOOLEAN(5); 
 	public boolean onRenderChange = true;
 
 	{
-		syncList.addParts(shouldRender, registryID);
+		syncList.addParts(shouldRender, registryID, isLocked);
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	public void updateDefaultInfo() {
-		if (this.getDisplayScreen() != null && this.shouldRender()) {
+		if (this.getDisplayScreen() != null && shouldRender()) {
 			super.updateDefaultInfo();
 		}
 	}
@@ -139,7 +140,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 				connectedDisplay.readData(savedTag, SyncType.SAVE);
 				savedTag = null;
 				connectedDisplay.updateAllListeners();
-				PL2.getServerManager().updateViewingMonitors = true;
+				PL2.getServerManager().updateListenerDisplays = true;
 			}
 		}
 	}
@@ -156,7 +157,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		}
 		onRenderChange = true;
 		if (isServer()) {
-			PL2.getServerManager().updateViewingMonitors = true;
+			PL2.getServerManager().updateListenerDisplays = true;
 		}
 		this.markDirty();
 	}
@@ -175,14 +176,14 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	@Override
-	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
 		boolean cableFace = (dir == getCableFace() || dir == getCableFace().getOpposite());
 		boolean cableConnection = (internal && cableFace && type == ConnectableType.CONNECTABLE);
 
-		if (cableConnection || (!cableFace && type == this.getConnectableType() && (getRegistryID() == registryID || !(getDisplayScreen().isLocked.getObject())))) {
-			return NetworkConnectionType.NETWORK;
+		if (cableConnection || (!cableFace && type == this.getConnectableType() && (getRegistryID() == registryID || !(isLocked())))) {
+			return CableConnectionType.NETWORK;
 		}
-		return NetworkConnectionType.NONE;
+		return CableConnectionType.NONE;
 	}
 
 	@Override
@@ -225,6 +226,10 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return TileEntity.INFINITE_EXTENT_AABB;
+	}
+	
+	public boolean isLocked(){		
+		return this.isLocked.getObject() || getDisplayScreen() != null && getDisplayScreen().isLocked.getObject();
 	}
 
 	//// SAVE \\\\
@@ -324,7 +329,10 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	@Override
-	public void updateCableRenders() {
+	public void updateCableRenders() {}
 
+	@Override
+	public void setLocked(boolean locked) {
+		this.isLocked.setObject(locked);
 	}
 }

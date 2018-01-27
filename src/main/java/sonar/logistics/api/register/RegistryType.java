@@ -15,10 +15,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 
 /** used to define the type of class the method/return is applicable for this is to speed up identification but you can use NONE for any type of class if you wish */
 public enum RegistryType {
-	WORLD(World.class, 0), TILE(TileEntity.class, 5), BLOCK(Block.class, 3), ENTITY(Entity.class, 6), ITEM(Item.class, 7), STATE(IBlockState.class, 4), POS(BlockPos.class, 1), FACE(EnumFacing.class, 2), ITEMSTACK(ItemStack.class, 8), CAPABILITY(Capability.class, 9), NONE(null, 9);
+	WORLD(World.class, 0), TILE(TileEntity.class, 5), BLOCK(Block.class, 3), ENTITY(Entity.class, 6), ITEM(Item.class, 7), STATE(IBlockState.class, 4), POS(BlockPos.class, 1), FACE(EnumFacing.class, 2), ITEMSTACK(ItemStack.class, 8), CAPABILITY(Capability.class, 9), LOGICNETWORK(ILogisticsNetwork.class, 10), NONE(null, 11);
 	Class classType;
 	public int sortOrder;
 

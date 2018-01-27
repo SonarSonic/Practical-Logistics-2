@@ -3,6 +3,7 @@ package sonar.logistics;
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.translate.Localisation;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
+import sonar.logistics.common.multiparts.cables.TileRedstoneCable;
 import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
@@ -11,6 +12,7 @@ import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
 import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.common.multiparts.nodes.TileEntityNode;
 import sonar.logistics.common.multiparts.nodes.TileNode;
+import sonar.logistics.common.multiparts.nodes.TileRedstoneNode;
 import sonar.logistics.common.multiparts.nodes.TileTransferNode;
 import sonar.logistics.common.multiparts.readers.TileEnergyReader;
 import sonar.logistics.common.multiparts.readers.TileFluidReader;
@@ -27,6 +29,7 @@ public enum PL2Multiparts {
 	ARRAY(0.625, 0.0625 * 1, 0.0625 * 4, "Array", TileArray.class, PL2Translate.ARRAY), //
 	ENTITY_NODE(5 * 0.0625, 0.0625 * 1, 0.0625 * 4, "EntityNode", TileEntityNode.class, PL2Translate.ENTITY_NODE), //
 	DATA_CABLE(0, 0, 0, "DataCable", TileDataCable.class, PL2Translate.CABLE), //
+	REDSTONE_CABLE(0, 0, 0, "RedstoneCable", TileRedstoneCable.class, PL2Translate.REDSTONE_CABLE), //
 	INFO_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "InfoReader", TileInfoReader.class, PL2Translate.INFO_READER), //
 	FLUID_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "FluidReader", TileFluidReader.class, PL2Translate.FLUID_READER), //
 	ENERGY_READER(6 * 0.0625, 0.0625 * 1, 0.0625 * 5, "EnergyReader", TileEnergyReader.class, PL2Translate.ENERGY_READER), //
@@ -39,6 +42,7 @@ public enum PL2Multiparts {
 	CLOCK(3 * 0.0625, 0.0625 * 1, 0.0625 * 3, "Clock", TileClock.class, PL2Translate.CLOCK), //
 	REDSTONE_SIGNALLER(3 * 0.0625, 0.0625 * 1, 0.0625 * 6, "RedstoneSignaller", TileRedstoneSignaller.class, PL2Translate.REDSTONE_SIGNALLER), //
 	TRANSFER_NODE(0.0625 * 8, 0, 0.0625 * 2, "TransferNode", TileTransferNode.class, PL2Translate.TRANSFER_NODE), //
+	REDSTONE_NODE(0.0625 * 8, 0, 0.0625 * 2, "RedstoneNode", TileRedstoneNode.class, PL2Translate.REDSTONE_NODE), //
 
 	DISPLAY_SCREEN(0, 0, 0, "DisplayScreen", TileDisplayScreen.class, PL2Translate.DISPLAY_SCREEN), //
 	HOLOGRAPHIC_DISPLAY(0, 0, 0, "HolographicDisplay", TileHolographicDisplay.class, PL2Translate.HOLOGRAPHIC_DISPLAY), //

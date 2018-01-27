@@ -69,13 +69,8 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 			double[] translation = info.getRenderProperties().translation;
 			double[] scaling = info.getRenderProperties().scaling;
 			GL11.glTranslated(translation[0], translation[1], translation[2]);
-
-			if (info.cachedInfo != null && !info.getUnformattedStrings().isEmpty()) {
-				InfoRenderer.renderNormalInfo(type, scaling[0], scaling[1], scaling[2], info.getFormattedStrings());
-			} else {
-				IInfo toDisplay = info.cachedInfo == null ? InfoError.noData : info.cachedInfo;
-				toDisplay.renderInfo((InfoContainer) part.container(), info, scaling[0], scaling[1], scaling[2], dataPos);
-			}
+			info.getGSI().renderGSIBackground(info.getSidedCachedInfo(true), (InfoContainer) part.container(), info, scaling[0], scaling[1], scaling[2], dataPos);
+			info.getGSI().renderGSIForeground(info.getSidedCachedInfo(true), (InfoContainer) part.container(), info, scaling[0], scaling[1], scaling[2], dataPos);			
 			GlStateManager.popAttrib();
 			GL11.glPopMatrix();
 		}

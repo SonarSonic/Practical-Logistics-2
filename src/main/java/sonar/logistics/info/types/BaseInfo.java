@@ -7,8 +7,6 @@ import sonar.core.network.sync.ICheckableSyncPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.InfoMonitoredValue;
@@ -18,7 +16,7 @@ import sonar.logistics.api.register.LogicPath;
 public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart implements IInfo<T>, ISyncableListener, IMonitoredValueInfo<T> {
 
 	private LogicPath path;
-	public boolean setInfoRenderSize = false;
+	//public boolean setInfoRenderSize = false;
 
 	public BaseInfo() {}
 
@@ -45,7 +43,8 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 		}
 		return false;
 	}
-
+	
+	/*
 	@Override
 	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		if (!setInfoRenderSize) {
@@ -56,7 +55,7 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 
 	@Override
 	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
-
+	*/
 	@Override
 	public void identifyChanges(T newInfo) {
 		List<ISyncPart> parts = syncList.getStandardSyncParts();

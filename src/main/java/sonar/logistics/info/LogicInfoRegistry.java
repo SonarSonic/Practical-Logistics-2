@@ -282,7 +282,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		try {
 			return method.invoke(obj, inputs);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			PL2.logger.error("COULDN'T INVOKE METHOD! " + method + " on object " + obj);
+			PL2.logger.debug("COULDN'T INVOKE METHOD! " + method + " on object " + obj);
 		}
 		return null;
 

@@ -11,7 +11,7 @@ import sonar.logistics.info.types.MonitoredItemStack;
 
 public class ItemChangeableList extends AbstractChangeableList<MonitoredItemStack> {
 
-	public StorageSize sizing = new StorageSize(0, 0);// FIXME
+	public StorageSize sizing = new StorageSize(0, 0);
 
 	public static final ItemChangeableList newChangeableList() {
 		return new ItemChangeableList();
@@ -32,7 +32,7 @@ public class ItemChangeableList extends AbstractChangeableList<MonitoredItemStac
 		if (found == null) {
 			values.add(createMonitoredValue(new MonitoredItemStack(stack)));
 		} else {
-			found.combine(stack.item, stack.stored);
+			found.combine(stack.stored);
 		}
 	}
 

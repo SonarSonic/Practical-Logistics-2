@@ -25,31 +25,27 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.helpers.RayTraceHelper;
-import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.PL2Properties.PropertyCableFace;
-import sonar.logistics.api.tiles.cable.CableRenderType;
-import sonar.logistics.api.tiles.cable.IDataCable;
+import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.common.multiparts.BlockLogistics;
-import sonar.logistics.helpers.CableHelper;
-import sonar.logistics.networking.connections.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableHelper;
 
 public class BlockDataCable extends BlockLogistics {
-
-	public static double p = 0.0625;
-	public static LabelledAxisAlignedBB cableBox = new LabelledAxisAlignedBB(6 * p, 6 * p, 6 * p, 1 - 6 * p, 1 - 6 * p, 1 - 6 * p).labelAxis("c");
 	
 	public BlockDataCable() {
 		super(PL2Multiparts.DATA_CABLE);
 	}
 
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return cableBox;
+		return PL2Properties.cableBox;
 	}
 
 	public static List<AxisAlignedBB> getSelectionBoxes(World world, BlockPos pos, List<AxisAlignedBB> collidingBoxes) {
-		collidingBoxes.add(cableBox);
+		collidingBoxes.add(PL2Properties.cableBox);
 		
 		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable != null) {
@@ -106,15 +102,6 @@ public class BlockDataCable extends BlockLogistics {
 	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		/*
-		TileDataCable cable = PL2API.getCableHelper().getCable(world, pos);
-		if (cable != null && !world.isRemote) {
-			ILogisticsNetwork network = cable.getNetwork();
-			FontHelper.sendMessage("Has network: " + !(network instanceof EmptyLogisticsNetwork), world, player);
-			FontHelper.sendMessage("ID: " + cable.registryID, world, player);
-			FontHelper.sendMessage(network.getCachedTiles(CacheHandler.TILE, CacheType.ALL).toString(), world, player);
-		}
-		*/
 		return false;
 	}
 
@@ -126,9 +113,7 @@ public class BlockDataCable extends BlockLogistics {
 			return state;
 		}
 		for (PropertyCableFace p : PL2Properties.PROPS) {
-			//state = state.withProperty(p, cable.getRenderType(p.face));
-			//FIXME make the cache work
-			state = state.withProperty(p, CableHelper.getConnectionRenderType(cable, p.face)); ///cable.getRenderType(p.face));
+			state = state.withProperty(p, CableHelper.getConnectionRenderType(cable, p.face));
 		}		
 		return state;
 	}

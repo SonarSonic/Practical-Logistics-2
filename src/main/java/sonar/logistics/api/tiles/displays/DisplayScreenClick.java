@@ -9,6 +9,7 @@ public class DisplayScreenClick {
 	public BlockInteractionType type;
 	public double clickX, clickY;
 	public BlockPos clickPos;
+	public int identity;
 	public boolean doubleClick = false;
 	
 	public DisplayScreenClick setClickPosition(double[] clickPosition){
@@ -21,8 +22,13 @@ public class DisplayScreenClick {
 		doubleClick=bool;
 	}
 	
+	public void setDisplayIdentity(int iden){
+		identity=iden;
+	}
+	
 	public static NBTTagCompound writeClick(DisplayScreenClick click, NBTTagCompound tag){
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setInteger("identity", click.identity);
 		nbt.setInteger("type", click.type.ordinal());
 		nbt.setDouble("clickX", click.clickX);
 		nbt.setDouble("clickY", click.clickY);
@@ -38,6 +44,7 @@ public class DisplayScreenClick {
 	public static DisplayScreenClick readClick(NBTTagCompound tag){
 		DisplayScreenClick click = new DisplayScreenClick();
 		NBTTagCompound nbt = tag.getCompoundTag("displayclick");
+		click.identity = nbt.getInteger("identity");		
 		click.type = BlockInteractionType.values()[nbt.getInteger("type")];
 		click.clickX = nbt.getDouble("clickX");
 		click.clickY = nbt.getDouble("clickY");
@@ -46,13 +53,5 @@ public class DisplayScreenClick {
 		return click;
 		
 	}
-	/*
-	public DisplayClickPosition setDisplaySize(double[] displaySize){
-		this.width = displaySize[0]; 
-		this.height = displaySize[1];
-		this.size = displaySize[2];
-		return this;
-	}
-	*/
 	
 }

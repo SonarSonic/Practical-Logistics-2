@@ -19,12 +19,10 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.networking.handlers.InfoNetworkHandler;
 
 @LogicInfoType(id = AE2DriveInfo.id, modid = "appliedenergistics2")
 public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableInfo<AE2DriveInfo>,INameableInfo<AE2DriveInfo>, IComparableInfo<AE2DriveInfo> {
@@ -84,11 +82,6 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	}
 
 	@Override
-	public INetworkHandler getHandler() {
-		return InfoNetworkHandler.INSTANCE;
-	}
-
-	@Override
 	public boolean isValid() {
 		return true;
 	}
@@ -102,24 +95,6 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	}
 
 	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {		
-		GL11.glPushMatrix();
-		GL11.glPushMatrix();
-		GlStateManager.disableLighting();
-		GL11.glTranslated(-1, -+0.0625 * 12, +0.004);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(infoPos));
-		InfoRenderer.renderProgressBar(width, height, scale, usedBytes.getObject(), totalBytes.getObject());
-		GlStateManager.enableLighting();
-		GL11.glTranslated(0, 0, -0.001);
-		GL11.glPopMatrix();
-		List<String> strings = Lists.newArrayList();
-		strings.add("Bytes: " + usedBytes.getObject() + "/" + totalBytes.getObject());
-		strings.add("Types: " + usedTypes.getObject() + "/" + totalTypes.getObject());
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, strings);
-		GL11.glPopMatrix();
-	}
-
-	@Override
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		objects.add(new ComparableObject(this, "total bytes", totalBytes.getObject()));
 		objects.add(new ComparableObject(this, "used bytes", usedBytes.getObject()));
@@ -127,7 +102,7 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 		objects.add(new ComparableObject(this, "used types", usedTypes.getObject()));
 		objects.add(new ComparableObject(this, "item count", itemCount.getObject()));
 		objects.add(new ComparableObject(this, "drive number", driveNum.getObject()));
-		return null;
+		return objects;
 	}
 
 	@Override

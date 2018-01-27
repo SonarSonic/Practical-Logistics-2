@@ -3,23 +3,13 @@ package sonar.logistics.common.multiparts.wireless;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.network.sync.ISyncPart;
-import sonar.core.network.sync.SyncEnum;
-import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncTagType.STRING;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
@@ -28,19 +18,14 @@ import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.INetworkListHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.api.wireless.WirelessSecurity;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
-import sonar.logistics.client.gui.GuiWirelessEmitter;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
-import sonar.logistics.networking.PL2ListenerList;
-import sonar.logistics.networking.channels.ListNetworkChannels;
-import sonar.logistics.networking.handlers.FluidNetworkHandler;
-import sonar.logistics.networking.handlers.ItemNetworkHandler;
+import sonar.logistics.networking.common.ListNetworkChannels;
+import sonar.logistics.networking.fluids.FluidNetworkHandler;
+import sonar.logistics.networking.items.ItemNetworkHandler;
 
 public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter, IFlexibleGui, IByteBufTile {
 
@@ -101,6 +86,11 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 			validHandlers = Lists.newArrayList(ItemNetworkHandler.INSTANCE, FluidNetworkHandler.INSTANCE);
 		}
 		return validHandlers;
+	}
+
+	@Override
+	public List<NodeConnection> getUsedChannels(Map<NodeConnection, AbstractChangeableList<IInfo>> channels) {
+		return Lists.newArrayList(channels.keySet());
 	}
 
 }

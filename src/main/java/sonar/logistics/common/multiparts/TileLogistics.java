@@ -16,20 +16,20 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
+import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
-import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
-import sonar.logistics.network.sync.SyncTileMessages;
+import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
+import sonar.logistics.packets.sync.SyncTileMessages;
 
 public abstract class TileLogistics extends TileSonarMultipart implements INetworkTile, INetworkListener, IOperatorProvider {
 

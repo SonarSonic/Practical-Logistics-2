@@ -11,12 +11,11 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUnidentifiedObject;
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.ComparatorHelper;
-import sonar.logistics.logic.comparators.ILogicComparator;
+import sonar.logistics.info.comparators.ILogicComparator;
 
 public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsStatement {
 

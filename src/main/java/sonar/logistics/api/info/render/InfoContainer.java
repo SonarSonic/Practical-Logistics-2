@@ -27,9 +27,6 @@ import sonar.core.network.sync.DirtyPart;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncableList;
-import sonar.logistics.PL2;
-import sonar.logistics.api.info.IAdvancedClickableInfo;
-import sonar.logistics.api.info.IBasicClickableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -39,12 +36,10 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gsi.IGSI;
+import sonar.logistics.client.gsi.IGSIListViewer;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.info.types.InfoError;
-import sonar.logistics.info.types.LogicInfoList;
-import sonar.logistics.packets.PacketClickEventServer;
 
 /** used to store {@link IInfo} along with their respective {@link DisplayInfo} for rendering on a {@link IDisplay} */
 public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
@@ -124,13 +119,16 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 			double[] translation = info.getRenderProperties().translation;
 			double[] scaling = info.getRenderProperties().scaling;
 			GL11.glTranslated(translation[0], translation[1], translation[2]);
-
+			info.getGSI().renderGSIBackground(info.getSidedCachedInfo(true), this, info, scaling[0], scaling[1], scaling[2], pos);
+			info.getGSI().renderGSIForeground(info.getSidedCachedInfo(true), this, info, scaling[0], scaling[1], scaling[2], pos);
+			/*			
 			if (info.getSidedCachedInfo(true) == null && !info.getUnformattedStrings().isEmpty()) {
 				InfoRenderer.renderNormalInfo(type, scaling[0], scaling[1], scaling[2], info.getFormattedStrings());
 			} else {
 				IInfo toDisplay = info.getSidedCachedInfo(true) == null ? InfoError.noData : info.getSidedCachedInfo(true);
 				toDisplay.renderInfo(this, info, scaling[0], scaling[1], scaling[2], pos);
 			}
+			*/
 			GL11.glPopMatrix();
 		}
 	}
@@ -149,9 +147,13 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 			for (int i = 0; i < display.maxInfo(); i++) {
 				DisplayInfo renderInfo = storedInfo.get(i);
 				IInfo cachedInfo = renderInfo.getSidedCachedInfo(world.isRemote);
-
-				if (cachedInfo instanceof IAdvancedClickableInfo) {
-					IAdvancedClickableInfo clickable = ((IAdvancedClickableInfo) cachedInfo);
+				IGSI gsi = renderInfo.getGSI();
+				if(gsi.canInteractWith(cachedInfo, click, hand)){
+					gsi.onGSIClicked(cachedInfo, click, hand);
+				}
+				/*
+				if (cachedInfo instanceof IClickableInfo) {
+					IClickableInfo clickable = ((IClickableInfo) cachedInfo);
 					if (clickable.canClick(click, renderInfo, player, hand)) {
 						NBTTagCompound clickTag = clickable.createClickPacket(click, renderInfo, player, hand);
 						if (!clickTag.hasNoTags()){
@@ -160,10 +162,8 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 						return true;
 					}
 
-				} else if (cachedInfo instanceof IBasicClickableInfo) {
-					IBasicClickableInfo clickable = ((IBasicClickableInfo) cachedInfo);
-					return clickable.onStandardClick(part, null, type, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 				}
+				*/
 			}
 		}
 		return true;
@@ -175,6 +175,7 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		if (!tag.hasNoTags()) {
 			NBTHelper.readSyncParts(tag, type, syncParts);
 			resetRenderProperties();
+			
 		}
 	}
 
@@ -255,8 +256,8 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	@Override
 	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
 		DisplayInfo displayInfo = getDisplayMonitoringUUID(uuid);
-		if (displayInfo != null && displayInfo.cachedInfo instanceof LogicInfoList) {
-			((LogicInfoList) displayInfo.cachedInfo).setCachedList(list, uuid);
+		if (displayInfo != null && displayInfo.getGSI() instanceof IGSIListViewer) {
+			((IGSIListViewer) displayInfo.getGSI()).setCachedList(list, uuid);
 		}
 	}
 
@@ -266,6 +267,10 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		if (info != null) {
 			displayInfo.setCachedInfo(info);
 		}
+	}
+	
+	public World getWorld(){
+		return display.getCoords().getWorld();
 	}
 
 }

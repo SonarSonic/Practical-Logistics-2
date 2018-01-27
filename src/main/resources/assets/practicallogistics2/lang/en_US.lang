@@ -12,8 +12,11 @@ tile.FluidReader.name=Fluid Reader
 tile.InfoReader.name=Info Reader
 tile.EnergyReader.name=Energy Reader
 tile.InventoryReader.name=Inventory Reader
+tile.NetworkReader.name=Network Reader
 tile.Array.name=Array
 tile.DataCable.name=Data Cable
+tile.RedstoneCable.name=Redstone Cable
+tile.RedstoneNode.name=Redstone Node
 tile.EntityNode.name=Entity Node
 tile.RedstoneSignaller.name=Redstone Signaller
 tile.DataReceiver.name=Data Receiver
@@ -226,6 +229,29 @@ pl.signaller.one=Match One
 
 //wireless storage reader
 pl.wirelessStorage.emitter=Select the emitter you wish to connect to
+
+//network reader
+pl.ILogisticsNetwork.pl2TickTime=PL2 Tick Time
+pl.ILogisticsNetwork.pl2TickPercentage=PL2 Tick Percentage
+pl.ILogisticsNetwork.pl2TickFurnace=PL2 Tick Furnace Equivilant
+pl.ILogisticsNetwork.furnace=Network Tick Furnace Equivilant
+pl.ILogisticsNetwork.getNetworkTickTime=Network Tick Time
+pl.ILogisticsNetwork.percent=Network Tick Percentage
+pl.ILogisticsNetwork.getNetworkID=Network ID
+pl.ILogisticsNetwork.connectedNetworks=Connected Networks
+pl.ILogisticsNetwork.watchingNetworks=Watching Networks
+pl.ILogisticsNetwork.CACHE.IDataCable=Cables
+pl.ILogisticsNetwork.CACHE.INetworkListener=Network Tiles
+pl.ILogisticsNetwork.CACHE.INode=Nodes
+pl.ILogisticsNetwork.CACHE.IEntityNode=Entity Nodes
+pl.ILogisticsNetwork.CACHE.IListReader=Readers
+pl.ILogisticsNetwork.CACHE.IDataEmitter=Data Emitters
+pl.ILogisticsNetwork.CACHE.IDataReceiver=Data Receivers
+pl.ILogisticsNetwork.CACHE.ITransferNode=Transfer Nodes
+pl.ILogisticsNetwork.totalConnections=Total Channels
+pl.ILogisticsNetwork.localConnections=Local Channels
+pl.ILogisticsNetwork.globalConnections=Global Channels
+
 
 //info
 pl.Vec3i.getX=X Coord

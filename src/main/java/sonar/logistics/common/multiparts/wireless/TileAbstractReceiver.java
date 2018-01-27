@@ -15,7 +15,6 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.api.wireless.EnumConnected;
@@ -23,9 +22,7 @@ import sonar.logistics.api.wireless.IWirelessEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.api.wireless.IWirelessReceiver;
 import sonar.logistics.api.wireless.WirelessSecurity;
-import sonar.logistics.client.gui.GuiAbstractReceiver;
 import sonar.logistics.common.containers.ContainerDataReceiver;
-import sonar.logistics.networking.connections.WirelessDataManager;
 
 public abstract class TileAbstractReceiver<E extends IWirelessEmitter, R extends IWirelessReceiver> extends TileAbstractWireless implements IWirelessReceiver<E>, IByteBufTile, IFlexibleGui {
 

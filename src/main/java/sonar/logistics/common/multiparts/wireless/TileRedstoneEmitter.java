@@ -1,20 +1,22 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2;
+import sonar.logistics.api.PL2Properties;
+import sonar.logistics.api.cabling.CableConnectionType;
+import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
-import sonar.logistics.client.gui.GuiWirelessEmitter;
+import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
+import sonar.logistics.networking.cabling.IRedstoneNetwork;
+import sonar.logistics.networking.cabling.RedstoneCableHelper;
 
-public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedstoneEmitter {
+public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedstoneEmitter, IRedstoneConnectable {
 
+	public IRedstoneNetwork rNetwork = EmptyRedstoneNetwork.INSTANCE;
 	public SyncTagType.INT currentPower = new SyncTagType.INT(0);
 
 	@Override
@@ -29,36 +31,67 @@ public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedston
 		return super.getEmitterName();
 	}
 
+	@Override
 	public void onFirstTick() {
 		super.onFirstTick();
-		if (isServer()) {
-			PL2.getWirelessRedstoneManager().connectEmitter(network, this);
-		}
+		// if (isServer()) {
+		// PL2.getWirelessRedstoneManager().connectEmitter(network, this);
+		// }
 	}
 
+	@Override
 	public void invalidate() {
 		super.invalidate();
-		if (isServer()) {
-			PL2.getWirelessRedstoneManager().disconnectEmitter(network, this);
-		}
+		// if (isServer()) {
+		// PL2.getWirelessRedstoneManager().disconnectEmitter(network, this);
+		// }
 	}
 
-	public void onNeighbouringBlockChanged() {
+	@Override
+	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+		if (!type.isRedstone()) {
+			return CableConnectionType.NONE;
+		}
+		EnumFacing toCheck = internal ? dir : dir.getOpposite();
+		return toCheck == getCableFace() ? CableConnectionType.NETWORK : CableConnectionType.NONE;
+	}
+
+	@Override
+	public void onCableChanged(int power) {
 		if (isServer()) {
-			int power = world.getRedstonePower(pos.offset(getCableFace()), getCableFace().getOpposite());
-			if (currentPower.getObject() != power) {
-				currentPower.setObject(power);
-				IBlockState state = world.getBlockState(pos);
-				world.notifyBlockUpdate(pos, state, state, 1);
-				SonarMultipartHelper.sendMultipartPacketAround(this, 0, 128);
-				PL2.getWirelessRedstoneManager().onEmitterPowerChanged(this);
-			}
+			// PL2.getWirelessRedstoneManager().onEmitterPowerChanged(this);
 		}
 	}
 
 	@Override
 	public int getRedstonePower() {
+		currentPower.setObject(RedstoneCableHelper.getCableState(world, pos).getValue(PL2Properties.ACTIVE) ? 15 : 0);
 		return currentPower.getObject();
+	}
+
+	@Override
+	public IRedstoneNetwork getRedstoneNetwork() {
+		return rNetwork;
+	}
+
+	@Override
+	public void onNetworkConnect(IRedstoneNetwork network) {
+		if (!this.rNetwork.isValid() || networkID.getObject() != network.getNetworkID()) {
+			this.rNetwork = network;
+			this.networkID.setObject(network.getNetworkID());
+			//states.markTileMessage(TileMessage.NO_NETWORK, false);
+		}
+	}
+
+	@Override
+	public void onNetworkDisconnect(IRedstoneNetwork network) {
+		if (networkID.getObject() == network.getNetworkID()) {
+			this.rNetwork = EmptyRedstoneNetwork.INSTANCE;
+			this.networkID.setObject(-1);
+			//states.markTileMessage(TileMessage.NO_NETWORK, true);
+		} else if (networkID.getObject() != -1) {
+			PL2.logger.info("%s : attempted to disconnect from the wrong network with ID: %s expected %s", this, network.getNetworkID(), networkID.getObject());
+		}		
 	}
 
 }

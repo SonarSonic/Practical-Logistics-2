@@ -3,8 +3,7 @@ package sonar.logistics.api.tiles.signaller;
 import java.util.List;
 import java.util.function.Function;
 
-import net.minecraft.util.EnumActionResult;
-import sonar.core.utils.Pair;
+import sonar.logistics.api.utils.Result;
 
 public enum SignallerModes {
 	ONE_TRUE, ONE_FALSE, ALL_TRUE, ALL_FALSE;
@@ -40,13 +39,5 @@ public enum SignallerModes {
 			}
 		}
 		return result.getBoolean();
-	}
-
-	public static enum Result {
-		SUCCESS, PASS, FAIL;
-		
-		public boolean getBoolean(){
-			return this == Result.FAIL ? false : true;
-		}
 	}
 }

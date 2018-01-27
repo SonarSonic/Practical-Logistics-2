@@ -47,7 +47,7 @@ public class InfoRenderer {
 
 	public static final double zLevel = 0, barOffset = 0.001;
 
-	public static void renderNormalInfo(DisplayType type, String...toDisplay) {
+	public static void renderNormalInfo(DisplayType type, String... toDisplay) {
 		renderNormalInfo(type, type.width, type.height, type.scale, SonarHelper.convertArray(toDisplay));
 	}
 
@@ -59,11 +59,11 @@ public class InfoRenderer {
 		return ((0.12 * height) * (0.12 * height)) + (0.35 * height) - 0.58; // quadratic equation to solve the scale
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, String...toDisplay) {
+	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, String... toDisplay) {
 		renderNormalInfo(displayType, width, height, scale, SonarHelper.convertArray(toDisplay));
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, String...toDisplay) {
+	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, String... toDisplay) {
 		renderNormalInfo(displayType, width, height, scale, colour, SonarHelper.convertArray(toDisplay));
 	}
 
@@ -92,7 +92,27 @@ public class InfoRenderer {
 
 	}
 
-	public static void renderProgressBar(double width, double height, double scale, double d, double e) {
+	public static void renderBox(double width, double height) {
+		GlStateManager.depthMask(true);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder vertexbuffer = tessellator.getBuffer();
+		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+
+		double minX = -barOffset + 0.0625, minY = -barOffset + 0.0625 * 1, maxX = width + barOffset + 0.0625 * 1, maxY = height + barOffset + 0.0625 * 1;
+		double barWidth = (maxX - minX);
+		double divide = Math.max((maxX - minX), (maxY - minY));
+		double minU = 0, minV = 0, maxU = 1, maxV = 1;
+
+		double widthnew = (minU + (barWidth * (maxU - minU) / 1));
+		double heightnew = (minV + ((maxY - minY) * (maxV - minV) / 1));
+		vertexbuffer.pos((double) (minX + 0), maxY, zLevel).tex((double) minU, heightnew).endVertex();
+		vertexbuffer.pos((double) (minX + barWidth), maxY, zLevel).tex(widthnew, heightnew).endVertex();
+		vertexbuffer.pos((double) (minX + barWidth), (double) (minY + 0), zLevel).tex(widthnew, (double) minV).endVertex();
+		vertexbuffer.pos((double) (minX + 0), (double) (minY + 0), zLevel).tex((double) minU, (double) minV).endVertex();
+		tessellator.draw();
+	}
+
+	public static void renderProgressBar(double width, double height, double d, double e) {
 		GlStateManager.depthMask(true);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
@@ -112,7 +132,7 @@ public class InfoRenderer {
 		tessellator.draw();
 	}
 
-	public static void renderProgressBarWithSprite(TextureAtlasSprite sprite, double width, double height, double scale, double progress, double maxProgress) {
+	public static void renderProgressBarWithSprite(TextureAtlasSprite sprite, double width, double height, double progress, double maxProgress) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -144,7 +164,7 @@ public class InfoRenderer {
 			int ordinal = rotation.ordinal();
 			ordinal = ordinal == 4 ? 5 : ordinal == 5 ? 4 : ordinal;
 			GL11.glRotated(rotate[ordinal], 0, 0, 1);
-			translate = getDownMatrix(ordinal, Math.max(1, width),  Math.max(1, height));
+			translate = getDownMatrix(ordinal, Math.max(1, width), Math.max(1, height));
 
 			break;
 		case UP:
@@ -234,7 +254,7 @@ public class InfoRenderer {
 		final float scaleFactor = 0.5F;
 		final float inverseScaleFactor = 1.0f / scaleFactor;
 		scale(scaleFactor, scaleFactor, scaleFactor);
-		
+
 		for (int i = start; i < stop; i++) {
 			MonitoredItemStack stack = cachedList.get(i);
 			int current = i - start;
@@ -248,7 +268,7 @@ public class InfoRenderer {
 			RenderHelper.fontRenderer.drawStringWithShadow(s, X, Y, 16777215);
 			popMatrix();
 		}
-		
+
 		popMatrix();
 		depthMask(true);
 		RenderHelper.restoreBlendState();

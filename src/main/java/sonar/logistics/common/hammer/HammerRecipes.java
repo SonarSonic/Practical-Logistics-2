@@ -1,7 +1,6 @@
 package sonar.logistics.common.hammer;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 import sonar.core.recipes.DefinedRecipeHelper;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.core.recipes.RecipeOreStack;

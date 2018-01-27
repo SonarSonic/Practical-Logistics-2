@@ -8,7 +8,6 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.common.multiparts.wireless.TileAbstractReceiver;
 import sonar.logistics.common.multiparts.wireless.TileRedstoneReceiver;
 
 public class GuiRedstoneReceiver extends GuiAbstractReceiver {

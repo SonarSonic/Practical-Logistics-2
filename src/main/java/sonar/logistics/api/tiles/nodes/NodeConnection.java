@@ -7,9 +7,9 @@ import java.util.List;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.IPriority;
 
 public abstract class NodeConnection<T extends IInfo> {

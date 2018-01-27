@@ -14,8 +14,8 @@ import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.helpers.InfoHelper;
-import sonar.logistics.networking.handlers.InfoNetworkHandler;
+import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.networking.info.InfoNetworkHandler;
 
 public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 

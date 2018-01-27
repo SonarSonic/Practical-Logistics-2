@@ -4,7 +4,6 @@ import mcmultipart.MCMultiPart;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -15,14 +14,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
-import sonar.logistics.helpers.CableHelper;
-import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.networking.connections.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableHelper;
+import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
+import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.worlddata.ConnectedDisplayData;
 import sonar.logistics.worlddata.IdentityCountData;
 
@@ -30,17 +29,26 @@ public class PL2Events {
 
 	public static final int saveDimension = 0;
 	public static int coolDownClick = 0;
+	public static long tickStart = 0;
+	public static long updateTick = 0; //in nano seconds
 
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
 		if (event.side == Side.SERVER && event.phase == Phase.END) {
+			tickStart = System.nanoTime();
+
+			ChunkViewerHandler.instance().tick();
 			CableConnectionHandler.instance().tick();
+			RedstoneConnectionHandler.instance().tick();
 			PL2.getNetworkManager().tick();
-			PL2.getServerManager().tick();
+			PL2.getServerManager().tick();	
+					
 			PL2.getWirelessDataManager().tick();
+			PL2.getWirelessRedstoneManager().tick();
 			PL2.getDisplayManager().tick();
 			TileArray.entityChanged = false;
-
+			
+			updateTick = System.nanoTime() - tickStart;
 		} else {
 			if (coolDownClick != 0) {
 				coolDownClick--;

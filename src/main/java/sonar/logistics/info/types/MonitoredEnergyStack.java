@@ -6,8 +6,6 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
@@ -24,8 +22,7 @@ import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.network.sync.SyncMonitoredType;
-import sonar.logistics.networking.handlers.EnergyNetworkHandler;
+import sonar.logistics.packets.sync.SyncMonitoredType;
 
 @LogicInfoType(id = MonitoredEnergyStack.id, modid = PL2Constants.MODID)
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {
@@ -72,11 +69,6 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 	}
 
 	@Override
-	public EnergyNetworkHandler getHandler() {
-		return EnergyNetworkHandler.INSTANCE;
-	}
-
-	@Override
 	public boolean canJoinInfo(MonitoredEnergyStack info) {
 		return false;// isMatchingInfo(info);
 	}
@@ -103,20 +95,6 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 		return new MonitoredEnergyStack(energyStack.getObject().copy(), coords.getMonitoredInfo().copy(), dropStack.getObject().copy());
 	}
 
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		GL11.glPushMatrix();
-		GL11.glPushMatrix();
-		GlStateManager.disableLighting();
-		GL11.glTranslated(-1, -+0.0625 * 12, +0.004);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(infoPos));
-		InfoRenderer.renderProgressBar(width, height, scale, energyStack.obj.stored, energyStack.obj.capacity);
-		GlStateManager.enableLighting();
-		GL11.glTranslated(0, 0, -0.001);
-		GL11.glPopMatrix();
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
-		GL11.glPopMatrix();
-	}
 
 	@Override
 	public String getClientIdentifier() {

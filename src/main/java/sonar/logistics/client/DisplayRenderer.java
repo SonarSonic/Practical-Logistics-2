@@ -31,11 +31,10 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			EnumFacing face = player.getHorizontalFacing().getOpposite();
 			if (face == part.getCableFace().getOpposite()) {
-				//only renders the display if the player is looking the correct way. 
 				return;
 			}
 		}
-		GL11.glFlush();
+		//GL11.glFlush();
 		RenderHelper.offsetRendering(part.getPos(), partialTicks);
 
 		if (part instanceof ILargeDisplay) {
@@ -69,9 +68,9 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 		GlStateManager.translate(-0.0625, 0, 0);
 		part.container().renderContainer();
 
-		GlStateManager.depthMask(true);
+		//GlStateManager.depthMask(true);
 		GlStateManager.popMatrix();
 
-		GL11.glFinish();
+		//GL11.glFinish();
 	}
 }

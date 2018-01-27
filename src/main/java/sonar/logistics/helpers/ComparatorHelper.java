@@ -1,9 +1,8 @@
 package sonar.logistics.helpers;
 
 import sonar.logistics.PL2ASMLoader;
-import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.logic.comparators.ILogicComparator;
-import sonar.logistics.logic.comparators.ObjectComparator;
+import sonar.logistics.info.comparators.ILogicComparator;
+import sonar.logistics.info.comparators.ObjectComparator;
 
 public class ComparatorHelper {
 

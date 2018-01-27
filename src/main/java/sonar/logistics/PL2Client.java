@@ -24,6 +24,17 @@ import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.RenderHammer;
 import sonar.logistics.client.RenderInteractionOverlay;
 import sonar.logistics.client.RenderOperatorOverlay;
+import sonar.logistics.client.gsi.GSIRegistry;
+import sonar.logistics.client.gsi.IGSIRegistry;
+import sonar.logistics.client.gsi.info.GSIAE2DriveInfo;
+import sonar.logistics.client.gsi.info.GSIBasicInfo;
+import sonar.logistics.client.gsi.info.GSIClockInfo;
+import sonar.logistics.client.gsi.info.GSIEnergyStack;
+import sonar.logistics.client.gsi.info.GSIFluidStack;
+import sonar.logistics.client.gsi.info.GSIItemStack;
+import sonar.logistics.client.gsi.info.GSILogicList;
+import sonar.logistics.client.gsi.info.GSINoData;
+import sonar.logistics.client.gsi.info.GSIProgressInfo;
 import sonar.logistics.common.hammer.TileEntityHammer;
 import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
@@ -31,22 +42,48 @@ import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.common.multiparts.misc.TileClock;
 import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.guide.GuidePageRegistry;
+import sonar.logistics.info.types.AE2DriveInfo;
+import sonar.logistics.info.types.ClockInfo;
+import sonar.logistics.info.types.InfoError;
+import sonar.logistics.info.types.LogicInfo;
+import sonar.logistics.info.types.LogicInfoList;
+import sonar.logistics.info.types.MonitoredEnergyStack;
+import sonar.logistics.info.types.MonitoredFluidStack;
+import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.info.types.ProgressInfo;
 
 public class PL2Client extends PL2Common implements ILocalisationHandler {
-
+	
+	IGSIRegistry GSI_REGISTRY = new GSIRegistry();
+	
 	public void registerRenderThings() {
-
+		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileArray.class, new RenderArray());		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileDisplayScreen.class, new DisplayRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileHolographicDisplay.class, new DisplayRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileLargeDisplayScreen.class, new DisplayRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileClock.class, new ClockRenderer());		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHammer.class, new RenderHammer());
-		MinecraftForge.EVENT_BUS.register(this);
+		
+		GSI_REGISTRY.register(AE2DriveInfo.id, GSIAE2DriveInfo.class);
+		GSI_REGISTRY.register(LogicInfo.id, GSIBasicInfo.class);		
+		GSI_REGISTRY.register(ClockInfo.id, GSIClockInfo.class);
+		GSI_REGISTRY.register(MonitoredEnergyStack.id, GSIEnergyStack.class);
+		GSI_REGISTRY.register(MonitoredFluidStack.id, GSIFluidStack.class);
+		GSI_REGISTRY.register(MonitoredItemStack.id, GSIItemStack.class);
+		GSI_REGISTRY.register(LogicInfoList.id, GSILogicList.class);
+		GSI_REGISTRY.register(InfoError.id, GSINoData.class);
+		GSI_REGISTRY.register(ProgressInfo.id, GSIProgressInfo.class);
 	}
 
+	public IGSIRegistry getGSIRegistry(){
+		return GSI_REGISTRY;
+	}
+	
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
+		MinecraftForge.EVENT_BUS.register(this);
+		PL2.logger.info("Registered Client Event Handler");
 		registerRenderThings();
 		PL2.logger.info("Registered Renderers");
 	}

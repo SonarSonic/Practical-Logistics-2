@@ -1,16 +1,28 @@
 package sonar.logistics.helpers;
 
-import net.minecraft.client.Minecraft;
+import com.google.common.collect.Lists;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.fluids.FluidActionResult;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import sonar.core.api.SonarAPI;
+import sonar.core.api.fluids.StoredFluidStack;
+import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.utils.Pair;
+import sonar.logistics.PL2;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
@@ -18,8 +30,93 @@ import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
+import sonar.logistics.networking.fluids.DummyFluidHandler;
+import sonar.logistics.packets.PacketItemInteractionText;
 
 public class InteractionHelper {
+
+	public enum ItemInteractionType {
+		ADD, REMOVE;
+	}
+
+	public static Pair<Integer, ItemInteractionType> getItemsToRemove(BlockInteractionType type) {
+		switch (type) {
+		case LEFT:
+			return new Pair(1, ItemInteractionType.REMOVE);
+		case RIGHT:
+			return new Pair(64, ItemInteractionType.ADD);
+		case SHIFT_LEFT:
+			return new Pair(64, ItemInteractionType.REMOVE);
+		default:
+			return new Pair(0, ItemInteractionType.ADD);
+		}
+	}
+
+	public static void screenItemStackClicked(int networkID, StoredItemStack storedItemStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(click.type);
+		EnumFacing facing = displayInfo.container.getDisplay().getCableFace();
+		ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(networkID);
+		if (toRemove.a != 0 && network.isValid()) {
+			switch (toRemove.b) {
+			case ADD:
+				ItemStack stack = player.getHeldItem(player.getActiveHand());
+				if (!stack.isEmpty()) {
+					long changed = 0;
+					if (!click.doubleClick) {
+						changed = PL2API.getItemHelper().insertItemFromPlayer(player, network, player.inventory.currentItem);
+					} else {
+						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, network, player.inventory.currentItem);
+					}
+					if (changed > 0) {
+						long itemCount = PL2API.getItemHelper().getItemCount(stack, network);
+						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
+						PacketHelper.createRapidItemUpdate(Lists.newArrayList(stack), networkID);
+					}
+				}
+				break;
+			case REMOVE:
+				if (storedItemStack != null) {
+					StoredItemStack extract = PL2API.getItemHelper().extractItem(network, storedItemStack.copy().setStackSize(toRemove.a));
+					if (extract != null) {
+						BlockPos pos = click.clickPos.offset(facing);
+						long r = extract.stored;
+						SonarAPI.getItemHelper().spawnStoredItemStack(extract, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ(), facing);
+						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), network);
+						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
+						PacketHelper.createRapidItemUpdate(Lists.newArrayList(storedItemStack.getItemStack()), networkID);
+					}
+				}
+				break;
+			default:
+				break;
+			}
+
+		}
+	}
+
+	public static void onScreenFluidStackClicked(int networkID, StoredFluidStack fluidStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+		ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(networkID);
+		if (network.isValid()) {
+			IFluidHandler handler = new DummyFluidHandler(network, fluidStack);
+			EnumHand hand = player.getActiveHand();
+			ItemStack heldItem = player.getHeldItem(hand);
+			FluidActionResult result = FluidActionResult.FAILURE;
+			FluidStack toUpdate = fluidStack == null ? FluidUtil.getFluidContained(heldItem) : fluidStack.getFullStack();
+			if (click.type == BlockInteractionType.RIGHT) {
+				result = FluidUtil.tryEmptyContainer(heldItem, handler, Integer.MAX_VALUE, player, true);
+			} else if (fluidStack != null && click.type == BlockInteractionType.LEFT) {
+				result = FluidUtil.tryFillContainer(heldItem, handler, (int) Math.min(1000, fluidStack.stored), player, true);
+			} else if (fluidStack != null && click.type == BlockInteractionType.SHIFT_LEFT) {
+				result = FluidUtil.tryFillContainer(heldItem, handler, (int) Math.min(Integer.MAX_VALUE, fluidStack.stored), player, true);
+			}
+			if (result.isSuccess()) {
+				player.setHeldItem(hand, result.getResult());
+				if (toUpdate != null) {
+					PacketHelper.createRapidFluidUpdate(Lists.newArrayList(toUpdate), networkID);
+				}
+			}
+		}
+	}
 
 	public static DisplayScreenClick getClickPosition(IDisplay display, BlockPos clickPos, BlockInteractionType type, EnumFacing face, float hitX, float hitY, float hitZ) {
 		DisplayScreenClick position = new DisplayScreenClick();
@@ -45,9 +142,10 @@ public class InteractionHelper {
 				}
 			}
 		} else {
-			//clickPosition[0] = clickPosition[0] - ((display.getDisplayType().width / 2));
+			// clickPosition[0] = clickPosition[0] - ((display.getDisplayType().width / 2));
 			clickPosition[1] = clickPosition[1] - ((display.getDisplayType().height / 2));
 		}
+		position.setDisplayIdentity(display.getIdentity());
 		position.setClickPosition(clickPosition);
 		position.type = type;
 		position.clickPos = clickPos;
@@ -132,7 +230,7 @@ public class InteractionHelper {
 		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.getRenderProperties().infoPos);
 		double x = click.clickX;
 		double y = click.clickY;
-		if (x >= intersect[0] && x <= intersect[2] && y >= intersect[1] && y <= intersect[3]) {
+		if (x >= intersect[0] + 0.0625 && x <= intersect[2] + 0.0625 && y >= intersect[1] + 0.0625 && y <= intersect[3] + 0.0625) { //add one pixel for the border of the screen
 			return true;
 		}
 		return false;

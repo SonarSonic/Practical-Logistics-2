@@ -17,10 +17,10 @@ import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
+import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.api.tiles.cable.CableRenderType;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiClock;
@@ -57,8 +57,8 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 		if (isClient()) {
 			return;
 		}
-		currentMillis = (getWorld().getTotalWorldTime() * 50);
 		if (!(tickTime.getObject() < 10)) {
+			currentMillis = (getWorld().getTotalWorldTime() * 50);
 			long start = currentMillis - lastMillis;
 			rotation = (start) * 360 / (tickTime.getObject());
 			if (start > tickTime.getObject()) {
@@ -72,9 +72,9 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 				}
 			}
 			markDirty();
+			sendByteBufPacket(0);
+			setClockInfo();
 		}
-		sendByteBufPacket(0);
-		setClockInfo();
 	}
 
 	public void setClockInfo() {
@@ -89,7 +89,7 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 			InfoUUID id = new InfoUUID(getIdentity(), 0);
 			IInfo oldInfo = PL2.getServerManager().getInfoFromUUID(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
-				PL2.getServerManager().changeInfo(id, info);
+				PL2.getServerManager().changeInfo(this, id, info);
 			}
 		}
 	}

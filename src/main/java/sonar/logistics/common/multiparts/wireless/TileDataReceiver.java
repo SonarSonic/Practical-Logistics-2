@@ -1,33 +1,20 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
-import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.network.sync.SyncNBTAbstract;
-import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.api.states.TileMessage;
-import sonar.logistics.api.wireless.ClientWirelessEmitter;
-import sonar.logistics.api.wireless.EnumConnected;
-import sonar.logistics.api.wireless.WirelessSecurity;
-import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IWirelessEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
-import sonar.logistics.client.gui.GuiAbstractReceiver;
 import sonar.logistics.client.gui.GuiDataReceiver;
-import sonar.logistics.common.containers.ContainerDataReceiver;
-import sonar.logistics.networking.connections.WirelessDataManager;
 
 public class TileDataReceiver extends TileAbstractReceiver implements IDataReceiver, IFlexibleGui, IByteBufTile {
 

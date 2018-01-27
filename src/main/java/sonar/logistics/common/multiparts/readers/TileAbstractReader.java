@@ -19,20 +19,22 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
+import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
+import sonar.logistics.api.cabling.CableConnectionType;
+import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.tiles.cable.CableRenderType;
-import sonar.logistics.api.tiles.cable.ConnectableType;
-import sonar.logistics.api.tiles.cable.NetworkConnectionType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -44,8 +46,8 @@ import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
-import sonar.logistics.network.sync.SyncMonitoredType;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogistics implements INetworkReader<T>, IByteBufTile, IFlexibleGui {
 
@@ -71,9 +73,9 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	}
 
 	@Override
-	public NetworkConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
+	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
 		EnumFacing toCheck = internal ? dir : dir.getOpposite();
-		return toCheck == getCableFace() ? NetworkConnectionType.NETWORK : toCheck == getCableFace().getOpposite() ? NetworkConnectionType.VISUAL : NetworkConnectionType.NONE;
+		return toCheck == getCableFace() ? CableConnectionType.NETWORK : toCheck == getCableFace().getOpposite() ? CableConnectionType.VISUAL : CableConnectionType.NONE;
 	}
 
 	public abstract List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers);
@@ -82,7 +84,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public void onNetworkDisconnect(ILogisticsNetwork network) {
 		super.onNetworkDisconnect(network);
 		for (int i = 0; i < getMaxInfo(); i++) {
-			PL2.getServerManager().changeInfo(new InfoUUID(this, i), InfoError.noData);
+			PL2.getServerManager().changeInfo(this, new InfoUUID(this, i), InfoError.noData);
 		}
 	}
 	//// ILogicMonitor \\\\
@@ -104,6 +106,17 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 			}
 		}
 		return updateList;
+	}
+
+	public List<NodeConnection> getUsedChannels(Map<NodeConnection, AbstractChangeableList<T>> channels) {
+		List<NodeConnection> usedChannels = Lists.newArrayList();
+		ChannelList readerChannels = getChannels();
+		for (Entry<NodeConnection, AbstractChangeableList<T>> entry : channels.entrySet()) {
+			if (readerChannels.isMonitored(entry.getKey())) {
+				usedChannels.add(entry.getKey());
+			}
+		}
+		return usedChannels;
 	}
 
 	public boolean canMonitorInfo(IMonitoredValue<T> info, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<T>> channels, List<NodeConnection> usedChannels) {
@@ -167,6 +180,18 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	}
 
 	//// EVENTS \\\\
+	public void markChanged(IDirtyPart part) {
+		super.markChanged(part);
+		if (part == list) {
+			for (INetworkHandler handler : getValidHandlers()) {
+				INetworkChannels channels = network.getNetworkChannels(handler.getChannelsType());
+				if (channels != null) {
+					channels.onChannelsChanged();
+				}
+			}
+		}
+	}
+
 	public void onFirstTick() {
 		super.onFirstTick();
 		if (isServer()) {

@@ -1,11 +1,6 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.Map.Entry;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,29 +16,14 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.STRING;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.lists.IMonitoredValue;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.INetworkListHandler;
-import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.EnumConnected;
-import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IWirelessEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.api.wireless.IWirelessReceiver;
 import sonar.logistics.api.wireless.WirelessSecurity;
 import sonar.logistics.client.gui.GuiWirelessEmitter;
-import sonar.logistics.info.types.MonitoredFluidStack;
-import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.PL2ListenerList;
-import sonar.logistics.networking.channels.ListNetworkChannels;
-import sonar.logistics.networking.handlers.FluidNetworkHandler;
-import sonar.logistics.networking.handlers.ItemNetworkHandler;
 
 public abstract class TileAbstractEmitter<E extends IWirelessEmitter, R extends IWirelessReceiver> extends TileAbstractWireless implements IWirelessEmitter, IFlexibleGui, IByteBufTile {
 

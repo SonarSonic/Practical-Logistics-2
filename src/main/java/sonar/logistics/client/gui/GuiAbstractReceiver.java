@@ -1,18 +1,13 @@
 package sonar.logistics.client.gui;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.PL2;
-import sonar.logistics.PL2Translate;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerDataReceiver;
 import sonar.logistics.common.multiparts.wireless.TileAbstractReceiver;
-import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
 import sonar.logistics.helpers.InfoRenderer;
 
 public abstract class GuiAbstractReceiver extends GuiSelectionList<ClientWirelessEmitter> {

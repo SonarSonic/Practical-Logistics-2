@@ -8,7 +8,6 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.helpers.InfoRenderer;
@@ -50,16 +49,6 @@ public class InfoError implements IInfo<InfoError> {
 	}
 
 	@Override
-	public boolean isHeader() {
-		return false;
-	}
-
-	@Override
-	public INetworkHandler getHandler() {
-		return null;
-	}
-
-	@Override
 	public boolean isValid() {
 		return true;
 	}
@@ -67,11 +56,6 @@ public class InfoError implements IInfo<InfoError> {
 	@Override
 	public InfoError copy() {
 		return new InfoError(error);
-	}
-
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, DisplayConstants.formatText(error, displayInfo));
 	}
 
 	@Override
@@ -94,10 +78,7 @@ public class InfoError implements IInfo<InfoError> {
 	public InfoError setPath(LogicPath path) {
 		return this;
 	}
-
-	@Override
-	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
-
+	
 	@Override
 	public void onInfoStored() {}
 

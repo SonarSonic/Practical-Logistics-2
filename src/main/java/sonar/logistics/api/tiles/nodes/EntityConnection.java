@@ -3,7 +3,7 @@ package sonar.logistics.api.tiles.nodes;
 import java.util.UUID;
 
 import net.minecraft.entity.Entity;
-import sonar.logistics.api.tiles.INetworkTile;
+import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.info.types.MonitoredEntity;
 
 public class EntityConnection extends NodeConnection<MonitoredEntity> {

@@ -27,8 +27,6 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.info.types.MonitoredBlockCoords;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	public TileAbstractDisplay part;

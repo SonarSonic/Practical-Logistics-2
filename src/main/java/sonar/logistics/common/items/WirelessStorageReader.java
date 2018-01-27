@@ -22,7 +22,7 @@ import sonar.logistics.client.gui.GuiWirelessStorageEmitterList;
 import sonar.logistics.client.gui.GuiWirelessStorageReader;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.containers.ContainerStorageViewer;
-import sonar.logistics.helpers.ItemHelper;
+import sonar.logistics.networking.items.ItemHelper;
 
 public class WirelessStorageReader extends SonarItem implements IWirelessStorageReader, IFlexibleGui<ItemStack> {
 
@@ -55,7 +55,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			}
 			Integer identity = getEmitterIdentity(stack);
 			IDataEmitter emitter = PL2.getWirelessDataManager().getEmitter(identity);
-			if (emitter != null) {
+			if (emitter != null && !player.isSneaking()) {
 				if (!emitter.getCoords().isChunkLoaded()) {
 					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);
 					return new ActionResult(EnumActionResult.SUCCESS, stack);
@@ -79,7 +79,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			IDataEmitter emitter = PL2.getWirelessDataManager().getEmitter(getEmitterIdentity(obj));
 			if (emitter != null) {
 				emitter.sendRapidUpdate(player);
-				emitter.getListenerList().addListener(player, ListenerType.LISTENER);
+				emitter.getListenerList().addListener(player, ListenerType.OLD_GUI_LISTENER);
 			}
 			break;
 		case 1:

@@ -48,8 +48,8 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		this.size = listSize();
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
+		scroller = new SonarScroller(this.guiLeft + listWidth+9, this.guiTop + 29, size * listHeight + 2, 10);
 		if (enableListRendering) {
-			scroller = new SonarScroller(this.guiLeft + listWidth+9, this.guiTop + 29, size * listHeight + 2, 10);
 			for (int i = 0; i < size; i++) {
 				this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * listHeight), listWidth, listHeight));
 			}

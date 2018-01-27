@@ -17,6 +17,7 @@ public enum TileMessage implements IState {
 
 	// readers
 	NO_DATA_SELECTED(true),
+	
 	// inv reader
 	NO_STACK_SELECTED(true), NO_FLUID_SELECTED(true),
 

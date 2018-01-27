@@ -7,7 +7,6 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncNBTAbstract;
-import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IComparableInfo;
@@ -15,7 +14,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.render.IDisplayInfo;
 import sonar.logistics.api.info.render.InfoContainer;
-import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.InfoRenderer;
 
@@ -99,21 +97,11 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 	}
 
 	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, getClientIdentifier(), getClientObject());
-	}
-
-	@Override
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		BlockCoords coords = syncCoords.getCoords();
 		objects.add(new ComparableObject(this, "x", coords.getX()));
 		objects.add(new ComparableObject(this, "y", coords.getY()));
 		objects.add(new ComparableObject(this, "z", coords.getZ()));
 		return objects;
-	}
-
-	@Override
-	public INetworkHandler getHandler() {
-		return null; // shouldn't hurt hopefully
 	}
 }

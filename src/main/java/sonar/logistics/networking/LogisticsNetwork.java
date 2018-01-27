@@ -18,21 +18,20 @@ import sonar.core.helpers.SonarHelper;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
-import sonar.core.utils.SimpleProfiler;
 import sonar.logistics.PL2;
+import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkListener;
-import sonar.logistics.api.tiles.cable.IDataCable;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.helpers.InfoHelper;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
-import sonar.logistics.networking.connections.CableConnectionHandler;
+import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 
 public class LogisticsNetwork implements ILogisticsNetwork {
@@ -47,6 +46,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public Queue<INetworkListener> toAdd = new ConcurrentLinkedQueue<INetworkListener>();
 	public Queue<INetworkListener> toRemove = new ConcurrentLinkedQueue<INetworkListener>();
 	private List<NodeConnection> localChannels = Lists.newArrayList(), globalChannels = Lists.newArrayList(), allChannels = Lists.newArrayList();
+	private long tickStart = 0;
+	private long updateTick = 0; // in nano seconds
 
 	public int networkID;
 	public boolean isValid = true;
@@ -60,11 +61,13 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public void onNetworkCreated() {}
 
 	public void onNetworkTick() {
+		tickStart = System.nanoTime();
 		addConnections();
 		removeConnections();
 		updateCaches();
 		runNetworkUpdates();
 		updateNetworkHandlers();
+		updateTick = System.nanoTime() - tickStart;
 	}
 
 	@Override
@@ -164,7 +167,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	@Override
 	public void removeConnection(INetworkListener tile) {
 		toRemove.add(tile);
-		toAdd.remove(tile); // prevents tiles being removed if it's unnecessary
+		toAdd.remove(tile); // prevents tiles being added if it's unnecessary
 	}
 
 	public void addConnections() {
@@ -242,12 +245,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public void updateCables() {
-		caches.forEach((cache_handler, cache_list) -> {
-			cache_list.forEach(tile -> cache_handler.onConnectionRemoved(this, tile));
-		});
-		caches = LogisticsHelper.getCachesMap();
-		subNetworks.invalidateList();
-		subNetworks.validateList();
+		List<INetworkListener> tiles = caches.get(CacheHandler.TILE);
+		tiles.forEach(tile -> removeConnection(tile)); //we remove them, but the cables then add them again below (as this is only a queue, they are never actually removed, unless necessary)
 		List<IDataCable> cables = PL2.getCableManager().getConnections(networkID);
 		cables.forEach(cable -> CableConnectionHandler.instance().addAllConnectionsToNetwork(cable, this));
 		markUpdate(NetworkUpdate.LOCAL, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
@@ -257,7 +256,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public void updateChannels() {
 		updateLocalChannels();
 		updateGlobalChannels();
-		// updateHandlerChannels();
+		updateHandlerChannels();
 	}
 
 	public void updateLocalChannels() {
@@ -265,7 +264,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.LOCAL));
 		// FIXME check there is a new local channel before using onLocalCacheChanged???
 		this.localChannels = Lists.newArrayList(channels);
-		this.markUpdate(NetworkUpdate.NOTIFY_WATCHING_NETWORKS);
+		this.markUpdate(NetworkUpdate.NOTIFY_WATCHING_NETWORKS, NetworkUpdate.HANDLER_CHANNELS);
 	}
 
 	public void updateGlobalChannels() {
@@ -370,5 +369,11 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	@Override
 	public ListenableList<ILogisticsNetwork> getListenerList() {
 		return subNetworks;
+	}
+
+	//// MONITORING \\\\
+
+	public long getNetworkTickTime() {
+		return updateTick;
 	}
 }

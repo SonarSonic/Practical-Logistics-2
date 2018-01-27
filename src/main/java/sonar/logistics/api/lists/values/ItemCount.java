@@ -41,7 +41,7 @@ public class ItemCount implements IMonitoredValue<MonitoredItemStack> {
 		item.getStoredStack().stored += combine.getStoredStack().stored;
 	}
 
-	public void combine(ItemStack combine, long stored) {
+	public void combine(long stored) {
 		item.getStoredStack().stored += stored;
 	}
 
