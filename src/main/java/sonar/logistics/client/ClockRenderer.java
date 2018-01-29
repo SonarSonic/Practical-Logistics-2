@@ -19,6 +19,7 @@ import sonar.core.common.block.properties.SonarProperties;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.common.multiparts.misc.TileClock;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 
@@ -26,36 +27,32 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 	public void render(TileClock te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		World world = te.getWorld();
 		if (world != null) {
-			GlStateManager.pushAttrib();
 			BlockPos pos = te.getPos();
 			RenderHelper.offsetRendering(pos, partialTicks);
-			GlStateManager.disableLighting();
-			GlStateManager.enableTexture2D();
-			GlStateManager.enableDepth();
-			GlStateManager.depthMask(true);
-			BufferBuilder wr = Tessellator.getInstance().getBuffer();
+			disableLighting();
+			enableTexture2D();
+			depthMask(true);
 			
-
-			//wr.setTranslation(-pos.getX() - 0.5, -pos.getY() - 0.5, -pos.getZ()- 0.5);
+			BufferBuilder wr = Tessellator.getInstance().getBuffer();
 			
 			switch (te.getCableFace().getOpposite()) {
 			case UP:
 			case DOWN:
-				GlStateManager.translate(0.5, 0, 0.5);
+				translate(0.5, 0, 0.5);
 				wr.setTranslation(-pos.getX() - 0.5, -pos.getY(), -pos.getZ() - 0.5);
-				GlStateManager.rotate(te.rotation, 0, 1, 0);
+				rotate(te.rotation, 0, 1, 0);
 				break;
 			case WEST:
 			case EAST:
-				GlStateManager.translate(0, 0.5, +0.5);
+				translate(0, 0.5, +0.5);
 				wr.setTranslation(-pos.getX(), -pos.getY() - 0.5, -pos.getZ() - 0.5);
-				GlStateManager.rotate(te.rotation, 1, 0, 0);
+				rotate(te.rotation, 1, 0, 0);
 				break;
 			case NORTH:
 			case SOUTH:
-				GlStateManager.translate(0.5, 0.5, 0);
+				translate(0.5, 0.5, 0);
 				wr.setTranslation(-pos.getX() - 0.5, -pos.getY() - 0.5, -pos.getZ());
-				GlStateManager.rotate(te.rotation, 0, 0, 1);
+				rotate(te.rotation, 0, 0, 1);
 				break;
 			default:
 				break;
@@ -77,9 +74,10 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 
 			Tessellator.getInstance().draw();
 			Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
-			// GL11.glPopMatrix();
-			GL11.glPopMatrix();
-			GlStateManager.popAttrib();
+			depthMask(false);
+			disableTexture2D();
+			enableLighting();		
+			popMatrix();
 
 		}
 	}

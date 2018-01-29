@@ -130,7 +130,7 @@ public class PacketHelper {
 	}
 
 	public static void sendNormalProviderInfo(IInfoProvider monitor) {
-		sendReaderToListeners(monitor, null, new InfoUUID(monitor.getIdentity(), 0)); // FIXME
+		sendReaderToListeners(monitor, null, new InfoUUID(monitor.getIdentity(), 0));
 	}
 
 	public static void sendReaderFullInfo(List<PlayerListener> listeners, ILogicListenable monitor, AbstractChangeableList b, InfoUUID uuid) {
@@ -196,7 +196,6 @@ public class PacketHelper {
 			if (tallies.isEmpty()) {
 				continue types;
 			}
-			// TODO why isn't Fluid Reader connecting?
 			switch (type) {
 			case NEW_DISPLAY_LISTENER:
 			case NEW_GUI_LISTENER:

@@ -3,6 +3,8 @@ package sonar.logistics.common.items;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -71,6 +73,7 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 	@SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4) {
 		super.addInformation(stack, world, list, par4);
+		list.add(TextFormatting.RED + "THE ENTITY SYSTEM IS CURRENTLY BROKEN");
 		if (stack.hasTagCompound()) {
 			list.add("Entity: " + TextFormatting.ITALIC + FontHelper.translate(stack.getTagCompound().getString("targetName")));
 		}

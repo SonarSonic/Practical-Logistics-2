@@ -11,7 +11,7 @@ import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.viewers.ILogicListenable;
 
-public interface IListReader<T extends IInfo> extends ILogicListenable, INetworkTile {
+public interface IListReader<T extends IInfo> extends ILogicListenable {
 
 	AbstractChangeableList<T> sortMonitoredList(AbstractChangeableList<T> updateInfo, int channelID);	
 	

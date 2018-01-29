@@ -120,10 +120,11 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	/**gets the first local info provider from the stored list provided in {@link #getLocalInfoProvider()}*/
 	IInfoProvider getLocalInfoProvider();
 
+	/**called by the given network when it's cache has changed*/
 	void onConnectedNetworkCacheChanged(ILogisticsNetwork network);
 	
 	//// MONITORING \\\\
-	
+	/**returns the networks last tick time in nanoseconds*/
 	public default long getNetworkTickTime(){
 		return 0;
 	}

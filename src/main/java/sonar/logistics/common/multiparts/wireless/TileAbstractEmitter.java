@@ -28,7 +28,6 @@ import sonar.logistics.networking.PL2ListenerList;
 public abstract class TileAbstractEmitter<E extends IWirelessEmitter, R extends IWirelessReceiver> extends TileAbstractWireless implements IWirelessEmitter, IFlexibleGui, IByteBufTile {
 
 	public static final String UNNAMED = "Unnamed Emitter";
-	public PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
 	public SyncTagType.STRING emitterName = (STRING) new SyncTagType.STRING(2).setDefault(UNNAMED);
 	public SyncEnum<WirelessSecurity> security = new SyncEnum(WirelessSecurity.values(), 5);
 
@@ -93,10 +92,6 @@ public abstract class TileAbstractEmitter<E extends IWirelessEmitter, R extends 
 			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 			break;
 		}
-	}
-
-	public PL2ListenerList getListenerList() {
-		return listeners;
 	}
 
 }

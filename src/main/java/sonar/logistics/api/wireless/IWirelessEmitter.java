@@ -5,7 +5,7 @@ import java.util.UUID;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.viewers.ILogicListenable;
 
-public interface IWirelessEmitter extends INetworkTile, ILogicListenable{
+public interface IWirelessEmitter extends INetworkTile{
 
 	/** can the given player UUID connect to this IDataEmitter */
 	public EnumConnected canPlayerConnect(UUID uuid);

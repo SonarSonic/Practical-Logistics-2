@@ -12,6 +12,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.Pair;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class RenderBlockSelection {
 
@@ -28,14 +29,14 @@ public class RenderBlockSelection {
 			if (time > position.getValue().a + displayTime) {
 				iterator.remove();
 			} else {
-				GlStateManager.pushMatrix();
-				GlStateManager.disableAlpha();
+				pushMatrix();
+				disableAlpha();
 				if (position.getValue().b) {
 				} else {
 					RenderHelper.drawBoundingBox(Block.FULL_BLOCK_AABB, position.getKey().getBlockPos(), evt.getPartialTicks(), 120.0F, 100.0F, 20.0F, 0.5F);
 				}
-				GlStateManager.enableAlpha();
-				GlStateManager.popMatrix();
+				enableAlpha();
+				popMatrix();
 			}
 		});
 	}

@@ -55,8 +55,6 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack, I
 						for (StoredItemStack item : info) {
 							newList.add(item);
 						}
-					} else {
-						//return previousList; //FIXME NEEDS TO RESTORE STATE??? - OR SET EVERYTHING TO EQUAL, RATHER THAN OLD, SO THEY WON'T BE DELETED
 					}
 					break;
 				}

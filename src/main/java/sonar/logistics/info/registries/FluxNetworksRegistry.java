@@ -2,9 +2,9 @@ package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
 
+import sonar.flux.api.AccessType;
 import sonar.flux.api.network.EnergyStats;
 import sonar.flux.api.network.IFluxCommon;
-import sonar.flux.api.network.IFluxCommon.AccessType;
 import sonar.flux.api.network.INetworkStatistics;
 import sonar.flux.api.tiles.IFlux;
 import sonar.flux.api.tiles.IFlux.ConnectionType;

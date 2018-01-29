@@ -1,6 +1,5 @@
 package sonar.logistics.client;
 
-import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,6 +15,7 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.helpers.InfoRenderer;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 //TWEAKED FAST MSR
 public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDisplay> {
@@ -46,30 +46,30 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 
 		if (part instanceof TileHolographicDisplay) {
 			this.bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));
-			GL11.glPushMatrix();
+			pushMatrix();
 			RenderHelper.saveBlendState();
-			GlStateManager.pushAttrib();
-			GlStateManager.disableCull();
-			GlStateManager.depthMask(false);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.2F);
-			GlStateManager.translate(-1 - 0.042, -1.2, .01);
-			GlStateManager.scale(0.015, 0.015, 0.015);
-			GlStateManager.enableBlend();
+			pushAttrib();
+			disableCull();
+			depthMask(false);
+			color(1.0F, 1.0F, 1.0F, 0.2F);
+			translate(-1 - 0.042, -1.2, .01);
+			scale(0.015, 0.015, 0.015);
+			enableBlend();
 			OpenGlHelper.glBlendFunc(770, 1, 1, 0);
 			RenderHelper.drawScaledCustomSizeModalRect(0, 0, 0, 0, 64, 36, 64, 36, 64, 36);
-			GlStateManager.disableBlend();
-			GlStateManager.popAttrib();
+			disableBlend();
+			popAttrib();
 			RenderHelper.restoreBlendState();
-			GL11.glPopMatrix();
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.translate(-0.0625, 0, 0);
+			popMatrix();
+			color(1.0F, 1.0F, 1.0F, 1.0F);
+			translate(-0.0625, 0, 0);
 		}
 		
-		GlStateManager.translate(-0.0625, 0, 0);
+		translate(-0.0625, 0, 0);
 		part.container().renderContainer();
 
-		//GlStateManager.depthMask(true);
-		GlStateManager.popMatrix();
+		//depthMask(true);
+		popMatrix();
 
 		//GL11.glFinish();
 	}

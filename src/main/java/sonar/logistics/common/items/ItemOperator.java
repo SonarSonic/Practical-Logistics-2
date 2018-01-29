@@ -33,6 +33,9 @@ import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.tiles.IChannelledTile;
+import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.client.gui.generic.GuiChannelSelection;
+import sonar.logistics.common.containers.ContainerChannelSelection;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
 
@@ -60,7 +63,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 			}
 			Optional<IMultipartTile> multipartTile = SonarMultipartHelper.getMultipartTileFromSlotID(world, pos, result.subHit);
 			Object part = multipartTile.isPresent() ? multipartTile.get() : world.getTileEntity(pos);
-			
+
 			if (part == null) {
 				return EnumActionResult.PASS;
 			}
@@ -89,20 +92,21 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 						tag.setBoolean(FlexibleGuiHandler.ITEM, true);
 						tag.setInteger(FlexibleGuiHandler.ID, 0);
 						tag.setInteger("hash", tile.getIdentity());
-						tag.setInteger("x", tile.getCoords().getX());
-						tag.setInteger("y", tile.getCoords().getY());
-						tag.setInteger("z", tile.getCoords().getZ());
+						// tag.setInteger("x", tile.getCoords().getX());
+						// tag.setInteger("y", tile.getCoords().getY());
+						// tag.setInteger("z", tile.getCoords().getZ());
 						SonarCore.instance.guiHandler.openGui(false, player, world, pos, 0, tag);
 					}
 					return EnumActionResult.SUCCESS;
+				}else{
+					FontHelper.sendMessage("This block has no channels", world, player);
 				}
 				// FIXME - Need a version for Logic Monitors
 				break;
 			case INFO:
 				break;
 			case ROTATE:
-				// return (part != null && part.rotatePart(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS; //FIXME
-				return EnumActionResult.PASS;
+				// return (part != null && part.rotate(facing)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
 			default:
 				break;
 
@@ -146,13 +150,27 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 
 	@Override
 	public Object getServerElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		/* FIXME switch (id) { case 0: int hash = tag.getInteger("hash"); BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")); IMultipartContainer container = MultipartHelper.getPartContainer(world, pos); for (IMultipart part : container.getParts()) { if (part != null && part instanceof IChannelledTile) { IChannelledTile tile = (IChannelledTile) part; if (tile.getIdentity() == hash) { return new ContainerChannelSelection(tile); } } } } */
+		switch (id) {
+		case 0:
+			ILogicListenable listen = PL2.getServerManager().getIdentityTile(tag.getInteger("hash"));
+			if (listen != null && listen instanceof IChannelledTile) {
+				IChannelledTile tile = (IChannelledTile) listen;
+				return new ContainerChannelSelection(tile);
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public Object getClientElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		/* switch (id) { case 0: int hash = tag.getInteger("hash"); BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")); IMultipartContainer container = MultipartHelper.getPartContainer(world, pos); for (IMultipart part : container.getParts()) { if (part != null && part instanceof IChannelledTile) { IChannelledTile tile = (IChannelledTile) part; if (tile.getIdentity() == hash) { return new GuiChannelSelection(player, tile, 0); } } } } */
+		switch (id) {
+		case 0:
+			ILogicListenable listen = PL2.getClientManager().getIdentityTile(tag.getInteger("hash"));
+			if (listen != null && listen instanceof IChannelledTile) {
+				IChannelledTile tile = (IChannelledTile) listen;
+				return new GuiChannelSelection(player, tile, 0);
+			}
+		}
 		return null;
 	}
 

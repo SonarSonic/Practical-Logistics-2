@@ -14,7 +14,7 @@ import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
 import sonar.logistics.networking.cabling.IRedstoneNetwork;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 
-public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedstoneEmitter, IRedstoneConnectable {
+public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedstoneEmitter {
 
 	public IRedstoneNetwork rNetwork = EmptyRedstoneNetwork.INSTANCE;
 	public SyncTagType.INT currentPower = new SyncTagType.INT(0);
@@ -58,10 +58,7 @@ public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedston
 
 	@Override
 	public void onCableChanged(int power) {
-		if (isServer()) {
-			// PL2.getWirelessRedstoneManager().onEmitterPowerChanged(this);
-		}
-	}
+			}
 
 	@Override
 	public int getRedstonePower() {

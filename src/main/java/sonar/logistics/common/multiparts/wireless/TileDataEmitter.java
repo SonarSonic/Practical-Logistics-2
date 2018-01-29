@@ -19,16 +19,19 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.networking.PL2ListenerList;
 import sonar.logistics.networking.common.ListNetworkChannels;
 import sonar.logistics.networking.fluids.FluidNetworkHandler;
 import sonar.logistics.networking.items.ItemNetworkHandler;
 
 public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter, IFlexibleGui, IByteBufTile {
 
+	public PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
 	@Override
 	public IWirelessManager getWirelessHandler() {
 		return PL2.getWirelessDataManager();
@@ -91,6 +94,10 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 	@Override
 	public List<NodeConnection> getUsedChannels(Map<NodeConnection, AbstractChangeableList<IInfo>> channels) {
 		return Lists.newArrayList(channels.keySet());
+	}
+
+	public PL2ListenerList getListenerList() {
+		return listeners;
 	}
 
 }

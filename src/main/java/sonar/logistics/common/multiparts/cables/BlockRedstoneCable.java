@@ -108,17 +108,8 @@ public class BlockRedstoneCable extends BlockLogistics {
 		}
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (!world.isRemote) {
-			TileRedstoneCable cable = RedstoneCableHelper.getCable(world, pos);
-			FontHelper.sendMessage("" + cable.registryID, world, player);
-		}
-		return false;
-	}
-
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-
 		TileRedstoneCable cable = RedstoneCableHelper.getCable(world, pos);
 		if (cable == null) {
 			return state;

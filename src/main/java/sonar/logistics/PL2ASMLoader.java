@@ -35,14 +35,7 @@ public class PL2ASMLoader {
 	public static LinkedHashMap<String, Integer> comparatorIds = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
 	
-	//public static LinkedHashMap<Integer, String> monitoredValueNames = Maps.newLinkedHashMap();
-	////public static LinkedHashMap<String, Integer> monitoredValueIds = Maps.newLinkedHashMap();
-	//public static LinkedHashMap<String, Class<? extends IMonitoredValue>> monitoredValueClasses = Maps.newLinkedHashMap();
-
-	// public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
-	// public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
 	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = Maps.newLinkedHashMap();
-	//public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
 
 	private PL2ASMLoader() {}
 

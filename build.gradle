@@ -48,7 +48,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "${minecraft_version}-${mod_version}"
 group= "sonar.logistics"
-archivesBaseName = "PracticalLogistics2"
+archivesBaseName = "practicalogistics2"
 sourceCompatibility = targetCompatibility = "1.8"
 compileJava {
     sourceCompatibility = targetCompatibility = "1.8"

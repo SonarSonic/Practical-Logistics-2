@@ -15,13 +15,12 @@ import sonar.logistics.api.cabling.IRedstonePowerProvider;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
 import sonar.logistics.api.wireless.IRedstoneReceiver;
 
-/**FIXME : BROKEN**/
 public class RedstoneNetwork implements IRedstoneNetwork {
 
 	public final List<IRedstonePowerProvider> providers = Lists.newArrayList(); // local providers
 	public final List<IRedstoneReceiver> receivers = Lists.newArrayList(); // receivers
 	public final List<IRedstoneEmitter> emitters = Lists.newArrayList(); // emitters
-	public final ListenableList<IRedstoneNetwork> subNetworks = new ListenableList(this, 2); // FIXME REMOVE ME?
+	public final ListenableList<IRedstoneNetwork> subNetworks = new ListenableList(this, 2);
 	public final List<IRedstoneConnectable> toAdd = Lists.newArrayList();
 	public final List<IRedstoneConnectable> toRemove = Lists.newArrayList();
 	public int registryID = -1;

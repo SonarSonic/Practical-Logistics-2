@@ -44,14 +44,14 @@ public class NetworkWatcherHandler implements INetworkHandler {
 	}
 
 	public AbstractChangeableList<IProvidableInfo> updateNetworkList(AbstractChangeableList<IProvidableInfo> list, ILogisticsNetwork network) {
-		double pl2Tick =  PL2Events.updateTick / 1000000.0;
-		double networkTick =  network.getNetworkTickTime() / 1000000.0;
+		double pl2Tick = PL2Events.updateTick / 1000000.0;
+		double networkTick = network.getNetworkTickTime() / 1000000.0;
 		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_TICK_TIME, RegistryType.LOGICNETWORK, pl2Tick));
-		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_TICK_PERCENT, RegistryType.LOGICNETWORK, ((pl2Tick)/50)*100)); //50 milliseconds in a tick	
-		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_TICK_FURNACE, RegistryType.LOGICNETWORK, (PL2Events.updateTick/1000)/20)); //50 milliseconds in a tick
+		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_TICK_PERCENT, RegistryType.LOGICNETWORK, ((pl2Tick) / 50) * 100)); // 50 milliseconds in a tick
+		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_TICK_FURNACE, RegistryType.LOGICNETWORK, (PL2Events.updateTick / 1000) / 20)); // 50 milliseconds in a tick
 		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_NETWORK_TICK_TIME, RegistryType.LOGICNETWORK, networkTick));
-		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_NETWORK_TICK_PERCENT, RegistryType.LOGICNETWORK, ((networkTick)/50)*100));//50 milliseconds in a tick
-		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_NETWORK_TICK_FURNACE, RegistryType.LOGICNETWORK, (network.getNetworkTickTime()/1000)/20)); //50 milliseconds in a tick	
+		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_NETWORK_TICK_PERCENT, RegistryType.LOGICNETWORK, ((networkTick) / 50) * 100));// 50 milliseconds in a tick
+		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_NETWORK_TICK_FURNACE, RegistryType.LOGICNETWORK, (network.getNetworkTickTime() / 1000) / 20)); // 50 milliseconds in a tick
 		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_NETWORK_ID, RegistryType.LOGICNETWORK, network.getNetworkID()));
 		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_CONNECTED_NETWORKS, RegistryType.LOGICNETWORK, network.getListenerList().getListeners(ILogisticsNetwork.CONNECTED_NETWORK).size()));
 		list.add(LogicInfo.buildDirectInfo(LogisticsInfoRegistry.PL_WATCHING_NETWORKS, RegistryType.LOGICNETWORK, network.getListenerList().getListeners(ILogisticsNetwork.WATCHING_NETWORK).size()));
@@ -75,7 +75,9 @@ public class NetworkWatcherHandler implements INetworkHandler {
 		InfoUUID uuid = getReaderUUID(reader);
 		if (network.validateTile(reader)) {
 			List<NodeConnection> usedChannels = Lists.newArrayList();
-			AbstractChangeableList<IProvidableInfo> updateList = (updateList = PL2.getServerManager().getMonitoredList(uuid)) == null ? newChangeableList() : updateList;
+			AbstractChangeableList<IProvidableInfo> currentList = PL2.getServerManager().getMonitoredList(uuid);
+			
+			final AbstractChangeableList<IProvidableInfo> updateList = currentList == null ? newChangeableList() : currentList;
 			updateList.saveStates();
 			networkList.createSaveableList().forEach(obj -> updateList.add(obj));
 			AbstractChangeableList<IProvidableInfo> viewableList = updateList;

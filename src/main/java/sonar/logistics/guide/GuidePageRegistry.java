@@ -35,7 +35,7 @@ public class GuidePageRegistry {
 		addGuidePage(new BaseItemPage(16, new ItemStack(PL2Blocks.array)));
 		addGuidePage(new TransferNodePage(17));
 		addGuidePage(new BaseItemPage(18, new ItemStack(PL2Items.transceiver)));
-		addGuidePage(new BaseItemPage(19, new ItemStack(PL2Items.entity_transceiver)));
+		//addGuidePage(new BaseItemPage(19, new ItemStack(PL2Items.entity_transceiver)));
 		addGuidePage(new BaseItemPage(20, new ItemStack(PL2Items.wireless_storage_reader)));
 		addGuidePage(new InfoReaderPage(21));
 		addGuidePage(new InventoryReaderPage(22));

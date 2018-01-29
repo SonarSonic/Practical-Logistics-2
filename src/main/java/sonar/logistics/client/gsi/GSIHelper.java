@@ -32,6 +32,10 @@ public class GSIHelper {
 		readPacketID(clickTag).logic.runPacket(click, displayInfo, player, clickTag);
 	}
 
+	public static NBTTagCompound createBasicPacket(GSIPackets packet){
+		return writePacketID(new NBTTagCompound(), packet);
+	}
+	
 	public static NBTTagCompound writePacketID(NBTTagCompound tag, GSIPackets packet) {
 		tag.setInteger(PACKET_ID, packet.ordinal());
 		return tag;
@@ -40,7 +44,7 @@ public class GSIHelper {
 	public static GSIPackets readPacketID(NBTTagCompound tag) {
 		return GSIPackets.values()[tag.getInteger(PACKET_ID)];
 	}
-
+	
 	public static NBTTagCompound createItemClickPacket(StoredItemStack stack, int networkID) {
 		NBTTagCompound tag = new NBTTagCompound();
 		writePacketID(tag, GSIPackets.ITEM_CLICK);
