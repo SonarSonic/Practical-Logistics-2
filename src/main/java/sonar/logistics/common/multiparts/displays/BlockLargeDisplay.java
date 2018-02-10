@@ -39,33 +39,27 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(0, 0, 0, 1, length, 1);
 	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - length, 1);
 	public static final AxisAlignedBB NORTH_AXIS = new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0);
-	public static final AxisAlignedBB SOUTH_AXIS =new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length);
+	public static final AxisAlignedBB SOUTH_AXIS = new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length);
 	public static final AxisAlignedBB WEST_AXIS = new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2);
 	public static final AxisAlignedBB EAST_AXIS = new AxisAlignedBB(1, 0, (width) / 2, 1 - length, height, 1 - width / 2);
 	public static final AxisAlignedBB[] AXIS = new AxisAlignedBB[] { DOWN_AXIS, UP_AXIS, NORTH_AXIS, SOUTH_AXIS, WEST_AXIS, EAST_AXIS };
-	
+
 	public BlockLargeDisplay() {
 		super(PL2Multiparts.LARGE_DISPLAY_SCREEN);
 	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		ItemStack stack = player.getHeldItem(hand);
-		if (stack != null && stack.getItem() instanceof IOperatorTool) {
-			return false;
-		}
-		if (canOpenGui(player)) {
-			TileEntity tile = world.getTileEntity(pos);
-			if (tile != null && tile instanceof TileLargeDisplayScreen) {
-				TileLargeDisplayScreen display = (TileLargeDisplayScreen) ((TileLargeDisplayScreen) tile).getDisplayScreen().getTopLeftScreen();
+		TileEntity tile = world.getTileEntity(pos);
+		if (tile != null && tile instanceof TileLargeDisplayScreen) {
+			TileLargeDisplayScreen source = ((TileLargeDisplayScreen) tile);
+			TileLargeDisplayScreen display = source.shouldRender.getObject() ? source : (TileLargeDisplayScreen) source.getConnectedDisplay().getTopLeftScreen();
+			if (display != null) {
 				if (facing != state.getValue(SonarProperties.ORIENTATION)) {
-					if (!world.isRemote) {
+					if (!world.isRemote && canOpenGui(player)) {
 						display.openFlexibleGui(player, 0);
 					}
 				} else {
-					if (world.isRemote) {
-						return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
-					}
-					return true;
+					return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 				}
 			}
 		}

@@ -4,8 +4,10 @@ import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.client.gui.SonarTextField;
-import sonar.core.helpers.RenderHelper;
+import sonar.core.helpers.FontHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.logistics.PL2Translate;
+import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.wireless.TileAbstractEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 
@@ -46,12 +48,11 @@ public class GuiWirelessEmitter extends GuiLogistics {
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		//FontHelper.textCentre(PL2Translate.DATA_EMITTER.t(), xSize, 6, LogisticsColours.white_text.getRGB());
+		FontHelper.textCentre(part.getMultipart().getDisplayName(), xSize, 6, LogisticsColours.white_text.getRGB());
 	}
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		RenderHelper.restoreBlendState();
 	}
 }

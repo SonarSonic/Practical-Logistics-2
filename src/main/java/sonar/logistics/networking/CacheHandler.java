@@ -15,6 +15,7 @@ import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
+import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.transfers.TransferNetworkChannels;
 
 public abstract class CacheHandler<T> {
@@ -34,13 +35,13 @@ public abstract class CacheHandler<T> {
 		@Override
 		public void onConnectionAdded(LogisticsNetwork network, IDataReceiver connection) {
 			connection.onNetworkConnect(network); // if we don't do this they effectively would have no network
-			PL2.getWirelessDataManager().connectReceiver(network, connection);
+			WirelessDataManager.instance().connectReceiver(network, connection);
 		}
 
 		@Override
 		public void onConnectionRemoved(LogisticsNetwork network, IDataReceiver connection) {
 			connection.onNetworkDisconnect(network);
-			PL2.getWirelessDataManager().disconnectReceiver(network, connection);
+			WirelessDataManager.instance().disconnectReceiver(network, connection);
 		}
 
 		@Override
@@ -53,12 +54,12 @@ public abstract class CacheHandler<T> {
 
 		public void onConnectionAdded(LogisticsNetwork network, IDataEmitter emitter) {
 			emitter.onNetworkConnect(network); // if we don't do this they effectively would have no network
-			PL2.getWirelessDataManager().connectEmitter(network, emitter);
+			WirelessDataManager.instance().connectEmitter(network, emitter);
 		}
 
 		public void onConnectionRemoved(LogisticsNetwork network, IDataEmitter emitter) {
 			emitter.onNetworkDisconnect(network);
-			PL2.getWirelessDataManager().disconnectEmitter(network, emitter);
+			WirelessDataManager.instance().disconnectEmitter(network, emitter);
 		}
 
 		@Override

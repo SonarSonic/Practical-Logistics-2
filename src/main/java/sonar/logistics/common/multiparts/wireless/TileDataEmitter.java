@@ -25,6 +25,7 @@ import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.common.ListNetworkChannels;
 import sonar.logistics.networking.fluids.FluidNetworkHandler;
 import sonar.logistics.networking.items.ItemNetworkHandler;
@@ -34,7 +35,7 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 	public PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
 	@Override
 	public IWirelessManager getWirelessHandler() {
-		return PL2.getWirelessDataManager();
+		return WirelessDataManager.instance();
 	}
 
 	public static int STATIC_ITEM_ID = -16;

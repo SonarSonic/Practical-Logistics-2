@@ -40,6 +40,7 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.networking.displays.DisplayHelper;
 import sonar.logistics.networking.fluids.FluidNetworkChannels;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
@@ -51,18 +52,8 @@ import sonar.logistics.packets.PacketMonitoredList;
 public class PacketHelper {
 
 	public static void sendLocalProvidersFromScreen(TileAbstractDisplay part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
-		List<ILogicListenable> providers = new ArrayList<ILogicListenable>();
+		List<ILogicListenable> providers = DisplayHelper.getLocalProviders(part, world, pos);
 		int identity = part.getIdentity();
-		if (part instanceof ILargeDisplay) {
-			ConnectedDisplay display = ((ILargeDisplay) part).getDisplayScreen();
-			if (display != null && display.getTopLeftScreen() != null) {
-				identity = ((TileAbstractDisplay) display.getTopLeftScreen()).getIdentity();
-			}
-			providers = display != null ? display.getLocalProviders(providers) : LogisticsHelper.getLocalProviders(providers, world, pos, part);
-		} else {
-			providers = LogisticsHelper.getLocalProviders(providers, world, pos, part);
-		}
-
 		List<ClientLocalProvider> clientMonitors = Lists.newArrayList();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);

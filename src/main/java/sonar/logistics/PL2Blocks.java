@@ -1,7 +1,9 @@
 package sonar.logistics;
 
+import mcmultipart.api.item.ItemBlockMultipart;
 import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import sonar.core.SonarRegister;
 import sonar.core.registries.SonarRegistryBlock;
 import sonar.core.registries.SonarRegistryMultipart;
@@ -9,6 +11,7 @@ import sonar.logistics.common.blocks.BlockHammer;
 import sonar.logistics.common.blocks.BlockHammerAir;
 import sonar.logistics.common.blocks.BlockSapphireOre;
 import sonar.logistics.common.hammer.TileEntityHammer;
+import sonar.logistics.common.items.PL2ItemConnectableMultipart;
 import sonar.logistics.common.multiparts.BlockLogistics;
 import sonar.logistics.common.multiparts.cables.BlockDataCable;
 import sonar.logistics.common.multiparts.cables.BlockRedstoneCable;
@@ -41,19 +44,19 @@ public class PL2Blocks extends PL2 {
 
 		sapphire_ore = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryBlock(new BlockSapphireOre(), "SapphireOre").setProperties(3.0F, 5.0F));
 
-		info_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockAbstractReader(PL2Multiparts.INFO_READER)));
-		inventory_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockAbstractReader(PL2Multiparts.INVENTORY_READER)));
-		fluid_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockAbstractReader(PL2Multiparts.FLUID_READER)));
-		energy_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockAbstractReader(PL2Multiparts.ENERGY_READER)));
-		network_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockAbstractReader(PL2Multiparts.NETWORK_READER)));
+		info_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockAbstractReader(PL2Multiparts.INFO_READER)));
+		inventory_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockAbstractReader(PL2Multiparts.INVENTORY_READER)));
+		fluid_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockAbstractReader(PL2Multiparts.FLUID_READER)));
+		energy_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockAbstractReader(PL2Multiparts.ENERGY_READER)));
+		network_reader = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockAbstractReader(PL2Multiparts.NETWORK_READER)));
 
-		array = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockArray()));
-		entity_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockEntityNode()));
-		transfer_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockTransferNode()));
-		redstone_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneNode()));
+		array = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockArray()));
+		entity_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockEntityNode()));
+		transfer_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockTransferNode()));
+		redstone_node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockRedstoneNode()));
 
-		clock = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockClock()));
-		redstone_signaller = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneSignaller()));
+		clock = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockClock()));
+		redstone_signaller = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockRedstoneSignaller()));
 		
 		display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDisplayScreen()));
 		large_display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockLargeDisplay()));
@@ -61,12 +64,28 @@ public class PL2Blocks extends PL2 {
 		
 		data_cable = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataCable()));
 		redstone_cable = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneCable()));
-		node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockNode()));
-		data_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataEmitter()));
-		data_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataReceiver()));
-		redstone_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneEmitter()));
-		redstone_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneReceiver()));
+		node = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockNode()));
+		data_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockDataEmitter()));
+		data_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockDataReceiver()));
+		redstone_emitter = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockRedstoneEmitter()));
+		redstone_receiver = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockRedstoneReceiver()));
 
+	}
+
+	public static class LogisticsRegistryConnectableMultipart<T extends BlockLogistics & IMultipart> extends LogisticsRegistryMultipart<T> {
+
+		public LogisticsRegistryConnectableMultipart(T block) {
+			super(block);
+		}
+
+		public LogisticsRegistryConnectableMultipart(T block, PL2Multiparts multipart) {
+			super(block,multipart);
+		}
+
+		@Override
+		public Item getItemBlock() {
+			return new PL2ItemConnectableMultipart(value);
+		}
 	}
 
 	public static class LogisticsRegistryMultipart<T extends BlockLogistics & IMultipart> extends SonarRegistryMultipart<T> {

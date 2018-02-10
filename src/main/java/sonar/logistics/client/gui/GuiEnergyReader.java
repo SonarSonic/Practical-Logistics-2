@@ -133,22 +133,18 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (info.getEnergyStack().capacity > 0) {
 			int l = (int) (info.getEnergyStack().stored * 231 / info.getEnergyStack().capacity);
-			RenderHelper.saveBlendState();
 			this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
 			if (l != 0)
 				this.drawTransparentRect(25, (yPos) + 6, l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
-			RenderHelper.restoreBlendState();
 		}
 		StoredItemStack storedStack = info.getDropStack();
 		if (storedStack != null) {
 
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			RenderHelper.saveBlendState();
 			ItemStack stack = storedStack.item;
 			RenderHelper.renderItem(this, 8, yPos - 2, stack);
 			RenderHelper.renderStoredItemStackOverlay(stack, 0, 8, yPos - 2, null, true);
-			RenderHelper.restoreBlendState();
 		}
 		GL11.glScaled(0.75, 0.75, 0.75);
 		FontHelper.text(info.getMonitoredCoords().getClientIdentifier() + " - " + info.getMonitoredCoords().getClientObject(), 35, (int) (yPos * 1 / 0.75) - 1, LogisticsColours.white_text.getRGB());

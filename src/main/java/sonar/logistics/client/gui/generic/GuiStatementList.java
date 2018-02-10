@@ -247,7 +247,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			String obj1 = "<- Select the object to compare", obj2 = obj1;
 			boolean has1 = false, has2 = false;
 
-			if (uuid1 != null) {
+			if (InfoUUID.valid(uuid1)) {
 				IInfo monitorInfo = PL2.getClientManager().info.get(uuid1).copy();
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
@@ -259,7 +259,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				}
 			}
 			if (currentFilter.getInputType().usesInfo()) {
-				if (uuid2 != null) {
+				if (InfoUUID.valid(uuid2)) {
 					IInfo monitorInfo = PL2.getClientManager().info.get(uuid2).copy();
 					if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
@@ -296,7 +296,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			break;
 		case STRING:
 			uuid1 = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
-			if (uuid1 != null) {
+			if (InfoUUID.valid(uuid1)) {
 				IInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
 				if (monitorInfo != null) {
 					FontHelper.textCentre("Info Type: " + monitorInfo.getID().toUpperCase(), xSize, 6, LogisticsColours.white_text.getRGB());
@@ -328,7 +328,6 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			drawTransparentRect(this.guiLeft + 4, this.guiTop + 58, this.guiLeft + xSize - 4, this.guiTop + 138, LogisticsColours.layers[2].getRGB());
 		}
 
-		RenderHelper.restoreBlendState();
 
 	}
 
@@ -541,7 +540,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			break;
 		case STRING:
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
-			if (uuid != null) {
+			if (InfoUUID.valid(uuid)) {
 				IInfo monitorInfo = PL2.getClientManager().info.get(uuid);
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;

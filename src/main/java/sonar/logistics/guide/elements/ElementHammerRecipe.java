@@ -64,9 +64,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		RenderHelper.saveBlendState();
 		gui.drawTransparentRect(x, y + 24, x + 80, y + 64, LogisticsColours.blue_overlay.getRGB());
-		RenderHelper.restoreBlendState();
 	}
 
 	@Override

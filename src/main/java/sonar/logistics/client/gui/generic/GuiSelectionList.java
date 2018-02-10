@@ -101,7 +101,6 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 			start = (int) (infoSize() * scroller.getCurrentScroll());
 			finish = Math.min(start + size, infoSize());
 			GL11.glPushMatrix();
-			GlStateManager.pushAttrib();
 			GL11.glScaled(listScale(), listScale(), listScale());
 			for (int i = start; i < finish; i++) {
 				T info = infoList.get(i);
@@ -110,7 +109,6 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 					renderInfo(info, yPos);
 				}
 			}
-			GlStateManager.popAttrib();
 			GL11.glPopMatrix();
 		}
 		super.drawGuiContainerForegroundLayer(x, y);
@@ -210,19 +208,18 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 				}
 			}
 		}
-		RenderHelper.restoreBlendState();
 	}
 
 	public void drawInfoBackground(List<List<Integer>> data, int width, int height, int left, int top, int i) {
 		int mainColour = data.get(0).contains(i) ? LogisticsColours.category.getRGB() : (data.get(1).contains(i)) ? getColour(i, 0) : LogisticsColours.layers[1].getRGB();
-		drawRect(left + 1, top + 1, left - 1 + width, top - 1 + height, mainColour);
-		drawRect(left, top, left + width, top + height, LogisticsColours.layers[2].getRGB());
+		drawTransparentRect(left + 1, top + 1, left - 1 + width, top - 1 + height, mainColour);
+		drawTransparentRect(left, top, left + width, top + height, LogisticsColours.layers[2].getRGB());
 	}
 
 	public void drawSelectedInfoBackground(int width, int height, int left, int top, int i) {
 		int rgb = getColour(i, 1);
-		drawRect(left, top, left + width, top + height, LogisticsColours.layers[2].getRGB());
-		drawRect(left + 1, top + 1, left - 1 + width, top - 1 + height, LogisticsColours.grey_base.getRGB());
+		drawTransparentRect(left, top, left + width, top + height, LogisticsColours.layers[2].getRGB());
+		drawTransparentRect(left + 1, top + 1, left - 1 + width, top - 1 + height, LogisticsColours.grey_base.getRGB());
 		drawHorizontalLine(left + 1, left - 2 + width, top + 1, rgb);
 		drawHorizontalLine(left + 1, left - 2 + width, top + listHeight-1, rgb);
 		drawVerticalLine(left + 1, top + 1, top + listHeight-1, rgb);

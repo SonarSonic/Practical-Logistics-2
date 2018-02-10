@@ -5,9 +5,9 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.helpers.InfoRenderer;
@@ -18,6 +18,7 @@ public class InfoError implements IInfo<InfoError> {
 	public static final InfoError noData = new InfoError("NO DATA");
 	public static final InfoError noMonitor = new InfoError("NO MONITOR");
 	public static final InfoError noItem = new InfoError("NO ITEMSTACK");
+	public static final InfoError incompleteDisplay = new InfoError("INCOMPLETE");
 
 	public static final String id = "error";
 	public String error;

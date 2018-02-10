@@ -25,7 +25,7 @@ public class LogisticsColours {
 	
 	public static CustomColour[] infoColours = new CustomColour[] { // all the info colours
 			new CustomColour(5, 50, 2), // green
-			new CustomColour(50, 5, 2), //
+			new CustomColour(50, 5, 2), // red
 			new CustomColour(5, 50, 20), //
 			new CustomColour(50, 50, 2), //
 			new CustomColour(50, 150, 2), //

@@ -24,6 +24,7 @@ import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.RenderHammer;
 import sonar.logistics.client.RenderInteractionOverlay;
 import sonar.logistics.client.RenderOperatorOverlay;
+import sonar.logistics.client.gsi.GSIOverlays;
 import sonar.logistics.client.gsi.GSIRegistry;
 import sonar.logistics.client.gsi.IGSIRegistry;
 import sonar.logistics.client.gsi.info.GSIAE2DriveInfo;
@@ -108,7 +109,10 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 
 	@SubscribeEvent
 	public void renderHighlight(DrawBlockHighlightEvent evt) {
-		RenderOperatorOverlay.tick(evt);
+		if (Minecraft.getMinecraft().inGameHasFocus) {
+			RenderOperatorOverlay.tick(evt);
+			GSIOverlays.tick(evt);
+		}
 	}
 
 	@SubscribeEvent

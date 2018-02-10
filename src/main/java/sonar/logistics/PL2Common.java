@@ -10,11 +10,13 @@ import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.PacketClientEmitters;
 import sonar.logistics.packets.PacketConnectedDisplayRemove;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
+import sonar.logistics.packets.PacketDisplayTextEdit;
 import sonar.logistics.packets.PacketEmitterStatement;
 import sonar.logistics.packets.PacketGSIClick;
 import sonar.logistics.packets.PacketInfoUpdates;
 import sonar.logistics.packets.PacketInventoryReader;
 import sonar.logistics.packets.PacketItemInteractionText;
+import sonar.logistics.packets.PacketLocalProviderSelection;
 import sonar.logistics.packets.PacketLocalProviders;
 import sonar.logistics.packets.PacketMonitoredList;
 import sonar.logistics.packets.PacketNodeFilter;
@@ -38,6 +40,8 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketWirelessStorage.Handler.class, PacketWirelessStorage.class, 12, Side.SERVER);
 		PL2.network.registerMessage(PacketItemInteractionText.Handler.class, PacketItemInteractionText.class, 13, Side.CLIENT);
 		PL2.network.registerMessage(PacketConnectedDisplayRemove.Handler.class, PacketConnectedDisplayRemove.class, 14, Side.CLIENT);
+		PL2.network.registerMessage(PacketLocalProviderSelection.Handler.class, PacketLocalProviderSelection.class, 15, Side.SERVER);
+		PL2.network.registerMessage(PacketDisplayTextEdit.Handler.class, PacketDisplayTextEdit.class, 16, Side.SERVER);
 	}
 
 	public IGSIRegistry getGSIRegistry(){

@@ -30,7 +30,7 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 			BlockPos pos = te.getPos();
 			RenderHelper.offsetRendering(pos, partialTicks);
 			disableLighting();
-			enableTexture2D();
+			//enableTexture2D();
 			depthMask(true);
 			
 			BufferBuilder wr = Tessellator.getInstance().getBuffer();
@@ -75,8 +75,8 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 			Tessellator.getInstance().draw();
 			Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
 			depthMask(false);
-			disableTexture2D();
-			enableLighting();		
+			enableLighting();	
+			//disableTexture2D();	
 			popMatrix();
 
 		}

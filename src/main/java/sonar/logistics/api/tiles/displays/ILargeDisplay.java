@@ -2,13 +2,10 @@ package sonar.logistics.api.tiles.displays;
 
 import sonar.logistics.api.cabling.ICable;
 
-/** implemented on Large Display Screen */
 public interface ILargeDisplay extends IDisplay, ICable {
 
-	/** gets the {@link ConnectedDisplay} this {@link ILargeDisplay} is connected to */
-	public ConnectedDisplay getDisplayScreen();
+	public ConnectedDisplay getConnectedDisplay();
 
-	/** sets the {@link ConnectedDisplay} this {@link ILargeDisplay} is connected to */
 	public void setConnectedDisplay(ConnectedDisplay connectedDisplay);
 
 	/** if this {@link ILargeDisplay} should render the info from the {@link ConnectedDisplay} */

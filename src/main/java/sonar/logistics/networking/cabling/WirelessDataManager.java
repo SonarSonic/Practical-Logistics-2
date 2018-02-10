@@ -7,9 +7,14 @@ import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.WirelessConnectionType;
+import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.NetworkUpdate;
 
 public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwork, IDataEmitter, IDataReceiver> {
+
+	public static WirelessDataManager instance() {
+		return PL2.instance.wirelessDataManager;
+	}
 
 	@Override
 	public WirelessConnectionType type() {
@@ -41,7 +46,7 @@ public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwo
 		receiver.refreshConnectedNetworks();
 		List<Integer> connected = receiver.getConnectedNetworks();
 		connected.iterator().forEachRemaining(networkID -> {
-			ILogisticsNetwork sub = PL2.getNetworkManager().getNetwork(networkID);
+			ILogisticsNetwork sub = LogisticsNetworkHandler.instance().getNetwork(networkID);
 			if (sub.getNetworkID() != main.getNetworkID() && sub.isValid()) {
 				connectNetworks(main, sub);
 			}
@@ -55,7 +60,7 @@ public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwo
 		receiver.refreshConnectedNetworks();
 		List<Integer> connected = receiver.getConnectedNetworks();
 		connected.iterator().forEachRemaining(networkID -> {
-			ILogisticsNetwork sub = PL2.getNetworkManager().getNetwork(networkID);
+			ILogisticsNetwork sub = LogisticsNetworkHandler.instance().getNetwork(networkID);
 			if (sub.getNetworkID() != network.getNetworkID() && sub.isValid()) {
 				disconnectNetworks(network, sub);
 			}

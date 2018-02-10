@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
 
+import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.LogicInfo;
 

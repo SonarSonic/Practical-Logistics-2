@@ -46,9 +46,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 			gui.drawTexturedModalRect(x + 8, y + 72, 0, 0, 120, 120);
 			GlStateManager.scale(1 / 0.5, 1 / 0.5, 1 / 0.5);
 
-			RenderHelper.saveBlendState();
 			// gui.drawTransparentRect(x, y, x + (int)(80*0.75), y + (int)((80+24)*0.75), LogisticsColours.blue_overlay.getRGB());
-			RenderHelper.restoreBlendState();
 
 			int pos = 0;
 			getPos();
@@ -68,9 +66,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		RenderHelper.saveBlendState();
 		gui.drawTransparentRect(x, y, x + 80, y + 80 + 16, LogisticsColours.blue_overlay.getRGB());
-		RenderHelper.restoreBlendState();
 	}
 
 	public IRecipe getRecipe() {

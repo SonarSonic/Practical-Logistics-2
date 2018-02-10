@@ -3,13 +3,11 @@ package sonar.logistics.guide;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -171,21 +169,19 @@ public abstract class BaseInfoPage implements IGuidePage {
 	}
 	
 	public void drawPageInGui(GuiGuide gui, int yPos) {
-		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		FontHelper.text(getDisplayName(), 28, yPos + 3, -1);
 	}
 
 	public void drawPage(GuiGuide gui, int x, int y, int page) {
-
+		disableDepth();
 		for (ElementLink pageLink : currentLinks) {
 			if (pageLink != null && pageLink.isMouseOver(gui, x - gui.getGuiLeft(), y - gui.getGuiTop())) {
-				GlStateManager.disableDepth();
 				gui.drawSonarCreativeTabHoveringText(TextFormatting.BLUE + "Open: " + TextFormatting.RESET + (pageLink.getGuidePage() == null ? "ERROR" : pageLink.getGuidePage().getDisplayName()), x, y);
-
-				GlStateManager.disableLighting();
+				
 				break;
 			}
 		}
+		enableDepth();
 		for (IGuidePageElement element : elements) {
 			if (element.getDisplayPage() == page) {
 				RenderHelper.saveBlendState();
@@ -206,13 +202,13 @@ public abstract class BaseInfoPage implements IGuidePage {
 	}
 
 	public void drawForegroundPage(GuiGuide gui, int x, int y, int page, float partialTicks) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		color(1.0F, 1.0F, 1.0F, 1.0F);
 		for (int i = 0; i < this.guideButtons.size(); ++i) {
 			GuiButton button = ((GuiButton) this.guideButtons.get(i));
 			button.drawButtonForegroundLayer(x, y);
 		}
 		int listTally = 0;
-		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+		//net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		//GlStateManager.enableLighting();
 		for (ElementInfoFormatted guidePage : currentData) {
 			List<String> info = guidePage.formattedList;

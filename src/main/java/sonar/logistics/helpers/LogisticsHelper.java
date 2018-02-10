@@ -23,9 +23,9 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.render.IInfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorTool;
 import sonar.logistics.api.tiles.displays.IDisplay;
@@ -39,6 +39,7 @@ import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.LogisticsNetworkHandler;
 
 public class LogisticsHelper {
 
@@ -53,7 +54,7 @@ public class LogisticsHelper {
 	public static List<ILogisticsNetwork> getNetworks(List<Integer> ids) {
 		List<ILogisticsNetwork> networks = Lists.newArrayList();
 		ids.forEach(id -> {
-			ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(id);
+			ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(id);
 			if (network != null && network.isValid()) {
 				networks.add(network);
 			}
@@ -103,7 +104,7 @@ public class LogisticsHelper {
 		for (IDisplay display : displays) {
 			IInfoContainer container = display.container();
 			container.forEachValidUUID(id -> {
-				if (!ids.contains(id))
+				if (InfoUUID.valid(id) && !ids.contains(id))
 					ids.add(id);
 			});
 		}
@@ -121,24 +122,6 @@ public class LogisticsHelper {
 			}
 		}
 		return infoList;
-	}
-
-	public static List<ILogicListenable> getLocalProviders(List<ILogicListenable> viewables, IBlockAccess world, BlockPos pos, TileAbstractDisplay part) {
-		ILogisticsNetwork networkCache = part.getNetwork();
-		IBlockAccess actualWorld = SonarMultipartHelper.unwrapBlockAccess(world);
-		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(actualWorld, pos, EnumFaceSlot.fromFace(part.getCableFace()), tile -> true);
-		if (connectedPart.isPresent() && connectedPart.get() instanceof IInfoProvider) {
-			if (!viewables.contains((IInfoProvider) connectedPart.get())) {
-				viewables.add((IInfoProvider) connectedPart.get());
-			}
-		} else {
-			for (IInfoProvider monitor : networkCache.getGlobalInfoProviders()) {
-				if (!viewables.contains(monitor)) {
-					viewables.add(monitor);
-				}
-			}
-		}
-		return viewables;
 	}
 
 	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {

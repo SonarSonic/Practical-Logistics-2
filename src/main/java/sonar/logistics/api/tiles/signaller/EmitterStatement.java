@@ -16,6 +16,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.ComparatorHelper;
 import sonar.logistics.info.comparators.ILogicComparator;
+import sonar.logistics.packets.sync.SyncInfoUUID;
 
 public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsStatement {
 
@@ -27,8 +28,8 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	/** if true, compare to bits of info, if false compare info to an object */
 	public SyncEnum<InputTypes> useInfo = new SyncEnum(InputTypes.values(), 2);
 
-	public SyncNBTAbstract<InfoUUID> uuid1 = new SyncNBTAbstract<InfoUUID>(InfoUUID.class, 3);
-	public SyncNBTAbstract<InfoUUID> uuid2 = new SyncNBTAbstract<InfoUUID>(InfoUUID.class, 4);
+	public SyncNBTAbstract<InfoUUID> uuid1 = new SyncInfoUUID(3).setObject(InfoUUID.newInvalid());
+	public SyncNBTAbstract<InfoUUID> uuid2 = new SyncInfoUUID(4).setObject(InfoUUID.newInvalid());
 	public SyncTagType.STRING key1 = new SyncTagType.STRING(5);
 	public SyncTagType.STRING key2 = new SyncTagType.STRING(6);
 
@@ -52,11 +53,11 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	}
 
 	public void addRequiredUUIDs(List<InfoUUID> uuids) {
-		if (uuid1.getObject() != null && !uuids.contains(uuid1.getObject())) {
+		if (InfoUUID.valid(uuid1.getObject()) && !uuids.contains(uuid1.getObject())) {
 			uuids.add(uuid1.getObject());
 		}
 		if (useInfo.getObject().usesInfo()) {
-			if (uuid2.getObject() != null && !uuids.contains(uuid2.getObject())) {
+			if (InfoUUID.valid(uuid2.getObject()) && !uuids.contains(uuid2.getObject())) {
 				uuids.add(uuid2.getObject());
 			}
 		}
@@ -81,7 +82,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	}
 
 	public Object getObject(Map<InfoUUID, IInfo> info, InfoUUID id, String key) {
-		if (id != null && key != null) {
+		if (InfoUUID.valid(id) && key != null) {
 			IInfo info1 = info.get(id);
 			if (info1 != null && info1 instanceof IComparableInfo) {
 				IComparableInfo provider1 = (IComparableInfo) info1;

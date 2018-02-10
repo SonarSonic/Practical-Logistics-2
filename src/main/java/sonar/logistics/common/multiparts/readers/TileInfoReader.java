@@ -20,6 +20,11 @@ import sonar.logistics.networking.info.InfoNetworkHandler;
 public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 
 	@Override
+	public int getMaxInfo() {
+		return 4;
+	}
+
+	@Override
 	public List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers) {
 		handlers.add(InfoNetworkHandler.INSTANCE);
 		return handlers;

@@ -15,11 +15,12 @@ import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IWirelessEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.client.gui.GuiDataReceiver;
+import sonar.logistics.networking.cabling.WirelessDataManager;
 
 public class TileDataReceiver extends TileAbstractReceiver implements IDataReceiver, IFlexibleGui, IByteBufTile {
 
 	public IWirelessManager getWirelessHandler(){
-		return PL2.getWirelessDataManager();
+		return WirelessDataManager.instance();
 	}
 	
 	public List<Integer> networks = Lists.newArrayList();
@@ -67,13 +68,13 @@ public class TileDataReceiver extends TileAbstractReceiver implements IDataRecei
 	@Override
 	public void onEmitterConnected(IWirelessEmitter emitter) {
 		refreshConnectedNetworks();
-		PL2.getWirelessDataManager().connectNetworks(getNetwork(), emitter.getNetwork());
+		WirelessDataManager.instance().connectNetworks(getNetwork(), emitter.getNetwork());
 	}
 
 	@Override
 	public void onEmitterDisconnected(IWirelessEmitter emitter) {
 		refreshConnectedNetworks();
-		PL2.getWirelessDataManager().disconnectNetworks(getNetwork(), emitter.getNetwork());
+		WirelessDataManager.instance().disconnectNetworks(getNetwork(), emitter.getNetwork());
 	}
 
 }

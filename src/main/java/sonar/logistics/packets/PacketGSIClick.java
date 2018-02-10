@@ -10,10 +10,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
+import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.render.DisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.gsi.GSIHelper;
@@ -59,17 +59,20 @@ public class PacketGSIClick implements IMessage {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 				if (player != null) {
 					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						IDisplay display = PL2.getServerManager().getDisplay(message.click.identity);
-						if (display != null) {
-							InfoContainer container = (InfoContainer) display.container();
-							DisplayInfo renderInfo = container.getDisplayMonitoringUUID(message.infoID);
-							if (renderInfo != null) {
-								IInfo info = PL2.getServerManager().getInfoFromUUID(message.infoID);
-								if (info != null){
-									IGSIPacketHandler handler = GSIHelper.getGSIHandler(info);
-									handler.runGSIPacket(message.click, container.getDisplayInfo(message.infoPosition), player, message.clickTag);
+						InfoContainer container = PL2.getServerManager().getInfoContainer(message.click.identity);
+						if (container != null) {
+							if (InfoUUID.valid(message.infoID)) {
+								DisplayInfo renderInfo = container.getDisplayMonitoringUUID(message.infoID);
+								if (renderInfo != null) {
+									IInfo info = PL2.getServerManager().getInfoFromUUID(message.infoID);
+									if (info != null) {
+										IGSIPacketHandler handler = GSIHelper.getGSIHandler(info);
+										handler.runGSIPacket(message.click, container.getDisplayInfo(message.infoPosition), player, message.clickTag);
+										return;
+									}
 								}
 							}
+							GSIHelper.handler.runGSIPacket(message.click, container.getDisplayInfo(message.infoPosition), player, message.clickTag);
 						}
 					});
 				}

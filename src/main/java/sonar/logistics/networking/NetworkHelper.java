@@ -34,7 +34,7 @@ public class NetworkHelper {
 	}
 
 	public static ILogisticsNetwork getNetwork(int networkID){
-		return PL2.getNetworkManager().getNetwork(networkID);
+		return LogisticsNetworkHandler.instance().getNetwork(networkID);
 	}
 
 	public static ILogicListenable getIdentityTile(int identity){

@@ -1,4 +1,4 @@
-package sonar.logistics.api.info.render;
+package sonar.logistics.api.displays;
 
 import java.util.function.Consumer;
 
@@ -15,17 +15,29 @@ import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 /** used for storing display info to be used on Screens */
 public interface IInfoContainer extends INBTSyncable, IDirtyPart, ISyncableListener {
 
+	/**the current screen layout*/
+	public DisplayLayout getLayout();
+	
+	public int getContainerIdentity();
+	
 	/** if this Display requires this InfoUUID to be synced */
 	public boolean isDisplayingUUID(InfoUUID id);
 
 	/** get the current info UUID of the Monitor Info at the given position */
 	public InfoUUID getInfoUUID(int pos);
+	
+	public EnumFacing getFacing();
+	
+	public EnumFacing getRotation();
+	
+	public double[] getDisplayScaling();
 
 	/** set the current info UUID at the given position */
 	public void setUUID(InfoUUID id, int pos);

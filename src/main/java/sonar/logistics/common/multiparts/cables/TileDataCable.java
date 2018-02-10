@@ -29,6 +29,7 @@ import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 
@@ -40,7 +41,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	public int registryID = -1;
 
 	public ILogisticsNetwork getNetwork() {
-		return PL2.instance.getNetworkManager().getNetwork(registryID);
+		return LogisticsNetworkHandler.instance().getNetwork(registryID);
 	}
 
 	@Override
@@ -164,8 +165,8 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 					
 					//update networks
 
-					ILogisticsNetwork thisNet = PL2.getNetworkManager().getOrCreateNetwork(getRegistryID());
-					ILogisticsNetwork adjNetNet = PL2.getNetworkManager().getOrCreateNetwork(adjCable.getRegistryID());
+					ILogisticsNetwork thisNet = LogisticsNetworkHandler.instance().getOrCreateNetwork(getRegistryID());
+					ILogisticsNetwork adjNetNet = LogisticsNetworkHandler.instance().getOrCreateNetwork(adjCable.getRegistryID());
 					thisNet.onCablesChanged();
 					adjNetNet.onCablesChanged();
 					

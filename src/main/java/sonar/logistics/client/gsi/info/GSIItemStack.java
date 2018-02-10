@@ -8,8 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.client.gsi.AbstractGSI;
@@ -21,7 +21,7 @@ public class GSIItemStack extends AbstractGSI<MonitoredItemStack> {
 	@Override
 	public void renderGSIForeground(MonitoredItemStack info, InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
 		if (info.itemStack.getObject() != null) {
-			DisplayType type = container.display.getDisplayType();
+			//DisplayType type = container.display.getDisplayType();
 			StoredItemStack stack = info.itemStack.getObject();
 			ItemStack item = stack.item;
 			GlStateManager.pushAttrib();
@@ -29,10 +29,9 @@ public class GSIItemStack extends AbstractGSI<MonitoredItemStack> {
 			GlStateManager.enableDepth();
 			GL11.glTranslated(-(1 - width / 2 - 0.0625), -0.68 + height / 2, 0.00);
 			GL11.glRotated(180, 0, 1, 0);
-			GL11.glScaled(-1, 1, 1);
-			double actualScale = type == DisplayType.LARGE ? scale * 3 : scale * 2;
-			GL11.glScaled(actualScale, actualScale, 0.01);
-			double trans = type == DisplayType.SMALL ? 4 : -(7);
+			GL11.glScaled(-1, 1, 1);			
+			double actualScale = scale * 2;			
+			GL11.glScaled(actualScale, actualScale, 0.01);			
 			GL11.glTranslated(-8, -8, 0);
 			GlStateManager.disableLighting();
 			GlStateManager.enablePolygonOffset();

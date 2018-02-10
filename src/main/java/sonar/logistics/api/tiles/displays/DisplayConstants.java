@@ -1,8 +1,8 @@
 package sonar.logistics.api.tiles.displays;
 
+import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.ISuffixable;
-import sonar.logistics.api.info.render.IDisplayInfo;
 
 /**these constants are used when configuring data on Display Screens*/
 public class DisplayConstants {

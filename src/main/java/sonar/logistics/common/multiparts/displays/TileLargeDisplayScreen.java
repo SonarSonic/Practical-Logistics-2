@@ -25,7 +25,7 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
@@ -33,46 +33,26 @@ import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.client.gui.GuiDisplayScreen;
+import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
 import sonar.logistics.helpers.PacketHelper;
+import sonar.logistics.networking.displays.ConnectedDisplayHandler;
+import sonar.logistics.networking.displays.ConnectedDisplayHandler.ConnectedDisplayChange;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILargeDisplay {
 
-	//public int registryID = -1;
-	public boolean wasAdded = false;
+	// public int registryID = -1;
 	public ConnectedDisplay overrideDisplay = null;
-	public NBTTagCompound savedTag = null;
-	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // set default info
-	public SyncTagType.INT registryID = (INT) new SyncTagType.INT(4).setDefault(-1); 
-	public SyncTagType.BOOLEAN isLocked = (BOOLEAN) new SyncTagType.BOOLEAN(5); 
-	public boolean onRenderChange = true;
+	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // if this is the top left screen
+	public SyncTagType.INT connected_display_ID = (INT) new SyncTagType.INT(4).setDefault(-1); // id of the connected display.
+	public SyncTagType.BOOLEAN isLocked = (BOOLEAN) new SyncTagType.BOOLEAN(5); // if this screen was locked, must also be stored in screens as sometimes they connect before the connected display is loaded
 
 	{
-		syncList.addParts(shouldRender, registryID, isLocked);
-	}
-
-	@Override
-	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (getDisplayScreen() != null && !getWorld().isRemote) {
-			incrementLayout();
-			FontHelper.sendMessage("Screen Layout: " + getDisplayScreen().layout.getObject(), getWorld(), player);
-		}
-		return false;
-	}
-
-	public void update() {
-		super.update();
-		if (isServer() && onRenderChange) {
-			if (this.shouldRender()) {
-				getDisplayScreen().updateListeners = true;
-			}
-			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
-			onRenderChange = false;
-		}
+		syncList.addParts(shouldRender, connected_display_ID, isLocked);
 	}
 
 	public void updateDefaultInfo() {
-		if (this.getDisplayScreen() != null && shouldRender()) {
+		if (this.getConnectedDisplay() != null && shouldRender()) {
 			super.updateDefaultInfo();
 		}
 	}
@@ -80,34 +60,24 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	//// IInfoDisplay \\\\
 
 	@Override
+	public int getInfoContainerID() {
+		return getConnectedDisplay().getInfoContainerID();
+	}
+
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag) {
+		super.handleUpdateTag(tag);
+		//overrideDisplay = PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
+	}
+
+	@Override
 	public InfoContainer container() {
-		return getDisplayScreen().container;
-	}
-
-	@Override
-	public DisplayLayout getLayout() {
-		ConnectedDisplay screen = getDisplayScreen();
-		return screen == null ? DisplayLayout.ONE : screen.getLayout();
-	}
-
-	@Override
-	public void incrementLayout() {
-		getDisplayScreen().layout.incrementEnum();
-		while (!(getDisplayScreen().layout.getObject().maxInfo <= this.maxInfo())) {
-			getDisplayScreen().layout.incrementEnum();
-		}
-		SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
-		getDisplayScreen().updateListeners = true;
+		return getConnectedDisplay().container();
 	}
 
 	@Override
 	public DisplayType getDisplayType() {
 		return DisplayType.LARGE;
-	}
-
-	@Override
-	public int maxInfo() {
-		return 4;
 	}
 
 	@Override
@@ -119,35 +89,31 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 
 	@Override
 	public int getRegistryID() {
-		return registryID.getObject();
+		return connected_display_ID.getObject();
 	}
 
 	@Override
 	public void setRegistryID(int id) {
-		registryID.setObject(id);
-		SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
+		connected_display_ID.setObject(id);
+		//SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 	}
 
 	@Override
-	public ConnectedDisplay getDisplayScreen() {
-		return overrideDisplay != null ? overrideDisplay : PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
+	public ConnectedDisplay getConnectedDisplay() {
+		if (isClient() && overrideDisplay != null) {
+			return overrideDisplay;
+		}
+		return PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
 	}
 
 	@Override
 	public void setConnectedDisplay(ConnectedDisplay connectedDisplay) {
-		if (isServer() && shouldRender()) {
-			if (this.savedTag != null && !savedTag.hasNoTags()) {
-				connectedDisplay.readData(savedTag, SyncType.SAVE);
-				savedTag = null;
-				connectedDisplay.updateAllListeners();
-				PL2.getServerManager().updateListenerDisplays = true;
-			}
-		}
+		overrideDisplay = connectedDisplay;
 	}
 
 	@Override
 	public boolean shouldRender() {
-		return shouldRender.getObject() && getRegistryID() != -1 && getDisplayScreen() != null;
+		return shouldRender.getObject() && getRegistryID() != -1 && getConnectedDisplay() != null;
 	}
 
 	@Override
@@ -155,11 +121,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		if (shouldRender != this.shouldRender.getObject()) {
 			this.shouldRender.setObject(shouldRender);
 		}
-		onRenderChange = true;
-		if (isServer()) {
-			PL2.getServerManager().updateListenerDisplays = true;
-		}
-		this.markDirty();
 	}
 
 	//// ILogicViewable \\\\
@@ -167,12 +128,12 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	//// NETWORK \\\\
 	public void onNetworkConnect(ILogisticsNetwork network) {
 		super.onNetworkConnect(network);
-		getDisplayScreen().setHasChanged();
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 	}
 
 	public void onNetworkDisconnect(ILogisticsNetwork network) {
 		super.onNetworkDisconnect(network);
-		getDisplayScreen().setHasChanged();
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 	}
 
 	@Override
@@ -189,82 +150,48 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	@Override
 	public void addInfo(List<String> info) {
 		super.addInfo(info);
-		info.add("Large Display ID: " + registryID);
+		info.add("Large Display ID: " + connected_display_ID);
 		info.add("Should Render " + this.shouldRender.getObject());
-	}
-
-	public void addConnection() {
-		if (isServer()) {
-			PL2.getDisplayManager().queueDisplayAddition(this);
-		}
-	}
-
-	public void removeConnection() {
-		if (isServer()) {
-			PL2.getDisplayManager().queueDisplayRemoval(this);
-		}
 	}
 
 	//// EVENTS \\\\
 	@Override
 	public void onFirstTick() {
 		super.onFirstTick();
-		if (isServer() && !wasAdded) {
-			addConnection();
-			wasAdded = true;
+		if (isServer()) {
+			ConnectedDisplayHandler.instance().queueDisplayAddition(this);
 		}
 	}
 
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		wasAdded = false;
-		removeConnection();
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public AxisAlignedBB getRenderBoundingBox() {
-		return TileEntity.INFINITE_EXTENT_AABB;
-	}
-	
-	public boolean isLocked(){		
-		return this.isLocked.getObject() || getDisplayScreen() != null && getDisplayScreen().isLocked.getObject();
-	}
-
-	//// SAVE \\\\
-	/*
-	@Override
-	public void readData(NBTTagCompound nbt, SyncType type) {
-		super.readData(nbt, type);
-		if (nbt.hasKey("3")) {
-			registryID = nbt.getInteger("id");
-			shouldRender.readData(nbt, type);
-			wasLocked.readData(nbt, type);
-		}
-		if (this.isServer() && type.isType(SyncType.SAVE) && nbt.hasKey("connected")) {
-			this.savedTag = nbt;
+		if (isServer()) {
+			ConnectedDisplayHandler.instance().queueDisplayRemoval(this);
 		}
 	}
 
-	@Override
-	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		if (type.isType(SyncType.DEFAULT_SYNC) || (type.isType(SyncType.SAVE) && getDisplayScreen() != null && getDisplayScreen().isLocked.getObject())) {
-			nbt.setInteger("id", registryID);
-			shouldRender.writeData(nbt, type);
-			wasLocked.setObject(this.getDisplayScreen().isLocked.getObject());
-			wasLocked.writeData(nbt, type);
-		}
-		if (this.isServer() && type.isType(SyncType.SAVE) && this.shouldRender()) {
-			if (this.getDisplayScreen() != null) {
-				this.getDisplayScreen().writeData(nbt, type);
-			}
-		}
-		return super.writeData(nbt, type);
+	public boolean isLocked() {
+		return this.isLocked.getObject() || getConnectedDisplay() != null && getConnectedDisplay().isLocked.getObject();
 	}
-	*/
-
 	//// PACKETS \\\\
+
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
+		super.writeData(tag, type);
+		if (type.isType(SyncType.SPECIAL)) {
+			container().writeData(tag, SyncType.SAVE);
+		}
+		return tag;
+	}
+
+	@Override
+	public void readData(NBTTagCompound tag, SyncType type) {
+		super.readData(tag, type);
+		if (type.isType(SyncType.SPECIAL)) {
+			container().readData(tag, SyncType.SAVE);
+		}
+	}
 
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
@@ -284,38 +211,32 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 			this.shouldRender.readFromBuf(buf);
 			break;
 		case 6:
-			if (getDisplayScreen().isLocked.getObject()) {
-				getDisplayScreen().unlock();
-			} else {
-				getDisplayScreen().lock();
-			}
+			ConnectedDisplayHandler.setDisplayLocking(getRegistryID(), !getConnectedDisplay().isLocked.getObject());			
 			break;
 		}
 	}
 
-
 	@Override
 	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		TileAbstractDisplay part = (TileAbstractDisplay) getDisplayScreen().getTopLeftScreen();
-		return id == 0 ? new ContainerMultipartSync(part) : null;
+		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
+		return new ContainerMultipartSync(part);
 	}
 
 	@Override
 	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		TileAbstractDisplay part = (TileAbstractDisplay) getDisplayScreen().getTopLeftScreen();
-		return id == 0 ? new GuiDisplayScreen(part) : null;
+		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
+		return new GuiDisplayScreen(part, part.container(), GuiState.values()[id], tag.getInteger("infopos"));
 	}
-	
+
 	@Override
 	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			TileAbstractDisplay part = (TileAbstractDisplay) getDisplayScreen().getTopLeftScreen();
-			SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);
-			PL2.network.sendTo(new PacketConnectedDisplayUpdate(getDisplayScreen(), getRegistryID()), (EntityPlayerMP) player);
+		GuiState state = GuiState.values()[id];
+		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
+		SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);
+		PL2.network.sendTo(new PacketConnectedDisplayUpdate(getConnectedDisplay(), getRegistryID()), (EntityPlayerMP) player);
+		if (state.needsSources())
 			PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player);
-			break;
-		}
+
 	}
 
 	@Override

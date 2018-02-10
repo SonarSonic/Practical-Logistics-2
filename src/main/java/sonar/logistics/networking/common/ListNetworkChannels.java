@@ -68,7 +68,8 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 					break readers;
 				}
 			}
-			if(reader.getListenerList().displayListeners.hasListeners()){
+			//FIXME should this be necessary?
+			if(reader.getListenerList().getDisplayListeners().hasListeners()){
 				UPDATES.add(ListenerType.OLD_DISPLAY_LISTENER);
 			}
 		}

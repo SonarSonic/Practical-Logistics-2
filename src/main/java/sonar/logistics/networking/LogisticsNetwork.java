@@ -247,7 +247,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public void updateCables() {
 		List<INetworkListener> tiles = caches.get(CacheHandler.TILE);
 		tiles.forEach(tile -> removeConnection(tile)); //we remove them, but the cables then add them again below (as this is only a queue, they are never actually removed, unless necessary)
-		List<IDataCable> cables = PL2.getCableManager().getConnections(networkID);
+		List<IDataCable> cables = CableConnectionHandler.instance().getConnections(networkID);
 		cables.forEach(cable -> CableConnectionHandler.instance().addAllConnectionsToNetwork(cable, this));
 		markUpdate(NetworkUpdate.LOCAL, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
 

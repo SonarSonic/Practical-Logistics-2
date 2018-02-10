@@ -7,12 +7,19 @@ public enum DisplayType {
 	HOLOGRAPHIC(0.0625 * 6, 0.0625 * 14, 0.008), //
 	LARGE(0.0625 * 14, 0.0625 * 14, 0.008), 
 	CONNECTED(0.0625 * 16, 0.0625 * 16, 0.008);//
-	public double height, width, scale;
+	public double width, height, scale;
 
 	DisplayType(double height, double width, double scale) {
 		this.height = height;
 		this.width = width;
 		this.scale = scale;
+	}
+	
+	public int getInfoMax(){
+		if(this == SMALL || this == HOLOGRAPHIC){
+			return 2;
+		}
+		return 16;
 	}
 
 	public boolean isStaticScreen() {

@@ -187,13 +187,14 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		if (currentPage != null) {
+			//net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			currentPage.drawPage(this, mouseX, mouseY, pagePos);
+			//net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 		}
 	}
 
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		if (currentPage != null) {
 			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, -1);
 			currentPage.drawForegroundPage(this, x, y, pagePos, 0);
@@ -206,9 +207,6 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		if (coolDown != 0) {
 			coolDown--;
 		}
-		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
-		RenderHelper.restoreBlendState();
-
 		super.drawGuiContainerForegroundLayer(x, y);
 
 	}

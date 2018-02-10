@@ -22,6 +22,7 @@ public class GuiRedstoneReceiver extends GuiAbstractReceiver {
 	public void initGui() {
 		super.initGui();
 		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 2, guiTop + 2, 48, 0 + 16 * receiver.mode.getObject().ordinal(), "Emit If: " + receiver.mode.getObject().name(), "button.EmitterMode"));
+		
 	}
 
 	public void actionPerformed(GuiButton button) {

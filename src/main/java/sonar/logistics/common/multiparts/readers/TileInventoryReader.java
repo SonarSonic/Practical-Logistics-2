@@ -74,6 +74,12 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	}
 
 	//// ILogicReader \\\\
+
+	@Override
+	public int getMaxInfo() {
+		return 1;
+	}
+	
 	@Override
 	public AbstractChangeableList<MonitoredItemStack> getViewableList(AbstractChangeableList<MonitoredItemStack> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredItemStack>> channels, List<NodeConnection> usedChannels) {
 		if (updateList instanceof ItemChangeableList) {

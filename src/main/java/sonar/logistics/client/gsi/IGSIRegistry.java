@@ -1,7 +1,7 @@
 package sonar.logistics.client.gsi;
 
+import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.render.DisplayInfo;
 
 public interface IGSIRegistry {
 

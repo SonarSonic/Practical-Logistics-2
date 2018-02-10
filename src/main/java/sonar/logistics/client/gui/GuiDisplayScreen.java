@@ -9,14 +9,15 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
+import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.client.DisplayTextFields;
@@ -27,9 +28,12 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.packets.PacketDisplayTextEdit;
+import sonar.logistics.packets.PacketLocalProviderSelection;
 
 public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	public TileAbstractDisplay part;
+	public InfoContainer container;
 	public DisplayTextFields textFields;
 	private GuiState state = GuiState.LIST;
 	private int left = 7;
@@ -44,13 +48,20 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			this.xSize = xSize;
 			this.ySize = ySize;
 		}
+
+		public boolean needsSources() {
+			return this == SOURCE || this == LIST;
+		}
 	}
 
-	public GuiDisplayScreen(TileAbstractDisplay obj) {
+	public GuiDisplayScreen(TileAbstractDisplay obj, InfoContainer container, GuiState state, int infoID) {
 		super(new ContainerMultipartSync(obj), obj);
+		this.state = state;
 		this.part = obj;
-		this.ySize = 20 + obj.maxInfo() * 26;
+		this.container = container;
+		this.ySize = 20 + container.getMaxCapacity() * 26;
 		this.enableListRendering = false;
+		this.changeState(state, infoID);
 	}
 
 	public void initGui() {
@@ -66,20 +77,20 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			this.buttonList.add(new GuiButton(4, guiLeft + 8, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_RESET.t()));
 			this.buttonList.add(new GuiButton(5, guiLeft + 8 + 50, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_CLEAR.t()));
 			this.buttonList.add(new GuiButton(6, guiLeft + 108, guiTop + 130 + 8, 50, 20, PL2Translate.BUTTON_SAVE.t()));
-			List<String> strings = textFields == null ? part.container().getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
+			List<String> strings = textFields == null ? container.getDisplayInfo(infoID).getUnformattedStrings() : textFields.textList();
 			textFields = new DisplayTextFields(8, 28 + 4, 8);
 			textFields.initFields(strings);
 			break;
 		case LIST:
-			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 127, guiTop + 3, 64, 0 + 16 * part.getLayout().ordinal(), PL2Translate.BUTTON_LAYOUT.t() + ": " + part.getLayout(), "button.ScreenLayout"));
+			this.buttonList.add(new LogisticsButton(this, -1, guiLeft + 127, guiTop + 3, 64, 0 + 16 * container.getLayout().ordinal(), PL2Translate.BUTTON_LAYOUT.t() + ": " + container.getLayout(), "button.ScreenLayout"));
 			if (part instanceof TileLargeDisplayScreen) {
 				TileLargeDisplayScreen display = (TileLargeDisplayScreen) part;
-				this.buttonList.add(new LogisticsButton(this, -2, guiLeft + 127 + 20, guiTop + 3, 160, display.getDisplayScreen().isLocked.getObject() ? 0 : 16, PL2Translate.BUTTON_LOCKED.t() + ": " + display.getDisplayScreen().isLocked.getObject(), "button.LockDisplay"));
+				this.buttonList.add(new LogisticsButton(this, -2, guiLeft + 127 + 20, guiTop + 3, 160, display.getConnectedDisplay().isLocked.getObject() ? 0 : 16, PL2Translate.BUTTON_LOCKED.t() + ": " + display.getConnectedDisplay().isLocked.getObject(), "button.LockDisplay"));
 
 			}
 			int height = 20;
 			int left = 7;
-			for (int i = 0; i < part.maxInfo(); i++) {
+			for (int i = 0; i < container.getMaxCapacity(); i++) {
 				int top = 22 + ((height + 6) * i);
 				this.buttonList.add(new LogisticsButton(this, i, guiLeft + 127, guiTop + top, 32, 256 - 32, PL2Translate.BUTTON_EDIT.t(), ""));
 				this.buttonList.add(new LogisticsButton(this, i + 100, guiLeft + 147, guiTop + top, 32, 256 - 16, PL2Translate.BUTTON_SOURCE.t(), ""));
@@ -131,28 +142,26 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 					field.writeText(DisplayConstants.SUFFIX);
 				break;
 			case 4:
-				textFields.initFields(part.container().getDisplayInfo(infoID).getUnformattedStrings());
+				textFields.initFields(container.getDisplayInfo(infoID).getUnformattedStrings());
 				break;
 			case 5:
 				textFields.initFields(Lists.newArrayList());
 				break;
 			case 6:
-				part.container().getDisplayInfo(infoID).setFormatStrings(textFields.textList());
-				part.currentSelected = infoID;
-				part.sendByteBufPacket(1);
+				PL2.network.sendToServer(new PacketDisplayTextEdit(infoID, textFields.textList(), part.getIdentity(), part.getPartPos()));
 				changeState(GuiState.LIST, -1);
 				break;
 			}
 			break;
 		case LIST:
 			if (button.id == -1) {
-				part.incrementLayout();
+				container.incrementLayout();
 				reset();
 				part.sendByteBufPacket(2);
 				break;
 			}
 			if (button.id == -2) {
-				((TileLargeDisplayScreen) part).getDisplayScreen().isLocked.invert();
+				((TileLargeDisplayScreen) part).getConnectedDisplay().isLocked.invert();
 				reset();
 				part.sendByteBufPacket(6);
 				break;
@@ -176,7 +185,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 		this.state = state;
 		this.infoID = btnID;
 		this.xSize = state.xSize;
-		this.ySize = state == GuiState.LIST ? 20 + part.maxInfo() * 26 : state.ySize;
+		this.ySize = state == GuiState.LIST ? 20 + container.getMaxCapacity() * 26 : state.ySize;
 		this.enableListRendering = state == GuiState.SOURCE;
 		if (scroller != null)
 			this.scroller.renderScroller = state == GuiState.SOURCE;
@@ -195,15 +204,17 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			break;
 		case LIST:
 			FontHelper.textCentre(PL2Translate.DISPLAY_SCREEN.t(), xSize, 6, LogisticsColours.white_text.getRGB());
-			RenderHelper.saveBlendState();
-			for (int i = 0; i < part.maxInfo(); i++) {
-				drawInfo(i, i < size ? part.container().getDisplayInfo(i) : null);
+			for (int i = 0; i < container.getMaxCapacity(); i++) {
+				drawInfo(i, i < size ? container.getDisplayInfo(i) : null);
 			}
-			RenderHelper.restoreBlendState();
 			break;
 		case SOURCE:
 			FontHelper.textCentre(PL2Translate.SCREEN_INFO_SELECT.t(), xSize, 6, LogisticsColours.white_text);
-			FontHelper.textCentre(PL2Translate.SCREEN_INFO_SELECT_HELP.t(), xSize, 18, LogisticsColours.grey_text);
+			if (infoList.isEmpty()) {
+				FontHelper.textCentre("NO CONNECTED READERS", xSize, 18, new CustomColour(200, 100, 100));
+			} else {
+				FontHelper.textCentre(PL2Translate.SCREEN_INFO_SELECT_HELP.t(), xSize, 18, LogisticsColours.grey_text);
+			}
 			break;
 		default:
 			break;
@@ -256,12 +267,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	}
 
 	@Override
-	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		RenderHelper.restoreBlendState();
-	}
-
-	@Override
 	public int getColour(int i, int type) {
 		return LogisticsColours.getDefaultSelection().getRGB();
 	}
@@ -285,7 +290,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 
 	@Override
 	public boolean isSelectedInfo(Object info) {
-		return info instanceof InfoUUID && part.container().getInfoUUID(infoID) != null && part.container().getInfoUUID(infoID).equals(info);
+		return info instanceof InfoUUID && InfoUUID.valid(container.getInfoUUID(infoID)) && container.getInfoUUID(infoID).equals(info);
 	}
 
 	@Override
@@ -295,7 +300,6 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
-
 				FontHelper.text("-", InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
 			}
 		} else if (info instanceof IInfoProvider) {
@@ -309,9 +313,7 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 	@Override
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, Object info) {
 		if (buttonID == 0 && info instanceof InfoUUID) {
-			part.container().setUUID((InfoUUID) info, infoID);
-			part.currentSelected = infoID;
-			part.sendByteBufPacket(0);
+			PL2.network.sendToServer(new PacketLocalProviderSelection(infoID, (InfoUUID) info, part.getSlotID(), part.getPartPos()));
 		} else if (info instanceof IInfoProvider) {
 			RenderBlockSelection.addPosition(((IInfoProvider) info).getCoords(), false);
 		}

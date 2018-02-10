@@ -2,11 +2,11 @@ package sonar.logistics.client.gsi;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 
 public enum GSIPackets {
-	ITEM_CLICK(GSIHelper::runItemPacket), FLUID_CLICK(GSIHelper::runFluidPacket);
+	ITEM_CLICK(GSIHelper::doItemPacket), FLUID_CLICK(GSIHelper::doFluidPacket), SOURCE_BUTTON(GSIHelper::doSourceButtonPacket);
 
 	IPacketLogic logic;
 
@@ -15,6 +15,6 @@ public enum GSIPackets {
 	}
 
 	public static interface IPacketLogic {
-		public void runPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag);
+		public void doPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag);
 	}
 }

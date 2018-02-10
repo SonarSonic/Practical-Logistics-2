@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.ChunkWatchEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockCoords;
@@ -21,7 +22,7 @@ import sonar.core.helpers.ListHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.displays.IDisplay;
 
-/**caches display viewers, via accessing chunk PlayerMap*/
+/** caches display viewers, via accessing chunk PlayerMap */
 public class ChunkViewerHandler {
 
 	private static final ChunkViewerHandler INSTANCE = new ChunkViewerHandler();
@@ -34,8 +35,15 @@ public class ChunkViewerHandler {
 	public static final ChunkViewerHandler instance() {
 		return INSTANCE;
 	}
-	
-	public boolean hasViewersChanged(){
+
+	public void removeAll() {
+		displayChunks.clear();
+		cachedPlayers.clear();
+		CHUNK_CHANGES.clear();
+		DISPLAY_VIEWERS_CHANGED = true;
+	}
+
+	public boolean hasViewersChanged() {
 		return DISPLAY_VIEWERS_CHANGED;
 	}
 
@@ -71,6 +79,7 @@ public class ChunkViewerHandler {
 			return;
 		}
 		if (DISPLAY_VIEWERS_CHANGED) {
+			
 			DISPLAY_VIEWERS_CHANGED = !DISPLAY_VIEWERS_CHANGED;
 		}
 	}
@@ -80,33 +89,21 @@ public class ChunkViewerHandler {
 	}
 
 	public List<EntityPlayerMP> getWatchingPlayers(List<IDisplay> displays) {
-		List<EntityPlayerMP> watchingPlayers = Lists.newArrayList();	
-		for(IDisplay display : displays){
+		List<EntityPlayerMP> watchingPlayers = Lists.newArrayList();
+		for (IDisplay display : displays) {
 			List<EntityPlayerMP> players = getWatchingPlayers(display);
-			if(!players.isEmpty()){
+			if (!players.isEmpty()) {
 				ListHelper.addWithCheck(watchingPlayers, players);
 			}
-		}		
-		/*
-		List<EntityPlayerMP> watchingPlayers = Lists.newArrayList();		
-		Map<Integer, List<ChunkPos>> chunks = getWatchingChunks(displays);
-		chunks.forEach((DIM, positions) -> {
-			World server = SonarCore.proxy.getDimension(DIM);
-			List<EntityPlayerMP> chunkPlayers = ChunkHelper.getChunkPlayers(server, positions);
-			chunkPlayers.forEach(player -> {
-				if (!watchingPlayers.contains(player)) {
-					watchingPlayers.add(player);
-				}
-			});
-		});
-		*/
+		}
+		/* List<EntityPlayerMP> watchingPlayers = Lists.newArrayList(); Map<Integer, List<ChunkPos>> chunks = getWatchingChunks(displays); chunks.forEach((DIM, positions) -> { World server = SonarCore.proxy.getDimension(DIM); List<EntityPlayerMP> chunkPlayers = ChunkHelper.getChunkPlayers(server, positions); chunkPlayers.forEach(player -> { if (!watchingPlayers.contains(player)) { watchingPlayers.add(player); } }); }); */
 		return watchingPlayers;
 	}
 
 	public List<EntityPlayerMP> getWatchingPlayers(IDisplay d) {
-		List<EntityPlayerMP> players = cachedPlayers.computeIfAbsent(d.getIdentity(), iden -> {
+		List<EntityPlayerMP> players = cachedPlayers.computeIfAbsent(d.getInfoContainerID(), iden -> {
 			World server = SonarCore.proxy.getDimension(d.getCoords().getDimension());
-			//Preconditions.checkArgument(!server.isRemote);
+			// Preconditions.checkArgument(!server.isRemote);
 			return ChunkHelper.getChunkPlayers(server, getWatchingChunks(d));
 		});
 		return players;

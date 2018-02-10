@@ -1,8 +1,10 @@
 package sonar.logistics.client.gui;
 
 import sonar.core.client.gui.SonarTextField;
-import sonar.core.helpers.RenderHelper;
+import sonar.core.helpers.FontHelper;
 import sonar.core.inventory.ContainerMultipartSync;
+import sonar.logistics.PL2Translate;
+import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.nodes.TileNode;
 
 public class GuiNode extends GuiLogistics {
@@ -28,7 +30,7 @@ public class GuiNode extends GuiLogistics {
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		//FontHelper.textCentre(PL2Translate.NODE.t(), xSize, 6, LogisticsColours.white_text.getRGB());
+		FontHelper.textCentre(PL2Translate.NODE.t(), xSize, 6, LogisticsColours.white_text.getRGB());
 	}
 
 	public void onTextFieldChanged(SonarTextField field) {
@@ -36,11 +38,5 @@ public class GuiNode extends GuiLogistics {
 			this.part.priority.setObject(priority.getIntegerFromText());
 			part.sendByteBufPacket(1);
 		}
-	}
-
-	@Override
-	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		RenderHelper.restoreBlendState();
 	}
 }

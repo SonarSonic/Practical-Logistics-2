@@ -8,8 +8,8 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.client.gsi.AbstractGSI;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.AE2DriveInfo;
@@ -31,7 +31,7 @@ public class GSIAE2DriveInfo extends AbstractGSI<AE2DriveInfo> {
 		List<String> strings = Lists.newArrayList();
 		strings.add("Bytes: " + info.usedBytes.getObject() + "/" + info.totalBytes.getObject());
 		strings.add("Types: " + info.usedTypes.getObject() + "/" + info.totalTypes.getObject());
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, strings);
+		InfoRenderer.renderNormalInfo(width, height, scale, strings);
 		GL11.glPopMatrix();
 	}
 

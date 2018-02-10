@@ -15,11 +15,12 @@ import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.networking.LogisticsNetworkHandler;
 
 public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable> {
 
 	public static CableConnectionHandler instance() {
-		return PL2.getCableManager();
+		return PL2.instance.cableManager;
 	}
 
 	public final List<IDataCable> addedCables = Lists.newArrayList();
@@ -93,14 +94,14 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	//// ADD/REMOVE CABLES \\\\
 
 	public void addCableToNetwork(IDataCable cable) {
-		int networkID = PL2.getCableManager().addConnection(cable);
-		ILogisticsNetwork network = PL2.getNetworkManager().getOrCreateNetwork(networkID); // create network
+		int networkID = addConnection(cable);
+		ILogisticsNetwork network = LogisticsNetworkHandler.instance().getOrCreateNetwork(networkID); // create network
 		network.onCablesChanged();
 	}
 
 	public void removeCableFromNetwork(IDataCable cable) {
 		ILogisticsNetwork network = cable.getNetwork();
-		PL2.getCableManager().removeConnection(cable);
+		removeConnection(cable);
 		network.onCablesChanged();
 	}
 

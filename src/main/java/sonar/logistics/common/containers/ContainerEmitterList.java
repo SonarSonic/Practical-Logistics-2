@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import sonar.logistics.PL2;
+import sonar.logistics.networking.cabling.WirelessDataManager;
 
 public class ContainerEmitterList extends Container {
 	public EntityPlayer player;
@@ -15,7 +16,7 @@ public class ContainerEmitterList extends Container {
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
 		if (!player.getEntityWorld().isRemote)
-			PL2.getWirelessDataManager().removeViewer(player);
+			WirelessDataManager.instance().removeViewer(player);
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {

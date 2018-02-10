@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -36,6 +38,9 @@ import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
+import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.HeightAlignment;
+import sonar.logistics.api.displays.elements.WidthAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.displays.DisplayType;
@@ -47,49 +52,231 @@ public class InfoRenderer {
 
 	public static final double zLevel = 0, barOffset = 0.001;
 
+	@Deprecated
 	public static void renderNormalInfo(DisplayType type, String... toDisplay) {
-		renderNormalInfo(type, type.width, type.height, type.scale, SonarHelper.convertArray(toDisplay));
+		renderNormalInfo(type.width, type.height, type.scale, SonarHelper.convertArray(toDisplay));
 	}
 
+	@Deprecated
 	public static void renderNormalInfo(DisplayType type, List<String> toDisplay) {
-		renderNormalInfo(type, type.width, type.height, type.scale, toDisplay);
+		renderNormalInfo(type.width, type.height, type.scale, toDisplay);
 	}
 
-	public static double getYCentre(DisplayType type, double height) {
-		return ((0.12 * height) * (0.12 * height)) + (0.35 * height) - 0.58; // quadratic equation to solve the scale
+	@Deprecated
+	public static void renderNormalInfo(double width, double height, double scale, String... toDisplay) {
+		renderNormalInfo(width, height, scale, SonarHelper.convertArray(toDisplay));
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, String... toDisplay) {
-		renderNormalInfo(displayType, width, height, scale, SonarHelper.convertArray(toDisplay));
+	@Deprecated
+	public static void renderNormalInfo(double width, double height, double scale, int colour, String... toDisplay) {
+		renderNormalInfo(width, height, scale, colour, SonarHelper.convertArray(toDisplay));
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, String... toDisplay) {
-		renderNormalInfo(displayType, width, height, scale, colour, SonarHelper.convertArray(toDisplay));
+	@Deprecated
+	public static void renderNormalInfo(double width, double height, double scale, List<String> toDisplay) {
+		renderNormalInfo(width, height, scale, -1, toDisplay);
 	}
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, List<String> toDisplay) {
-		renderNormalInfo(displayType, width, height, scale, -1, toDisplay);
-	}
+	@Deprecated
+	public static void renderNormalInfo(double width, double height, double maxScale, int colour, List<String> toDisplay) {
 
-	public static void renderNormalInfo(DisplayType displayType, double width, double height, double scale, int colour, List<String> toDisplay) {
 		GlStateManager.disableLighting();
 		GlStateManager.enableCull();
-		float offset = (float) (12 / (1 / scale));
+		float offset = (float) (12 / (1 / maxScale));
 		double yCentre = 0;
 		double centre = (double) toDisplay.size() / 2 - 0.5;
 		int fontHeight = RenderHelper.fontRenderer.FONT_HEIGHT;
 		for (int i = 0; i < toDisplay.size(); i++) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, (-1 + height / 2 + 0.26) + (i == centre ? 0 : i < centre ? yCentre - offset * -(i - centre) : yCentre + offset * (i - centre)), 0);
-			GlStateManager.scale(scale, scale, 1.0f);
+			GlStateManager.scale(maxScale, maxScale, 1.0f);
 			String string = toDisplay.get(i);
 			int length = RenderHelper.fontRenderer.getStringWidth(string);
-			RenderHelper.fontRenderer.drawString(string, (float) ((-1 + 0.0625 + width / 2) / scale - length / 2), (float) 0.625, colour, false);
+			RenderHelper.fontRenderer.drawString(string, (float) ((-1 + 0.0625 + width / 2) / maxScale - length / 2), (float) 0.625, colour, false);
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.disableCull();
 		GlStateManager.enableLighting();
 
+	}
+
+	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
+
+	/** @param actualScaling the actual scaling
+	 * @param maxListScaling the max scaling //FIXME not necessary, should be scaled to fit given scaling regardless of max list scaling
+	 * @param percentageFill
+	 * @param elements */
+	public static void renderDisplayElements(double[] actualListScaling, double[] maxListScaling, double percentageFill, List<IDisplayElement> elements) {
+		for (IDisplayElement e : elements) {
+			double[] maxElementScaling = e.getMaxScaling();
+			double[] actualElementScaling = e.getActualScaling();
+			int[] unscaledWidthHeight = e.getUnscaledWidthHeight();
+			pushMatrix();
+			align(new double[] { maxListScaling[0], maxElementScaling[1], maxElementScaling[2] }, actualElementScaling, e.getWidthAlignment(), e.getHeightAlignment());
+			scale(actualElementScaling[SCALE], actualElementScaling[SCALE], actualElementScaling[SCALE]);
+			pushMatrix();
+			e.render();
+			popMatrix();
+			popMatrix();
+			translate(0, actualElementScaling[HEIGHT], 0);
+		}
+	}
+
+	public static void align(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
+		alignWidth(actualListScaling, actualElementScaling, width);
+		alignHeight(actualListScaling, actualElementScaling, height);
+	}
+
+	public static void alignWidth(double[] actualListScaling, double[] actualElementScaling, WidthAlignment align) {
+		switch (align) {
+		case CENTERED:
+			translate((actualListScaling[WIDTH] / 2) - (actualElementScaling[WIDTH] / 2), 0, 0);
+			break;
+		case LEFT:
+			break;
+		case RIGHT:
+			translate(actualListScaling[WIDTH] - actualElementScaling[WIDTH], 0, 0);
+			break;
+		default:
+			break;
+
+		}
+	}
+
+	public static void alignHeight(double[] actualListScaling, double[] actualElementScaling, HeightAlignment align) {
+		switch (align) {
+		case CENTERED:
+			translate(0, actualListScaling[HEIGHT] / 2 - actualElementScaling[HEIGHT] / 2, 0);
+			break;
+		case TOP:
+			break;
+		case BOTTOM:
+			translate(0, actualListScaling[HEIGHT] - actualElementScaling[HEIGHT], 0);
+			break;
+		default:
+			break;
+
+		}
+	}
+
+	/** scales the unscaled width and height to match the given scaling returned in the form, actual width, actual height, scale factor */
+	public static double[] getScaling(int[] unscaled, double[] scaling, double percentageFill) {
+		double actualElementScale = Math.min(scaling[0] / unscaled[0], scaling[1] / unscaled[1]);
+		double actualElementWidth = (unscaled[0] * actualElementScale) * percentageFill;
+		double actualElementHeight = (unscaled[1] * actualElementScale) * percentageFill;
+		return new double[] { actualElementWidth, actualElementHeight, actualElementScale };
+	}
+
+	public static void renderCenteredStringsWithAdaptiveScaling(double width, double height, double maxScale, int spacing, double percentageFill, int colour, List<String> toDisplay) {
+		double maxIndividualHeight = height / toDisplay.size();
+
+		double compressedHeight = 0;
+		double maximumWidth = 0;
+		int unscaledMaximumWidth = 0;
+		List<Double[]> matrices = Lists.newArrayList();
+
+		for (int i = 0; i < toDisplay.size(); i++) {
+			String s = toDisplay.get(i);
+			int unscaledWidth = getStringWidth(s);
+			int unscaledHeight = getStringHeight();
+			double scale = Math.min(width / unscaledWidth, maxIndividualHeight / unscaledHeight);
+			double maxWidth = (unscaledWidth * scale) * percentageFill;
+			double maxHeight = (unscaledHeight * scale) * percentageFill;
+			matrices.add(new Double[] { maxWidth, maxHeight, scale });
+			if (maxWidth > maximumWidth) {
+				maximumWidth = maxWidth;
+				unscaledMaximumWidth = unscaledWidth;
+			}
+			compressedHeight += maxHeight;
+
+		}
+		GlStateManager.translate((width - maximumWidth) / 2, (height - compressedHeight) / 2, 0);
+		for (int i = 0; i < toDisplay.size(); i++) {
+			String s = toDisplay.get(i);
+			Double[] matrix = matrices.get(i);
+
+			// if (i != 0) GlStateManager.translate(0, matrix[1], 0); //offset
+
+			//// START LIFT \\\\
+			GlStateManager.pushMatrix();
+			int unscaledWidth = getStringWidth(s);
+			int unscaledHeight = getStringHeight();
+			double scale = Math.min(width / unscaledWidth, matrix[1] / unscaledHeight);
+			double maxWidth = (unscaledWidth * scale);
+			double maxHeight = (unscaledHeight * scale);
+			GlStateManager.translate((maximumWidth - maxWidth) / 2, 0, 0);
+			GlStateManager.scale(scale, scale, scale);
+
+			//// START STRING RENDERING \\\\
+
+			GlStateManager.pushMatrix();
+			RenderHelper.fontRenderer.drawString(s, 0, 0, colour);
+			// GlStateManager.translate(-((maximumWidth / 2) - (maxWidth / 2)), 0, 0);
+			GlStateManager.popMatrix();
+			//// STOP STRING RENDERING \\\\
+
+			GlStateManager.popMatrix();
+			//// END LIFT \\\\
+
+			GlStateManager.translate(0, maxHeight, 0);
+		}
+	}
+
+	public static void renderCenteredStringsWithUniformScaling(double width, double height, double maxScale, int spacing, double percentageFill, int colour, List<String> toDisplay) {
+		GlStateManager.pushMatrix();
+		int unscaledWidth = getMaxWidth(toDisplay);
+		int unscaledHeight = getMaxHeight(toDisplay, spacing);
+		double scale = Math.min(width / unscaledWidth, height / unscaledHeight);
+		double maxWidth = (unscaledWidth * scale) * percentageFill;
+		double maxHeight = (unscaledHeight * scale) * percentageFill;
+		GlStateManager.translate((width - maxWidth) / 2, (height - maxHeight) / 2, 0);
+		GlStateManager.scale(scale, scale, scale);
+		for (int i = 0; i < toDisplay.size(); i++) {
+			if (i != 0)
+				GlStateManager.translate(0, spacing + getStringHeight(), 0);
+			String s = toDisplay.get(i);
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(((unscaledWidth / 2) - (getStringWidth(s) / 2)), 0, 0);
+			RenderHelper.fontRenderer.drawString(s, 0, 0, colour);
+			GlStateManager.popMatrix();
+		}
+		GlStateManager.popMatrix();
+	}
+
+	public static int getMaxWidth(List<String> toDisplay) {
+		int width = 0;
+		for (String s : toDisplay) {
+			int w = RenderHelper.fontRenderer.getStringWidth(s);
+			if (w > width) {
+				width = w;
+			}
+		}
+		return width;
+	}
+
+	public static int getMaxHeight(List<String> toDisplay, int spacing) {
+		int height = toDisplay.size() * getStringHeight();
+		// FIXME should empty strings just be the spacing height???
+		int spacings = toDisplay.size() - 1; /// -1 because the first text has no gap.
+		if (spacings > 0) {
+			height += spacings * spacing;
+		}
+		return height;
+	}
+
+	/** in pixels */
+	public static int getStringWidth(String s) {
+		return RenderHelper.fontRenderer.getStringWidth(s);
+	}
+
+	/** in pixels */
+	public static int getStringHeight() {
+		return RenderHelper.fontRenderer.FONT_HEIGHT;
+	}
+
+	public static int getStartX(int maxWidth) {
+
+		return 0;
 	}
 
 	public static void renderBox(double width, double height) {
@@ -155,7 +342,7 @@ public class InfoRenderer {
 	public static final double[][] downMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 0, 0, 0 }, { 1, 1, 0 } };
 	public static final double[][] upMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
 
-	public static void rotateDisplayRendering(EnumFacing face, EnumFacing rotation, int width, int height) {
+	public static void rotateDisplayRendering(EnumFacing face, EnumFacing rotation, double width, double height) {
 		double[] translate = matrix[face.ordinal()];
 		GL11.glRotated(180, 0, 0, 1);
 		switch (face) {
@@ -164,8 +351,7 @@ public class InfoRenderer {
 			int ordinal = rotation.ordinal();
 			ordinal = ordinal == 4 ? 5 : ordinal == 5 ? 4 : ordinal;
 			GL11.glRotated(rotate[ordinal], 0, 0, 1);
-			translate = getDownMatrix(ordinal, Math.max(1, width), Math.max(1, height));
-
+			translate = getDownMatrix(ordinal, Math.max(1D, width), Math.max(1D, height));
 			break;
 		case UP:
 			GL11.glRotated(270, 1, 0, 0);
@@ -178,15 +364,15 @@ public class InfoRenderer {
 			break;
 
 		}
-		GL11.glTranslated(translate[0] + 0.0625, translate[1], translate[2] - 0.005);
+		GL11.glTranslated(translate[0], translate[1], translate[2]);
 	}
 
-	public static double[] getDownMatrix(int i, int width, int height) {
+	public static double[] getDownMatrix(int i, double width, double height) {
 		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, width, 0 }, { height, 0, 0 }, { 0, 0, 0 }, { height, width, 0 } };
 		return newMatrix[i];
 	}
 
-	public static double[] getUpMatrix(int i, int width, int height) {
+	public static double[] getUpMatrix(int i, double width, double height) {
 		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
 		return newMatrix[i];
 	}
@@ -217,7 +403,6 @@ public class InfoRenderer {
 
 	public static void renderInventory(List<MonitoredItemStack> cachedList, int start, int stop, int xSlots, int ySlots) {
 		pushMatrix();
-		RenderHelper.saveBlendState();
 		color(1.0F, 1.0F, 1.0F, 1.0F);
 		translate(-1 + (0.0625 * 1.3), -1 + 0.0625 * 5, 0.00);
 		rotate(180, 0, 1, 0);
@@ -271,7 +456,6 @@ public class InfoRenderer {
 
 		popMatrix();
 		depthMask(true);
-		RenderHelper.restoreBlendState();
 		popMatrix();
 	}
 

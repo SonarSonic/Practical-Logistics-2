@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidStack;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.AbstractGSI;
 import sonar.logistics.client.gsi.GSIHelper;
@@ -33,7 +33,7 @@ public class GSIFluidStack extends AbstractGSI<MonitoredFluidStack> {
 			GlStateManager.enableLighting();
 			GL11.glTranslated(0, 0, -0.001);
 			GL11.glPopMatrix();
-			InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
+			InfoRenderer.renderNormalInfo(width, height, scale, displayInfo.getFormattedStrings());
 			GL11.glPopMatrix();
 		}
 	}

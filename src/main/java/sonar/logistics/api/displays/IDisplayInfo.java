@@ -1,4 +1,4 @@
-package sonar.logistics.api.info.render;
+package sonar.logistics.api.displays;
 
 import java.util.ArrayList;
 
@@ -22,8 +22,8 @@ public interface IDisplayInfo extends INBTSyncable {
 	@Nullable
 	public IInfo getSidedCachedInfo(boolean isRemote);
 
-	/** the currently cached info UUID, obtained via the Client Cache, this can be null */
-	@Nullable
+	/** the currently cached info UUID, obtained via the Client Cache, this may be an instanceof InfoUUID.EMPTY */
+	
 	public InfoUUID getInfoUUID();
 	
 	public IGSI getGSI();

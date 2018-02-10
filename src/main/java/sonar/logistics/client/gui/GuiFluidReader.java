@@ -184,7 +184,6 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		final int var12 = br / 65536;
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var11 * 0.8F, var12 * 0.8F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.disableBlend();
 		if (getGridList() != null) {
 			GlStateManager.disableLighting();
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();

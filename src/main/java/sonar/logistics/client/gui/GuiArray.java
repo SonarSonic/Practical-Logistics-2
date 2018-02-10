@@ -30,6 +30,5 @@ public class GuiArray extends GuiLogistics {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		renderPlayerInventory(7, 50);
 		drawTexturedModalRect(this.guiLeft + 16, this.guiTop + 19, 0, 0, 18 * 8, 18);
-		RenderHelper.restoreBlendState();
 	}
 }

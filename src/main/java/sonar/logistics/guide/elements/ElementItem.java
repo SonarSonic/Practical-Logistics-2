@@ -53,9 +53,7 @@ public class ElementItem implements IGuidePageElement {
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		RenderHelper.saveBlendState();
 		gui.drawTransparentRect(x, y, x + SIZE, y + SIZE, LogisticsColours.blue_overlay.getRGB());
-		RenderHelper.restoreBlendState();
 
 	}
 

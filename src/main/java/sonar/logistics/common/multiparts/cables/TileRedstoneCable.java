@@ -164,10 +164,12 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 					RedstoneConnectionHandler.instance().addConnection(this);
 
 					// update networks
+					/* FIXME probably not needed for redstone cable
 					ILogisticsNetwork thisNet = PL2.getNetworkManager().getOrCreateNetwork(getRegistryID());
 					ILogisticsNetwork adjNetNet = PL2.getNetworkManager().getOrCreateNetwork(adjCable.getRegistryID());
 					thisNet.onCablesChanged();
 					adjNetNet.onCablesChanged();
+					*/
 
 					// update cable render
 					SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);

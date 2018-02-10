@@ -10,9 +10,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
 import sonar.core.common.block.properties.SonarProperties;
+import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.render.DisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
@@ -42,24 +42,23 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		if (part instanceof TileLargeDisplayScreen && !((TileLargeDisplayScreen) part).shouldRender.getObject()) {
 			return;
 		}
+
+		InfoContainer container = part.container();
 		GlStateManager.pushMatrix();
-		GlStateManager.pushAttrib();
 		translate(pos.getX() - 0.5, pos.getY(), pos.getZ() - 0.5);
 
 		if (part instanceof ILargeDisplay) {
-			ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen();
-			InfoRenderer.rotateDisplayRendering(cache.state.getValue(SonarProperties.ORIENTATION), part.rotation, screen.width.getObject(), screen.height.getObject());
+			ConnectedDisplay screen = ((ILargeDisplay) part).getConnectedDisplay();
+			InfoRenderer.rotateDisplayRendering(cache.state.getValue(SonarProperties.ORIENTATION), container.getRotation(), screen.width.getObject(), screen.height.getObject());
 		} else {
-			InfoRenderer.rotateDisplayRendering(cache.state.getValue(SonarProperties.ORIENTATION), part.rotation, 0, 0);
+			InfoRenderer.rotateDisplayRendering(cache.state.getValue(SonarProperties.ORIENTATION), container.getRotation(), 0, 0);
 		}
 		
-		/* if (part instanceof ILargeDisplay) { ConnectedDisplay screen = ((ILargeDisplay) part).getDisplayScreen(); InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, screen.width.getObject(), screen.height.getObject()); } else { InfoRenderer.rotateDisplayRendering(part.getCableFace(), EnumFacing.NORTH, 0, 0); } */
 		GL11.glTranslated(-0.0625, 0, 0);
-		// part.container().renderContainer();
 		if (part.getDisplayType() == DisplayType.LARGE) {
 			GL11.glTranslated(0, -0.0625 * 4, 0);
 		}
-		DisplayLayout layout = part.getLayout();
+		DisplayLayout layout = container.getLayout();
 		DisplayType type = part.getDisplayType();
 		for (int dataPos = 0; dataPos < layout.maxInfo; dataPos++) {
 			DisplayInfo info = part.container().getDisplayInfo(dataPos);
@@ -74,8 +73,6 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 			GlStateManager.popAttrib();
 			GL11.glPopMatrix();
 		}
-
-		GlStateManager.popAttrib();
 		GlStateManager.popMatrix();
 	}
 

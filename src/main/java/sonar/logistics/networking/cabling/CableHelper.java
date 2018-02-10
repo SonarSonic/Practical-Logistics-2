@@ -26,12 +26,15 @@ import sonar.logistics.api.cabling.ICable;
 import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
+import sonar.logistics.helpers.LogisticsHelper;
 
 public class CableHelper extends CablingWrapper {
 
@@ -171,7 +174,10 @@ public class CableHelper extends CablingWrapper {
 		}
 		return logicTiles;
 	}
-	/* public ILogisticsNetwork getNetwork(TileEntity tile, EnumFacing dir) { // watch out for this null :P Pair<ConnectableType, Integer> connection = PL2.getDisplayManager().getConnectionType(null, tile.getWorld(), tile.getPos(), dir, ConnectableType.CONNECTABLE); if (connection.a != ConnectableType.NONE && connection.b != -1) { ILogisticsNetwork cache = PL2.instance.networkManager.getNetwork(connection.b); if (cache != null) { return cache; } } return EmptyLogisticsNetwork.INSTANCE; } public ILogisticsNetwork getNetwork(int registryID) { return PL2.instance.networkManager.getNetwork(registryID); } */
-
-	/* public static <T extends ICable> Pair<ConnectableType, Integer> getConnectionType(T source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) { BlockPos offset = pos.offset(dir); IMultipartContainer container = MultipartHelper.getPartContainer(world, offset); if (container != null) { return getConnectionType(source, container, dir, cableType); } else { TileEntity tile = world.getTileEntity(offset); if (tile != null) { return getConnectionTypeFromObject(source, tile, dir, cableType); } } return new Pair(ConnectableType.NONE, -1); } /** checks what cable type can be connected via a certain direction, assumes the other block can connect from this side public static <T extends ICable> Pair<ConnectableType, Integer> getConnectionType(T source, IMultipartContainer container, EnumFacing dir, ConnectableType cableType) { ISlottedPart part = container.getPartInSlot(PartSlot.getFaceSlot(dir.getOpposite())); if (part != null) { return getConnectionTypeFromObject(source, part, dir, cableType); } else { ISlottedPart centre = container.getPartInSlot(PartSlot.CENTER); if (centre != null && centre instanceof IDataCable) { return getConnectionTypeFromObject(source, centre, dir, cableType); } } return new Pair(ConnectableType.NONE, -1); } public static <T extends ICable> Pair<ConnectableType, Integer> getConnectionTypeFromObject(T source, Object connection, EnumFacing dir, ConnectableType cableType) { if (connection instanceof IDataCable) { IDataCable cable = (IDataCable) connection; if (cable.getConnectableType().canConnect(cableType)) { return cable.canConnectOnSide(cable.getRegistryID(), dir.getOpposite(), false) ? new Pair(cable.getConnectableType(), cable.getRegistryID()) : new Pair(ConnectableType.NONE, -1); } } else if (connection instanceof INetworkTile) { return ((INetworkTile) connection).canConnect(dir.getOpposite()).canShowConnection() ? new Pair(ConnectableType.TILE, -1) : new Pair(ConnectableType.NONE, -1); } return new Pair(ConnectableType.NONE, -1); } */
+	
+	public static boolean canDisplayConnectToItemNetwork(InfoUUID uuid, IDisplay display, int networkID){
+		//ILogisticsNetwork network = LogisticsHelper.getLocalProviders(viewables, world, pos, part)
+		
+		return false;		
+	}
 }

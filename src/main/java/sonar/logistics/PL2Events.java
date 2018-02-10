@@ -18,10 +18,14 @@ import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
+import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
+import sonar.logistics.networking.cabling.WirelessDataManager;
+import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.ConnectedDisplayHandler;
 import sonar.logistics.worlddata.ConnectedDisplayData;
 import sonar.logistics.worlddata.IdentityCountData;
 
@@ -40,12 +44,12 @@ public class PL2Events {
 			ChunkViewerHandler.instance().tick();
 			CableConnectionHandler.instance().tick();
 			RedstoneConnectionHandler.instance().tick();
-			PL2.getNetworkManager().tick();
+			LogisticsNetworkHandler.instance().tick();
 			PL2.getServerManager().tick();	
 					
-			PL2.getWirelessDataManager().tick();
-			PL2.getWirelessRedstoneManager().tick();
-			PL2.getDisplayManager().tick();
+			WirelessDataManager.instance().tick();
+			WirelessRedstoneManager.instance().tick();
+			ConnectedDisplayHandler.instance().tick();
 			TileArray.entityChanged = false;
 			
 			updateTick = System.nanoTime() - tickStart;
@@ -80,10 +84,10 @@ public class PL2Events {
 
 	@SubscribeEvent
 	public void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
-
+		//multiparts dont implement left clicking properly.
 		BlockPos pos = event.getPos();
 		World world = event.getWorld();
-		if (world.isRemote && coolDownClick == 0) {
+		if (coolDownClick == 0) {
 			IBlockState state = world.getBlockState(pos);
 			Block block = state.getBlock();
 			if (block == MCMultiPart.multipart) {

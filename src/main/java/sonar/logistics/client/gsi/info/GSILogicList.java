@@ -21,9 +21,9 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.RenderBlockSelection;
@@ -128,7 +128,7 @@ public class GSILogicList extends AbstractGSI<LogicInfoList> implements IGSIList
 					GlStateManager.enableLighting();
 					GL11.glTranslated(0, 0, -0.001);
 					GL11.glPopMatrix();
-					InfoRenderer.renderNormalInfo(container.display.getDisplayType(), fluidWidth, fluidHeight + 0.0625 / 2, container.getDisplay().getDisplayType().scale, fluid.getClientIdentifier(), fluid.getClientObject());
+					InfoRenderer.renderNormalInfo(fluidWidth, fluidHeight + 0.0625 / 2, container.scale, fluid.getClientIdentifier(), fluid.getClientObject());
 					GL11.glPopMatrix();
 					GL11.glPopMatrix();
 				}
@@ -151,7 +151,6 @@ public class GSILogicList extends AbstractGSI<LogicInfoList> implements IGSIList
 				GL11.glTranslated(xLevel * spacing, yLevel * spacing, 0);
 				double l = ((double) energy.getEnergyStack().stored * (double) (width) / energy.getEnergyStack().capacity);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				RenderHelper.saveBlendState();
 				GlStateManager.disableLighting();
 				boolean isHighlighted = false;
 				if (!RenderBlockSelection.positions.isEmpty()) {
@@ -161,11 +160,10 @@ public class GSILogicList extends AbstractGSI<LogicInfoList> implements IGSIList
 				}
 				Minecraft.getMinecraft().getTextureManager().bindTexture(InfoContainer.getColour(2));
 				InfoRenderer.renderProgressBar(width, 6 * 0.0625, l, width);
-				RenderHelper.restoreBlendState();
 				GL11.glTranslated(0, 0, -0.00625);
 				// GL11.glTranslated((width/2)-1, +1 + 0.0625 * 4, 0.00);
 				GL11.glTranslated(1, 1 - 0.0625 * 3.5, 0.00);
-				InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, 0.0625 * 6, scale / 3, isHighlighted ? new CustomColour(20, 100, 180).getRGB() : -1, Lists.newArrayList(energy.getMonitoredCoords().getClientIdentifier() + " - " + energy.getMonitoredCoords().getClientObject(), info.getClientIdentifier() + " - " + info.getClientObject()));
+				InfoRenderer.renderNormalInfo(width, 0.0625 * 6, scale / 3, isHighlighted ? new CustomColour(20, 100, 180).getRGB() : -1, Lists.newArrayList(energy.getMonitoredCoords().getClientIdentifier() + " - " + energy.getMonitoredCoords().getClientObject(), info.getClientIdentifier() + " - " + info.getClientObject()));
 				GL11.glPopMatrix();
 			}
 			break;

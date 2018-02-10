@@ -38,6 +38,7 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
+import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.filters.BaseFilter;
 import sonar.logistics.api.filters.FilterList;
 import sonar.logistics.api.filters.FluidFilter;
@@ -48,7 +49,6 @@ import sonar.logistics.api.filters.ItemFilter;
 import sonar.logistics.api.filters.OreDictFilter;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.render.DisplayInfo;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.nodes.TransferType;
 import sonar.logistics.api.utils.ListPacket;
@@ -505,7 +505,6 @@ public class GuiFilterList extends GuiSelectionList {
 				}
 				RenderHelper.renderItem(this, 13 + i * 18, -2 + yPos, item);
 				RenderHelper.renderStoredItemStackOverlay(item, 0, 13 + i * 18, -2 + yPos + yOffset * 18, null, true);
-				RenderHelper.restoreBlendState();
 			}
 			GlStateManager.translate(0, -12, 0);
 		}
@@ -647,11 +646,9 @@ public class GuiFilterList extends GuiSelectionList {
 	public void renderGridSelection(Object selection, int x, int y) {
 		if (selection instanceof StoredItemStack) {
 			StoredItemStack stored = (StoredItemStack) selection;
-			RenderHelper.saveBlendState();
 			ItemStack stack = stored.item;
 			RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
 			RenderHelper.renderStoredItemStackOverlay(stack, 0, 13 + (x * 18), 32 + (y * 18), null, true);
-			RenderHelper.restoreBlendState();
 		} else if (selection instanceof StoredFluidStack) {
 			StoredFluidStack stored = (StoredFluidStack) selection;
 			if (stored.fluid != null) {
@@ -711,7 +708,6 @@ public class GuiFilterList extends GuiSelectionList {
 		}
 		drawTransparentRect(guiLeft + 12, guiTop + 170, guiLeft + xSize - 12, guiTop + 252, LogisticsColours.grey_base.getRGB());
 		drawTransparentRect(guiLeft + 13, guiTop + 171, guiLeft + xSize - 13, guiTop + 251, LogisticsColours.blue_overlay.getRGB());
-		RenderHelper.restoreBlendState();
 	}
 
 	// BUTTONS

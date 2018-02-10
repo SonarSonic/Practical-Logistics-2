@@ -13,6 +13,7 @@ import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
 import sonar.logistics.networking.cabling.IRedstoneNetwork;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
+import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 
 public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedstoneEmitter {
 
@@ -21,7 +22,7 @@ public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedston
 
 	@Override
 	public IWirelessManager getWirelessHandler() {
-		return PL2.getWirelessRedstoneManager();
+		return WirelessRedstoneManager.instance();
 	}
 
 	@Override
@@ -29,22 +30,6 @@ public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedston
 		if (currentPower.getObject() > 0)
 			return TextFormatting.GREEN + super.getEmitterName();
 		return super.getEmitterName();
-	}
-
-	@Override
-	public void onFirstTick() {
-		super.onFirstTick();
-		// if (isServer()) {
-		// PL2.getWirelessRedstoneManager().connectEmitter(network, this);
-		// }
-	}
-
-	@Override
-	public void invalidate() {
-		super.invalidate();
-		// if (isServer()) {
-		// PL2.getWirelessRedstoneManager().disconnectEmitter(network, this);
-		// }
 	}
 
 	@Override
@@ -57,8 +42,7 @@ public class TileRedstoneEmitter extends TileAbstractEmitter implements IRedston
 	}
 
 	@Override
-	public void onCableChanged(int power) {
-			}
+	public void onCableChanged(int power) {}
 
 	@Override
 	public int getRedstonePower() {

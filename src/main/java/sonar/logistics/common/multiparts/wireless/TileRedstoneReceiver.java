@@ -27,6 +27,7 @@ import sonar.logistics.networking.cabling.IRedstoneNetwork;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
 import sonar.logistics.networking.cabling.RedstoneNetwork;
+import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 
 public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter, IRedstoneReceiver> implements IRedstoneReceiver, IRedstoneConnectable {
 
@@ -37,15 +38,7 @@ public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter,
 
 	@Override
 	public IWirelessManager getWirelessHandler() {
-		return PL2.getWirelessRedstoneManager();
-	}
-
-	public void onFirstTick() {
-		super.onFirstTick();
-	}
-
-	public void invalidate() {
-		super.invalidate();
+		return WirelessRedstoneManager.instance();
 	}
 
 	public void updatePower() {
@@ -76,15 +69,15 @@ public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter,
 	@Override
 	public void onEmitterDisconnected(IRedstoneEmitter emitter) {
 		// updatePower();
-		PL2.getWirelessRedstoneManager().disconnectNetworks(getRedstoneNetwork(), emitter.getRedstoneNetwork());
-		PL2.getRedstoneManager().markPowerForUpdate(rNetwork.getNetworkID());
+		WirelessRedstoneManager.instance().disconnectNetworks(getRedstoneNetwork(), emitter.getRedstoneNetwork());
+		RedstoneConnectionHandler.instance().markPowerForUpdate(rNetwork.getNetworkID());
 	}
 
 	@Override
 	public void onEmitterConnected(IRedstoneEmitter emitter) {
 		// updatePower();
-		PL2.getWirelessRedstoneManager().connectNetworks(getRedstoneNetwork(), emitter.getRedstoneNetwork());
-		PL2.getRedstoneManager().markPowerForUpdate(rNetwork.getNetworkID());
+		WirelessRedstoneManager.instance().connectNetworks(getRedstoneNetwork(), emitter.getRedstoneNetwork());
+		RedstoneConnectionHandler.instance().markPowerForUpdate(rNetwork.getNetworkID());
 	}
 
 	@Override

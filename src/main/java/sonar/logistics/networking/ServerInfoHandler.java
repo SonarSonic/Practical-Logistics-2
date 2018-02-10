@@ -32,6 +32,7 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.info.InfoHelper;
 
 public class ServerInfoHandler implements IInfoManager {
@@ -52,11 +53,11 @@ public class ServerInfoHandler implements IInfoManager {
 	public boolean newChunks = false;
 
 	public int ticks;
-	public boolean updateListenerDisplays;
 
 	public void removeAll() {
 		changedInfo.clear();
 		displays.clear();
+		markDisplaysDirty = true;
 		info.clear();
 		monitoredLists.clear();
 		identityTiles.clear();
@@ -100,20 +101,20 @@ public class ServerInfoHandler implements IInfoManager {
 		return new ConnectedDisplay(display);// kills Ait
 	}
 
-	public void addIdentityTile(ILogicListenable infoProvider) {
-		if (identityTiles.containsValue(infoProvider)) {
+	public void addIdentityTile(ILogicListenable logicTile) {
+		if (identityTiles.containsValue(logicTile)) {
 			return;
 		}
-		identityTiles.put(infoProvider.getIdentity(), infoProvider);
-		updateListenerDisplays = true;
+		identityTiles.put(logicTile.getIdentity(), logicTile);
+		LocalProviderHandler.onLocalProviderAdded(logicTile);
 	}
 
-	public void removeIdentityTile(ILogicListenable monitor) {
-		for (int i = 0; i < (monitor instanceof IInfoProvider ? ((IInfoProvider) monitor).getMaxInfo() : 1); i++) {
-			info.put(new InfoUUID(monitor.getIdentity(), i), InfoError.noData);
+	public void removeIdentityTile(ILogicListenable logicTile) {
+		for (int i = 0; i < (logicTile instanceof IInfoProvider ? ((IInfoProvider) logicTile).getMaxInfo() : 1); i++) {
+			info.put(new InfoUUID(logicTile.getIdentity(), i), InfoError.noData);
 		}
-		identityTiles.remove(monitor.getIdentity());
-		updateListenerDisplays = true;
+		identityTiles.remove(logicTile.getIdentity());
+		LocalProviderHandler.onLocalProviderRemoved(logicTile);
 	}
 
 	public ILogicListenable getIdentityTile(int iden) {
@@ -124,18 +125,23 @@ public class ServerInfoHandler implements IInfoManager {
 		if (!displays.containsValue(display)) {
 			displays.put(display.getIdentity(), display);
 			ChunkViewerHandler.instance().onDisplayAdded(display);
-			updateListenerDisplays = true;
+			LocalProviderHandler.onDisplayAdded(display);
 		}
 	}
 
 	public void removeDisplay(IDisplay display) {
-		identityTiles.remove(display);
+		displays.remove(display.getIdentity());
 		ChunkViewerHandler.instance().onDisplayRemoved(display);
-		updateListenerDisplays = true;
+		LocalProviderHandler.onDisplayRemoved(display);
 	}
 
+	@Override
 	public IDisplay getDisplay(int iden) {
 		return displays.get(iden);
+	}
+
+	public ConnectedDisplay getConnectedDisplay(int iden) {
+		return connectedDisplays.get(iden);
 	}
 
 	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
@@ -148,39 +154,17 @@ public class ServerInfoHandler implements IInfoManager {
 
 	@Nullable
 	public Pair<InfoUUID, UniversalChangeableList<?>> getMonitorFromServer(InfoUUID uuid) {
-		for (Entry<InfoUUID, ?> entry : monitoredLists.entrySet()) {
-			if (entry.getKey().equals(uuid)) {
-				return new Pair(entry.getKey(), entry.getValue());
-			}
-		}
-		return null;
+		AbstractChangeableList list = getMonitoredList(uuid);
+		return list != null ? new Pair(uuid, list) : null;
 	}
 
 	@Nullable
 	public <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid) {
-		for (Entry<InfoUUID, AbstractChangeableList> entry : monitoredLists.entrySet()) {
-			if (entry.getKey().equals(uuid)) {
-				return entry.getValue();
-			}
-		}
-		return null;
+		return monitoredLists.get(uuid);
 	}
 
 	public void tick() {
-
-		if (updateListenerDisplays) {
-			updateListenerDisplays = false;
-			identityTiles.values().forEach(tile -> tile.getListenerList().getDisplayListeners().clear());
-
-			displays.values().forEach(display -> display.container().forEachValidUUID(uuid -> {
-				ILogicListenable monitor = getIdentityTile(uuid.getIdentity());
-				if (monitor != null && monitor instanceof ILogicListenable) {
-					monitor.getListenerList().getDisplayListeners().addListener(display, 0);
-				}
-			}));
-
-		}
-
+		LocalProviderHandler.updateLists();
 		if (!changedInfo.isEmpty() && !displays.isEmpty()) {
 			Map<EntityPlayerMP, NBTTagList> savePackets = new HashMap<EntityPlayerMP, NBTTagList>();
 			for (Entry<ILogicListenable, List<Integer>> id : changedInfo.entrySet()) {
@@ -190,9 +174,13 @@ public class ServerInfoHandler implements IInfoManager {
 					for (Integer i : id.getValue()) {
 						InfoUUID uuid = new InfoUUID(id.getKey().getIdentity(), i);
 						IInfo monitorInfo = getInfoFromUUID(uuid);
-						NBTTagCompound saveTag = InfoHelper.writeInfoToNBT(new NBTTagCompound(), monitorInfo, SyncType.SAVE);
-						saveTag = uuid.writeData(saveTag, SyncType.SAVE);
-						PacketHelper.createInfoUpdatesForListeners(savePackets, listeners, saveTag, saveTag, false);
+						if (monitorInfo != null) {
+							NBTTagCompound saveTag = InfoHelper.writeInfoToNBT(new NBTTagCompound(), monitorInfo, SyncType.SAVE);
+							if (!saveTag.hasNoTags()) {
+								saveTag = uuid.writeData(saveTag, SyncType.SAVE);
+								PacketHelper.createInfoUpdatesForListeners(savePackets, listeners, saveTag, saveTag, true);
+							}
+						}
 					}
 				}
 			}
@@ -206,6 +194,9 @@ public class ServerInfoHandler implements IInfoManager {
 	}
 
 	public void changeInfo(ILogicListenable source, InfoUUID id, IInfo info) {
+		if (!InfoUUID.valid(id)) {
+			return;
+		}
 		IInfo last = getInfoFromUUID(id);
 		if (info == null && last != null) {
 			info = InfoError.noData;

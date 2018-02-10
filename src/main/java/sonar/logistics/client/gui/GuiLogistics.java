@@ -29,7 +29,6 @@ public class GuiLogistics extends GuiSonarTile {
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		RenderHelper.saveBlendState();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		drawTransparentRect(this.guiLeft, this.guiTop, this.guiLeft + this.xSize, this.guiTop + this.ySize, LogisticsColours.layers[1].getRGB());
 		drawTransparentRect(this.guiLeft + 1, this.guiTop + 1, this.guiLeft + this.xSize - 1, this.guiTop + this.ySize - 1, LogisticsColours.layers[2].getRGB());
@@ -40,14 +39,14 @@ public class GuiLogistics extends GuiSonarTile {
 		if (scroller != null && scroller.renderScroller) {
 			if (scroller.orientation.isVertical()) {
 				int scrollYPos = scroller.top + (int) ((float) (scroller.length - 17) * scroller.getCurrentScroll());
-				drawRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
-				drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
-				drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
+				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
 			}else{
 				int scrollXPos = scroller.left + (int) ((float) (scroller.width - 17) * scroller.getCurrentScroll());
-				drawRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());				
-				drawRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8, LogisticsColours.layers[2].getRGB());
-				drawRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8,  LogisticsColours.layers[2].getRGB());				
+				drawTransparentRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());				
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8,  LogisticsColours.layers[2].getRGB());				
 			}
 		}
 	}

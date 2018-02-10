@@ -1,8 +1,8 @@
 package sonar.logistics.api.render;
 
+import sonar.logistics.api.displays.IInfoContainer;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.render.IInfoContainer;
-import sonar.logistics.api.info.render.InfoContainer;
 
 /**the render properties for a {@link IInfo} when rendered in a {@link InfoContainer}*/
 public class RenderInfoProperties {

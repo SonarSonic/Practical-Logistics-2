@@ -32,7 +32,7 @@ public class InfoNetworkChannels extends ListNetworkChannels<IProvidableInfo, In
 		
 		if (UPDATES.canSyncUpdate(UpdateType.DISPLAY)) {
 			for (IListReader reader : readers) {
-				if (reader instanceof INetworkReader && !reader.getListenerList().displayListeners.isEmpty()) {
+				if (reader instanceof INetworkReader && !reader.getListenerList().getDisplayListeners().isEmpty()) {
 					InfoUUID uuid = handler.getReaderUUID(reader);
 					AbstractChangeableList<IProvidableInfo> updateList = handler.getUUIDLatestList(uuid);
 					((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels.get(reader.getIdentity()), uuid);

@@ -137,10 +137,6 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 		return PL2.getInfoManager(world.isRemote).getMonitoredList(id);
 	}
 
-	public int getMaxInfo() {
-		return 4;
-	}
-
 	//// IChannelledTile \\\\
 
 	@Override

@@ -64,10 +64,4 @@ public class GuiEntityNode extends GuiLogistics {
 	public void mouseClicked(int i, int j, int k) throws IOException {
 		super.mouseClicked(i, j, k);
 	}
-
-	@Override
-	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		RenderHelper.restoreBlendState();
-	}
 }

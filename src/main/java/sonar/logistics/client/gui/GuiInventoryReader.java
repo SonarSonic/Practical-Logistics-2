@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -204,16 +205,14 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 
 	@Override
 	public void renderGridElement(MonitoredItemStack selection, int x, int y, int slot) {
-		RenderHelper.saveBlendState();
 		StoredItemStack storedStack = selection.getStoredStack();
 		if (storedStack == null) {
 			return;
 		}
 		ItemStack stack = storedStack.item;
+		GlStateManager.depthMask(false);
 		RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
 		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
-		RenderHelper.restoreBlendState();
-
 	}
 
 	@Override

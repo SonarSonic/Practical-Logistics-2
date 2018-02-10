@@ -2,6 +2,7 @@ package sonar.logistics.networking.cabling;
 
 import java.util.List;
 
+import sonar.logistics.PL2;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
@@ -9,6 +10,10 @@ import sonar.logistics.api.wireless.IRedstoneReceiver;
 import sonar.logistics.api.wireless.WirelessConnectionType;
 
 public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNetwork, IRedstoneEmitter, IRedstoneReceiver> {
+
+	public static WirelessRedstoneManager instance() {
+		return PL2.instance.wirelessRedstoneManager;
+	}
 
 	@Override
 	public WirelessConnectionType type() {

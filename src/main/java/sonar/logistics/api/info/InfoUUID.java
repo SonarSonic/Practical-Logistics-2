@@ -1,5 +1,7 @@
 package sonar.logistics.api.info;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.base.Objects;
 
 import io.netty.buffer.ByteBuf;
@@ -9,6 +11,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.cabling.INetworkTile;
 
 /** used to identify info and find the monitor which created it */
+@Nonnull
 public class InfoUUID implements INBTSyncable {
 
 	public int identity;
@@ -20,12 +23,20 @@ public class InfoUUID implements INBTSyncable {
 		this.identity = tile.getIdentity();
 		this.channelID = channelID;
 	}
-	
+
 	public InfoUUID(int identity, int channelID) {
 		this.identity = identity;
 		this.channelID = channelID;
 	}
 
+	public static InfoUUID newEmpty(){
+		return new InfoUUID(-1, -1);
+	}
+
+	public static InfoUUID newInvalid(){
+		return new InfoUUID(-2, -2);
+	}
+	
 	public int getIdentity() {
 		return identity;
 	}
@@ -45,11 +56,16 @@ public class InfoUUID implements INBTSyncable {
 		return Objects.hashCode(identity, channelID);
 	}
 
-	public boolean valid() {
-		if (identity == -1 && channelID == -1) {
+	public static boolean valid(InfoUUID uuid) {
+		if (uuid == null || uuid.identity < 0 || uuid.channelID < 0) {
 			return false;
 		}
 		return true;
+	}
+	
+	/**if this uuid has been received from the server yet*/
+	public static boolean shouldRender(InfoUUID uuid){
+		return uuid.identity!=-2;
 	}
 
 	public static InfoUUID getUUID(ByteBuf buf) {

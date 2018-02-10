@@ -22,6 +22,7 @@ import sonar.logistics.client.gui.GuiWirelessStorageEmitterList;
 import sonar.logistics.client.gui.GuiWirelessStorageReader;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.containers.ContainerStorageViewer;
+import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.items.ItemHelper;
 
 public class WirelessStorageReader extends SonarItem implements IWirelessStorageReader, IFlexibleGui<ItemStack> {
@@ -54,7 +55,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 				nbt = new NBTTagCompound();
 			}
 			Integer identity = getEmitterIdentity(stack);
-			IDataEmitter emitter = PL2.getWirelessDataManager().getEmitter(identity);
+			IDataEmitter emitter = WirelessDataManager.instance().getEmitter(identity);
 			if (emitter != null && !player.isSneaking()) {
 				if (!emitter.getCoords().isChunkLoaded()) {
 					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);
@@ -76,14 +77,14 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 	public void onGuiOpened(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			IDataEmitter emitter = PL2.getWirelessDataManager().getEmitter(getEmitterIdentity(obj));
+			IDataEmitter emitter = WirelessDataManager.instance().getEmitter(getEmitterIdentity(obj));
 			if (emitter != null) {
 				emitter.sendRapidUpdate(player);
 				emitter.getListenerList().addListener(player, ListenerType.OLD_GUI_LISTENER);
 			}
 			break;
 		case 1:
-			PL2.getWirelessDataManager().addViewer(player);
+			WirelessDataManager.instance().addViewer(player);
 			break;
 		}
 	}
@@ -118,7 +119,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			if (buf.readBoolean()) {
 				selected = ByteBufUtils.readItemStack(buf);
 			}
-			IDataEmitter emitter = PL2.getWirelessDataManager().getEmitter(getEmitterIdentity(stack));
+			IDataEmitter emitter = WirelessDataManager.instance().getEmitter(getEmitterIdentity(stack));
 			ItemHelper.onNetworkItemInteraction(emitter, emitter.getNetwork(), emitter.getServerItems(), player, selected, buf.readInt());
 
 			break;

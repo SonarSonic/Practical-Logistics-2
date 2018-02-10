@@ -40,18 +40,12 @@ public class GuiClock extends GuiLogistics {
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
-		RenderHelper.restoreBlendState();
 		super.drawGuiContainerForegroundLayer(x, y);
 		GL11.glPushMatrix();
 		GL11.glScaled(1.5, 1.5, 1.5);
 		FontHelper.textCentre(timeFormat.format(getLong() - (60 * 60 * 1000)).substring(0, 11), (int) (xSize / (1.5)), 6, -1);
 		GL11.glPopMatrix();
 
-	}
-	@Override
-	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
-		RenderHelper.restoreBlendState();
 	}
 
 	protected void actionPerformed(GuiButton button) {

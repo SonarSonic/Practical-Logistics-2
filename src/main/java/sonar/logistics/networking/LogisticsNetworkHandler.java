@@ -7,14 +7,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import sonar.logistics.PL2;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
 
 public class LogisticsNetworkHandler {
 
-	
+	public static LogisticsNetworkHandler instance() {
+		return PL2.instance.networkManager;
+	}	
 	
 	public Map<Integer, ILogisticsNetwork> cache = new ConcurrentHashMap<Integer, ILogisticsNetwork>();
 

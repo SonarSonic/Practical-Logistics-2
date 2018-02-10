@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
@@ -64,9 +65,10 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderHelper.saveBlendState();
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GlStateManager.enableDepth();
 		RenderHelper.renderItem(gui, 8, yPos - 1, stack);
 		RenderHelper.renderStoredItemStackOverlay(stack, stack.getCount() == 1 ? 0 : stack.getCount(), 8, yPos - 1, null, true);
+		GlStateManager.disableDepth();
 		RenderHelper.restoreBlendState();
 		FontHelper.text(stack.getDisplayName(), 28, yPos + 3, -1);
 	}

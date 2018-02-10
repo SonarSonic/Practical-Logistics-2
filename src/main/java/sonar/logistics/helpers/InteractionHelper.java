@@ -17,19 +17,23 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
-import sonar.logistics.api.info.render.DisplayInfo;
+import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.IInfoContainer;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
+import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.fluids.DummyFluidHandler;
 import sonar.logistics.packets.PacketItemInteractionText;
 
@@ -54,8 +58,8 @@ public class InteractionHelper {
 
 	public static void screenItemStackClicked(int networkID, StoredItemStack storedItemStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(click.type);
-		EnumFacing facing = displayInfo.container.getDisplay().getCableFace();
-		ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(networkID);
+		EnumFacing facing = displayInfo.container.getFacing();
+		ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(networkID);
 		if (toRemove.a != 0 && network.isValid()) {
 			switch (toRemove.b) {
 			case ADD:
@@ -95,7 +99,7 @@ public class InteractionHelper {
 	}
 
 	public static void onScreenFluidStackClicked(int networkID, StoredFluidStack fluidStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
-		ILogisticsNetwork network = PL2.getNetworkManager().getNetwork(networkID);
+		ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(networkID);
 		if (network.isValid()) {
 			IFluidHandler handler = new DummyFluidHandler(network, fluidStack);
 			EnumHand hand = player.getActiveHand();
@@ -118,57 +122,80 @@ public class InteractionHelper {
 		}
 	}
 
-	public static DisplayScreenClick getClickPosition(IDisplay display, BlockPos clickPos, BlockInteractionType type, EnumFacing face, float hitX, float hitY, float hitZ) {
-		DisplayScreenClick position = new DisplayScreenClick();
+	public static double[] getDisplayPositionFromXY(InfoContainer container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
 		double[] clickPosition = getClickPosition(face, hitX, hitY, hitZ);
-		if (display instanceof ILargeDisplay) {
-			ConnectedDisplay connected = ((ILargeDisplay) display).getDisplayScreen();
-			ILargeDisplay topLeft = connected.getTopLeftScreen();
-			if (topLeft != null && topLeft.getCoords() != null) {
-				BlockPos leftPos = topLeft.getCoords().getBlockPos();
+		if (container.getDisplay() instanceof ConnectedDisplay) {
+			ConnectedDisplay connected = (ConnectedDisplay) container.getDisplay();
+			BlockCoords coords = connected.getCoords();
+			if (coords != null) {
+				BlockPos leftPos = coords.getBlockPos();
 				BlockPos displayPos = clickPos;
 				int x = Math.abs(leftPos.getX() - displayPos.getX());
 				int y = Math.abs(leftPos.getY() - displayPos.getY());
 				int z = Math.abs(leftPos.getZ() - displayPos.getZ());
-				if (topLeft.getCableFace().getAxis() != Axis.Y) {
+				if (container.getFacing().getAxis() != Axis.Y) {
 					clickPosition[0] += x + z;
 					clickPosition[1] += y;
-				} else if (topLeft.getCableFace() == EnumFacing.UP) {
+				} else if (container.getFacing() == EnumFacing.UP) {
 					clickPosition[0] += x;
 					clickPosition[1] += z;
-				} else if (topLeft.getCableFace() == EnumFacing.DOWN) {
+				} else if (container.getFacing() == EnumFacing.DOWN) {
 					clickPosition[0] += x;
 					clickPosition[1] += z;
 				}
 			}
 		} else {
-			// clickPosition[0] = clickPosition[0] - ((display.getDisplayType().width / 2));
-			clickPosition[1] = clickPosition[1] - ((display.getDisplayType().height / 2));
+			clickPosition[1] = clickPosition[1] - ((container.height / 2));
 		}
-		position.setDisplayIdentity(display.getIdentity());
+		return clickPosition;
+	}
+
+	public static DisplayScreenLook getLookPosition(InfoContainer container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
+		DisplayScreenLook position = new DisplayScreenLook();
+		double[] clickPosition = getDisplayPositionFromXY(container, clickPos, face, hitX, hitY, hitZ);
+		position.setContainerIdentity(container.getContainerIdentity());
+		position.setLookPosition(clickPosition);
+		return position;
+	}
+
+	public static DisplayScreenClick getClickPosition(InfoContainer container, BlockPos clickPos, BlockInteractionType type, EnumFacing face, float hitX, float hitY, float hitZ) {
+		DisplayScreenClick position = new DisplayScreenClick();
+		double[] clickPosition = getDisplayPositionFromXY(container, clickPos, face, hitX, hitY, hitZ);
+		position.setContainerIdentity(container.getContainerIdentity());
 		position.setClickPosition(clickPosition);
 		position.type = type;
 		position.clickPos = clickPos;
-
 		return position;
 	}
 
 	/* public static double[] getPos(IDisplay display, RenderInfoProperties renderInfo) { if (display instanceof ConnectedDisplay) { ConnectedDisplay connected = (ConnectedDisplay) display; if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) { BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos(); double[] translation = renderInfo.getTranslation(); switch (display.getCableFace()) { case DOWN: break; case EAST: break; case NORTH: return new double[] { leftPos.getX() - translation[0], leftPos.getY() - translation[1], leftPos.getZ() }; case SOUTH: break; case UP: break; case WEST: break; default: break; } } } return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() }; } */
 
+	/**in the form of double[] {start x, start y, width, height, actual x click, actual y click}*/
+	public static double[] getActualBox(double mouseX, double mouseY, DisplayInfo renderInfo) {
+		double[] actualIntersect = new double[8];
+		double[] sect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition());
+		actualIntersect[0] = sect[0]; //actual start x
+		actualIntersect[1] = sect[1]; //actual start y
+		actualIntersect[2] = sect[2]; //actual finish x
+		actualIntersect[3] = sect[3]; //actual finish y		
+		actualIntersect[4] = sect[2] - sect[0]; // actual width
+		actualIntersect[5] = sect[3] - sect[1]; // actual height		
+		
+		actualIntersect[6] = mouseX - sect[0]; // actual x click
+		actualIntersect[7] = mouseY - sect[1]; // actual y click
+		return actualIntersect;
+	}
+
 	public static int getSlot(DisplayScreenClick click, DisplayInfo renderInfo, int xSize, int ySize) {
-		double[] sect = getIntersect(renderInfo.container.getDisplay(), renderInfo.container.getDisplay().getLayout(), renderInfo.getInfoPosition());
-		double maxX = sect[2] - sect[0];
-		double maxY = sect[3] - sect[1];
-		double clickX = click.clickX - sect[0];
-		double clickY = click.clickY - sect[1];
-		int xPos = (int) (clickX * xSize);
-		int yPos = (int) (clickY * ySize);
-		int slot = (int) (xPos + (yPos * (Math.ceil(maxX * xSize))));
+		double[] actualIntersect = getActualBox(click.clickX, click.clickY, renderInfo);
+		int xPos = (int) (actualIntersect[6] * xSize);
+		int yPos = (int) (actualIntersect[7] * ySize);
+		int slot = (int) (xPos + (yPos * (Math.ceil(actualIntersect[4] * xSize))));
 		return slot;
 	}
 
 	public static int getListSlot(DisplayScreenClick click, DisplayInfo renderInfo, double elementSize, double spacing, int maxPageSize) {
-		double[] sect = getIntersect(renderInfo.container.getDisplay(), renderInfo.container.getDisplay().getLayout(), renderInfo.getInfoPosition());
+		double[] sect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition());
 		for (int i = 0; i < maxPageSize; i++) {
 			double yStart = (i * elementSize) + (Math.max(0, (i - 1) * spacing)) + 0.0625 + sect[1];
 			double yEnd = yStart + elementSize;
@@ -179,10 +206,10 @@ public class InteractionHelper {
 		return -1;
 	}
 
-	public static double[] getTranslation(IDisplay display, DisplayLayout layout, int pos) {
-		double[] displaySize = getDisplaySize(display);
+	public static double[] getTranslation(IInfoContainer container, int pos) {
+		double[] displaySize = container.getDisplayScaling();
 		double width = displaySize[0], height = displaySize[1];
-		switch (layout) {
+		switch (container.getLayout()) {
 		case DUAL:
 			return new double[] { 0, pos == 1 ? height / 2 : 0, 0 };
 		case GRID:
@@ -194,10 +221,10 @@ public class InteractionHelper {
 		}
 	}
 
-	public static double[] getScaling(IDisplay display, DisplayLayout layout, int pos) {
-		double[] displaySize = getDisplaySize(display);
+	public static double[] getScaling(IInfoContainer container, int pos) {
+		double[] displaySize = container.getDisplayScaling();
 		double width = displaySize[0], height = displaySize[1], scale = displaySize[2];
-		switch (layout) {
+		switch (container.getLayout()) {
 		case DUAL:
 			return new double[] { width, height / 2, scale };
 		case GRID:
@@ -210,10 +237,10 @@ public class InteractionHelper {
 	}
 
 	/** in the form of start x, start y, end x, end y */
-	public static double[] getIntersect(IDisplay display, DisplayLayout layout, int pos) {
-		double[] displaySize = getDisplaySize(display);
+	public static double[] getPositionedClickBox(IInfoContainer container, int pos) {
+		double[] displaySize = container.getDisplayScaling();
 		double width = displaySize[0], height = displaySize[1];
-		switch (layout) {
+		switch (container.getLayout()) {
 		case DUAL:
 			return new double[] { 0, pos == 1 ? height / 2 : 0, pos == 1 ? width : width / 2, pos == 1 ? height : height / 2 };
 		case GRID:
@@ -226,11 +253,10 @@ public class InteractionHelper {
 	}
 
 	public static boolean canBeClickedStandard(DisplayInfo renderInfo, DisplayScreenClick click) {
-		IDisplay display = renderInfo.container.getDisplay();
-		double[] intersect = getIntersect(display, display.getLayout(), renderInfo.getRenderProperties().infoPos);
+		double[] intersect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition());
 		double x = click.clickX;
 		double y = click.clickY;
-		if (x >= intersect[0] + 0.0625 && x <= intersect[2] + 0.0625 && y >= intersect[1] + 0.0625 && y <= intersect[3] + 0.0625) { //add one pixel for the border of the screen
+		if (x >= intersect[0] + 0.0625 && x <= intersect[2] + 0.0625 && y >= intersect[1] + 0.0625 && y <= intersect[3] + 0.0625) { // add one pixel for the border of the screen
 			return true;
 		}
 		return false;
@@ -254,8 +280,8 @@ public class InteractionHelper {
 			return new double[] { trueX, trueY };
 		}
 	}
-
-	public static double[] getDisplaySize(IDisplay display) {
+	/*
+	public static double[] getDisplaySize(IInfoContainer container) {
 		DisplayType type = display.getDisplayType();
 		double width = type.width, height = type.height, scale = type.scale;
 		if (display instanceof IScaleableDisplay) {
@@ -266,4 +292,5 @@ public class InteractionHelper {
 		}
 		return new double[] { width, height, scale };
 	}
+	*/
 }

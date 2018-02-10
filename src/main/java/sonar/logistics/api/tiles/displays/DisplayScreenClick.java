@@ -22,7 +22,7 @@ public class DisplayScreenClick {
 		doubleClick=bool;
 	}
 	
-	public void setDisplayIdentity(int iden){
+	public void setContainerIdentity(int iden){
 		identity=iden;
 	}
 	

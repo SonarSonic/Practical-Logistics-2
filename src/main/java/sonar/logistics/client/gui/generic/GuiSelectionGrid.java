@@ -88,14 +88,12 @@ public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		this.renderPlayerInventory(40, 173);
 
-		drawRect(guiLeft + xPos-1, guiTop + yPos-1, guiLeft + xPos + (eWidth * gWidth) - 1, guiTop + yPos + (eHeight * gHeight) - 1, LogisticsColours.grey_base.getRGB());
-		drawRect(guiLeft + xPos, guiTop + yPos, guiLeft + xPos + (eWidth * gWidth) - 2, guiTop + yPos + (eHeight * gHeight) - 2, LogisticsColours.blue_overlay.getRGB());
+		drawTransparentRect(guiLeft + xPos-1, guiTop + yPos-1, guiLeft + xPos + (eWidth * gWidth) - 1, guiTop + yPos + (eHeight * gHeight) - 1, LogisticsColours.grey_base.getRGB());
+		drawTransparentRect(guiLeft + xPos, guiTop + yPos, guiLeft + xPos + (eWidth * gWidth) - 2, guiTop + yPos + (eHeight * gHeight) - 2, LogisticsColours.blue_overlay.getRGB());
 
-		drawRect(guiLeft + 12, guiTop + 170, guiLeft + xSize - 9, guiTop + 252, LogisticsColours.grey_base.getRGB());
-		drawRect(guiLeft + 13, guiTop + 171, guiLeft + xSize - 10, guiTop + 251, LogisticsColours.blue_overlay.getRGB());
-		RenderHelper.restoreBlendState();
+		drawTransparentRect(guiLeft + 12, guiTop + 170, guiLeft + xSize - 9, guiTop + 252, LogisticsColours.grey_base.getRGB());
+		drawTransparentRect(guiLeft + 13, guiTop + 171, guiLeft + xSize - 10, guiTop + 251, LogisticsColours.blue_overlay.getRGB());
 	}
-
 	public abstract void onGridClicked(T element, int pos, int button, boolean empty);
 
 	public abstract void renderGridElement(T element, int x, int y, int slot);

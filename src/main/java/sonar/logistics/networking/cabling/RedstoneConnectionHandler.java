@@ -19,7 +19,7 @@ import sonar.logistics.api.cabling.IRedstoneConnectable;
 public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedstoneCable> {
 
 	public static RedstoneConnectionHandler instance() {
-		return PL2.getRedstoneManager();
+		return PL2.instance.redstoneManager;
 	}
 
 	public final List<Integer> forUpdate = Lists.newArrayList();

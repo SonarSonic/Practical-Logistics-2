@@ -63,6 +63,12 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	}
 
 	//// ILogicReader \\\\
+
+	@Override
+	public int getMaxInfo() {
+		return 1;
+	}
+	
 	@Override
 	public AbstractChangeableList<MonitoredFluidStack> getViewableList(AbstractChangeableList<MonitoredFluidStack> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredFluidStack>> channels, List<NodeConnection> usedChannels) {
 		if (updateList instanceof FluidChangeableList) {

@@ -22,6 +22,7 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
+import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTool;
 
@@ -35,9 +36,7 @@ public class RenderOperatorOverlay {
 			return;
 		}
 		ItemStack stack = evt.getPlayer().getHeldItemMainhand();
-
 		if (stack == null || !(stack.getItem() instanceof IOperatorTool)) {
-			// isUsing=false;
 			return;
 		}
 		BlockPos pos = evt.getTarget().getBlockPos();
@@ -58,7 +57,6 @@ public class RenderOperatorOverlay {
 				provider = (IOperatorProvider) multipartTile;
 			}
 		} else {
-
 			if (tile instanceof IOperatorProvider) {
 				provider = (IOperatorProvider) tile;
 			} else if (tile instanceof IMultipartContainer && evt.getTarget().subHit != -1) {

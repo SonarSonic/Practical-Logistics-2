@@ -53,6 +53,12 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	}
 
 	//// ILogicReader \\\\
+
+	@Override
+	public int getMaxInfo() {
+		return 1;
+	}
+	
 	@Override
 	public AbstractChangeableList<MonitoredEnergyStack> sortMonitoredList(AbstractChangeableList<MonitoredEnergyStack> updateInfo, int channelID) {
 		return EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), EnergyReader.SortingType.NAME);

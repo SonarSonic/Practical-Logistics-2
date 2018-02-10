@@ -1,4 +1,4 @@
-package sonar.logistics.api.info.render;
+package sonar.logistics.api.displays;
 
 import java.util.ArrayList;
 
@@ -27,6 +27,8 @@ import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.client.gsi.IGSI;
+import sonar.logistics.packets.sync.SyncInfoUUID;
+import stanhebben.zenscript.annotations.NotNull;
 
 /** default implementation of the Display Info used on displays */
 public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableListener {
@@ -34,10 +36,9 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	public RenderInfoProperties renderInfo;
 	public IInfo cachedInfo = null;
 	public SyncTagTypeList<String> formatList = new SyncTagTypeList(NBT.TAG_STRING, 0);
-	public SyncNBTAbstract<InfoUUID> uuid = new SyncNBTAbstract<InfoUUID>(InfoUUID.class, 1);
+	public SyncNBTAbstract<InfoUUID> uuid = new SyncInfoUUID(1).setObject(InfoUUID.newInvalid());
 	public SyncNBTAbstract<CustomColour> textColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 2), backgroundColour = new SyncNBTAbstract<CustomColour>(CustomColour.class, 3);
 	public InfoContainer container;
-	public boolean isList = false;
 	public IGSI gsi = null;
 
 	public SyncableList syncParts = new SyncableList(this);
@@ -54,7 +55,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 
 	public RenderInfoProperties setRenderInfoProperties(RenderInfoProperties renderInfo, int pos) {
 		this.renderInfo = renderInfo;
-		//FIXME DID WE NEED SOMETHING HERE?
+		// FIXME DID WE NEED SOMETHING HERE?
 		return renderInfo;
 	}
 
@@ -65,12 +66,11 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	@Override
 	public IInfo getSidedCachedInfo(boolean isClient) {
 		InfoUUID id = getInfoUUID();
-		if (id == null)
+		if (!InfoUUID.valid(id))
 			return null;
 		if (cachedInfo == null) {
 			cachedInfo = PL2.getInfoManager(isClient).getInfoList().get(id);
 			cachedInfo = cachedInfo != null ? cachedInfo.copy() : null;
-			updateGSI();
 		}
 		return cachedInfo;
 	}
@@ -81,20 +81,17 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 	}
 
 	public IGSI getGSI() {
-		if (gsi == null) {
+		if (gsi == null && FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			updateGSI();
 		}
 		return gsi;
 	}
 
 	public void updateGSI() {
-		//World world = container.getWorld();
-		//if (world.isRemote) {
-		if(FMLCommonHandler.instance().getEffectiveSide().isClient()){//FIXME
+		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {// FIXME
 			gsi = GSIHelper.getGSIForInfo(cachedInfo, this);
 			gsi.resetGSI();
 		}
-		//}
 	}
 
 	@Override
@@ -121,9 +118,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 		NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
 		if (!tag.hasNoTags()) {
 			NBTHelper.readSyncParts(tag, type, syncParts);
-			if (container.getWorld().isRemote) {
-				getGSI().resetGSI();
-			}
+			updateGSI();
 		}
 	}
 

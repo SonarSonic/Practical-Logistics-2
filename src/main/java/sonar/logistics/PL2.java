@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -150,37 +151,16 @@ public class PL2 {
 
 	@EventHandler
 	public void serverClose(FMLServerStoppedEvent event) {
-		getWirelessDataManager().removeAll();
-		getWirelessRedstoneManager().removeAll();
-		getNetworkManager().removeAll();
-		getCableManager().removeAll();
-		getDisplayManager().removeAll();
 		getClientManager().removeAll();
 		getServerManager().removeAll();
-	}
-
-	public static LogisticsNetworkHandler getNetworkManager() {
-		return PL2.instance.networkManager;
-	}
-
-	public static CableConnectionHandler getCableManager() {
-		return PL2.instance.cableManager;
-	}
-
-	public static RedstoneConnectionHandler getRedstoneManager() {
-		return PL2.instance.redstoneManager;
-	}
-
-	public static ConnectedDisplayHandler getDisplayManager() {
-		return PL2.instance.displayManager;
-	}
-
-	public static WirelessDataManager getWirelessDataManager() {
-		return PL2.instance.wirelessDataManager;
-	}
-
-	public static WirelessRedstoneManager getWirelessRedstoneManager() {
-		return PL2.instance.wirelessRedstoneManager;
+		
+		WirelessDataManager.instance().removeAll();
+		WirelessRedstoneManager.instance().removeAll();
+		LogisticsNetworkHandler.instance().removeAll();
+		CableConnectionHandler.instance().removeAll();
+		ConnectedDisplayHandler.instance().removeAll();
+		RedstoneConnectionHandler.instance().removeAll();
+		ChunkViewerHandler.instance().removeAll();
 	}
 	
 	public static ServerInfoHandler getServerManager() {

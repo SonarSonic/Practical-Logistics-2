@@ -19,6 +19,7 @@ import sonar.core.network.sync.ISyncableListener;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncableList;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
@@ -26,8 +27,8 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICable;
-import sonar.logistics.api.info.render.IInfoContainer;
-import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.displays.IInfoContainer;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.states.TileMessage;
@@ -36,99 +37,63 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.ConnectedDisplayHandler;
+import sonar.logistics.networking.displays.ConnectedDisplayHandler.ConnectedDisplayChange;
+import sonar.logistics.networking.displays.DisplayHelper;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
-public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScaleableDisplay, ISyncPart {
+public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDisplay, ISyncPart, ISyncableListener {
 
-	private int registryID = -1;
+	public final int registryID;
 	public ILargeDisplay topLeftScreen = null;
 	public SyncableList syncParts = new SyncableList(this);
 	public SyncEnum<EnumFacing> face = new SyncEnum(EnumFacing.VALUES, 0);
 	public SyncEnum<DisplayLayout> layout = new SyncEnum(DisplayLayout.values(), 1);
 	public SyncTagType.INT width = new SyncTagType.INT(2), height = new SyncTagType.INT(3);
-	public SyncTagType.BOOLEAN canBeRendered = new SyncTagType.BOOLEAN(4);
-	public InfoContainer container = new InfoContainer(this);
+	public SyncTagType.BOOLEAN canBeRendered = (BOOLEAN) new SyncTagType.BOOLEAN(4).setDefault(true);
+	private InfoContainer container;
 	public SyncCoords topLeftCoords = new SyncCoords(5);
 	public SyncTagType.BOOLEAN isLocked = new SyncTagType.BOOLEAN(6);
 	// public double[] scaling = null;
-	public boolean hasChanged = true;
-	public boolean updateListeners = false;
 
 	// server side
 	{
-		syncParts.addParts(face, layout, width, height, canBeRendered, topLeftCoords, container, isLocked);
+		syncParts.addParts(face, layout, width, height, canBeRendered, topLeftCoords, isLocked);
 	}
 
 	public ConnectedDisplay(ILargeDisplay display) {
 		registryID = display.getRegistryID();
 		face.setObject(display.getCableFace());
-		this.hasChanged = true;
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(registryID, ConnectedDisplayChange.values());
 	}
 
 	public ConnectedDisplay(int registryID) {
+		if (registryID == -1) {
+			PL2.logger.info("DISPLAY CREATED WITH ID -1");
+		}
 		this.registryID = registryID;
-		this.hasChanged = true;
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(registryID, ConnectedDisplayChange.values());
 	}
 
-	public void lock() {
-		isLocked.setObject(true);
-		PL2.getDisplayManager().getConnections(registryID).forEach(display -> display.setLocked(true));
-	}
-
-	public void unlock() {
-		isLocked.setObject(false);
-		PL2.getDisplayManager().getConnections(registryID).forEach(display -> display.setLocked(false)); 
-		//displays sometimes attach to others when locked, as the larger display hasn't been loaded yet, also storing the locking on the displays stops this
-	}
-
-	public void update(int registryID) {
-		if (updateListeners) {
-			updateAllListeners();
-		}
-		if (hasChanged || this.registryID != registryID) {
-			this.registryID = registryID;
-			List<ILargeDisplay> displays = PL2.getDisplayManager().getConnections(registryID);
-			if (!displays.isEmpty()) {
-				if (!displays.get(0).getCoords().getWorld().isRemote) {
-					setDisplayScaling(displays.get(0), displays);
-				}
-			}
-			hasChanged = false;
-			updateListeners = true;
-		}
-	}
-
-	public void updateAllListeners() {
-		if (getCoords() != null) {
-			List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
-			players.forEach(listener -> updateListener(listener));
-
-		}
-	}
-
-	/* public void removeAllListeners(){ forListeners(listener -> removeListener(listener)); } public void forListeners(Consumer<PlayerListener> action){ List<PlayerListener> listeners = getListenerList().getListeners(ListenerType.INFO, ListenerType.FULL_INFO); listeners.forEach(action); } */
-
-	public void updateListener(EntityPlayerMP player) {
-		PL2.network.sendTo(new PacketConnectedDisplayUpdate(this, registryID), player);
-	}
-
-	public void setDisplayScaling(ILargeDisplay primary, List<ILargeDisplay> displays) {
+	public void setDisplayScaling() {
+		List<ILargeDisplay> displays = ConnectedDisplayHandler.instance().getConnections(getRegistryID());
 		displays.forEach(display -> display.setConnectedDisplay(this)); // make sure to read the NBT first so WIDTH and HEIGHT arn't altered
 
-		BlockCoords primaryCoords = primary.getCoords();
-		int minX = primaryCoords.getX();
-		int maxX = primaryCoords.getX();
-		int minY = primaryCoords.getY();
-		int maxY = primaryCoords.getY();
-		int minZ = primaryCoords.getZ();
-		int maxZ = primaryCoords.getZ();
+		boolean init = false;
+		int minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
 
-		EnumFacing meta = primary.getCableFace();
+		EnumFacing meta = getCableFace();
 		boolean north = meta == EnumFacing.NORTH;
 		for (ILargeDisplay display : displays) {
 			BlockCoords coords = display.getCoords();
-
+			if (!init) {
+				init=true;
+				minX = maxX = coords.getX();
+				minY = maxY = coords.getY();
+				minZ = maxZ = coords.getZ();
+				continue;
+			}
 			if (coords.getX() > maxX) {
 				maxX = coords.getX();
 			} else if (coords.getX() < minX) {
@@ -144,7 +109,6 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 			} else if (coords.getZ() < minZ) {
 				minZ = coords.getZ();
 			}
-
 		}
 		switch (meta.getAxis()) {
 		case X:
@@ -155,7 +119,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 			this.width.setObject(maxX - minX);
 			this.height.setObject(maxZ - minZ);
 			if (meta == EnumFacing.UP) {
-				switch (primary.getRotation()) {
+				switch (container.getRotation()) {
 				case DOWN:
 					break;
 				case EAST:
@@ -186,7 +150,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 				}
 			} else if (meta == EnumFacing.DOWN) {
-				switch (primary.getRotation()) {
+				switch (container.getRotation()) {
 				case DOWN:
 					break;
 				case EAST:
@@ -231,7 +195,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 					BlockCoords coords = new BlockCoords(x, y, z);
 					IDisplay display = CableHelper.getDisplay(coords.getWorld(), coords.getBlockPos(), EnumDisplayFaceSlot.fromFace(meta));
 					if (display == null || !(display instanceof ILargeDisplay)) {
-						this.canBeRendered.setObject(false);
+						canBeRendered.setObject(false);
 						return;
 					}
 					AxisDirection dir = meta.getAxisDirection();
@@ -247,17 +211,17 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	}
 
 	public List<ILogicListenable> getLocalProviders(List<ILogicListenable> monitors) {
-		List<ILargeDisplay> displays = PL2.getDisplayManager().getConnections(registryID);
+		List<ILargeDisplay> displays = ConnectedDisplayHandler.instance().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
 			if (display instanceof TileAbstractDisplay) {
-				monitors = LogisticsHelper.getLocalProviders(monitors, ((TileAbstractDisplay) display).getWorld(), ((TileAbstractDisplay) display).getPos(), (TileAbstractDisplay) display);
+				monitors = DisplayHelper.getLocalProvidersFromDisplay(monitors, ((TileAbstractDisplay) display).getWorld(), ((TileAbstractDisplay) display).getPos(), (TileAbstractDisplay) display);
 			}
 		}
 		return monitors;
 	}
 
-	public void setHasChanged() {
-		hasChanged = true;
+	private void setHasChanged() {
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED);
 	}
 
 	public void setTopLeftScreen(ILargeDisplay display, boolean isTopLeft) {
@@ -266,24 +230,22 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 			this.topLeftCoords.setCoords(display.getCoords());
 			display.setShouldRender(true);
 			face.setObject(display.getCableFace());
-			if (!display.getCoords().getWorld().isRemote)
-				PL2.getServerManager().addDisplay(display);
+			//if (!display.getCoords().getWorld().isRemote)
+			//	PL2.getServerManager().addDisplay(display);
 		} else {
 			display.setShouldRender(false);
-			if (!display.getCoords().getWorld().isRemote)
-				PL2.getServerManager().removeDisplay(display);
+			//if (!display.getCoords().getWorld().isRemote)
+			//	PL2.getServerManager().removeDisplay(display);
 		}
 
 	}
 
 	@Override
-	public IInfoContainer container() {
+	public InfoContainer container() {
+		if (container == null) {
+			container = new InfoContainer(this, getInfoContainerID());
+		}
 		return container;
-	}
-
-	@Override
-	public DisplayLayout getLayout() {
-		return layout.getObject();
 	}
 
 	@Override
@@ -292,45 +254,35 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	}
 
 	@Override
-	public int maxInfo() {
-		return topLeftScreen != null ? topLeftScreen.maxInfo() : 4;
-	}
-
-	@Override
 	public EnumFacing getCableFace() {
-		return topLeftScreen != null ? topLeftScreen.getCableFace() : EnumFacing.NORTH;
+		return face.getObject();
 	}
 
 	@Override
 	public BlockCoords getCoords() {
-		return topLeftScreen != null ? topLeftScreen.getCoords() : topLeftCoords.getCoords();
+		return getTopLeftScreen() != null ? topLeftScreen.getCoords() : topLeftCoords.getCoords();
 	}
 
 	@Override
-	public int getNetworkID() {
-		return topLeftScreen != null ? topLeftScreen.getNetworkID() : -1;
+	public int getInfoContainerID() {
+		return getRegistryID();
 	}
 
-	@Override
-	public ConnectableType getConnectableType() {
-		return ConnectableType.CONNECTABLE;
+	public void sendInfoContainerPacket() {
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED);
 	}
 
-	@Override
 	public int getRegistryID() {
 		return registryID;
 	}
 
-	@Override
-	public void setRegistryID(int id) {
-		this.registryID = id;
-		this.hasChanged = true;
-	}
+	/* public void setRegistryID(int id) { this.registryID = id; this.hasChanged = true; } */
 
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		if (nbt.hasKey(getTagName())) {
 			NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
 			NBTHelper.readSyncParts(tag, type, this.syncParts);
+			container().readData(tag, type);
 			container.resetRenderProperties();
 		}
 	}
@@ -339,6 +291,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTHelper.writeSyncParts(tag, type, this.syncParts, true);
+		container().writeData(tag, type);
 		if (!tag.hasNoTags()) {
 			nbt.setTag(this.getTagName(), tag);
 		}
@@ -383,7 +336,7 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 
 	@Override
 	public ISyncableListener getListener() {
-		return this.getTopLeftScreen();
+		return this;
 	}
 
 	@Override
@@ -399,31 +352,32 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	@Override
 	public void markChanged(IDirtyPart part) {
 		syncParts.markSyncPartChanged(part);
-		if (this.getTopLeftScreen() != null) {
-			this.getTopLeftScreen().markChanged(this);
-		}
+		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED);
 	}
 
 	@Override
-	public int getIdentity() {
-		return -1;
-	}
-
-	@Override
-	public EnumFacing getRotation() {
-		return getTopLeftScreen() == null ? EnumFacing.NORTH : getTopLeftScreen().getRotation();
+	public int getNetworkID() {
+		return getTopLeftScreen().getNetworkID();
 	}
 
 	@Override
 	public ILogisticsNetwork getNetwork() {
-		return getTopLeftScreen() == null ? EmptyLogisticsNetwork.INSTANCE : getTopLeftScreen().getNetwork();
+		return getTopLeftScreen().getNetwork();
 	}
 
-	//// UNUSED IDISPLAY STUFF \\\\
+	@Override
+	public int getIdentity() {
+		return getTopLeftScreen().getIdentity();
+	}
 
 	@Override
-	public boolean isValid() {
-		return true;
+	public TileMessage[] getValidMessages() {
+		return new TileMessage[0];
+	}
+
+	@Override
+	public PL2Multiparts getMultipart() {
+		return PL2Multiparts.LARGE_DISPLAY_SCREEN;
 	}
 
 	@Override
@@ -433,8 +387,8 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	public void onNetworkDisconnect(ILogisticsNetwork network) {}
 
 	@Override
-	public TileMessage[] getValidMessages() {
-		return new TileMessage[0];
+	public boolean isValid() {
+		return true;
 	}
 
 	@Override
@@ -445,19 +399,6 @@ public class ConnectedDisplay implements IDisplay, ICable, INBTSyncable, IScalea
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
 		return CableRenderType.CABLE;
-	}
-
-	@Override
-	public boolean isBlocked(EnumFacing dir) {
-		return true;
-	}
-
-	@Override
-	public void updateCableRenders() {}
-
-	@Override
-	public PL2Multiparts getMultipart() {
-		return PL2Multiparts.LARGE_DISPLAY_SCREEN;
 	}
 
 }

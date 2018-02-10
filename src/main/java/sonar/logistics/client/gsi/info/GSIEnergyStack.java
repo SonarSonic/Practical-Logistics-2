@@ -4,8 +4,8 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import sonar.logistics.api.info.render.IDisplayInfo;
-import sonar.logistics.api.info.render.InfoContainer;
+import sonar.logistics.api.displays.IDisplayInfo;
+import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.client.gsi.AbstractGSI;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredEnergyStack;
@@ -24,7 +24,7 @@ public class GSIEnergyStack extends AbstractGSI<MonitoredEnergyStack> {
 		GlStateManager.enableLighting();
 		GL11.glTranslated(0, 0, -0.001);
 		GL11.glPopMatrix();
-		InfoRenderer.renderNormalInfo(container.display.getDisplayType(), width, height, scale, displayInfo.getFormattedStrings());
+		InfoRenderer.renderNormalInfo(width, height, scale, displayInfo.getFormattedStrings());
 		GL11.glPopMatrix();
 	}
 }

@@ -79,10 +79,10 @@ public class RedstoneNetwork implements IRedstoneNetwork {
 	public void doAddConnection(IRedstoneConnectable connection) {
 		if (connection instanceof IRedstoneReceiver) {
 			ListHelper.addWithCheck(receivers, (IRedstoneReceiver) connection);
-			PL2.getWirelessRedstoneManager().connectReceiver(this, (IRedstoneReceiver) connection);
+			WirelessRedstoneManager.instance().connectReceiver(this, (IRedstoneReceiver) connection);
 		} else if (connection instanceof IRedstoneEmitter) {
 			ListHelper.addWithCheck(emitters, (IRedstoneEmitter) connection);
-			PL2.getWirelessRedstoneManager().connectEmitter(this, (IRedstoneEmitter) connection);
+			WirelessRedstoneManager.instance().connectEmitter(this, (IRedstoneEmitter) connection);
 		} else if (connection instanceof IRedstonePowerProvider) {
 			ListHelper.addWithCheck(providers, (IRedstonePowerProvider) connection);
 		}
@@ -93,10 +93,10 @@ public class RedstoneNetwork implements IRedstoneNetwork {
 	public void doRemoveConnection(IRedstoneConnectable connection) {
 		if (connection instanceof IRedstoneReceiver) {
 			receivers.remove(connection);
-			PL2.getWirelessRedstoneManager().disconnectReceiver(this, (IRedstoneReceiver) connection);
+			WirelessRedstoneManager.instance().disconnectReceiver(this, (IRedstoneReceiver) connection);
 		} else if (connection instanceof IRedstoneEmitter) {
 			emitters.remove(connection);
-			PL2.getWirelessRedstoneManager().disconnectEmitter(this, (IRedstoneEmitter) connection);
+			WirelessRedstoneManager.instance().disconnectEmitter(this, (IRedstoneEmitter) connection);
 		} else if (connection instanceof IRedstonePowerProvider) {
 			providers.remove(connection);
 		}

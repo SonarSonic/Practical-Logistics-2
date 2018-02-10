@@ -12,10 +12,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -33,20 +37,19 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.client.gui.GuiDisplayScreen;
+import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.DisplayHelper;
+import sonar.logistics.networking.displays.LocalProviderHandler;
 
-public abstract class TileAbstractDisplay extends TileSidedLogistics implements IByteBufTile, IDisplay, IOperatorTile, IFlexibleGui<TileAbstractDisplay> {
+public abstract class TileAbstractDisplay extends TileSidedLogistics implements IByteBufTile, IDisplay, IFlexibleGui<TileAbstractDisplay> {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_READER_SELECTED };
 
 	public SyncTagType.BOOLEAN defaultData = new SyncTagType.BOOLEAN(2); // set default info
-	public INetworkReader monitor = null;
-	public EnumFacing rotation = EnumFacing.NORTH; // FIXME - when it's placed set the rotation
-	public BlockCoords lastSelected = null;
-	public int currentSelected = -1;
 	{
 		syncList.addPart(defaultData);
 	}
@@ -58,43 +61,40 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	public void update() {
 		super.update();
 		updateDefaultInfo();
-	}
-
-	public boolean isDoubleClick() {
-		return false;
+		if (ChunkViewerHandler.instance().hasViewersChanged()) {
+			sendInfoContainerPacket();
+		}
 	}
 
 	public void updateDefaultInfo() {
-		if (isServer() && !defaultData.getObject()) {
-			List<ILogicListenable> providers = LogisticsHelper.getLocalProviders(Lists.newArrayList(), world, pos, this);
+		if (isServer() && !defaultData.getObject() && networkID.getObject()!=-1) {
+			List<ILogicListenable> providers = DisplayHelper.getLocalProvidersFromDisplay(Lists.newArrayList(), world, pos, this);
 			ILogicListenable v;
 			if (!providers.isEmpty() && (v = providers.get(0)) instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) v;
 				if (container() != null && monitor != null && monitor.getIdentity() != -1) {
-
-					for (int i = 0; i < Math.min(monitor.getMaxInfo(), maxInfo()); i++) {
-						if (container().getInfoUUID(i) == null && container().getDisplayInfo(i).formatList.getObjects().isEmpty()) {
-							container().setUUID(new InfoUUID(monitor.getIdentity(), i), i);
+					for (int i = 0; i < Math.min(monitor.getMaxInfo(), container().getMaxCapacity()); i++) {
+						if (!InfoUUID.valid(container().getInfoUUID(i)) && container().getDisplayInfo(i).formatList.getObjects().isEmpty()) {
+							LocalProviderHandler.doLocalProviderConnect(this, monitor, new InfoUUID(monitor.getIdentity(), i), i);
 						}
 					}
-					defaultData.setObject(true);
-					sendSyncPacket();
-					List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
-					players.forEach(player -> {
-						PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
-						SonarMultipartHelper.sendMultipartSyncToPlayer(this, player);
-					});
+					sendInfoContainerPacket();
 				}
 			}
+			defaultData.setObject(true);
 		}
 	}
 
-	//// IInfoDisplay \\\\
+	@Override
+	public NBTTagCompound getUpdateTag() {
+		// sendInfoContainerPacket();
+		return super.getUpdateTag();
+	}
 
-	public abstract void incrementLayout();
-
-	public EnumFacing getRotation() {
-		return rotation;
+	@Override
+	public void sendInfoContainerPacket() {
+		List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
+		players.forEach(listener -> SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) listener));
 	}
 
 	//// EVENTS \\\\
@@ -109,41 +109,12 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 		PL2.getInfoManager(world.isRemote).removeDisplay(this);
 	}
 
-	@Override
-	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
-		super.writeData(tag, type);
-		tag.setByte("rotation", (byte) rotation.ordinal());
-		return tag;
-	}
-
-	@Override
-	public void readData(NBTTagCompound tag, SyncType type) {
-		super.readData(tag, type);
-		rotation = EnumFacing.VALUES[tag.getByte("rotation")];
-	}
-
 	//// PACKETS \\\\
-
-	public void markChanged(IDirtyPart part) {
-		super.markChanged(part);
-		if (isServer()) {
-			List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
-			for (EntityPlayerMP player : players) {
-				SonarMultipartHelper.sendMultipartSyncToPlayer(this, player);
-			}
-		}
-	}
 
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {
-		case 0:
-			buf.writeInt(currentSelected);
-			container().getInfoUUID(currentSelected).writeToBuf(buf);
-			break;
-		case 1:
-			buf.writeInt(currentSelected);
-			container().getDisplayInfo(currentSelected).formatList.writeToBuf(buf);
+		default:
 			break;
 		}
 	}
@@ -151,28 +122,13 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	@Override
 	public void readPacket(ByteBuf buf, int id) {
 		switch (id) {
-		case 0:
-			currentSelected = buf.readInt();
-			InfoUUID uuid = InfoUUID.getUUID(buf);
-			container().setUUID(uuid, currentSelected);
-			if (isServer()) {
-				PL2.getServerManager().updateListenerDisplays = true;
-				this.sendSyncPacket();
-			}
-			break;
-		case 1:
-			currentSelected = buf.readInt();
-			container().getDisplayInfo(currentSelected).formatList.readFromBuf(buf);
-			this.sendSyncPacket();
-			break;
 		case 2:
-			incrementLayout();
+			container().incrementLayout();
 			break;
 		}
 	}
 
 	public RayTraceResult getPartHit(EntityPlayer player) {
-
 		Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);
 		IBlockState state = world.getBlockState(pos);
 		return getBlockType().collisionRayTrace(state, world, pos, vectors.getLeft(), vectors.getRight());
@@ -182,26 +138,28 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 
 	@Override
 	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new ContainerMultipartSync(obj) : null;
+		return new ContainerMultipartSync(obj);
 	}
 
 	@Override
 	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return id == 0 ? new GuiDisplayScreen(obj) : null;
+		return new GuiDisplayScreen(obj, obj.container(), GuiState.values()[id], tag.getInteger("infopos"));
 	}
 
 	@Override
 	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		switch (id) {
-		case 0:
-			PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
-			SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
-			break;
-		}
+		PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
+		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 	}
 
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return TileEntity.INFINITE_EXTENT_AABB;
 	}
 }

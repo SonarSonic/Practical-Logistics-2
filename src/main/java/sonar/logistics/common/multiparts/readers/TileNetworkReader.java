@@ -28,6 +28,11 @@ import sonar.logistics.networking.subnetworks.NetworkWatcherHandler;
 public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> {
 
 	@Override
+	public int getMaxInfo() {
+		return 4;
+	}
+	
+	@Override
 	public AbstractChangeableList<IProvidableInfo> getViewableList(AbstractChangeableList<IProvidableInfo> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<IProvidableInfo>> channels, List<NodeConnection> usedChannels) {
 		//everything should be viewable
 		return updateList;

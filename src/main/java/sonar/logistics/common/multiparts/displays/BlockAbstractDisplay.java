@@ -23,7 +23,7 @@ import sonar.logistics.PL2Events;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.common.multiparts.BlockLogisticsSided;
-import sonar.logistics.networking.displays.ScreenHelper;
+import sonar.logistics.networking.displays.DisplayHelper;
 
 public class BlockAbstractDisplay extends BlockLogisticsSided {
 
@@ -33,20 +33,20 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 
 	@SideOnly(Side.CLIENT)
 	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, net.minecraft.client.particle.ParticleManager manager) {
-		if(target.sideHit==state.getValue(SonarProperties.ORIENTATION)){
+		if (target.sideHit == state.getValue(SonarProperties.ORIENTATION)) {
 			return true;
 		}
-		return super.addHitEffects(state,world,target,manager);
+		return super.addHitEffects(state, world, target, manager);
 	}
 
 	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		EnumFacing[] orientation = ScreenHelper.getScreenOrientation(placer, facing);
+		EnumFacing[] orientation = DisplayHelper.getScreenOrientation(placer, facing);
 		return getStateFromMeta(orientation[0].ordinal());
 	}
 
 	@Override
 	public IPartSlot getSlotForPlacement(World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ, EntityLivingBase placer) {
-		EnumFacing[] orientation = ScreenHelper.getScreenOrientation(placer, facing);
+		EnumFacing[] orientation = DisplayHelper.getScreenOrientation(placer, facing);
 		return EnumDisplayFaceSlot.fromFace(orientation[0]);
 	}
 
@@ -56,17 +56,15 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (!canOpenGui(player)) {
-			return false;
-		}
+
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile != null && tile instanceof TileAbstractDisplay) {
 			TileAbstractDisplay display = (TileAbstractDisplay) tile;
 			if (facing != state.getValue(SonarProperties.ORIENTATION)) {
-				if (!world.isRemote) {
+				if (!world.isRemote && canOpenGui(player)) {
 					display.openFlexibleGui(player, 0);
 				}
-			} else if (world.isRemote) {
+			} else {
 				return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 		}
@@ -105,12 +103,11 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 			PL2Events.coolDownClick = 2;
 			RayTraceResult rayResult = RayTraceHelper.getRayTraceEyes(player, world);
 			TileAbstractDisplay display = (TileAbstractDisplay) world.getTileEntity(pos);
-			if (world.isRemote) {
-				float hitX = (float) (rayResult.hitVec.x - (double) pos.getX());
-				float hitY = (float) (rayResult.hitVec.y - (double) pos.getY());
-				float hitZ = (float) (rayResult.hitVec.z - (double) pos.getZ());
-				display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
-			}
+			float hitX = (float) (rayResult.hitVec.x - (double) pos.getX());
+			float hitY = (float) (rayResult.hitVec.y - (double) pos.getY());
+			float hitZ = (float) (rayResult.hitVec.z - (double) pos.getZ());
+			display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
+
 		}
 
 	}
@@ -120,7 +117,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 		EnumFacing rotation = EnumFacing.NORTH;
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile != null && tile instanceof TileAbstractDisplay) {
-			rotation = ((TileAbstractDisplay) tile).rotation;
+			rotation = ((TileAbstractDisplay) tile).container().getRotation();
 		}
 		return state.withProperty(SonarProperties.ROTATION, rotation);
 	}
