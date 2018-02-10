@@ -1,24 +1,30 @@
 package sonar.logistics.api.displays.elements;
 
 import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.IDisplayElementList;
 
 public abstract class AbstractDisplayElement implements IDisplayElement {
 
-	public IDisplayElementList list;
+	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
+	public DisplayElementContainer container;
 	public double[] maxScaling, actualScaling;
 	public int[] unscaledWidthHeight;
 	public double percentageFill = 1;
 	public WidthAlignment width_align = WidthAlignment.CENTERED;
 	public HeightAlignment height_align = HeightAlignment.CENTERED;
 
-	public AbstractDisplayElement(IDisplayElementList list) {
-		this.list = list;
+	public AbstractDisplayElement() {}
+	
+	public AbstractDisplayElement(DisplayElementContainer list) {
+		this.container = list;
+	}
+	
+	public final DisplayElementContainer setContainer(DisplayElementContainer c) {
+		return container = c;
 	}
 
 	@Override
-	public final IDisplayElementList getList() {
-		return list;
+	public final DisplayElementContainer getContainer() {
+		return container;
 	}
 
 	@Override
@@ -26,7 +32,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 		unscaledWidthHeight = null;
 		maxScaling = null;
 		actualScaling = null;
-		list.onElementChanged(this);
+		container.onElementChanged(this);
 	}
 
 	@Override
@@ -61,9 +67,6 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	@Override
 	public final double[] getMaxScaling() {
-		if (maxScaling == null) {
-			maxScaling = list.createMaxScaling(this);
-		}
 		return maxScaling;
 	}
 
@@ -74,9 +77,6 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	@Override
 	public final double[] getActualScaling() {
-		if (actualScaling == null) {
-			actualScaling = list.createActualScaling(this);
-		}
 		return actualScaling;
 	}
 

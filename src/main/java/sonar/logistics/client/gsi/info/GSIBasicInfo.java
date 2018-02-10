@@ -19,7 +19,7 @@ import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.IDisplayRenderable;
 import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.elements.DisplayElementList;
+import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.displays.elements.ItemStackElement;
 import sonar.logistics.api.displays.elements.TextDisplayElement;
 import sonar.logistics.api.info.IInfo;
@@ -32,14 +32,14 @@ import sonar.logistics.info.types.InfoError;
 
 public class GSIBasicInfo extends AbstractGSI<IInfo> {
 
-	public DisplayElementList list;
+	public DisplayElementContainer list;
 
 	@Override
 	public void initRenderables(List<IDisplayRenderable> renderables) {
 		super.initRenderables(renderables);
 		RenderInfoProperties props = renderInfo.getRenderProperties();
 		double[] scaling = props.getScaling();
-		list = new DisplayElementList(scaling[0], scaling[1], scaling[2]);
+		list = new DisplayElementContainer(scaling[0], scaling[1], scaling[2]);
 		
 		boolean first = true;
 		for (String s : renderInfo.getFormattedStrings()) {

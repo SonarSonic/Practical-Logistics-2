@@ -58,6 +58,7 @@ import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 /** used to store {@link IInfo} along with their respective {@link DisplayInfo} for rendering on a {@link IDisplay} */
+@Deprecated
 public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
 
 	private SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
@@ -241,7 +242,6 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 		if (!tag.hasNoTags()) {
 			NBTHelper.readSyncParts(tag, type, syncParts);
 			resetRenderProperties();
-
 		}
 	}
 
@@ -272,16 +272,6 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	public InfoContainer cloneFromContainer(IInfoContainer container) {
 		this.readData(container.writeData(new NBTTagCompound(), SyncType.SAVE), SyncType.SAVE);
 		return this;
-	}
-
-	@Override
-	public void writeToBuf(ByteBuf buf) {
-		ByteBufUtils.writeTag(buf, this.writeData(new NBTTagCompound(), SyncType.SAVE));
-	}
-
-	@Override
-	public void readFromBuf(ByteBuf buf) {
-		readData(ByteBufUtils.readTag(buf), SyncType.SAVE);
 	}
 
 	@Override

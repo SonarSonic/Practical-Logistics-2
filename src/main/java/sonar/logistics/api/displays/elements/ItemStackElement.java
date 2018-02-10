@@ -4,11 +4,16 @@ import org.lwjgl.opengl.GL11;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
 
+import java.util.List;
+
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.IDisplayElementList;
+import sonar.logistics.api.info.InfoUUID;
 
 public class ItemStackElement extends AbstractDisplayElement {
 
@@ -85,6 +90,36 @@ public class ItemStackElement extends AbstractDisplayElement {
 	@Override
 	int[] createUnscaledWidthHeight() {
 		return new int[] { 16, 16 };
+	}
+
+	@Override
+	public String getRegisteredName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<InfoUUID> getInfoReferences() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getElementIdentity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

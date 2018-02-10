@@ -106,7 +106,7 @@ public class InfoRenderer {
 	 * @param maxListScaling the max scaling //FIXME not necessary, should be scaled to fit given scaling regardless of max list scaling
 	 * @param percentageFill
 	 * @param elements */
-	public static void renderDisplayElements(double[] actualListScaling, double[] maxListScaling, double percentageFill, List<IDisplayElement> elements) {
+	public static void renderDisplayElements(double[] maxListScaling, double[] actualListScaling, double percentageFill, Iterable<IDisplayElement> elements) {
 		for (IDisplayElement e : elements) {
 			double[] maxElementScaling = e.getMaxScaling();
 			double[] actualElementScaling = e.getActualScaling();
