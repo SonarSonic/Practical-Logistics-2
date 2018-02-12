@@ -55,7 +55,7 @@ public class PacketDisplayTextEdit extends PacketMultipart {
 		public IMessage processMessage(PacketDisplayTextEdit message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
 			if (ctx.side == Side.SERVER && part instanceof IDisplay) {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					((IDisplay)part).container().getDisplayInfo(message.infoPosition).setFormatStrings(message.textList);
+					//((IDisplay)part).getGSI().getDisplayInfo(message.infoPosition).setFormatStrings(message.textList);
 				});
 			}
 			return null;

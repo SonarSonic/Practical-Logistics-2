@@ -13,6 +13,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncEnum;
 import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.operator.OperatorMode;
@@ -22,14 +23,14 @@ import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 public class TileDisplayScreen extends TileAbstractDisplay {
 
-	private InfoContainer container;
+	private DisplayGSI container;
 
 	//// IInfoDisplay \\\\
 
 	@Override
-	public InfoContainer container() {
+	public DisplayGSI getGSI() {
 		if (container == null) {
-			container = new InfoContainer(this, getInfoContainerID());
+			container = new DisplayGSI(this, getInfoContainerID());
 		}
 		return container;
 	}
@@ -49,14 +50,14 @@ public class TileDisplayScreen extends TileAbstractDisplay {
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
 		super.writeData(tag, type);
-		container().writeData(tag, type.isType(SyncType.SPECIAL) ? SyncType.SAVE : type);
+		getGSI().writeData(tag, type.isType(SyncType.SPECIAL) ? SyncType.SAVE : type);
 		return tag;
 	}
 
 	@Override
 	public void readData(NBTTagCompound tag, SyncType type) {
 		super.readData(tag, type);
-		container().readData(tag, type.isType(SyncType.SPECIAL) ? SyncType.SAVE : type);
+		getGSI().readData(tag, type.isType(SyncType.SPECIAL) ? SyncType.SAVE : type);
 	}
 
 	@Override

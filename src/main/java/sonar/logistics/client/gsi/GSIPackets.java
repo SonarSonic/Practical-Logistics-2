@@ -2,7 +2,7 @@ package sonar.logistics.client.gsi;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 
 public enum GSIPackets {
@@ -15,6 +15,6 @@ public enum GSIPackets {
 	}
 
 	public static interface IPacketLogic {
-		public void doPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag);
+		public void doPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag);
 	}
 }

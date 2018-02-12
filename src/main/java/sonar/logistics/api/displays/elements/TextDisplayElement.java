@@ -22,8 +22,8 @@ public class TextDisplayElement extends AbstractDisplayElement {
 
 	public TextDisplayElement() {}
 	
-	public TextDisplayElement(DisplayElementContainer list, String unformattedText) {
-		super(list);
+	public TextDisplayElement(String unformattedText) {
+		super();
 		this.unformattedText = unformattedText;
 	}
 

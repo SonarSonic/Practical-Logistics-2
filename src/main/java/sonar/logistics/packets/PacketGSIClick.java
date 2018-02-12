@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
@@ -22,33 +23,29 @@ import sonar.logistics.client.gsi.IGSIPacketHandler;
 public class PacketGSIClick implements IMessage {
 
 	public NBTTagCompound clickTag;
-	public InfoUUID infoID;
 	public DisplayScreenClick click;
-	public int infoPosition;
+	public int elementIdentity;
 
 	public PacketGSIClick() {}
 
-	public PacketGSIClick(int infoPosition, DisplayScreenClick click, InfoUUID infoID, NBTTagCompound clickTag) {
-		this.infoPosition = infoPosition;
+	public PacketGSIClick(int elementIdentity, DisplayScreenClick click, NBTTagCompound clickTag) {
+		this.elementIdentity = elementIdentity;
 		this.click = click;
-		this.infoID = infoID;
 		this.clickTag = clickTag;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		infoPosition = buf.readInt();
+		elementIdentity = buf.readInt();
 		clickTag = ByteBufUtils.readTag(buf);
 		click = DisplayScreenClick.readClick(clickTag);
-		infoID = InfoUUID.getUUID(buf);
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		buf.writeInt(infoPosition);
+		buf.writeInt(elementIdentity);
 		DisplayScreenClick.writeClick(click, clickTag);
 		ByteBufUtils.writeTag(buf, clickTag);
-		infoID.writeToBuf(buf);
 	}
 
 	public static class Handler implements IMessageHandler<PacketGSIClick, IMessage> {
@@ -59,20 +56,11 @@ public class PacketGSIClick implements IMessage {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 				if (player != null) {
 					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						InfoContainer container = PL2.getServerManager().getInfoContainer(message.click.identity);
-						if (container != null) {
-							if (InfoUUID.valid(message.infoID)) {
-								DisplayInfo renderInfo = container.getDisplayMonitoringUUID(message.infoID);
-								if (renderInfo != null) {
-									IInfo info = PL2.getServerManager().getInfoFromUUID(message.infoID);
-									if (info != null) {
-										IGSIPacketHandler handler = GSIHelper.getGSIHandler(info);
-										handler.runGSIPacket(message.click, container.getDisplayInfo(message.infoPosition), player, message.clickTag);
-										return;
-									}
-								}
-							}
-							GSIHelper.handler.runGSIPacket(message.click, container.getDisplayInfo(message.infoPosition), player, message.clickTag);
+						// FIXME ELEMENT IDENTITY
+						DisplayGSI gsi = PL2.getServerManager().getDisplayGSI(message.click.identity);
+						if (gsi != null) {
+							message.click.gsi = gsi;
+							GSIHelper.handler.runGSIPacket(gsi, message.click, player, message.clickTag);
 						}
 					});
 				}

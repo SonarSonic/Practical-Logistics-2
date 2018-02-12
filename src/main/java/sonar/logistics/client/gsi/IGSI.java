@@ -12,6 +12,7 @@ import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 
 /**GSI=GUIDED SCREEN INTERFACE*/
 @SideOnly(Side.CLIENT)
+@Deprecated
 public interface IGSI<I extends IInfo> {
 	
 	/**currently unimplemented, if you return true, other things may not work properly*/

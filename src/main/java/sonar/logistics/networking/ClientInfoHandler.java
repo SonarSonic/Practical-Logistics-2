@@ -113,16 +113,16 @@ public class ClientInfoHandler implements IInfoManager {
 
 	public void onInfoChanged(InfoUUID uuid, IInfo info) {
 		for (IDisplay display : displays.values()) {
-			if (display.container().isDisplayingUUID(uuid)) {
-				display.container().onInfoChanged(uuid, info);
+			if (display.getGSI().isDisplayingUUID(uuid)) {
+				display.getGSI().onInfoChanged(uuid, info);
 			}
 		}
 	}
 
 	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
 		for (IDisplay display : displays.values()) {
-			if (display.container().isDisplayingUUID(uuid)) {
-				display.container().onMonitoredListChanged(uuid, list);
+			if (display.getGSI().isDisplayingUUID(uuid)) {
+				display.getGSI().onMonitoredListChanged(uuid, list);
 			}
 		}
 	}

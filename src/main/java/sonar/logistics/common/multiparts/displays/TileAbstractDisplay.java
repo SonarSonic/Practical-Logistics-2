@@ -17,11 +17,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
+import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.SonarHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -29,6 +32,9 @@ import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
+import sonar.logistics.api.displays.elements.DisplayElementContainer;
+import sonar.logistics.api.displays.elements.DisplayElementList;
+import sonar.logistics.api.displays.elements.TextDisplayElement;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.states.TileMessage;
@@ -61,20 +67,21 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	public void update() {
 		super.update();
 		updateDefaultInfo();
-		if (ChunkViewerHandler.instance().hasViewersChanged()) {
+		if (this.isServer() && ChunkViewerHandler.instance().hasViewersChanged()) {
 			sendInfoContainerPacket();
 		}
 	}
 
 	public void updateDefaultInfo() {
+		/*
 		if (isServer() && !defaultData.getObject() && networkID.getObject()!=-1) {
 			List<ILogicListenable> providers = DisplayHelper.getLocalProvidersFromDisplay(Lists.newArrayList(), world, pos, this);
 			ILogicListenable v;
 			if (!providers.isEmpty() && (v = providers.get(0)) instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) v;
-				if (container() != null && monitor != null && monitor.getIdentity() != -1) {
-					for (int i = 0; i < Math.min(monitor.getMaxInfo(), container().getMaxCapacity()); i++) {
-						if (!InfoUUID.valid(container().getInfoUUID(i)) && container().getDisplayInfo(i).formatList.getObjects().isEmpty()) {
+				if (getGSI() != null && monitor != null && monitor.getIdentity() != -1) {
+					for (int i = 0; i < Math.min(monitor.getMaxInfo(), getGSI().getMaxCapacity()); i++) {
+						if (!InfoUUID.valid(getGSI().getInfoUUID(i)) && getGSI().getDisplayInfo(i).formatList.getObjects().isEmpty()) {
 							LocalProviderHandler.doLocalProviderConnect(this, monitor, new InfoUUID(monitor.getIdentity(), i), i);
 						}
 					}
@@ -83,6 +90,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 			}
 			defaultData.setObject(true);
 		}
+		*/
 	}
 
 	@Override
@@ -123,7 +131,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	public void readPacket(ByteBuf buf, int id) {
 		switch (id) {
 		case 2:
-			container().incrementLayout();
+			//getGSI().incrementLayout();
 			break;
 		}
 	}
@@ -138,16 +146,29 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 
 	@Override
 	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return new ContainerMultipartSync(obj);
+		//return new ContainerMultipartSync(obj);
+		return null;
 	}
 
 	@Override
 	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return new GuiDisplayScreen(obj, obj.container(), GuiState.values()[id], tag.getInteger("infopos"));
+		//return new GuiDisplayScreen(obj, obj.getGSI(), GuiState.values()[id], tag.getInteger("infopos"));
+		return null;
 	}
 
 	@Override
 	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		if (!world.isRemote) {
+			DisplayElementContainer cont = getGSI().addElementContainer(new double[] { 0, 0, 0 }, getGSI().getDisplayScaling(), 0.5);
+			//cont.getElements().addElement(new TextDisplayElement(cont, "HELLO SAVE ME!"));
+			
+			List<String> strings = SonarHelper.convertArray(FontHelper.translate(TextFormatting.BOLD + ""+ TextFormatting.UNDERLINE + "Videotape by Radiohead"+ "-" + "When I'm at the pearly gates-This will be on my videotape, my videotape-Mephistopheles is just beneath-And he's reaching up to grab me- + -This is one for the good days-And I have it all here-In red, blue, green-Red, blue, green- + -You are my center-When I spin away-Out of control on videotape-On videotape-On videotape-On videotape-On videotape-On videotape- + -This is my way of saying goodbye-Because I can't do it face to face-I'm talking to you after it's too late-No matter what happens now-You shouldn't be afraid-Because I know today has been-the most perfect day I've ever seen").split("-"));
+			DisplayElementList list = new DisplayElementList();
+			for(String t : strings){
+				list.getElements().addElement(new TextDisplayElement(t));
+			}
+			cont.getElements().addElement(list);
+		}
 		PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
 		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 	}
@@ -157,9 +178,8 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 		return validStates;
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public AxisAlignedBB getRenderBoundingBox() {
-		return TileEntity.INFINITE_EXTENT_AABB;
+    @Override
+	public boolean maxRender() {
+		return true;
 	}
 }

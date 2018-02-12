@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
@@ -29,7 +30,7 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 	@Override
 	public void render(TileAbstractDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		//if (part.defaultData.getObject()) { //stops it flickering no data before first packet has been received.
-			InfoContainer container = part.container();
+			DisplayGSI container = part.getGSI();
 
 			if (part instanceof ILargeDisplay && (!((ILargeDisplay) part).shouldRender() || !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject())) {
 				boolean bool = !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject();
@@ -49,7 +50,7 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 			InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
 			translate(-1, -1, -0.01);
 			translate(0.0625, 0.0625, 0);//FIXME - OFFSET FOR BEZEL
-			part.container().renderContainer();
+			part.getGSI().render();
 			popMatrix();
 		//}
 	}

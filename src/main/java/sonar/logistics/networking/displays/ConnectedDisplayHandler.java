@@ -136,12 +136,12 @@ public class ConnectedDisplayHandler extends AbstractConnectionHandler<ILargeDis
 			}
 
 		});
+		addedScreens.clear();
+		removedScreens.clear();
 		Map<Integer, ConnectedDisplay> connected = PL2.getServerManager().getConnectedDisplays();
 		if (!connected.isEmpty()) {
 			connected.values().forEach(this::runChanges);
 		}
-		addedScreens.clear();
-		removedScreens.clear();
 		fullRemovals.clear();
 		connectedDisplaysChanged.clear();
 	}

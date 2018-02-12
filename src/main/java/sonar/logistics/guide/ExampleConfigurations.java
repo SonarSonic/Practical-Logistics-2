@@ -50,7 +50,7 @@ public class ExampleConfigurations {
 			TileDisplayScreen screen = new TileDisplayScreen();
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
-			screen.container().storedInfo.get(0).cachedInfo = new ProgressInfo(info1, info2);
+			screen.getGSI().storedInfo.get(0).cachedInfo = new ProgressInfo(info1, info2);
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(SonarProperties.ROTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.LIT_FURNACE.getDefaultState());
 		}
@@ -67,7 +67,7 @@ public class ExampleConfigurations {
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL), new TileDataCable());
 
 			TileDisplayScreen screen = new TileDisplayScreen();
-			screen.container().storedInfo.get(0).cachedInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
+			screen.getGSI().storedInfo.get(0).cachedInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH), new TileEntityChest());
 		}
@@ -109,7 +109,7 @@ public class ExampleConfigurations {
 			screen1.overrideDisplay = fullDisplay;
 			screen1.shouldRender.setObject(true);
 			fullDisplay.topLeftScreen = screen1;
-			fullDisplay.container().resetRenderProperties();
+			fullDisplay.getGSI().resetRenderProperties();
 
 			ItemChangeableList list = new ItemChangeableList();
 			list.add(new StoredItemStack(new ItemStack(PL2Items.sapphire), 512));
@@ -131,7 +131,7 @@ public class ExampleConfigurations {
 			list.add(new StoredItemStack(new ItemStack(PL2Blocks.info_reader), 4));
 			list.add(new StoredItemStack(new ItemStack(PL2Items.operator), 1));
 
-			fullDisplay.container().storedInfo.get(0).cachedInfo = new LogicInfoList() {
+			fullDisplay.getGSI().storedInfo.get(0).cachedInfo = new LogicInfoList() {
 				{
 					infoID.setObject(MonitoredItemStack.id);
 					listChanged = false;

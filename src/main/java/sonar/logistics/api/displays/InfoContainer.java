@@ -291,8 +291,8 @@ public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPar
 	}
 
 	public void forEachValidUUID(Consumer<InfoUUID> action) {
-		for (int i = 0; i < display.container().getMaxCapacity(); i++) {
-			InfoUUID uuid = display.container().getInfoUUID(i);
+		for (int i = 0; i < display.getGSI().getMaxCapacity(); i++) {
+			InfoUUID uuid = display.getGSI().getInfoUUID(i);
 			if (InfoUUID.valid(uuid)) {
 				action.accept(uuid);
 			}

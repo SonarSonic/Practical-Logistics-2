@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.World;
-import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -29,12 +29,12 @@ public interface IInfoManager {
 	@Nullable
 	public <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid);
 
-	public default InfoContainer getInfoContainer(int iden) {
+	public default DisplayGSI getDisplayGSI(int iden) {
 		IDisplay display = getDisplay(iden);
 		if (display == null) {
 			display = getConnectedDisplay(iden);
 		}
-		return display == null ? null : display.container();
+		return display == null ? null : display.getGSI();
 	}
 
 	public ConnectedDisplay getConnectedDisplay(int iden);

@@ -31,6 +31,8 @@ import sonar.logistics.packets.sync.SyncInfoUUID;
 import stanhebben.zenscript.annotations.NotNull;
 
 /** default implementation of the Display Info used on displays */
+
+@Deprecated
 public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableListener {
 
 	public RenderInfoProperties renderInfo;

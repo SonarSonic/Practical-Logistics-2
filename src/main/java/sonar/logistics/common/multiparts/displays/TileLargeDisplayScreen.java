@@ -1,23 +1,21 @@
 package sonar.logistics.common.multiparts.displays;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.SonarHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
@@ -25,15 +23,16 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.elements.DisplayElementContainer;
+import sonar.logistics.api.displays.elements.DisplayElementList;
+import sonar.logistics.api.displays.elements.TextDisplayElement;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.client.gui.GuiDisplayScreen;
 import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
+import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler.ConnectedDisplayChange;
@@ -67,12 +66,12 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	@Override
 	public void handleUpdateTag(NBTTagCompound tag) {
 		super.handleUpdateTag(tag);
-		//overrideDisplay = PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
+		// overrideDisplay = PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
 	}
 
 	@Override
-	public InfoContainer container() {
-		return getConnectedDisplay().container();
+	public DisplayGSI getGSI() {
+		return getConnectedDisplay().getGSI();
 	}
 
 	@Override
@@ -95,7 +94,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	@Override
 	public void setRegistryID(int id) {
 		connected_display_ID.setObject(id);
-		//SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
+		// SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 	}
 
 	@Override
@@ -180,7 +179,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
 		super.writeData(tag, type);
 		if (type.isType(SyncType.SPECIAL)) {
-			container().writeData(tag, SyncType.SAVE);
+			getGSI().writeData(tag, SyncType.SAVE);
 		}
 		return tag;
 	}
@@ -189,7 +188,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public void readData(NBTTagCompound tag, SyncType type) {
 		super.readData(tag, type);
 		if (type.isType(SyncType.SPECIAL)) {
-			container().readData(tag, SyncType.SAVE);
+			getGSI().readData(tag, SyncType.SAVE);			
 		}
 	}
 
@@ -211,25 +210,38 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 			this.shouldRender.readFromBuf(buf);
 			break;
 		case 6:
-			ConnectedDisplayHandler.setDisplayLocking(getRegistryID(), !getConnectedDisplay().isLocked.getObject());			
+			ConnectedDisplayHandler.setDisplayLocking(getRegistryID(), !getConnectedDisplay().isLocked.getObject());
 			break;
 		}
 	}
 
 	@Override
 	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
-		return new ContainerMultipartSync(part);
+		// TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
+		// return new ContainerMultipartSync(part);
+		return null;
 	}
 
 	@Override
 	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
-		return new GuiDisplayScreen(part, part.container(), GuiState.values()[id], tag.getInteger("infopos"));
+		// TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
+		// return new GuiDisplayScreen(part, part.getGSI(), GuiState.values()[id], tag.getInteger("infopos"));
+		return null;
 	}
 
 	@Override
 	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		if (!world.isRemote) {
+			DisplayElementContainer cont = getGSI().addElementContainer(new double[] { 0, 0, 0 }, getGSI().getDisplayScaling(), 0.5);
+			//cont.getElements().addElement(new TextDisplayElement(cont, "HELLO SAVE ME!"));
+			
+			List<String> strings = SonarHelper.convertArray(FontHelper.translate(TextFormatting.BOLD + ""+ TextFormatting.UNDERLINE + "Videotape by Radiohead"+ "-" + "When I'm at the pearly gates-This will be on my videotape, my videotape-Mephistopheles is just beneath-And he's reaching up to grab me- + -This is one for the good days-And I have it all here-In red, blue, green-Red, blue, green- + -You are my center-When I spin away-Out of control on videotape-On videotape-On videotape-On videotape-On videotape-On videotape- + -This is my way of saying goodbye-Because I can't do it face to face-I'm talking to you after it's too late-No matter what happens now-You shouldn't be afraid-Because I know today has been-the most perfect day I've ever seen").split("-"));
+			DisplayElementList list = new DisplayElementList();
+			for(String t : strings){
+				list.getElements().addElement(new TextDisplayElement(t));
+			}
+			cont.getElements().addElement(list);
+		}
 		GuiState state = GuiState.values()[id];
 		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
 		SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);

@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
@@ -24,8 +25,8 @@ public class GSIOverlays {
 	public static BlockPos lastPos = null;
 
 	@Nullable
-	public static DisplayScreenLook getCurrentLook(InfoContainer container) {
-		if (currentLook != null && currentLook.identity == container.getDisplay().getInfoContainerID()) {
+	public static DisplayScreenLook getCurrentLook(DisplayGSI container) {
+		if (currentLook != null && currentLook.identity == container.getDisplayGSIIdentity()) {
 			return currentLook;
 		}
 		return null;
@@ -47,13 +48,14 @@ public class GSIOverlays {
 					display = ((TileLargeDisplayScreen) display).getConnectedDisplay().getTopLeftScreen();
 				}
 				if (display != null) {
-					currentLook = InteractionHelper.getLookPosition(display.container(), clickPos, face, hitX, hitY, hitZ);
+					currentLook = InteractionHelper.getLookPosition(display.getGSI(), clickPos, face, hitX, hitY, hitZ);
 					return;
 				}
 			}
 
 		}
 		currentLook = null;
+
 	}
 
 }

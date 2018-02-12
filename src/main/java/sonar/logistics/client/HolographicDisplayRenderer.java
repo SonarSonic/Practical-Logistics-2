@@ -30,7 +30,7 @@ public class HolographicDisplayRenderer extends TileEntitySpecialRenderer<TileHo
 
 	@Override
 	public void render(TileHolographicDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-		InfoContainer container = part.container();
+		InfoContainer container = part.getGSI();
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		EnumFacing face = player.getHorizontalFacing().getOpposite();
 		if (face == container.getFacing().getOpposite()) {
@@ -61,7 +61,7 @@ public class HolographicDisplayRenderer extends TileEntitySpecialRenderer<TileHo
 		}
 
 		translate(-0.0625, 0, 0);
-		part.container().renderContainer();
+		part.getGSI().render();
 		popMatrix();
 	}
 }

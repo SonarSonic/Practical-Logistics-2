@@ -9,7 +9,9 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
@@ -18,6 +20,7 @@ import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.info.types.InfoError;
+import sonar.logistics.packets.PacketGSIClick;
 
 public class GSIHelper {
 
@@ -34,8 +37,14 @@ public class GSIHelper {
 		return info instanceof IGSIPacketHandler ? (IGSIPacketHandler) info : GSIHelper.handler;
 	}
 
-	public static void runGSIPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
-		readPacketID(clickTag).logic.doPacket(click, displayInfo, player, clickTag);
+	public static void sendGSIPacket(NBTTagCompound tag, DisplayElementContainer container, DisplayScreenClick click) {
+		if (!tag.hasNoTags()) {
+			PL2.network.sendToServer(new PacketGSIClick(container.getContainerIdentity(), click, tag));
+		}
+	}
+
+	public static void runGSIPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
+		readPacketID(clickTag).logic.doPacket(gsi, click, player, clickTag);
 	}
 
 	public static NBTTagCompound createBasicPacket(GSIPackets packet) {
@@ -63,10 +72,10 @@ public class GSIHelper {
 		return tag;
 	}
 
-	public static void doItemPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+	public static void doItemPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		StoredItemStack clicked = NBTHelper.instanceNBTSyncable(StoredItemStack.class, clickTag);
 		int networkID = clickTag.getInteger("networkID");
-		InteractionHelper.screenItemStackClicked(networkID, clicked.item.isEmpty() ? null : clicked, click, displayInfo, player, clickTag);
+		InteractionHelper.screenItemStackClicked(networkID, clicked.item.isEmpty() ? null : clicked, click, player, clickTag);
 		
 	}
 
@@ -82,15 +91,16 @@ public class GSIHelper {
 		return tag;
 	}
 
-	public static void doFluidPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+	public static void doFluidPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		StoredFluidStack clicked = NBTHelper.instanceNBTSyncable(StoredFluidStack.class, clickTag);
-		InteractionHelper.onScreenFluidStackClicked(clickTag.getInteger("networkID"), clicked.fluid == null ? null : clicked, click, displayInfo, player, clickTag);
+		InteractionHelper.onScreenFluidStackClicked(clickTag.getInteger("networkID"), clicked.fluid == null ? null : clicked, click, player, clickTag);
 	}
 
 	//// SOURCE BUTTON \\\\ - BASIC PACKET
 
-	public static void doSourceButtonPacket(DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
-		IDisplay display = displayInfo.container.getDisplay();
+	public static void doSourceButtonPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
+		/*
+		IDisplay display = gsi.getDisplay();
 		if (display instanceof ConnectedDisplay) {
 			display = ((ConnectedDisplay) display).getTopLeftScreen();
 		}
@@ -100,9 +110,10 @@ public class GSIHelper {
 			NBTTagCompound tag = new NBTTagCompound();
 			tag.setBoolean(slotID == -1 ? FlexibleGuiHandler.TILEENTITY : FlexibleGuiHandler.MULTIPART, true);
 			tag.setInteger(FlexibleGuiHandler.SLOT_ID, slotID);
-			tag.setInteger("infopos", displayInfo.id);
+			//tag.setInteger("infopos", displayInfo.id);
 			SonarCore.instance.guiHandler.openGui(false, player, tile.getWorld(), tile.getPos(), GuiState.SOURCE.ordinal(), tag);
 		}
+		*/
 	}
 
 }

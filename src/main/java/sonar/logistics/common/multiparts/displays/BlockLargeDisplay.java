@@ -59,7 +59,7 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 						display.openFlexibleGui(player, 0);
 					}
 				} else {
-					return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+					return display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 				}
 			}
 		}

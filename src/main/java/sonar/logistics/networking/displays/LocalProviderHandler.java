@@ -25,34 +25,42 @@ public class LocalProviderHandler {
 
 	/** when a ILogicListenable is added to the world */
 	public static void onDisplayAdded(IDisplay display) {
-		for (int i = 0; i < display.container().getMaxCapacity(); i++) {
-			InfoUUID uuid = display.container().getInfoUUID(i);
+		return;
+		/*
+		for (int i = 0; i < display.getGSI().getMaxCapacity(); i++) {
+			InfoUUID uuid = display.getGSI().getInfoUUID(i);
 			if (InfoUUID.valid(uuid)) {
 				ILogicListenable listen = PL2.getServerManager().getIdentityTile(uuid.identity);
 				if (listen != null) {
 					doLocalProviderConnect(display, listen, uuid, i);
-					display.container().sendInfoContainerPacketToWatchers();
+					display.getGSI().sendInfoContainerPacketToWatchers();
 				}
 			}
 		}
+		*/
 	}
 
 	/** when a ILogicListenable is removed from the world */
 	public static void onDisplayRemoved(IDisplay display) {
-		for (int i = 0; i < display.container().getMaxCapacity(); i++) {
-			InfoUUID uuid = display.container().getInfoUUID(i);
+		return;
+		/*
+		for (int i = 0; i < display.getGSI().getMaxCapacity(); i++) {
+			InfoUUID uuid = display.getGSI().getInfoUUID(i);
 			if (InfoUUID.valid(uuid)) {
 				ILogicListenable listen = PL2.getServerManager().getIdentityTile(uuid.identity);
 				if (listen != null) {
 					doLocalProviderDisconnect(display, listen, uuid, i);
-					display.container().sendInfoContainerPacketToWatchers();
+					display.getGSI().sendInfoContainerPacketToWatchers();
 				}
 			}
 		}
+		*/
 	}
 
 	public static void doLocalProviderPacket(IDisplay display, InfoUUID uuid, int infoPosition) {
-		InfoUUID current = display.container().getInfoUUID(infoPosition);
+		return;
+		/*
+		InfoUUID current = display.getGSI().getInfoUUID(infoPosition);
 		if (!InfoUUID.valid(current) || !current.equals(uuid)) {
 			BlockCoords coords = display.getCoords();
 			if (InfoUUID.valid(current)) {
@@ -69,19 +77,26 @@ public class LocalProviderHandler {
 				return match;
 			});
 		}
-		display.container().sendInfoContainerPacketToWatchers();
+		display.getGSI().sendInfoContainerPacketToWatchers();
+		*/
 	}
 
 	public static void doLocalProviderConnect(IDisplay display, ILogicListenable logicTile, InfoUUID uuid, int infoPosition) {
-		display.container().setUUID(uuid, infoPosition);
+		return;
+		/*
+		display.getGSI().setUUID(uuid, infoPosition);
 		logicTile.getListenerList().getDisplayListeners().addListener(display, 0);
 		PL2.getServerManager().markChanged(logicTile, uuid); // triggers the info packet to be sent to watchers
+		*/
 	}
 
 	public static void doLocalProviderDisconnect(IDisplay display, ILogicListenable logicTile, InfoUUID uuid, int infoPosition) {
-		display.container().setUUID(InfoUUID.newEmpty(), infoPosition);
+		return;
+		/*
+		display.getGSI().setUUID(InfoUUID.newEmpty(), infoPosition);
 		logicTile.getListenerList().getDisplayListeners().removeListener(display, true, 0); // FIXME does it tally with multiple info watching the same one?
 		PL2.getServerManager().markChanged(logicTile, uuid); // triggers the info packet to be sent to watchers
+		*/
 	}
 
 	/** when a display is connected to a ILogicListenable */
@@ -98,7 +113,7 @@ public class LocalProviderHandler {
 		if (updateListenerDisplays) {
 			updateListenerDisplays = false;
 			PL2.getServerManager().identityTiles.values().forEach(tile -> tile.getListenerList().getDisplayListeners().clear());
-			PL2.getServerManager().displays.values().forEach(display -> display.container().forEachValidUUID(uuid -> {
+			PL2.getServerManager().displays.values().forEach(display -> display.getGSI().forEachValidUUID(uuid -> {
 				ILogicListenable monitor = PL2.getServerManager().getIdentityTile(uuid.getIdentity());
 				if (monitor != null && monitor instanceof ILogicListenable) {
 					monitor.getListenerList().getDisplayListeners().addListener(display, 0);

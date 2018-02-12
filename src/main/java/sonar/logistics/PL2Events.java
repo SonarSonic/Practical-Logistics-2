@@ -96,7 +96,7 @@ public class PL2Events {
 				if (display != null && display instanceof TileAbstractDisplay) {
 					Vec3d vec = event.getHitVec();
 					coolDownClick = 3;
-					display.container().onClicked((TileAbstractDisplay) display, event.getEntityPlayer().isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, state, event.getEntityPlayer(), event.getHand(), event.getFace(), (float) vec.x - pos.getX(), (float) vec.y - pos.getY(), (float) vec.z - pos.getZ());
+					display.getGSI().onClicked((TileAbstractDisplay) display, event.getEntityPlayer().isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, state, event.getEntityPlayer(), event.getHand(), event.getFace(), (float) vec.x - pos.getX(), (float) vec.y - pos.getY(), (float) vec.z - pos.getZ());
 					event.setCanceled(true);
 				}
 			}

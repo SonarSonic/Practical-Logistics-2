@@ -5,26 +5,22 @@ import sonar.logistics.api.displays.IDisplayElement;
 public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
-	public DisplayElementContainer container;
-	public double[] maxScaling, actualScaling;
-	public int[] unscaledWidthHeight;
-	public double percentageFill = 1;
-	public WidthAlignment width_align = WidthAlignment.CENTERED;
-	public HeightAlignment height_align = HeightAlignment.CENTERED;
+	public IElementStorageHolder holder;
+	private double[] maxScaling, actualScaling;
+	private int[] unscaledWidthHeight;
+	protected double percentageFill = 1;
+	protected WidthAlignment width_align = WidthAlignment.CENTERED;
+	protected HeightAlignment height_align = HeightAlignment.CENTERED;
 
 	public AbstractDisplayElement() {}
 	
-	public AbstractDisplayElement(DisplayElementContainer list) {
-		this.container = list;
-	}
-	
-	public final DisplayElementContainer setContainer(DisplayElementContainer c) {
-		return container = c;
+	public final IElementStorageHolder setHolder(IElementStorageHolder c) {
+		return holder = c;
 	}
 
 	@Override
-	public final DisplayElementContainer getContainer() {
-		return container;
+	public IElementStorageHolder getHolder() {
+		return holder;
 	}
 
 	@Override
@@ -32,7 +28,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 		unscaledWidthHeight = null;
 		maxScaling = null;
 		actualScaling = null;
-		container.onElementChanged(this);
+		//holder.updateActualScaling();
 	}
 
 	@Override
@@ -66,7 +62,10 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 	}
 
 	@Override
-	public final double[] getMaxScaling() {
+	public double[] getMaxScaling() {
+		if(maxScaling==null){
+			maxScaling = getHolder().createMaxScaling(this);
+		}
 		return maxScaling;
 	}
 
@@ -76,7 +75,10 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 	}
 
 	@Override
-	public final double[] getActualScaling() {
+	public double[] getActualScaling() {
+		if(actualScaling==null){
+			actualScaling = getHolder().createActualScaling(this);
+		}
 		return actualScaling;
 	}
 

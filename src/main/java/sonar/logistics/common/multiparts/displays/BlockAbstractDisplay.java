@@ -65,7 +65,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 					display.openFlexibleGui(player, 0);
 				}
 			} else {
-				return display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+				return display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 		}
 		return true;
@@ -106,7 +106,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 			float hitX = (float) (rayResult.hitVec.x - (double) pos.getX());
 			float hitY = (float) (rayResult.hitVec.y - (double) pos.getY());
 			float hitZ = (float) (rayResult.hitVec.z - (double) pos.getZ());
-			display.container().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
+			display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
 
 		}
 
@@ -117,7 +117,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 		EnumFacing rotation = EnumFacing.NORTH;
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile != null && tile instanceof TileAbstractDisplay) {
-			rotation = ((TileAbstractDisplay) tile).container().getRotation();
+			rotation = ((TileAbstractDisplay) tile).getGSI().getRotation();
 		}
 		return state.withProperty(SonarProperties.ROTATION, rotation);
 	}

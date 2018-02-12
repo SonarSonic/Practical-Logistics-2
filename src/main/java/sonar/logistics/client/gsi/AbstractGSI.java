@@ -175,12 +175,6 @@ public abstract class AbstractGSI<I extends IInfo> extends Gui implements IGSI<I
 		return null;
 	}
 
-	public void sendGSIPacket(NBTTagCompound tag, I info, DisplayScreenClick click, EnumHand hand) {
-		if (!tag.hasNoTags()) {
-			PL2.network.sendToServer(new PacketGSIClick(renderInfo.getInfoPosition(), click, renderInfo.getInfoUUID(), tag));
-		}
-	}
-
 	public void initButtons(List<GSIButton> buttons) {}
 
 	public void initRenderables(List<IDisplayRenderable> renderables) {}

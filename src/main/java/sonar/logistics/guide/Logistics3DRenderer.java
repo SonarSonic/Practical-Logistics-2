@@ -43,7 +43,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 			return;
 		}
 
-		InfoContainer container = part.container();
+		InfoContainer container = part.getGSI();
 		GlStateManager.pushMatrix();
 		translate(pos.getX() - 0.5, pos.getY(), pos.getZ() - 0.5);
 
@@ -61,15 +61,15 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		DisplayLayout layout = container.getLayout();
 		DisplayType type = part.getDisplayType();
 		for (int dataPos = 0; dataPos < layout.maxInfo; dataPos++) {
-			DisplayInfo info = part.container().getDisplayInfo(dataPos);
+			DisplayInfo info = part.getGSI().getDisplayInfo(dataPos);
 
 			GL11.glPushMatrix();
 			GlStateManager.pushAttrib();
 			double[] translation = info.getRenderProperties().translation;
 			double[] scaling = info.getRenderProperties().scaling;
 			GL11.glTranslated(translation[0], translation[1], translation[2]);		
-			info.getGSI().renderGSIBackground(info.cachedInfo, (InfoContainer) part.container(), info, scaling[0], scaling[1], scaling[2], dataPos);
-			info.getGSI().renderGSIForeground(info.cachedInfo, (InfoContainer) part.container(), info, scaling[0], scaling[1], scaling[2], dataPos);			
+			info.getGSI().renderGSIBackground(info.cachedInfo, (InfoContainer) part.getGSI(), info, scaling[0], scaling[1], scaling[2], dataPos);
+			info.getGSI().renderGSIForeground(info.cachedInfo, (InfoContainer) part.getGSI(), info, scaling[0], scaling[1], scaling[2], dataPos);			
 			GlStateManager.popAttrib();
 			GL11.glPopMatrix();
 		}

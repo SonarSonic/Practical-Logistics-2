@@ -39,7 +39,9 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.ElementStorage;
 import sonar.logistics.api.displays.elements.HeightAlignment;
+import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.WidthAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
@@ -102,61 +104,62 @@ public class InfoRenderer {
 
 	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
 
-	/** @param actualScaling the actual scaling
-	 * @param maxListScaling the max scaling //FIXME not necessary, should be scaled to fit given scaling regardless of max list scaling
-	 * @param percentageFill
-	 * @param elements */
-	public static void renderDisplayElements(double[] maxListScaling, double[] actualListScaling, double percentageFill, Iterable<IDisplayElement> elements) {
-		for (IDisplayElement e : elements) {
-			double[] maxElementScaling = e.getMaxScaling();
-			double[] actualElementScaling = e.getActualScaling();
-			int[] unscaledWidthHeight = e.getUnscaledWidthHeight();
+	/**
+	 * @param holder the holder to render
+	 */
+	public static void renderElementStorageHolder(IElementStorageHolder holder) {
+		for (IDisplayElement e : holder.getElements()) {
+			holder.startElementRender(e);
 			pushMatrix();
-			align(new double[] { maxListScaling[0], maxElementScaling[1], maxElementScaling[2] }, actualElementScaling, e.getWidthAlignment(), e.getHeightAlignment());
-			scale(actualElementScaling[SCALE], actualElementScaling[SCALE], actualElementScaling[SCALE]);
-			pushMatrix();
+			align(holder.getAlignmentTranslation(e));
+			double scale = e.getActualScaling()[SCALE];
+			scale(scale, scale, scale);
+			//pushMatrix();
 			e.render();
+			//popMatrix();
 			popMatrix();
-			popMatrix();
-			translate(0, actualElementScaling[HEIGHT], 0);
+			holder.endElementRender(e);
 		}
+	}
+	
+	public static double[] alignArray(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
+		double x = alignWidth(actualListScaling, actualElementScaling, width);
+		double y = alignHeight(actualListScaling, actualElementScaling, height);
+		double z = 0;
+		return new double[]{x, y, z};
 	}
 
 	public static void align(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
-		alignWidth(actualListScaling, actualElementScaling, width);
-		alignHeight(actualListScaling, actualElementScaling, height);
+		double[] alignArray = alignArray(actualListScaling, actualElementScaling, width, height);
+		align(alignArray);
+	}
+	
+	public static void align(double[] align){
+		translate(align[WIDTH], align[HEIGHT], 0);
 	}
 
-	public static void alignWidth(double[] actualListScaling, double[] actualElementScaling, WidthAlignment align) {
+	public static double alignWidth(double[] actualListScaling, double[] actualElementScaling, WidthAlignment align) {
 		switch (align) {
 		case CENTERED:
-			translate((actualListScaling[WIDTH] / 2) - (actualElementScaling[WIDTH] / 2), 0, 0);
-			break;
+			return (actualListScaling[WIDTH] / 2) - (actualElementScaling[WIDTH] / 2);
 		case LEFT:
 			break;
 		case RIGHT:
-			translate(actualListScaling[WIDTH] - actualElementScaling[WIDTH], 0, 0);
-			break;
-		default:
-			break;
-
+			return actualListScaling[WIDTH] - actualElementScaling[WIDTH];
 		}
+		return 0;
 	}
 
-	public static void alignHeight(double[] actualListScaling, double[] actualElementScaling, HeightAlignment align) {
+	public static double alignHeight(double[] actualListScaling, double[] actualElementScaling, HeightAlignment align) {
 		switch (align) {
 		case CENTERED:
-			translate(0, actualListScaling[HEIGHT] / 2 - actualElementScaling[HEIGHT] / 2, 0);
-			break;
+			return (actualListScaling[HEIGHT] / 2) - (actualElementScaling[HEIGHT] / 2);
 		case TOP:
 			break;
 		case BOTTOM:
-			translate(0, actualListScaling[HEIGHT] - actualElementScaling[HEIGHT], 0);
-			break;
-		default:
-			break;
-
+			return actualListScaling[HEIGHT] - actualElementScaling[HEIGHT];
 		}
+		return 0;
 	}
 
 	/** scales the unscaled width and height to match the given scaling returned in the form, actual width, actual height, scale factor */
@@ -222,14 +225,14 @@ public class InfoRenderer {
 		}
 	}
 
-	public static void renderCenteredStringsWithUniformScaling(double width, double height, double maxScale, int spacing, double percentageFill, int colour, List<String> toDisplay) {
+	public static void renderCenteredStringsWithUniformScaling(List<String> toDisplay, double width, double height, int spacing, double percentageFill, int colour) {
 		GlStateManager.pushMatrix();
 		int unscaledWidth = getMaxWidth(toDisplay);
 		int unscaledHeight = getMaxHeight(toDisplay, spacing);
-		double scale = Math.min(width / unscaledWidth, height / unscaledHeight);
-		double maxWidth = (unscaledWidth * scale) * percentageFill;
-		double maxHeight = (unscaledHeight * scale) * percentageFill;
-		GlStateManager.translate((width - maxWidth) / 2, (height - maxHeight) / 2, 0);
+		double scale = (Math.min(width / unscaledWidth, height / unscaledHeight)) * percentageFill;
+		double maxWidth = (unscaledWidth * scale);
+		double maxHeight = (unscaledHeight * scale);
+		align(new double[]{width, height, 1}, new double[]{maxWidth, maxHeight, 1}, WidthAlignment.CENTERED, HeightAlignment.CENTERED);
 		GlStateManager.scale(scale, scale, scale);
 		for (int i = 0; i < toDisplay.size(); i++) {
 			if (i != 0)
@@ -241,6 +244,8 @@ public class InfoRenderer {
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.popMatrix();
+		
+		
 	}
 
 	public static int getMaxWidth(List<String> toDisplay) {

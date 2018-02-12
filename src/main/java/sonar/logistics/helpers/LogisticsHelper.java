@@ -23,6 +23,7 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -102,7 +103,7 @@ public class LogisticsHelper {
 	public List<InfoUUID> getConnectedUUIDS(List<IDisplay> displays) {
 		ArrayList<InfoUUID> ids = Lists.newArrayList();
 		for (IDisplay display : displays) {
-			IInfoContainer container = display.container();
+			DisplayGSI container = display.getGSI();
 			container.forEachValidUUID(id -> {
 				if (InfoUUID.valid(id) && !ids.contains(id))
 					ids.add(id);

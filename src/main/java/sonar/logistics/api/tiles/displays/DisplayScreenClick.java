@@ -3,9 +3,11 @@ package sonar.logistics.api.tiles.displays;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.logistics.api.displays.DisplayGSI;
 
 public class DisplayScreenClick {
 
+	public DisplayGSI gsi;
 	public BlockInteractionType type;
 	public double clickX, clickY;
 	public BlockPos clickPos;

@@ -22,6 +22,7 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.InfoContainer;
@@ -56,9 +57,9 @@ public class InteractionHelper {
 		}
 	}
 
-	public static void screenItemStackClicked(int networkID, StoredItemStack storedItemStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+	public static void screenItemStackClicked(int networkID, StoredItemStack storedItemStack, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(click.type);
-		EnumFacing facing = displayInfo.container.getFacing();
+		EnumFacing facing = click.gsi.getFacing();
 		ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(networkID);
 		if (toRemove.a != 0 && network.isValid()) {
 			switch (toRemove.b) {
@@ -98,7 +99,7 @@ public class InteractionHelper {
 		}
 	}
 
-	public static void onScreenFluidStackClicked(int networkID, StoredFluidStack fluidStack, DisplayScreenClick click, DisplayInfo displayInfo, EntityPlayer player, NBTTagCompound clickTag) {
+	public static void onScreenFluidStackClicked(int networkID, StoredFluidStack fluidStack, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(networkID);
 		if (network.isValid()) {
 			IFluidHandler handler = new DummyFluidHandler(network, fluidStack);
@@ -122,7 +123,7 @@ public class InteractionHelper {
 		}
 	}
 
-	public static double[] getDisplayPositionFromXY(InfoContainer container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
+	public static double[] getDisplayPositionFromXY(DisplayGSI container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
 		double[] clickPosition = getClickPosition(face, hitX, hitY, hitZ);
 		if (container.getDisplay() instanceof ConnectedDisplay) {
 			ConnectedDisplay connected = (ConnectedDisplay) container.getDisplay();
@@ -145,24 +146,25 @@ public class InteractionHelper {
 				}
 			}
 		} else {
-			clickPosition[1] = clickPosition[1] - ((container.height / 2));
+			clickPosition[1] = clickPosition[1] - ((container.getDisplayScaling()[1] / 2));
 		}
 		return clickPosition;
 	}
 
-	public static DisplayScreenLook getLookPosition(InfoContainer container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
+	public static DisplayScreenLook getLookPosition(DisplayGSI container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
 		DisplayScreenLook position = new DisplayScreenLook();
 		double[] clickPosition = getDisplayPositionFromXY(container, clickPos, face, hitX, hitY, hitZ);
-		position.setContainerIdentity(container.getContainerIdentity());
+		position.setContainerIdentity(container.getDisplayGSIIdentity());
 		position.setLookPosition(clickPosition);
 		return position;
 	}
 
-	public static DisplayScreenClick getClickPosition(InfoContainer container, BlockPos clickPos, BlockInteractionType type, EnumFacing face, float hitX, float hitY, float hitZ) {
+	public static DisplayScreenClick getClickPosition(DisplayGSI displayGSI, BlockPos clickPos, BlockInteractionType type, EnumFacing face, float hitX, float hitY, float hitZ) {
 		DisplayScreenClick position = new DisplayScreenClick();
-		double[] clickPosition = getDisplayPositionFromXY(container, clickPos, face, hitX, hitY, hitZ);
-		position.setContainerIdentity(container.getContainerIdentity());
+		double[] clickPosition = getDisplayPositionFromXY(displayGSI, clickPos, face, hitX, hitY, hitZ);
+		position.setContainerIdentity(displayGSI.getDisplayGSIIdentity());
 		position.setClickPosition(clickPosition);
+		position.gsi=displayGSI;
 		position.type = type;
 		position.clickPos = clickPos;
 		return position;
@@ -206,10 +208,10 @@ public class InteractionHelper {
 		return -1;
 	}
 
-	public static double[] getTranslation(IInfoContainer container, int pos) {
-		double[] displaySize = container.getDisplayScaling();
+	public static double[] getTranslation(double[] scaling, DisplayLayout layout, int pos) {
+		double[] displaySize = scaling;
 		double width = displaySize[0], height = displaySize[1];
-		switch (container.getLayout()) {
+		switch (layout) {
 		case DUAL:
 			return new double[] { 0, pos == 1 ? height / 2 : 0, 0 };
 		case GRID:
@@ -221,10 +223,10 @@ public class InteractionHelper {
 		}
 	}
 
-	public static double[] getScaling(IInfoContainer container, int pos) {
-		double[] displaySize = container.getDisplayScaling();
+	public static double[] getScaling(double[] scaling, DisplayLayout layout, int pos) {
+		double[] displaySize = scaling;
 		double width = displaySize[0], height = displaySize[1], scale = displaySize[2];
-		switch (container.getLayout()) {
+		switch (layout) {
 		case DUAL:
 			return new double[] { width, height / 2, scale };
 		case GRID:
@@ -237,6 +239,8 @@ public class InteractionHelper {
 	}
 
 	/** in the form of start x, start y, end x, end y */
+
+	@Deprecated
 	public static double[] getPositionedClickBox(IInfoContainer container, int pos) {
 		double[] displaySize = container.getDisplayScaling();
 		double width = displaySize[0], height = displaySize[1];
@@ -252,6 +256,7 @@ public class InteractionHelper {
 		}
 	}
 
+	@Deprecated
 	public static boolean canBeClickedStandard(DisplayInfo renderInfo, DisplayScreenClick click) {
 		double[] intersect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition());
 		double x = click.clickX;
@@ -261,6 +266,10 @@ public class InteractionHelper {
 		}
 		return false;
 
+	}
+	
+	public static boolean checkClick(double x, double y, double[] clickBox) {
+		return x >= clickBox[0] && x <= clickBox[2] && y >= clickBox[1] && y <= clickBox[3];
 	}
 
 	public static double[] getClickPosition(EnumFacing face, float hitX, float hitY, float hitZ) {

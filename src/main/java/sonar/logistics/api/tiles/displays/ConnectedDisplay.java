@@ -27,6 +27,7 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICable;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
@@ -52,7 +53,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	public SyncEnum<DisplayLayout> layout = new SyncEnum(DisplayLayout.values(), 1);
 	public SyncTagType.INT width = new SyncTagType.INT(2), height = new SyncTagType.INT(3);
 	public SyncTagType.BOOLEAN canBeRendered = (BOOLEAN) new SyncTagType.BOOLEAN(4).setDefault(true);
-	private InfoContainer container;
+	private DisplayGSI container;
 	public SyncCoords topLeftCoords = new SyncCoords(5);
 	public SyncTagType.BOOLEAN isLocked = new SyncTagType.BOOLEAN(6);
 	// public double[] scaling = null;
@@ -65,7 +66,6 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	public ConnectedDisplay(ILargeDisplay display) {
 		registryID = display.getRegistryID();
 		face.setObject(display.getCableFace());
-		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(registryID, ConnectedDisplayChange.values());
 	}
 
 	public ConnectedDisplay(int registryID) {
@@ -73,7 +73,6 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 			PL2.logger.info("DISPLAY CREATED WITH ID -1");
 		}
 		this.registryID = registryID;
-		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(registryID, ConnectedDisplayChange.values());
 	}
 
 	public void setDisplayScaling() {
@@ -119,7 +118,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 			this.width.setObject(maxX - minX);
 			this.height.setObject(maxZ - minZ);
 			if (meta == EnumFacing.UP) {
-				switch (container.getRotation()) {
+				switch (getGSI().getRotation()) {
 				case DOWN:
 					break;
 				case EAST:
@@ -150,7 +149,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 
 				}
 			} else if (meta == EnumFacing.DOWN) {
-				switch (container.getRotation()) {
+				switch (getGSI().getRotation()) {
 				case DOWN:
 					break;
 				case EAST:
@@ -241,9 +240,9 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	}
 
 	@Override
-	public InfoContainer container() {
+	public DisplayGSI getGSI() {
 		if (container == null) {
-			container = new InfoContainer(this, getInfoContainerID());
+			container = new DisplayGSI(this, getInfoContainerID());
 		}
 		return container;
 	}
@@ -282,8 +281,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 		if (nbt.hasKey(getTagName())) {
 			NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
 			NBTHelper.readSyncParts(tag, type, this.syncParts);
-			container().readData(tag, type);
-			container.resetRenderProperties();
+			getGSI().readData(tag, type);
 		}
 	}
 
@@ -291,7 +289,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTHelper.writeSyncParts(tag, type, this.syncParts, true);
-		container().writeData(tag, type);
+		getGSI().writeData(tag, type);
 		if (!tag.hasNoTags()) {
 			nbt.setTag(this.getTagName(), tag);
 		}
@@ -321,7 +319,6 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	@Override
 	public void readFromBuf(ByteBuf buf) {
 		readData(ByteBufUtils.readTag(buf), SyncType.SAVE);
-		container.resetRenderProperties();
 	}
 
 	@Override

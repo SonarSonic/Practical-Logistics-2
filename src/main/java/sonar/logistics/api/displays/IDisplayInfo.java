@@ -12,6 +12,8 @@ import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.client.gsi.IGSI;
 
 /** used within a IInfoContainer */
+
+@Deprecated
 public interface IDisplayInfo extends INBTSyncable {
 
 	/** sets the info UUID to get cached info from */
