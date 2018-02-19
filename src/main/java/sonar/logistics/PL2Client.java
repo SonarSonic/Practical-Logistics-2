@@ -66,6 +66,7 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileClock.class, new ClockRenderer());		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHammer.class, new RenderHammer());
 		
+		/* FIXME?
 		GSI_REGISTRY.register(AE2DriveInfo.id, GSIAE2DriveInfo.class);
 		GSI_REGISTRY.register(LogicInfo.id, GSIBasicInfo.class);		
 		GSI_REGISTRY.register(ClockInfo.id, GSIClockInfo.class);
@@ -75,6 +76,7 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 		GSI_REGISTRY.register(LogicInfoList.id, GSILogicList.class);
 		GSI_REGISTRY.register(InfoError.id, GSINoData.class);
 		GSI_REGISTRY.register(ProgressInfo.id, GSIProgressInfo.class);
+		*/
 	}
 
 	public IGSIRegistry getGSIRegistry(){

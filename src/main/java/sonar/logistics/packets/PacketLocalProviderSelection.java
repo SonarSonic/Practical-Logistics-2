@@ -12,11 +12,8 @@ import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.common.multiparts.readers.TileInventoryReader;
 import sonar.logistics.networking.displays.LocalProviderHandler;
-import sonar.logistics.networking.items.ItemHelper;
 
 public class PacketLocalProviderSelection extends PacketMultipart {
 
@@ -50,7 +47,7 @@ public class PacketLocalProviderSelection extends PacketMultipart {
 		public IMessage processMessage(PacketLocalProviderSelection message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
 			if (ctx.side == Side.SERVER && part instanceof IDisplay) {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					LocalProviderHandler.doLocalProviderPacket((IDisplay) part, message.uuid, message.infoPosition);
+					//FIXME do we still need this packet???  LocalProviderHandler.doLocalProviderPacket((IDisplay) part, message.uuid, message.infoPosition);
 				});
 			}
 			return null;

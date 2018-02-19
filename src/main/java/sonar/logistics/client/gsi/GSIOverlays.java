@@ -12,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;

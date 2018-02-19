@@ -17,12 +17,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.InfoError;
 
 public class HolographicDisplayRenderer extends TileEntitySpecialRenderer<TileHolographicDisplay> {
 
@@ -30,7 +27,7 @@ public class HolographicDisplayRenderer extends TileEntitySpecialRenderer<TileHo
 
 	@Override
 	public void render(TileHolographicDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-		InfoContainer container = part.getGSI();
+		DisplayGSI container = part.getGSI();
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		EnumFacing face = player.getHorizontalFacing().getOpposite();
 		if (face == container.getFacing().getOpposite()) {

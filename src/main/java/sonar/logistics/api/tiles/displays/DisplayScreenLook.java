@@ -1,9 +1,5 @@
 package sonar.logistics.api.tiles.displays;
 
-import net.minecraft.util.math.BlockPos;
-import sonar.core.api.utils.BlockInteractionType;
-import sonar.logistics.api.displays.InfoContainer;
-
 public class DisplayScreenLook {
 
 	public double lookX, lookY;

@@ -25,15 +25,11 @@ import sonar.logistics.api.PL2API;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.IInfoContainer;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
-import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.fluids.DummyFluidHandler;
 import sonar.logistics.packets.PacketItemInteractionText;
@@ -173,6 +169,7 @@ public class InteractionHelper {
 	/* public static double[] getPos(IDisplay display, RenderInfoProperties renderInfo) { if (display instanceof ConnectedDisplay) { ConnectedDisplay connected = (ConnectedDisplay) display; if (connected.getTopLeftScreen() != null && connected.getTopLeftScreen().getCoords() != null) { BlockPos leftPos = connected.getTopLeftScreen().getCoords().getBlockPos(); double[] translation = renderInfo.getTranslation(); switch (display.getCableFace()) { case DOWN: break; case EAST: break; case NORTH: return new double[] { leftPos.getX() - translation[0], leftPos.getY() - translation[1], leftPos.getZ() }; case SOUTH: break; case UP: break; case WEST: break; default: break; } } } return new double[] { display.getCoords().getX(), display.getCoords().getY(), display.getCoords().getZ() }; } */
 
 	/**in the form of double[] {start x, start y, width, height, actual x click, actual y click}*/
+	/*
 	public static double[] getActualBox(double mouseX, double mouseY, DisplayInfo renderInfo) {
 		double[] actualIntersect = new double[8];
 		double[] sect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition());
@@ -207,6 +204,7 @@ public class InteractionHelper {
 		}
 		return -1;
 	}
+	*/
 
 	public static double[] getTranslation(double[] scaling, DisplayLayout layout, int pos) {
 		double[] displaySize = scaling;
@@ -239,7 +237,7 @@ public class InteractionHelper {
 	}
 
 	/** in the form of start x, start y, end x, end y */
-
+	/*
 	@Deprecated
 	public static double[] getPositionedClickBox(IInfoContainer container, int pos) {
 		double[] displaySize = container.getDisplayScaling();
@@ -267,6 +265,7 @@ public class InteractionHelper {
 		return false;
 
 	}
+	*/
 	
 	public static boolean checkClick(double x, double y, double[] clickBox) {
 		return x >= clickBox[0] && x <= clickBox[2] && y >= clickBox[1] && y <= clickBox[3];

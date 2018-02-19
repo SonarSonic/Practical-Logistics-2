@@ -1,24 +1,20 @@
 package sonar.logistics.client;
 
+import static net.minecraft.client.renderer.GlStateManager.rotate;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.common.hammer.TileEntityHammer;
-import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class RenderHammer extends TileEntitySpecialRenderer<TileEntityHammer> {
 

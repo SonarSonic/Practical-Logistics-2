@@ -12,8 +12,6 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
@@ -22,7 +20,6 @@ import sonar.logistics.api.info.ISuffixable;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.LogicInfoRegistry;
 
 /** default info type, created by the LogicRegistry */

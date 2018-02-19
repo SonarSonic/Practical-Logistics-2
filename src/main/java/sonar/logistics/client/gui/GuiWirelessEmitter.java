@@ -6,7 +6,6 @@ import net.minecraft.client.gui.GuiButton;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.wireless.TileAbstractEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;

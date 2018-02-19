@@ -9,10 +9,15 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.NetworkFluidElement;
+import sonar.logistics.api.displays.elements.ProgressBarElement;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.ISuffixable;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.register.LogicPath;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.networking.info.InfoHelper;
@@ -73,7 +78,6 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	public String getClientType() {
 		return "Progress";
 	}
-
 	@Override
 	public String getSuffix() {
 		if (!isValid()) {
@@ -89,6 +93,13 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 		}
 		return (compare == 1 ? second : first).getPrefix();
 	}
+
+	@Override
+	public void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
+		IInfo.doCreateDefaultElements(this, toAdd, h, uuid);
+		toAdd.add(new ProgressBarElement(uuid));
+	}
+
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {

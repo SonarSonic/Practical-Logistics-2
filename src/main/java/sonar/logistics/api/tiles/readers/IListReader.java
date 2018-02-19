@@ -3,7 +3,6 @@ package sonar.logistics.api.tiles.readers;
 import java.util.List;
 import java.util.Map;
 
-import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;

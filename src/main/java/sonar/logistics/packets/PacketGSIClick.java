@@ -11,14 +11,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.DisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.client.gsi.GSIHelper;
-import sonar.logistics.client.gsi.IGSIPacketHandler;
+import sonar.logistics.client.gsi.GSIClickPacketHelper;
 
 public class PacketGSIClick implements IMessage {
 
@@ -56,11 +50,10 @@ public class PacketGSIClick implements IMessage {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 				if (player != null) {
 					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						// FIXME ELEMENT IDENTITY
 						DisplayGSI gsi = PL2.getServerManager().getDisplayGSI(message.click.identity);
 						if (gsi != null) {
 							message.click.gsi = gsi;
-							GSIHelper.handler.runGSIPacket(gsi, message.click, player, message.clickTag);
+							GSIClickPacketHelper.handler.runGSIClickPacket(gsi, message.click, player, message.clickTag);
 						}
 					});
 				}

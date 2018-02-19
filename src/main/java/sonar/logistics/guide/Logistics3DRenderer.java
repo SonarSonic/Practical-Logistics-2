@@ -12,7 +12,6 @@ import sonar.core.client.gui.GuiBlockRenderer3D;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayType;
@@ -20,7 +19,6 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.InfoError;
 
 public class Logistics3DRenderer extends GuiBlockRenderer3D {
 

@@ -2,7 +2,6 @@ package sonar.logistics.client.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerArray;

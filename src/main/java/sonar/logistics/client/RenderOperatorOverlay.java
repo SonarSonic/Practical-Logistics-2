@@ -22,7 +22,6 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTool;
 

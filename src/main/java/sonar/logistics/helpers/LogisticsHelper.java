@@ -3,28 +3,21 @@ package sonar.logistics.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import mcmultipart.api.multipart.IMultipartTile;
-import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import sonar.core.api.utils.BlockCoords;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.IInfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.ILogisticsNetwork;
@@ -38,7 +31,6 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 

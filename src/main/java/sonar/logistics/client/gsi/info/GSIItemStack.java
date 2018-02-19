@@ -11,9 +11,8 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.client.gsi.AbstractGSI;
-import sonar.logistics.client.gsi.GSIHelper;
+import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 public class GSIItemStack extends AbstractGSI<MonitoredItemStack> {
@@ -52,7 +51,7 @@ public class GSIItemStack extends AbstractGSI<MonitoredItemStack> {
 	@Override
 	public void onGSIClicked(MonitoredItemStack info, DisplayScreenClick click, EnumHand hand) {
 		super.onGSIClicked(info, click, hand);
-		NBTTagCompound packet = GSIHelper.createItemClickPacket(info.getStoredStack(), info.getNetworkSource());
+		NBTTagCompound packet = GSIClickPacketHelper.createItemClickPacket(info.getStoredStack(), info.getNetworkSource());
 		sendGSIPacket(packet, info, click, hand);
 	}
 	

@@ -1,5 +1,8 @@
 package sonar.logistics.api.displays.elements;
 
+import net.minecraft.nbt.NBTTagCompound;
+import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.logistics.PL2;
 import sonar.logistics.api.displays.IDisplayElement;
 
 public abstract class AbstractDisplayElement implements IDisplayElement {
@@ -11,9 +14,28 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 	protected double percentageFill = 1;
 	protected WidthAlignment width_align = WidthAlignment.CENTERED;
 	protected HeightAlignment height_align = HeightAlignment.CENTERED;
+	private int identity = -1;
 
 	public AbstractDisplayElement() {}
-	
+
+	public int getElementIdentity() {
+		if (identity == -1) {
+			identity = PL2.getServerManager().getNextIdentity();
+		}
+		return identity;
+	}
+
+	@Override
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		identity = nbt.getInteger("identity");
+	}
+
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		nbt.setInteger("identity", getElementIdentity());
+		return nbt;
+	}
+
 	public final IElementStorageHolder setHolder(IElementStorageHolder c) {
 		return holder = c;
 	}
@@ -28,26 +50,26 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 		unscaledWidthHeight = null;
 		maxScaling = null;
 		actualScaling = null;
-		//holder.updateActualScaling();
+		// holder.updateActualScaling();
 	}
 
 	@Override
-	public WidthAlignment getWidthAlignment(){
+	public WidthAlignment getWidthAlignment() {
 		return width_align;
 	}
 
 	@Override
-	public WidthAlignment setWidthAlignment(WidthAlignment align){
+	public WidthAlignment setWidthAlignment(WidthAlignment align) {
 		return width_align = align;
 	}
 
 	@Override
-	public HeightAlignment getHeightAlignment(){
+	public HeightAlignment getHeightAlignment() {
 		return height_align;
 	}
 
 	@Override
-	public HeightAlignment setHeightAlignment(HeightAlignment align){
+	public HeightAlignment setHeightAlignment(HeightAlignment align) {
 		return height_align = align;
 	}
 
@@ -63,7 +85,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	@Override
 	public double[] getMaxScaling() {
-		if(maxScaling==null){
+		if (maxScaling == null) {
 			maxScaling = getHolder().createMaxScaling(this);
 		}
 		return maxScaling;
@@ -76,7 +98,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	@Override
 	public double[] getActualScaling() {
-		if(actualScaling==null){
+		if (actualScaling == null) {
 			actualScaling = getHolder().createActualScaling(this);
 		}
 		return actualScaling;
@@ -95,6 +117,8 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 		return unscaledWidthHeight;
 	}
 
-	abstract int[] createUnscaledWidthHeight();
+	int[] createUnscaledWidthHeight() {
+		return new int[] { 1, 1 };
+	}
 
 }

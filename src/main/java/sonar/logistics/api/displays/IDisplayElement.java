@@ -2,22 +2,24 @@ package sonar.logistics.api.displays;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.displays.elements.HeightAlignment;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.WidthAlignment;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.helpers.InfoRenderer;
 
 public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 
 	IElementStorageHolder setHolder(IElementStorageHolder c);
 	
 	IElementStorageHolder getHolder();
+	
+	int getElementIdentity();
+	
+	default DisplayGSI getGSI(){
+		return getHolder().getContainer().getGSI();
+	}
 
 	String getRegisteredName();
 	
@@ -39,6 +41,12 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	
 	String getRepresentiveString();
 
+	/**the width/height in pixels, returns 0,0 if this element fills the entire container*/
+	
+	default ElementFillType getFillType(){
+		return ElementFillType.CUSTOM_SIZE;
+	}
+	
 	int[] getUnscaledWidthHeight();
 	
 	WidthAlignment getWidthAlignment();

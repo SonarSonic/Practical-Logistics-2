@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;

@@ -8,14 +8,11 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
-import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = MonitoredEntity.id, modid = PL2Constants.MODID)
 public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INameableInfo<MonitoredEntity>, IComparableInfo<MonitoredEntity> {

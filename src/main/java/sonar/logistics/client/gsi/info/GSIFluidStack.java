@@ -13,7 +13,7 @@ import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.AbstractGSI;
-import sonar.logistics.client.gsi.GSIHelper;
+import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
@@ -41,7 +41,7 @@ public class GSIFluidStack extends AbstractGSI<MonitoredFluidStack> {
 	@Override
 	public void onGSIClicked(MonitoredFluidStack info, DisplayScreenClick click, EnumHand hand) {
 		super.onGSIClicked(info, click, hand);
-		NBTTagCompound packet = GSIHelper.createFluidClickPacket(info.getStoredStack(), info.getNetworkSource());
+		NBTTagCompound packet = GSIClickPacketHelper.createFluidClickPacket(info.getStoredStack(), info.getNetworkSource());
 		sendGSIPacket(packet, info, click, hand);
 	}
 

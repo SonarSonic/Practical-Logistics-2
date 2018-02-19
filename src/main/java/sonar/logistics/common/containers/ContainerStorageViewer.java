@@ -8,7 +8,6 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.slots.SlotLimiter;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;

@@ -10,11 +10,15 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.NetworkItemElement;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IJoinableInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
+import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.ItemCount;
@@ -123,6 +127,11 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	@Override
 	public String getClientType() {
 		return "item";
+	}
+
+	@Override
+	public void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
+		toAdd.add(new NetworkItemElement(uuid));
 	}
 
 	@Override

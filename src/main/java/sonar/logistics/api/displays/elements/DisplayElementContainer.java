@@ -6,9 +6,6 @@ import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -18,13 +15,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.displays.IDisplayRenderable;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
@@ -40,7 +37,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 
 	private double[] translation;
 	private double[] actualContainerScaling; // only for aligning purposes.
-	private double[] maxContainerScaling;
+	private double[] maxContainerScaling, maxElementScaling;
 	private double percentageScale;
 	protected int defaultColour = -1;
 	public int containerIdentity;
@@ -51,31 +48,56 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 
 	public DisplayElementContainer(DisplayGSI gsi, double xPos, double yPos, double zPos, double width, double height, double pScale, int identity) {
 		this.gsi = gsi;
-		createdTranslation = DisplayElementHelper.percentageFromScale(new double[] { xPos, yPos, zPos }, gsi.getDisplayScaling());
-		createdScaling = DisplayElementHelper.percentageFromScale(new double[] { width, height, 1 }, gsi.getDisplayScaling());
+		resize(new double[] { xPos, yPos, zPos }, new double[] { width, height, 1 }, pScale);
 		percentageScale = pScale;
 		containerIdentity = identity;
 	}
 
 	public DisplayElementContainer(DisplayGSI gsi, double[] translate, double[] scale, double pScale, int identity) {
 		this.gsi = gsi;
+		resize(translate, scale, pScale);
+		containerIdentity = identity;
+	}
+	
+	public void resize( double[] translate, double[] scale, double pScale){
 		createdTranslation = DisplayElementHelper.percentageFromScale(translate, gsi.getDisplayScaling());
 		createdScaling = DisplayElementHelper.percentageFromScale(scale, gsi.getDisplayScaling());
 		percentageScale = pScale;
-		containerIdentity = identity;
+	}
+
+	public DisplayGSI getGSI() {
+		return gsi;
 	}
 
 	public boolean canRender() {
-		return isWithinScreenBounds && (gsi.isEditContainer(this) ? gsi.edit_mode.getObject() && !gsi.isGridSelectionMode : true);
+		return isWithinScreenBounds && !gsi.isGridSelectionMode;
 	}
 
 	public void render() {
 		if (canRender()) {
 			pushMatrix();
 			translate(getTranslation()[0], getTranslation()[1], getTranslation()[2]);
+
 			elements.forEach(IDisplayRenderable::updateRender);
 			InfoRenderer.align(getAlignmentTranslation());
 			InfoRenderer.renderElementStorageHolder(this);
+			if (!gsi.isEditContainer(this)) {
+				translate(0,0,-0.02);				
+				if(gsi.isElementSelectionMode){
+					if(gsi.selected_identities.contains(getContainerIdentity())){
+						DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], gsi.selectionType.getTypeColour());
+					}
+				}
+				translate(0,0,-0.002);		
+				
+				CustomColour green = new CustomColour(255, 255, 255);
+				double borderWidth = 0.0625 / 8;
+				DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], borderWidth, green.getRGB());
+				DisplayElementHelper.drawRect(0, getContainerMaxScaling()[1] - borderWidth, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB());
+
+				DisplayElementHelper.drawRect(0, 0, borderWidth, getContainerMaxScaling()[1], green.getRGB());
+				DisplayElementHelper.drawRect(getContainerMaxScaling()[0] - borderWidth, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB());
+			}
 			popMatrix();
 		}
 	}
@@ -86,8 +108,17 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	@Override
 	public void endElementRender(IDisplayElement e) {}
 
+	public List<InfoUUID> getInfoReferences() {
+		List<InfoUUID> uuid = Lists.newArrayList();
+		for (IDisplayElement s : elements) {
+			ListHelper.addWithCheck(uuid, s.getInfoReferences());
+		}
+		return uuid;
+	}
+
 	public Tuple<IDisplayElement, double[]> getClickBoxes(double x, double y) {
 		double[] align = getAlignmentTranslation();
+
 		Map<IDisplayElement, Double[]> boxes = Maps.newHashMap();
 		for (IDisplayElement e : elements) {// FIXME
 			// for (IDisplayElement e : elements.getClickables()) {
@@ -117,6 +148,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public void updateActualScaling() {
 		translation = null;
 		maxContainerScaling = null;
+		maxElementScaling = null;
 		elements.forEach(e -> {
 			if (e instanceof IElementStorageHolder) {
 				((IElementStorageHolder) e).updateActualScaling();
@@ -152,8 +184,8 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public boolean canClickContainer(double x, double y) {
 		double startX = getTranslation()[0];
 		double startY = getTranslation()[1];
-		double endX = getTranslation()[0] + getMaxScaling()[0];
-		double endY = getTranslation()[1] + getMaxScaling()[1];
+		double endX = getTranslation()[0] + getContainerMaxScaling()[0];
+		double endY = getTranslation()[1] + getContainerMaxScaling()[1];
 		return InteractionHelper.checkClick(x, y, new double[] { startX, startY, endX, endY });
 	}
 
@@ -161,7 +193,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		double offsetX = x - getTranslation()[0];
 		double offsetY = y - getTranslation()[1];
 		/* for (IDisplayElement e : elements) { if (checkClick(offsetX, offsetY, e.getClickBox())) { return e; } } */
-		return getClickBoxes(x, y);
+		return getClickBoxes(offsetX, offsetY);
 	}
 
 	@Override
@@ -172,12 +204,34 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public double[] getTranslation() {
 		if (translation == null) {
 			if (locked) {
-				translation = DisplayElementHelper.toNearestPixel(createdTranslation, gsi.getDisplayScaling());
+				translation = createdTranslation;// DisplayElementHelper.toNearestPixel(createdTranslation, gsi.getDisplayScaling());
 			} else {
 				translation = DisplayElementHelper.scaleFromPercentage(createdTranslation, gsi.getDisplayScaling());
 			}
 		}
 		return translation;
+	}
+
+	/** the maximum scale of an element */
+	public double[] getMaxScaling() {
+		if (maxElementScaling == null) {
+			maxElementScaling = DisplayElementHelper.scale(getContainerMaxScaling(), percentageScale);
+			maxElementScaling[SCALE] = 1;
+		}
+		return maxElementScaling;
+	}
+
+	/** the maximum scale of this container */
+	public double[] getContainerMaxScaling() {
+		if (maxContainerScaling == null) {
+			if (locked) {
+				maxContainerScaling = createdScaling;
+			} else {
+				maxContainerScaling = DisplayElementHelper.scaleFromPercentage(createdScaling, gsi.getDisplayScaling());
+			}
+			maxContainerScaling[SCALE] = 1;
+		}
+		return maxContainerScaling;
 	}
 
 	public double[] getActualScaling() {
@@ -187,33 +241,21 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		return actualContainerScaling;
 	}
 
-	public double[] getMaxScaling() {
-		if (maxContainerScaling == null) {
-			if (locked) {
-				maxContainerScaling = DisplayElementHelper.toNearestPixel(createdScaling, gsi.getDisplayScaling());
-			} else {
-				maxContainerScaling = DisplayElementHelper.toNearestPixel(DisplayElementHelper.scaleFromPercentage(createdScaling, gsi.getDisplayScaling()), gsi.getDisplayScaling());
-			}
-
-			// listScaling = DisplayElementHelper.scale(listScaling, percentageScale);
-			// listScaling[SCALE] = 1;
-		}
-		return maxContainerScaling;
-	}
-
 	@Override
 	public ElementStorage getElements() {
 		return elements;
 	}
 
-	public void onElementAdded(IDisplayElement element) {
-		element.setHolder(this);
+	public void onElementAdded(IDisplayElement e) {
+		e.setHolder(this);
 		updateActualScaling();
+		gsi.onElementAdded(this, e);
 	}
 
 	public void onElementRemoved(IDisplayElement element) {
 		element.setHolder(this);
 		updateActualScaling();
+		gsi.onElementRemoved(this, element);
 	}
 
 	public int getContainerIdentity() {
@@ -232,9 +274,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		FontHelper.text(element.getRepresentiveString(), 0, 0, getDefaultColour());
 	}
 
-	public void onInfoUUIDChanged(InfoUUID id) {
-
-	}
+	public void onInfoUUIDChanged(InfoUUID id) {}
 
 	public void lock() {
 		// when the display is locked we store the exact scale of the element
@@ -256,43 +296,57 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
+		containerIdentity = nbt.getInteger("iden");
 		locked = nbt.getBoolean("locked");
 		percentageScale = nbt.getDouble("percent");
 		createdTranslation = NBTHelper.readDoubleArray(nbt, "c_trans", 3);
 		createdScaling = NBTHelper.readDoubleArray(nbt, "c_scale", 3);
-		containerIdentity = nbt.getInteger("iden");
 		elements.readData(nbt, type);
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		nbt.setInteger("iden", containerIdentity);
 		nbt.setBoolean("locked", locked);
 		nbt.setDouble("percent", percentageScale);
 		NBTHelper.writeDoubleArray(nbt, createdTranslation, "c_trans");
 		NBTHelper.writeDoubleArray(nbt, createdScaling, "c_scale");
-		nbt.setInteger("iden", containerIdentity);
 		elements.writeData(nbt, type);
 		return nbt;
 	}
 
 	@Override
 	public double[] createMaxScaling(IDisplayElement element) {
-		return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), getMaxScaling(), 1);
+		switch (element.getFillType()) {
+		case FILL_CONTAINER:
+			return getContainerMaxScaling();
+		case FILL_SCALED_CONTAINER:
+			return getMaxScaling();
+		default:
+			return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), getMaxScaling(), 1);
+		}
 	}
 
 	@Override
 	public double[] createActualScaling(IDisplayElement element) {
-		return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), getMaxScaling(), 1);
+		switch (element.getFillType()) {
+		case FILL_CONTAINER:
+			return getContainerMaxScaling();
+		case FILL_SCALED_CONTAINER:
+			return getMaxScaling();
+		default:
+			return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), element.getMaxScaling(), 1);
+		}
 	}
 
 	@Override
 	public double[] getAlignmentTranslation() {
-		return InfoRenderer.alignArray(getMaxScaling(), getActualScaling(), WidthAlignment.LEFT, HeightAlignment.TOP);
+		return InfoRenderer.alignArray(getContainerMaxScaling(), getMaxScaling(), WidthAlignment.LEFT, HeightAlignment.TOP);
 	}
 
 	@Override
 	public double[] getAlignmentTranslation(IDisplayElement e) {
-		return InfoRenderer.alignArray(getMaxScaling(), e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
+		return InfoRenderer.alignArray(getContainerMaxScaling(), e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
 	}
 
 }

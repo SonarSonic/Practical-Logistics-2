@@ -3,7 +3,6 @@ package sonar.logistics.api.tiles.displays;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
@@ -26,22 +25,15 @@ import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.ICable;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.IInfoContainer;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.networking.cabling.CableHelper;
-import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler.ConnectedDisplayChange;
 import sonar.logistics.networking.displays.DisplayHelper;
-import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
 public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDisplay, ISyncPart, ISyncableListener {
@@ -294,6 +286,10 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 			nbt.setTag(this.getTagName(), tag);
 		}
 		return nbt;
+	}
+	
+	public ILargeDisplay getActualDisplay() {
+		return getTopLeftScreen();
 	}
 
 	public ILargeDisplay getTopLeftScreen() {

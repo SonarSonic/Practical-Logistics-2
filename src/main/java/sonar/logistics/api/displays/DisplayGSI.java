@@ -1,6 +1,5 @@
 package sonar.logistics.api.displays;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -10,9 +9,8 @@ import java.util.stream.Stream;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,34 +20,36 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import sonar.core.api.nbt.INBTSyncable;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.network.sync.DirtyPart;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.SyncTagType.BOOLEAN;
+import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncableList;
 import sonar.core.utils.CustomColour;
-import sonar.core.network.sync.SyncTagType.BOOLEAN;
-import sonar.core.network.sync.SyncTagType.DOUBLE;
-import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
-import sonar.logistics.api.displays.elements.ButtonElement;
+import sonar.logistics.api.IInfoManager;
+import sonar.logistics.api.displays.buttons.CreateElementButton;
 import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.displays.elements.DisplayElementList;
+import sonar.logistics.api.displays.elements.EditContainer;
 import sonar.logistics.api.displays.elements.HeightAlignment;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.api.displays.elements.WidthAlignment;
+import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -58,29 +58,26 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
-import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.client.gsi.GSIButton;
-import sonar.logistics.client.gsi.GSIHelper;
+import sonar.logistics.api.tiles.signaller.ComparableObject;
+import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gsi.GSIOverlays;
-import sonar.logistics.client.gsi.GSIPackets;
-import sonar.logistics.client.gsi.IGSI;
-import sonar.logistics.client.gsi.IGSIListViewer;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.packets.PacketGSIClick;
+import sonar.logistics.networking.displays.LocalProviderHandler;
 
-public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListener {
+public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListener, IFlexibleGui<IDisplay> {
 
 	public final IDisplay display;
 	// the watched id, followed by how many references it has been attached to, it is loaded by the IDisplayElements
-	public Map<InfoUUID, Integer> infoReferences = Maps.newHashMap();
+	// public Map<InfoUUID, Integer> infoReferences = Maps.newHashMap();
+	public List<InfoUUID> references = Lists.newArrayList();
+	public Map<InfoUUID, IInfo> cachedInfo = Maps.newHashMap();
 	public Map<Integer, DisplayElementContainer> containers = Maps.newHashMap();
 	public List<Integer> changedElements = Lists.newArrayList();
+
 	public SyncableList syncParts = new SyncableList(this);
-	public IDisplayElement lookElement = null;
 
 	public static final int EDIT_CONTAINER_ID = 0;
 
@@ -88,28 +85,37 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public long lastClickTime;
 	public UUID lastClickUUID;
 
+	// client side - look element
+	public IDisplayElement lookElement = null;
+	public double lookX, lookY;
+	private long lastLookElementUpdate;
+
 	public SyncTagType.INT container_identity = (INT) new SyncTagType.INT(0).setDefault(-1);
-	public SyncTagType.INT display_container_identity_count = (INT) new SyncTagType.INT(1).setDefault(0);
 	public SyncTagType.BOOLEAN edit_mode = (BOOLEAN) new SyncTagType.BOOLEAN(2).setDefault(true);
-	// private SyncTagType<Double> width = new DOUBLE(2);
-	// private SyncTagType<Double> height = new DOUBLE(3);
-	// private SyncTagType<Double> scale = new DOUBLE(4);
+
 	private double[] currentScaling;
 
 	/// grid selection mode
+	public CreateInfoType createInfo;
+	public int containerResizing;
 	public boolean isGridSelectionMode = false;
 	double[] clickPosition1;
 	double[] clickPosition2;
 
+	/// element selection mode
+	public ElementSelectionType selectionType;
+	public boolean isElementSelectionMode = false;
+	public List<Integer> selected_identities = Lists.newArrayList();
+
 	{
-		syncParts.addParts(container_identity, display_container_identity_count, edit_mode);// , width, height, scale);
+		syncParts.addParts(container_identity, edit_mode);// , width, height, scale);
 	}
 
 	public DisplayGSI(IDisplay display, int id) {
 		this.display = display;
 		container_identity.setObject(id);
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) // FIXME
-			addEditContainer();
+			EditContainer.addEditContainer(this);
 	}
 
 	//// MAIN ACTIONS \\\\
@@ -119,7 +125,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			if (!world.isRemote) {
 				edit_mode.invert();
 				player.sendMessage(new TextComponentTranslation("Edit Mode: " + edit_mode.getObject()));
-				display.sendInfoContainerPacket();
+				sendInfoContainerPacket();
 			}
 			return true;
 		}
@@ -138,7 +144,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			click.setDoubleClick(wasDoubleClick(world, player));
 			if (this.isGridSelectionMode) {
 				if (type.isShifting()) {
-					if (type.isLeft() || clickPosition1 == null){// FIXME won't need second position everytime|| clickPosition2 == null) {
+					if (type.isLeft() || clickPosition1 == null) {
 						exitGridSelectionMode();
 					} else {
 						finishGridSelectionMode();
@@ -147,7 +153,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 					double[] newPosition = new double[] { click.clickX - 0.0625, click.clickY - 0.0625 };
 					if (clickPosition1 == null) {
 						clickPosition1 = newPosition;
-						
+
 					} else if (clickPosition2 == null) {
 						clickPosition2 = newPosition;
 					} else if (type.isLeft()) {
@@ -159,14 +165,38 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				}
 			} else {
 				Tuple<IDisplayElement, double[]> e = getElementFromXY(click.clickX - 0.0625, click.clickY - 0.0625);
-
-				if (e != null && e.getFirst() instanceof IClickableElement) {
-					((IClickableElement) e.getFirst()).onGSIClicked(click, e.getSecond()[0], e.getSecond()[1]);
+				if ((e.getFirst() == null || !isEditContainer(e.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
+					for (DisplayElementContainer container : containers.values()) {
+						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX - 0.0625, click.clickY - 0.0625)) {
+							onElementSelected(container.getContainerIdentity(), type);
+							break;
+						}
+					}
+				} else {
+					if (e != null && e.getFirst() instanceof IClickableElement) {
+						int gui = ((IClickableElement) e.getFirst()).onGSIClicked(click, player, e.getSecond()[0], e.getSecond()[1]);
+						if (gui != -1) {
+							requestGui(part, world, pos, player, e.getFirst(), gui);
+						}
+					}
 				}
 			}
 		}
 
 		return true; // FIXME
+
+	}
+
+	public Tuple<IDisplayElement, double[]> getElementFromXY(double x, double y) {
+		for (DisplayElementContainer container : containers.values()) {
+			if (container.canRender() && container.canClickContainer(x, y)) {
+				Tuple<IDisplayElement, double[]> e = container.getClickedElement(x, y);
+				if (e != null) {
+					return e;
+				}
+			}
+		}
+		return null;
 	}
 
 	private boolean wasDoubleClick(World world, EntityPlayer player) {
@@ -180,9 +210,24 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	}
 
-	public void render() {
-		/* DisplayScreenLook look = GSIOverlays.getCurrentLook(this); if (look != null) { Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX, look.lookY); if (e != null && e.getFirst() != null && e.getFirst() instanceof ILookableElement) { lookElement = e.getFirst(); } } */
+	public void updateLookElement() {
+		DisplayScreenLook look = GSIOverlays.getCurrentLook(this);
 		lookElement = null;
+		if (look != null) {
+			Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX - 0.0625, look.lookY - 0.0625);
+			if (e != null && e.getFirst() != null && e.getFirst() instanceof ILookableElement) {
+				lookElement = e.getFirst();
+				lookX = e.getSecond()[0];
+				lookY = e.getSecond()[1];
+			}
+		}
+	}
+
+	public void render() {
+		if (lastLookElementUpdate == 0 || (System.currentTimeMillis() - lastLookElementUpdate) > 200) {
+			lastLookElementUpdate = System.currentTimeMillis();
+			updateLookElement();
+		}
 
 		// renders viewable the display element containers
 
@@ -194,7 +239,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			for (DisplayElementContainer container : containers.values()) {
 				if (container.canRender() && !isEditContainer(container)) {
 					double[] translation = container.getTranslation();
-					double[] scaling = container.getMaxScaling();
+					double[] scaling = container.getContainerMaxScaling();
 					DisplayElementHelper.drawRect(translation[0], translation[1], translation[0] + scaling[0], translation[1] + scaling[1], new CustomColour(255, 153, 51).getRGB());
 				}
 			}
@@ -205,8 +250,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				double[] click2 = clickPosition2 == null ? clickPosition1 : clickPosition2;
 				double clickStartX = getGridXPosition(Math.min(clickPosition1[0], click2[0]));
 				double clickStartY = getGridYPosition(Math.min(clickPosition1[1], click2[1]));
-				double clickEndX = Math.max(getDisplayScaling()[0], getGridXPosition(Math.max(clickPosition1[0], click2[0])) + getGridXScale());
-				double clickEndY = Math.max(getDisplayScaling()[1], getGridYPosition(Math.max(clickPosition1[1], click2[1])) + getGridYScale());
+				double clickEndX = Math.min(getDisplayScaling()[0], getGridXPosition(Math.max(clickPosition1[0], click2[0])) + getGridXScale());
+				double clickEndY = Math.min(getDisplayScaling()[1], getGridYPosition(Math.max(clickPosition1[1], click2[1])) + getGridYScale());
 				DisplayElementHelper.drawRect(clickStartX, clickStartY, clickEndX, clickEndY, new CustomColour(49, 145, 88).getRGB());
 			}
 
@@ -216,20 +261,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			DisplayElementHelper.drawGrid(0, 0, getDisplayScaling()[0], getDisplayScaling()[1], getGridXScale(), getGridYScale(), green.getRGB());
 
 			/// render help overlays
-			/*
-			GlStateManager.translate(0, 0, -0.001);
-			List<String> messages = Lists.newArrayList();
-			if (clickPosition1 == null && clickPosition2 == null) {
-				messages.add("L-CLICK = SELECT START POSITION");
-			} else if (clickPosition1 != null && clickPosition2 == null) {
-				messages.add("R-CLICK = SELECT END POSITION");
-			} else if (clickPosition1 != null && clickPosition2 != null) {
-				messages.add("SHIFT-R = CONFIRM");
-			}
-			messages.add("SHIFT-L = CANCEL");
-
-			InfoRenderer.renderCenteredStringsWithUniformScaling(messages, getDisplayScaling()[0], getDisplayScaling()[1], 0, 0.75, green.getRGB());
-			*/
+			/* GlStateManager.translate(0, 0, -0.001); List<String> messages = Lists.newArrayList(); if (clickPosition1 == null && clickPosition2 == null) { messages.add("L-CLICK = SELECT START POSITION"); } else if (clickPosition1 != null && clickPosition2 == null) { messages.add("R-CLICK = SELECT END POSITION"); } else if (clickPosition1 != null && clickPosition2 != null) { messages.add("SHIFT-R = CONFIRM"); } messages.add("SHIFT-L = CANCEL"); InfoRenderer.renderCenteredStringsWithUniformScaling(messages, getDisplayScaling()[0], getDisplayScaling()[1], 0, 0.75, green.getRGB()); */
 			GlStateManager.popMatrix();
 		} else {
 			getViewableContainers().forEach(DisplayElementContainer::render);
@@ -237,9 +269,42 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	}
 
-	// public double[] offsetClick2(double[] click2) {
-	// return ;
-	// }
+	//// ELEMENT SELECTION MODE \\\\
+
+	public void startElementSelectionMode(ElementSelectionType type) {
+		selectionType = type;
+		selected_identities = Lists.newArrayList();
+		isElementSelectionMode = true;
+	}
+
+	public void onElementSelected(int containerID, BlockInteractionType type) {
+		if (type == BlockInteractionType.RIGHT) {
+			if (selected_identities.contains(containerID)) {
+				selected_identities.remove(Integer.valueOf(containerID));
+			} else {
+				selected_identities.add(containerID);
+			}
+		}
+		if (type == BlockInteractionType.SHIFT_LEFT) {
+			finishElementSelectionMode(false);
+		}
+
+		if (type == BlockInteractionType.SHIFT_RIGHT) {
+			if (!selected_identities.isEmpty()) {
+				finishElementSelectionMode(true);
+			}
+		}
+	}
+
+	public void finishElementSelectionMode(boolean sendPacket) {
+		if (sendPacket)
+			selectionType.finishSelection(this, selected_identities);
+		selectionType = null;
+		selected_identities = Lists.newArrayList();
+		isElementSelectionMode = false;
+	}
+
+	//// GRID SELECTION MODE \\\\\
 
 	public double getGridXScale() {
 		return Math.max(getDisplayScaling()[0] / 8, display.getDisplayType().width / 4);
@@ -257,10 +322,32 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		return DisplayElementHelper.toNearestMultiple(y, getDisplayScaling()[1], getGridYScale());
 	}
 
-	public void startGridSelectionMode() {
+	public void startResizeSelectionMode(int containerID) {
+		DisplayElementContainer c = getContainer(containerID);
+		if (c != null) {
+			createInfo = null;
+			isGridSelectionMode = true;
+			containerResizing = c.getContainerIdentity();
+			clickPosition1 = c.getTranslation();
+			clickPosition2 = new double[] { c.getTranslation()[0] + c.getContainerMaxScaling()[0], c.getTranslation()[1] + c.getContainerMaxScaling()[1], 0 };
+
+			Minecraft.getMinecraft().player.sendMessage(new TextComponentTranslation("" + //
+					TextFormatting.GREEN + "L-CLICK" + TextFormatting.RESET + " = FIRST POSITION, " + //
+					TextFormatting.GREEN + "R-CLICK" + TextFormatting.RESET + " = SECOND POSITION, " + //
+					TextFormatting.GREEN + "SHIFT-R" + TextFormatting.RESET + " = CONFIRM, " + TextFormatting.RED + "SHIFT-L" + TextFormatting.RESET + " = CANCEL"));
+		}
+	}
+
+	public void startGridSelectionMode(CreateInfoType type) {
+		createInfo = type;
 		isGridSelectionMode = true;
 		clickPosition1 = null;
 		clickPosition2 = null;
+
+		Minecraft.getMinecraft().player.sendMessage(new TextComponentTranslation("" + //
+				TextFormatting.GREEN + "L-CLICK" + TextFormatting.RESET + " = FIRST POSITION, " + //
+				TextFormatting.GREEN + "R-CLICK" + TextFormatting.RESET + " = SECOND POSITION, " + //
+				TextFormatting.GREEN + "SHIFT-R" + TextFormatting.RESET + " = CONFIRM, " + TextFormatting.RED + "SHIFT-L" + TextFormatting.RESET + " = CANCEL"));
 	}
 
 	public void exitGridSelectionMode() {
@@ -270,9 +357,21 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void finishGridSelectionMode() {
-		/// FIXME send the clickPositions somewhere
+		double[] click2 = clickPosition2 == null ? clickPosition1 : clickPosition2;
+		double clickStartX = getGridXPosition(Math.min(clickPosition1[0], click2[0]));
+		double clickStartY = getGridYPosition(Math.min(clickPosition1[1], click2[1]));
+		double clickEndX = Math.min(getDisplayScaling()[0], getGridXPosition(Math.max(clickPosition1[0], click2[0])) + getGridXScale());
+		double clickEndY = Math.min(getDisplayScaling()[1], getGridYPosition(Math.max(clickPosition1[1], click2[1])) + getGridYScale());
+		if (createInfo != null) {
+			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createInfoAdditionPacket(new double[] { clickStartX, clickStartY, 0 }, new double[] { clickEndX - clickStartX, clickEndY - clickStartY, 1 }, 0.5, createInfo), -1, this);
+		} else {
+			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createResizeContainerPacket(this.containerResizing, new double[] { clickStartX, clickStartY, 0 }, new double[] { clickEndX - clickStartX, clickEndY - clickStartY, 1 }, 0.5), -1, this);
+			containerResizing = -1;
+		}
 		exitGridSelectionMode();
 	}
+
+	//// GSI/ELEMENT SCALING \\\\
 
 	public void updateScaling() {
 		updateDisplayScaling();
@@ -287,7 +386,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		if (display instanceof IScaleableDisplay) {
 			currentScaling = ((IScaleableDisplay) display).getScaling();
 		} else {
-			currentScaling = new double[] { display.getDisplayType().width, display.getDisplayType().height, display.getDisplayType().scale };
+			currentScaling = new double[] { display.getDisplayType().width, display.getDisplayType().height, 1 };
 		}
 	}
 
@@ -298,59 +397,124 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		return currentScaling;
 	}
 
-	public void forEachValidUUID(Consumer<InfoUUID> action) {}
+	//// INFO REFERENCES \\\\
 
-	public boolean isDisplayingUUID(InfoUUID id) {
-		return false;
+	public void forEachValidUUID(Consumer<InfoUUID> action) {
+		references.forEach(uuid -> action.accept(uuid));
 	}
 
-	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {}
+	public boolean isDisplayingUUID(InfoUUID id) {
+		return references.contains(id);
+	}
 
-	public void onInfoChanged(InfoUUID uuid, IInfo info) {}
+	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
+		/// FIXME DON'T DO THIS FOR EVERYTHING
+		updateCachedInfo();
+		updateScaling();
+	}
 
-	public Tuple<IDisplayElement, double[]> getElementFromXY(double x, double y) {
-		for (DisplayElementContainer container : containers.values()) {
-			if (container.canRender() && container.canClickContainer(x, y)) {
-				Tuple<IDisplayElement, double[]> e = container.getClickedElement(x, y);
-				if (e != null) {
-					return e;
-				}
+	public void onInfoChanged(InfoUUID uuid, IInfo info) {
+		/// FIXME DON'T DO THIS FOR EVERYTHING
+		updateCachedInfo();
+		updateScaling();
+	}
+
+	//// INFO REFERENCES \\\\
+
+	public void updateInfoReferences() {
+		List<InfoUUID> newReferences = Lists.newArrayList();
+		containers.values().forEach(c -> c.getElements().forEach(e -> ListHelper.addWithCheck(newReferences, e.getInfoReferences())));
+		references = newReferences;
+	}
+
+	/** takes the given uuids and adds them as Info References it will also add the host display to the listeners of the Reader which provides the info uuid */
+	public void addInfoReferences(List<InfoUUID> uuid) {
+		uuid.forEach(this::addInfoReference);
+		updateCachedInfo();
+	}
+
+	private void addInfoReference(InfoUUID uuid) {
+		if (ListHelper.addWithCheck(references, uuid)) {
+			LocalProviderHandler.doInfoReferenceConnect(this, uuid);
+		}
+	}
+
+	/** takes the given uuids and removes them as Info References it will also remove the host display from the listeners of the Reader which provides the info uuid */
+	public void removeInfoReferences(List<InfoUUID> uuid) {
+		uuid.forEach(this::removeInfoReference);
+		updateCachedInfo();
+	}
+
+	private void removeInfoReference(InfoUUID uuid) {
+		if (references.remove(uuid)) {
+			LocalProviderHandler.doInfoReferenceConnect(this, uuid);
+		}
+	}
+
+	//// CACHED INFO \\\\
+
+	public void updateCachedInfo() {
+		IInfoManager manager = PL2.getInfoManager(FMLCommonHandler.instance().getEffectiveSide().isClient());
+		Map<InfoUUID, IInfo> newCache = Maps.newHashMap();
+		references.forEach(ref -> newCache.put(ref, manager.getInfoFromUUID(ref)));
+		cachedInfo = newCache;
+	}
+
+	public IInfo getCachedInfo(InfoUUID uuid) {
+		return cachedInfo.get(uuid);
+	}
+
+	//// GUIS \\\\
+
+	public void requestGui(TileAbstractDisplay display, World world, BlockPos pos, EntityPlayer player, IDisplayElement element, int guiID) {
+		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createGuiRequestPacket(guiID), element.getElementIdentity(), this);
+	}
+
+	public IDisplayElement getElementFromIdentity(int identity) {
+		for (DisplayElementContainer c : containers.values()) {
+			IDisplayElement e = c.getElements().getElementFromIdentity(identity);
+			if (e != null) {
+				return e;
 			}
 		}
 		return null;
 	}
 
-	//// ELEMENTS \\\\
-
-	public DisplayElementContainer addEditContainer() {
-		double[] scaling = new double[] { display.getDisplayType().width / 4, getDisplayScaling()[1], 1 };
-		DisplayElementContainer editContainer = new DisplayElementContainer(this, new double[] { 0, 0, 0 }, scaling, 1, EDIT_CONTAINER_ID);
-		// editContainer.lock();
-		DisplayElementList editList = new DisplayElementList();
-		editList.setWidthAlignment(WidthAlignment.LEFT);
-		editList.setHeightAlignment(HeightAlignment.TOP);
-		editList.getElements().addElement(new ButtonElement(0, 4D, 4D, 2, 15, "GRID MODE") {
-			@Override
-			public boolean onGSIClicked(DisplayScreenClick click, double subClickX, double subClickY) {
-				switch (buttonID) {
-				case 0:
-					click.gsi.startGridSelectionMode();
-					return true;
-				}
-				return false;
+	public IFlexibleGui getElementFromGuiPacket(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		DisplayElementContainer c = getContainer(tag.getInteger("CONT_ID"));
+		if (c != null) {
+			IDisplayElement e = c.getElements().getElementFromIdentity(tag.getInteger("ELE_ID"));
+			if (e instanceof IFlexibleGui) {
+				return (IFlexibleGui) e;
 			}
-		});
-		editList.getElements().addElement(new ButtonElement(1, 4D, 4D, 3, 3, "BANG"));
-		editList.getElements().addElement(new ButtonElement(2, 4D, 4D, 1, 5, "CLICK"));
-		editList.getElements().addElement(new ButtonElement(3, 4D, 4D, 1, 7, "CRACK"));
-		editList.getElements().addElement(new ButtonElement(4, 4D, 4D, 1, 4, "CRACK"));
-		editList.getElements().addElement(new ButtonElement(5, 4D, 4D, 2, 7, "CRACK"));
-		editList.getElements().addElement(new ButtonElement(6, 4D, 4D, 2, 2, "CRACK"));
-		editList.getElements().addElement(new ButtonElement(7, 4D, 4D, 1, 3, "CRACK"));
-		editContainer.getElements().addElement(editList);
-		containers.put(EDIT_CONTAINER_ID, editContainer);
-		return editContainer;
+		}
+		return null;
 	}
+
+	public void onGuiOpened(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		IFlexibleGui guiHandler = getElementFromGuiPacket(obj, id, world, player, tag);
+		if (guiHandler != null) {
+			guiHandler.onGuiOpened(obj, id, world, player, tag);
+		}
+	}
+
+	public Object getServerElement(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		IFlexibleGui guiHandler = getElementFromGuiPacket(obj, id, world, player, tag);
+		if (guiHandler != null) {
+			return guiHandler.getServerElement(obj, id, world, player, tag);
+		}
+		return null;
+	}
+
+	public Object getClientElement(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		IFlexibleGui guiHandler = getElementFromGuiPacket(obj, id, world, player, tag);
+		if (guiHandler != null) {
+			return guiHandler.getClientElement(obj, id, world, player, tag);
+		}
+		return null;
+	}
+
+	//// ELEMENTS \\\\
 
 	public DisplayElementContainer getEditContainer() {
 		return containers.get(EDIT_CONTAINER_ID);
@@ -360,26 +524,48 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		return c.getContainerIdentity() == EDIT_CONTAINER_ID;
 	}
 
+	/** creates a new Element Container with the given properties */
 	public DisplayElementContainer addElementContainer(double[] translate, double[] scale, double pScale) {
 		int identity = createDisplayContainerIdentity();
 		DisplayElementContainer container = new DisplayElementContainer(this, translate, scale, pScale, identity);
 		containers.put(identity, container);
+		sendInfoContainerPacket();
 		return container;
 	}
 
+	/** removes the Element Container with the given id */
 	public void removeElementContainer(int containerID) {
 		containers.remove(containerID);
+		sendInfoContainerPacket();
 		// reset info references???
+	}
+
+	public DisplayElementContainer getContainer(int identity) {
+		return containers.get(identity);
 	}
 
 	public void addElement(int containerID, IDisplayElement element) {
 		containers.get(containerID).getElements().addElement(element);
-		addInfoReferences(element.getInfoReferences());
 	}
 
 	public void removeElement(int containerID, IDisplayElement element) {
 		containers.get(containerID).getElements().removeElement(element);
-		removeInfoReferences(element.getInfoReferences());
+	}
+
+	public void onElementAdded(IElementStorageHolder c, IDisplayElement e) {
+		addInfoReferences(e.getInfoReferences());
+		sendInfoContainerPacket();
+	}
+
+	public void onElementRemoved(IElementStorageHolder c, IDisplayElement e) {
+		removeInfoReferences(e.getInfoReferences());
+		sendInfoContainerPacket();
+	}
+
+	public void sendInfoContainerPacket() {
+		if (display.getCoords() != null && !display.getCoords().getWorld().isRemote) {
+			display.sendInfoContainerPacket();
+		}
 	}
 
 	/* public NBTTagCompound saveElement(IDisplayElement element, SyncType type) { NBTTagCompound elementTag = new NBTTagCompound(); if (type.isGivenType(SyncType.SAVE) || (type.isGivenType(SyncType.DEFAULT_SYNC) && hasElementChanged(element.getElementIdentity()))) { elementTag.setInteger("identity", element.getElementIdentity()); DisplayElementHelper.saveElement(elementTag, element, type); } return elementTag; } public IDisplayElement loadOrUpdateElement(NBTTagCompound tag, SyncType type) { int identity = tag.getInteger("identity"); IDisplayElement element = elements.get(identity); if(element==null){ element = DisplayElementHelper.loadElement(tag); addElement(element); return element; } return null; } */
@@ -393,8 +579,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	private int createDisplayContainerIdentity() {
-		display_container_identity_count.increaseBy(1);
-		return display_container_identity_count.getObject();
+		return PL2.getServerManager().getNextIdentity();
 	}
 
 	public int getDisplayGSIIdentity() {
@@ -405,53 +590,31 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		return display;
 	}
 
-	//// INFO REFERENCES \\\\
-
-	public void resetInfoReferences() {
-		infoReferences.clear();
-		// containers.values().forEach(e -> addInfoReferences(e.getInfoReferences())); //FIXME
-	}
-
-	public void addInfoReferences(List<InfoUUID> uuid) {
-		uuid.forEach(this::addInfoReference);
-	}
-
-	public void addInfoReference(InfoUUID uuid) {
-		Integer current = infoReferences.get(uuid);
-		int value = current == null ? 0 : 1;
-		infoReferences.put(uuid, value + 1);
-	}
-
-	public void removeInfoReferences(List<InfoUUID> uuid) {
-		uuid.forEach(this::removeInfoReference);
-	}
-
-	public void removeInfoReference(InfoUUID uuid) {
-		int current = infoReferences.get(uuid);
-		int newValue = current - 1;
-		if (newValue == 0) {
-			infoReferences.remove(uuid);
-		} else {
-			infoReferences.put(uuid, newValue);
-		}
-	}
-
-	public void updateChangedInfo(List<InfoUUID> uuid) {
-		for (DisplayElementContainer e : containers.values()) {
-			/* FIXME if(e.getInfoReferences().contains(e)){ e.onElementChanged(); } */
-		}
-	}
+	//// NBT \\\\
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		if (type.isType(SyncType.SAVE)) {
+			List<Integer> loaded = Lists.newArrayList();
 			NBTTagList tagList = nbt.getTagList("containers", NBT.TAG_COMPOUND);
-			tagList.forEach(tag -> loadContainer((NBTTagCompound) tag, type));
+			tagList.forEach(tag -> loaded.add(loadContainer((NBTTagCompound) tag, type).getContainerIdentity()));
+			// if (type.isType(SyncType.SAVE)) {
+			loaded.add(EDIT_CONTAINER_ID);
+			List<Integer> toDelete = Lists.newArrayList();
+			containers.values().forEach(c -> {
+				if (!loaded.contains(c.getContainerIdentity())) {
+					toDelete.add(c.getContainerIdentity());
+				}
+			});
+			toDelete.forEach(del -> containers.remove(del));
+			// }
 		}
 		NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
 		if (!tag.hasNoTags()) {
 			NBTHelper.readSyncParts(tag, type, syncParts);
 		}
+		updateInfoReferences();
+		updateCachedInfo();
 		updateScaling();
 	}
 
@@ -485,8 +648,9 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		int identity = nbt.getInteger("iden");
 		DisplayElementContainer container = containers.get(identity);
 		if (container == null) {
-			container = NBTHelper.instanceNBTSyncable(DisplayElementContainer.class, nbt);
+			container = new DisplayElementContainer();
 			container.gsi = this;
+			container.readData(nbt, type);
 			containers.put(identity, container);
 		} else {
 			container.readData(nbt, type);
@@ -508,6 +672,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void markChanged(IDirtyPart part) {
 		markChanged(); // alert the display
 	}
+
+	//// ORIENTATION \\\\
 
 	public EnumFacing getFacing() {
 		return display.getCableFace();

@@ -9,7 +9,6 @@ import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.client.gsi.AbstractGSI;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.ClockInfo;
-import sonar.logistics.info.types.ProgressInfo;
 
 public class GSIClockInfo extends AbstractGSI<ClockInfo> {
 

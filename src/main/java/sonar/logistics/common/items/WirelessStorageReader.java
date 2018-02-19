@@ -14,7 +14,6 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
-import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;

@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;

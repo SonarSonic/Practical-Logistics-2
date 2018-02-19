@@ -1,10 +1,12 @@
 package sonar.logistics.api.displays.elements;
 
-import org.lwjgl.opengl.GL11;
-
-import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.GlStateManager.scale;
 
 import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -12,15 +14,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.displays.IDisplayElementList;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.info.InfoUUID;
 
+@DisplayElementType(id = ItemStackElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class ItemStackElement extends AbstractDisplayElement {
 
 	public StoredItemStack stack;
 
-	public ItemStackElement(IDisplayElementList list, StoredItemStack stack) {
-		super(list);
+	public ItemStackElement(StoredItemStack stack) {
+		super();
 		this.stack = stack;
 	}
 
@@ -83,6 +87,11 @@ public class ItemStackElement extends AbstractDisplayElement {
 	}
 
 	@Override
+	public List<InfoUUID> getInfoReferences() {
+		return Lists.newArrayList();
+	}
+
+	@Override
 	public String getRepresentiveString() {
 		return getItem().getDisplayName() + " - " + getCount();
 	}
@@ -93,33 +102,25 @@ public class ItemStackElement extends AbstractDisplayElement {
 	}
 
 	@Override
-	public String getRegisteredName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<InfoUUID> getInfoReferences() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int getElementIdentity() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		// TODO Auto-generated method stub
-		
+		super.readData(nbt, type);
+		stack = new StoredItemStack();
+		stack.readData(nbt, type);		
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		// TODO Auto-generated method stub
-		return null;
+		super.writeData(nbt, type);
+		stack.writeData(nbt, type);
+		return nbt;
+		
+	}
+
+	public static final String REGISTRY_NAME = "s_item";
+
+	@Override
+	public String getRegisteredName() {
+		return REGISTRY_NAME;
 	}
 
 }

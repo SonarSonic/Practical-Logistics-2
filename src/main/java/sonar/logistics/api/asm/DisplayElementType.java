@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import sonar.logistics.api.displays.IDisplayElement;
+
 /**use this with {@link IDisplayElement}, these must have an empty constructor!!*/
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

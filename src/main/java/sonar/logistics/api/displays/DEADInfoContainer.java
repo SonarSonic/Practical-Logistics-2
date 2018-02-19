@@ -1,7 +1,6 @@
 package sonar.logistics.api.displays;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -11,41 +10,34 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.DirtyPart;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncableList;
 import sonar.core.network.sync.SyncTagType.INT;
+import sonar.core.network.sync.SyncableList;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
-import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.client.LogisticsColours;
@@ -55,11 +47,10 @@ import sonar.logistics.client.gsi.IGSIListViewer;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 /** used to store {@link IInfo} along with their respective {@link DisplayInfo} for rendering on a {@link IDisplay} */
 @Deprecated
-public class InfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
+public class DEADInfoContainer extends DirtyPart implements IInfoContainer, ISyncPart {
 
 	private SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
 	public SyncEnum<DisplayLayout> layout = new SyncEnum(DisplayLayout.values(), -2);

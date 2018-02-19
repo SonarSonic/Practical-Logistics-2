@@ -7,20 +7,16 @@ import java.util.Optional;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class DisplayHelper {
 
@@ -41,7 +37,10 @@ public class DisplayHelper {
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplay display = ((ILargeDisplay) part).getConnectedDisplay();
 			providers = display != null ? display.getLocalProviders(providers) : getLocalProvidersFromDisplay(providers, world, pos, part);
-		} else {
+		} else if(part instanceof ConnectedDisplay){
+			ConnectedDisplay display = (ConnectedDisplay) part;
+			providers = display.getLocalProviders(providers);			
+		}else{
 			providers = getLocalProvidersFromDisplay(providers, world, pos, part);
 		}
 		return providers;

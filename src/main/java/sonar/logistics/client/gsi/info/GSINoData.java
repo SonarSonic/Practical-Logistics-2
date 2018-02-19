@@ -8,14 +8,12 @@ import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.AbstractGSI;
 import sonar.logistics.client.gsi.GSIButton;
-import sonar.logistics.client.gsi.GSIHelper;
-import sonar.logistics.client.gsi.GSIPackets;
+import sonar.logistics.client.gsi.GSIClickPacketHelper;
+import sonar.logistics.client.gsi.GSIClickPackets;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.InfoError;
 
 public class GSINoData extends AbstractGSI<IInfo> {
 
@@ -45,7 +43,7 @@ public class GSINoData extends AbstractGSI<IInfo> {
 	public void onButtonClicked(IInfo info, GSIButton button, DisplayScreenClick click, EnumHand hand) {
 		switch (button.buttonID) {
 		case 0:
-			sendGSIPacket(GSIHelper.createBasicPacket(GSIPackets.SOURCE_BUTTON), info, click, hand);
+			sendGSIPacket(GSIClickPacketHelper.createBasicPacket(GSIClickPackets.SOURCE_BUTTON), info, click, hand);
 			break;
 		default:
 			return;

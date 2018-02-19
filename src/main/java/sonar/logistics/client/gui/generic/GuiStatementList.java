@@ -16,7 +16,6 @@ import net.minecraft.util.text.TextFormatting;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;

@@ -1,5 +1,10 @@
 package sonar.logistics.client;
 
+import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,12 +12,10 @@ import java.util.Map.Entry;
 import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.Pair;
-import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class RenderBlockSelection {
 

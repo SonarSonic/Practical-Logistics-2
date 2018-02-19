@@ -4,54 +4,25 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import mcmultipart.RayTraceHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import sonar.core.api.IFlexibleGui;
-import sonar.core.api.utils.BlockCoords;
-import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.DisplayElementList;
-import sonar.logistics.api.displays.elements.TextDisplayElement;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.tiles.readers.INetworkReader;
-import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.client.gui.GuiDisplayScreen;
-import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
-import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
-import sonar.logistics.networking.displays.DisplayHelper;
-import sonar.logistics.networking.displays.LocalProviderHandler;
 
-public abstract class TileAbstractDisplay extends TileSidedLogistics implements IByteBufTile, IDisplay, IFlexibleGui<TileAbstractDisplay> {
+public abstract class TileAbstractDisplay extends TileSidedLogistics implements IByteBufTile, IDisplay {
 
 	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_READER_SELECTED };
 
@@ -104,6 +75,10 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 		List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
 		players.forEach(listener -> SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) listener));
 	}
+	
+	public IDisplay getActualDisplay(){
+		return this;
+	}
 
 	//// EVENTS \\\\
 
@@ -143,7 +118,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	}
 
 	//// GUI \\\\
-
+/*
 	@Override
 	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		//return new ContainerMultipartSync(obj);
@@ -172,7 +147,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 		PacketHelper.sendLocalProvidersFromScreen(this, world, pos, player);
 		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 	}
-
+	*/
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;

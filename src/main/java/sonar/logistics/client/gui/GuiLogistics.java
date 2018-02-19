@@ -7,7 +7,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.GuiSonarTile;
 import sonar.core.client.gui.widgets.SonarScroller;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.client.LogisticsColours;

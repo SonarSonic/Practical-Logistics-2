@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.common.multiparts.misc.TileClock;
 

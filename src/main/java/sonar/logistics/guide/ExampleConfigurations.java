@@ -17,6 +17,7 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.ItemChangeableList;
 import sonar.logistics.api.register.RegistryType;
@@ -50,7 +51,8 @@ public class ExampleConfigurations {
 			TileDisplayScreen screen = new TileDisplayScreen();
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
-			screen.getGSI().storedInfo.get(0).cachedInfo = new ProgressInfo(info1, info2);
+			DisplayElementContainer c = screen.getGSI().addElementContainer(new double[] { 0, 0, 0 }, screen.getGSI().getDisplayScaling(), 1);
+			c.getElements().addElement(new ProgressInfo(info1, info2));
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(SonarProperties.ROTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.LIT_FURNACE.getDefaultState());
 		}

@@ -22,10 +22,10 @@ import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.packets.PacketGSIClick;
 
-public class GSIHelper {
+public class GSIClickPacketHelper {
 
 	public static final String PACKET_ID = "PktID";
-	public static IGSIPacketHandler handler = GSIHelper::runGSIPacket;
+	public static IGSIClickPacketHandler handler = GSIClickPacketHelper::runGSIClickPacket;
 
 	public static IGSI getGSIForInfo(IInfo cachedInfo, DisplayInfo renderInfo) {
 		IInfo info = cachedInfo == null ? InfoError.noData : cachedInfo;
@@ -33,38 +33,38 @@ public class GSIHelper {
 		return gsi;
 	}
 
-	public static IGSIPacketHandler getGSIHandler(IInfo info) {
-		return info instanceof IGSIPacketHandler ? (IGSIPacketHandler) info : GSIHelper.handler;
+	public static IGSIClickPacketHandler getGSIHandler(IInfo info) {
+		return info instanceof IGSIClickPacketHandler ? (IGSIClickPacketHandler) info : GSIClickPacketHelper.handler;
 	}
 
-	public static void sendGSIPacket(NBTTagCompound tag, DisplayElementContainer container, DisplayScreenClick click) {
+	public static void sendGSIClickPacket(NBTTagCompound tag, DisplayElementContainer container, DisplayScreenClick click) {
 		if (!tag.hasNoTags()) {
 			PL2.network.sendToServer(new PacketGSIClick(container.getContainerIdentity(), click, tag));
 		}
 	}
 
-	public static void runGSIPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
-		readPacketID(clickTag).logic.doPacket(gsi, click, player, clickTag);
+	public static void runGSIClickPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
+		readPacketID(clickTag).logic.runGSIClickPacket(gsi, click, player, clickTag);
 	}
 
-	public static NBTTagCompound createBasicPacket(GSIPackets packet) {
+	public static NBTTagCompound createBasicPacket(GSIClickPackets packet) {
 		return writePacketID(new NBTTagCompound(), packet);
 	}
 
-	public static NBTTagCompound writePacketID(NBTTagCompound tag, GSIPackets packet) {
+	public static NBTTagCompound writePacketID(NBTTagCompound tag, GSIClickPackets packet) {
 		tag.setInteger(PACKET_ID, packet.ordinal());
 		return tag;
 	}
 
-	public static GSIPackets readPacketID(NBTTagCompound tag) {
-		return GSIPackets.values()[tag.getInteger(PACKET_ID)];
+	public static GSIClickPackets readPacketID(NBTTagCompound tag) {
+		return GSIClickPackets.values()[tag.getInteger(PACKET_ID)];
 	}
 
 	//// ITEM PACKET \\\\
 
 	public static NBTTagCompound createItemClickPacket(StoredItemStack stack, int networkID) {
 		NBTTagCompound tag = new NBTTagCompound();
-		writePacketID(tag, GSIPackets.ITEM_CLICK);
+		writePacketID(tag, GSIClickPackets.ITEM_CLICK);
 		tag.setInteger("networkID", networkID);
 		if (stack != null) {
 			stack.writeData(tag, SyncType.SAVE);
@@ -83,7 +83,7 @@ public class GSIHelper {
 
 	public static NBTTagCompound createFluidClickPacket(StoredFluidStack stack, int networkID) {
 		NBTTagCompound tag = new NBTTagCompound();
-		writePacketID(tag, GSIPackets.FLUID_CLICK);
+		writePacketID(tag, GSIClickPackets.FLUID_CLICK);
 		tag.setInteger("networkID", networkID);
 		if (stack != null) {
 			stack.writeData(tag, SyncType.SAVE);
@@ -99,7 +99,7 @@ public class GSIHelper {
 	//// SOURCE BUTTON \\\\ - BASIC PACKET
 
 	public static void doSourceButtonPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
-		/*
+		
 		IDisplay display = gsi.getDisplay();
 		if (display instanceof ConnectedDisplay) {
 			display = ((ConnectedDisplay) display).getTopLeftScreen();
@@ -113,7 +113,7 @@ public class GSIHelper {
 			//tag.setInteger("infopos", displayInfo.id);
 			SonarCore.instance.guiHandler.openGui(false, player, tile.getWorld(), tile.getPos(), GuiState.SOURCE.ordinal(), tag);
 		}
-		*/
+		
 	}
 
 }

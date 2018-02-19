@@ -1,21 +1,11 @@
 package sonar.logistics.common.multiparts.displays;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.helpers.SonarHelper;
-import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
@@ -24,19 +14,12 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.DisplayElementList;
-import sonar.logistics.api.displays.elements.TextDisplayElement;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
-import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler.ConnectedDisplayChange;
-import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILargeDisplay {
 
@@ -214,7 +197,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 			break;
 		}
 	}
-
+	/*
 	@Override
 	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		// TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
@@ -250,7 +233,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 			PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player);
 
 	}
-
+	*/
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
 		return CableRenderType.INTERNAL;

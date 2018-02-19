@@ -39,7 +39,6 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.elements.ElementStorage;
 import sonar.logistics.api.displays.elements.HeightAlignment;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.WidthAlignment;
@@ -53,60 +52,9 @@ import sonar.logistics.info.types.MonitoredItemStack;
 public class InfoRenderer {
 
 	public static final double zLevel = 0, barOffset = 0.001;
-
-	@Deprecated
-	public static void renderNormalInfo(DisplayType type, String... toDisplay) {
-		renderNormalInfo(type.width, type.height, type.scale, SonarHelper.convertArray(toDisplay));
-	}
-
-	@Deprecated
-	public static void renderNormalInfo(DisplayType type, List<String> toDisplay) {
-		renderNormalInfo(type.width, type.height, type.scale, toDisplay);
-	}
-
-	@Deprecated
-	public static void renderNormalInfo(double width, double height, double scale, String... toDisplay) {
-		renderNormalInfo(width, height, scale, SonarHelper.convertArray(toDisplay));
-	}
-
-	@Deprecated
-	public static void renderNormalInfo(double width, double height, double scale, int colour, String... toDisplay) {
-		renderNormalInfo(width, height, scale, colour, SonarHelper.convertArray(toDisplay));
-	}
-
-	@Deprecated
-	public static void renderNormalInfo(double width, double height, double scale, List<String> toDisplay) {
-		renderNormalInfo(width, height, scale, -1, toDisplay);
-	}
-
-	@Deprecated
-	public static void renderNormalInfo(double width, double height, double maxScale, int colour, List<String> toDisplay) {
-
-		GlStateManager.disableLighting();
-		GlStateManager.enableCull();
-		float offset = (float) (12 / (1 / maxScale));
-		double yCentre = 0;
-		double centre = (double) toDisplay.size() / 2 - 0.5;
-		int fontHeight = RenderHelper.fontRenderer.FONT_HEIGHT;
-		for (int i = 0; i < toDisplay.size(); i++) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0, (-1 + height / 2 + 0.26) + (i == centre ? 0 : i < centre ? yCentre - offset * -(i - centre) : yCentre + offset * (i - centre)), 0);
-			GlStateManager.scale(maxScale, maxScale, 1.0f);
-			String string = toDisplay.get(i);
-			int length = RenderHelper.fontRenderer.getStringWidth(string);
-			RenderHelper.fontRenderer.drawString(string, (float) ((-1 + 0.0625 + width / 2) / maxScale - length / 2), (float) 0.625, colour, false);
-			GlStateManager.popMatrix();
-		}
-		GlStateManager.disableCull();
-		GlStateManager.enableLighting();
-
-	}
-
 	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
 
-	/**
-	 * @param holder the holder to render
-	 */
+	/** @param holder the holder to render*/
 	public static void renderElementStorageHolder(IElementStorageHolder holder) {
 		for (IDisplayElement e : holder.getElements()) {
 			holder.startElementRender(e);
@@ -310,7 +258,7 @@ public class InfoRenderer {
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 
-		double minX = -barOffset + 0.0625, minY = -barOffset + 0.0625 * 1, maxX = width + barOffset + 0.0625 * 1, maxY = height + barOffset + 0.0625 * 1;
+		double minX = -barOffset, minY = -barOffset, maxX = width + barOffset, maxY = height + barOffset;
 		double barWidth = d * (maxX - minX) / e;
 		double divide = Math.max((maxX - minX), (maxY - minY));
 		double minU = 0, minV = 0, maxU = 1, maxV = 1;
@@ -329,7 +277,7 @@ public class InfoRenderer {
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 
-		double minX = -barOffset + 0.0625, minY = -barOffset + 0.0625 * 1, maxX = width + barOffset + 0.0625 * 1, maxY = height + barOffset + 0.0625 * 1;
+		double minX = -barOffset, minY = -barOffset, maxX = width + barOffset, maxY = height + barOffset;
 		double barWidth = ((double) progress * (maxX - minX)) / maxProgress;
 		double divide = Math.max((maxX - minX), (maxY - minY));
 

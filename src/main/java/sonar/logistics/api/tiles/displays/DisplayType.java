@@ -1,22 +1,23 @@
 package sonar.logistics.api.tiles.displays;
 
-/**the various types of Display Screen*/
+/** the various types of Display Screen */
 public enum DisplayType {
 
-	SMALL(0.0625 * 6, 0.0625 * 14, 0.008), //
-	HOLOGRAPHIC(0.0625 * 6, 0.0625 * 14, 0.008), //
-	LARGE(0.0625 * 14, 0.0625 * 14, 0.008), 
-	CONNECTED(0.0625 * 16, 0.0625 * 16, 0.008);//
-	public double width, height, scale;
+	SMALL(0.0625, 0.0625 * 5, 0.0625 * 6, 0.0625 * 14), //
+	HOLOGRAPHIC(0.0625, 0.0625, 0.0625 * 6, 0.0625 * 14), //
+	LARGE(0.0625, 0.0625, 0.0625 * 14, 0.0625 * 14), CONNECTED(0.0625, 0.0625, 0.0625 * 16, 0.0625 * 16);//
+	public double width, height;
+	public double xPos, yPos;
 
-	DisplayType(double height, double width, double scale) {
+	DisplayType(double xPos, double yPos, double height, double width) {
+		this.xPos = xPos;
+		this.yPos = yPos;
 		this.height = height;
 		this.width = width;
-		this.scale = scale;
 	}
-	
-	public int getInfoMax(){
-		if(this == SMALL || this == HOLOGRAPHIC){
+
+	public int getInfoMax() {
+		if (this == SMALL || this == HOLOGRAPHIC) {
 			return 2;
 		}
 		return 16;

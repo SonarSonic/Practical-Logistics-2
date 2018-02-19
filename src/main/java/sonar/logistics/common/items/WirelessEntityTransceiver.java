@@ -3,8 +3,6 @@ package sonar.logistics.common.items;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

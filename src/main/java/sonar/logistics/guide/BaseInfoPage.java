@@ -1,5 +1,9 @@
 package sonar.logistics.guide;
 
+import static net.minecraft.client.renderer.GlStateManager.color;
+import static net.minecraft.client.renderer.GlStateManager.disableDepth;
+import static net.minecraft.client.renderer.GlStateManager.enableDepth;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.gui.GuiButton;
-import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;

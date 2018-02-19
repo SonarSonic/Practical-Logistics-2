@@ -19,7 +19,6 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;

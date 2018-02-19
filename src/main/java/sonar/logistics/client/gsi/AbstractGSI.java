@@ -1,5 +1,18 @@
 package sonar.logistics.client.gsi;
 
+import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.disableBlend;
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
+import static net.minecraft.client.renderer.GlStateManager.disableTexture2D;
+import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.enableBlend;
+import static net.minecraft.client.renderer.GlStateManager.enableLighting;
+import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,11 +25,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-
-import static net.minecraft.client.renderer.GlStateManager.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -25,7 +34,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -36,7 +44,6 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.packets.PacketGSIClick;
 
 @SideOnly(Side.CLIENT)
 public abstract class AbstractGSI<I extends IInfo> extends Gui implements IGSI<I> {
@@ -121,7 +128,7 @@ public abstract class AbstractGSI<I extends IInfo> extends Gui implements IGSI<I
 	public void renderLookOverlays(I info, InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos, DisplayScreenLook look) {
 		GSIButton button = getButtonFromXY(look.lookX, look.lookY);
 		if (button != null) {
-			double displayScale = container.getDisplay().getDisplayType().scale;
+			double displayScale = 0.016;//FIXME
 			pushMatrix();
 			translate(-1, -0.0625 * 12, +0.004);
 			translate(button.posX + (button.width / 2), button.posY - 0.12, -0.05);

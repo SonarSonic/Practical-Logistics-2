@@ -1,34 +1,16 @@
 package sonar.logistics.client.gsi.info;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
-import sonar.core.helpers.SonarHelper;
-import sonar.logistics.PL2Blocks;
-import sonar.logistics.PL2Items;
 import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.displays.IDisplayInfo;
 import sonar.logistics.api.displays.IDisplayRenderable;
 import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.ItemStackElement;
 import sonar.logistics.api.displays.elements.TextDisplayElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.render.RenderInfoProperties;
-import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.client.gsi.AbstractGSI;
-import sonar.logistics.client.gsi.GSIButton;
-import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.InfoError;
 
 public class GSIBasicInfo extends AbstractGSI<IInfo> {
 

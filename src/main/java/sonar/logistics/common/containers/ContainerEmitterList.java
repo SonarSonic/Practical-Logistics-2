@@ -3,7 +3,6 @@ package sonar.logistics.common.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
-import sonar.logistics.PL2;
 import sonar.logistics.networking.cabling.WirelessDataManager;
 
 public class ContainerEmitterList extends Container {

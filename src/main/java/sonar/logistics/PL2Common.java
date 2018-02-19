@@ -13,6 +13,7 @@ import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 import sonar.logistics.packets.PacketDisplayTextEdit;
 import sonar.logistics.packets.PacketEmitterStatement;
 import sonar.logistics.packets.PacketGSIClick;
+import sonar.logistics.packets.PacketGSIElement;
 import sonar.logistics.packets.PacketInfoUpdates;
 import sonar.logistics.packets.PacketInventoryReader;
 import sonar.logistics.packets.PacketItemInteractionText;
@@ -34,7 +35,9 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketLocalProviders.Handler.class, PacketLocalProviders.class, 6, Side.CLIENT);
 		PL2.network.registerMessage(PacketConnectedDisplayUpdate.Handler.class, PacketConnectedDisplayUpdate.class, 7, Side.CLIENT);
 		PL2.network.registerMessage(PacketGSIClick.Handler.class, PacketGSIClick.class, 8, Side.SERVER);
-		//PL2.network.registerMessage(PacketClickEventClient.Handler.class, PacketClickEventClient.class, 9, Side.CLIENT);
+		//make a server to client version?
+		PL2.network.registerMessage(PacketGSIElement.Handler.class, PacketGSIElement.class, 9, Side.SERVER);
+		//
 		PL2.network.registerMessage(PacketNodeFilter.Handler.class, PacketNodeFilter.class, 10, Side.SERVER);
 		PL2.network.registerMessage(PacketEmitterStatement.Handler.class, PacketEmitterStatement.class, 11, Side.SERVER);
 		PL2.network.registerMessage(PacketWirelessStorage.Handler.class, PacketWirelessStorage.class, 12, Side.SERVER);

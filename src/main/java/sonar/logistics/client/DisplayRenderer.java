@@ -1,26 +1,15 @@
 package sonar.logistics.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.translate;
+
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.IInfoContainer;
-import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayConstants;
-import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.InfoError;
-
-import static net.minecraft.client.renderer.GlStateManager.*;
 
 //TWEAKED FAST MSR
 public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDisplay> {
@@ -38,8 +27,9 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 				if (bool) {
 					RenderHelper.offsetRendering(part.getPos(), partialTicks);
 					InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
-					//translate(-0.0625, 0, 0);
-					InfoRenderer.renderNormalInfo(part.getDisplayType().width, part.getDisplayType().height / 2, part.getDisplayType().scale, InfoError.incompleteDisplay.error);
+
+					translate(-1, -1, -0.01);
+					//InfoRenderer.renderNormalInfo(part.getDisplayType().width, part.getDisplayType().height / 2, part.getDisplayType().scale, InfoError.incompleteDisplay.error);
 					popMatrix();
 				}
 
@@ -48,8 +38,8 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 
 			RenderHelper.offsetRendering(part.getPos(), partialTicks);
 			InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
-			translate(-1, -1, -0.01);
-			translate(0.0625, 0.0625, 0);//FIXME - OFFSET FOR BEZEL
+			translate(-1, -1, -0.005);
+			translate(part.getDisplayType().xPos, part.getDisplayType().yPos, 0);
 			part.getGSI().render();
 			popMatrix();
 		//}

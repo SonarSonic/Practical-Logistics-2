@@ -5,12 +5,8 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.tiles.displays.DisplayConstants;
-import sonar.logistics.helpers.InfoRenderer;
 
 @LogicInfoType(id = InfoError.id, modid = PL2Constants.MODID)
 public class InfoError implements IInfo<InfoError> {

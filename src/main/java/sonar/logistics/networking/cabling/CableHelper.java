@@ -27,14 +27,12 @@ import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
-import sonar.logistics.helpers.LogisticsHelper;
 
 public class CableHelper extends CablingWrapper {
 

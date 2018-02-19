@@ -1,6 +1,5 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +25,6 @@ import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.FluidChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.tiles.readers.INetworkReader;
@@ -53,7 +50,7 @@ public class PacketHelper {
 
 	public static void sendLocalProvidersFromScreen(TileAbstractDisplay part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		List<ILogicListenable> providers = DisplayHelper.getLocalProviders(part, world, pos);
-		int identity = part.getIdentity();
+		int identity = part.getInfoContainerID();
 		List<ClientLocalProvider> clientMonitors = Lists.newArrayList();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
@@ -179,7 +176,7 @@ public class PacketHelper {
 		}
 		PL2ListenerList list = reader.getListenerList();
 		types: for (ListenerType type : ListenerType.ALL) {
-			if (type == ListenerType.OLD_GUI_LISTENER || type == ListenerType.OLD_DISPLAY_LISTENER) {
+			if (type == ListenerType.OLD_GUI_LISTENER){// || type == ListenerType.OLD_DISPLAY_LISTENER) {
 				sendStandardListenerPacket(reader, updateList, listUUID);
 				continue;
 			}

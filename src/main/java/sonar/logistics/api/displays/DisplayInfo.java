@@ -25,10 +25,9 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.api.tiles.displays.DisplayConstants;
 import sonar.logistics.client.LogisticsColours;
-import sonar.logistics.client.gsi.GSIHelper;
+import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gsi.IGSI;
 import sonar.logistics.packets.sync.SyncInfoUUID;
-import stanhebben.zenscript.annotations.NotNull;
 
 /** default implementation of the Display Info used on displays */
 
@@ -91,7 +90,7 @@ public class DisplayInfo extends SyncPart implements IDisplayInfo, ISyncableList
 
 	public void updateGSI() {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {// FIXME
-			gsi = GSIHelper.getGSIForInfo(cachedInfo, this);
+			gsi = GSIClickPacketHelper.getGSIForInfo(cachedInfo, this);
 			gsi.resetGSI();
 		}
 	}

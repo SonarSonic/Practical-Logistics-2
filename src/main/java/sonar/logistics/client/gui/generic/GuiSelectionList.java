@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
@@ -19,7 +18,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.client.gui.SonarButtons.ImageButton;
 import sonar.core.client.gui.widgets.SonarScroller;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;

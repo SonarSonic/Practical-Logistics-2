@@ -8,12 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.world.World;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.displays.InfoContainer;
+import sonar.logistics.api.displays.InfoReference;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -25,8 +24,6 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
-import sonar.logistics.networking.displays.ChunkViewerHandler;
-import sonar.logistics.networking.displays.LocalProviderHandler;
 
 public class ClientInfoHandler implements IInfoManager {
 

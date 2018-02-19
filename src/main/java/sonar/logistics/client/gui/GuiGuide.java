@@ -12,7 +12,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsButton;

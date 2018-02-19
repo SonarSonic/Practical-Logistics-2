@@ -7,7 +7,7 @@ import sonar.logistics.api.info.IInfo;
 /**the render properties for a {@link IInfo} when rendered in a {@link InfoContainer}*/
 
 @Deprecated
-public class RenderInfoProperties {
+public class DEADRenderInfoProperties {
 
 	public IInfoContainer container;
 	public double[] scaling, translation;

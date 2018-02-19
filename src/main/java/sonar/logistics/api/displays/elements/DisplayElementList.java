@@ -8,21 +8,19 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
-import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
-import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.InfoContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
 
 @DisplayElementType(id = DisplayElementList.REGISTRY_NAME, modid = PL2Constants.MODID)
+//FIXME make it be able to do grids also.
 public class DisplayElementList extends AbstractDisplayElement implements IElementStorageHolder {
 
 	public boolean updateScaling = true;
@@ -33,7 +31,11 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	public DisplayElementList() {
 		super();
-		//this.setWidthAlignment(WidthAlignment.LEFT);
+	}
+
+	public DisplayElementList(IElementStorageHolder holder) {
+		super();
+		setHolder(holder);
 	}
 
 	@Override
@@ -47,13 +49,15 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	}
 
 	public void onElementAdded(IDisplayElement element) {
-		this.updateScaling = true;
 		element.setHolder(this);
+		updateScaling = true;
+		getGSI().onElementAdded(this, element);		
 	}
 
 	public void onElementRemoved(IDisplayElement element) {
-		this.updateScaling = true;
 		element.setHolder(this);
+		updateScaling = true;
+		getGSI().onElementRemoved(this, element);
 	}
 
 	public void onElementChanged() {
@@ -195,7 +199,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 		return maxScaling;
 	}
 
-	public double[] createActualScaling(IDisplayElement element) {
+	public double[] createActualScaling(IDisplayElement element) {		
 		if (uniformScaling) {
 			double actualElementScale = minScale;
 			double actualElementWidth = (element.getUnscaledWidthHeight()[0] * actualElementScale) * percentageFill;
@@ -208,7 +212,11 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	@Override
 	public List<InfoUUID> getInfoReferences() {
-		return references; // FIXME
+		List<InfoUUID> uuid = Lists.newArrayList();
+		for(IDisplayElement s : elements){
+			ListHelper.addWithCheck(uuid, s.getInfoReferences());
+		}		
+		return uuid; // FIXME CACHE THIS?
 	}
 
 	@Override
@@ -218,11 +226,13 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
+		super.readData(nbt, type);
 		elements.readData(nbt, type);
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		super.writeData(nbt, type);
 		elements.writeData(nbt, type);
 		return nbt;
 	}

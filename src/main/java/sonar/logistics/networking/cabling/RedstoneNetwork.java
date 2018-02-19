@@ -8,7 +8,6 @@ import sonar.core.helpers.ListHelper;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
-import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.api.cabling.IRedstonePowerProvider;

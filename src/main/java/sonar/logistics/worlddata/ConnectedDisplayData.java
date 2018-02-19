@@ -1,11 +1,7 @@
 package sonar.logistics.worlddata;
 
-import java.util.Arrays;
 import java.util.Map.Entry;
 
-import com.google.common.collect.Lists;
-
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
@@ -13,7 +9,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;

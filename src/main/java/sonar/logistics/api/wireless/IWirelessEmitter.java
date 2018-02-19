@@ -3,7 +3,6 @@ package sonar.logistics.api.wireless;
 import java.util.UUID;
 
 import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.viewers.ILogicListenable;
 
 public interface IWirelessEmitter extends INetworkTile{
 

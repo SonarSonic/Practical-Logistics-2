@@ -9,14 +9,11 @@ import java.util.function.Consumer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.ListHelper;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.helpers.DisplayElementHelper;
@@ -57,14 +54,31 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 		}
 	}
 
-	public void setElement(IDisplayElement e, int pos) {
-		int id = DisplayElementHelper.getRegisteredID(e);
-		elements.putIfAbsent(id, Lists.newArrayList());
-		IDisplayElement previous = elements.get(id).set(pos, e);
-		if (previous != null) {
-			onElementRemoved(previous);
+	public IDisplayElement getElementFromIdentity(int identity) {
+		for (IDisplayElement e : this) {
+			if (e.getElementIdentity() == identity) {
+				return e;
+			}
 		}
-		onElementAdded(e);
+		return null;
+	}
+
+	/** the replaced element */
+	public IDisplayElement replaceElement(IDisplayElement element, int identity) {
+		int id = DisplayElementHelper.getRegisteredID(element);
+		elements.putIfAbsent(id, Lists.newArrayList());
+		IDisplayElement toReplace = null;
+		for (IDisplayElement e : holder.getElements()) {
+			if (e.getElementIdentity() == identity) {
+				toReplace = e;
+				break;
+			}
+		}
+		addElement(element);
+		if (toReplace != null) {
+			removeElement(toReplace);
+		}
+		return null;
 	}
 
 	public void onElementAdded(IDisplayElement e) {
@@ -103,10 +117,14 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		Map<Integer, List<IDisplayElement>> newElements = Maps.newHashMap();// make sure you get old ones if there are any.
-		clickables.clear();
-		lookables.clear();
-		holders.clear();
+		//Map<Integer, List<IDisplayElement>> newElements = Maps.newHashMap();// make sure you get old ones if there are any.
+		//clickables.clear();
+		////lookables.clear();
+		//holders.clear();
+		if(type.isType(SyncType.SAVE)){
+			elements.clear();
+		}
+		
 		NBTTagList tagList = nbt.getTagList(TAG_NAME, NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound elementsTag = tagList.getCompoundTagAt(i);
@@ -115,18 +133,22 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				Class<? extends IDisplayElement> currentClass = DisplayElementHelper.getElementClass(registryID);
 
 				NBTTagList subList = elementsTag.getTagList("list", NBT.TAG_COMPOUND);
-				newElements.putIfAbsent(registryID, Lists.newArrayList());
-				List<IDisplayElement> elements = newElements.get(registryID);
+				//newElements.putIfAbsent(registryID, Lists.newArrayList());
+				//List<IDisplayElement> elements = newElements.get(registryID);
 				for (int s = 0; s < subList.tagCount(); s++) {
 					NBTTagCompound eTag = subList.getCompoundTagAt(s);
-					IDisplayElement e = NBTHelper.instanceNBTSyncable(currentClass, eTag);
-					e.setHolder(holder);
-					elements.add(e);
-					onElementAdded(e);
+					int iden = eTag.getInteger("identity");
+					IDisplayElement ide = this.getElementFromIdentity(iden);
+					if(ide!=null){
+						ide.readData(eTag, type);
+					}else{
+						IDisplayElement e = DisplayElementHelper.loadElement(eTag, holder);
+						addElement(e);						
+					}
 				}
 			}
 		}
-		elements = newElements;
+		//elements = newElements;
 		// find the elements in one list and not the other and mark them as removed?? - doesn't matter as client doesn't need to know
 	}
 
@@ -139,10 +161,8 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 			}
 			NBTTagList subList = new NBTTagList();
 			for (IDisplayElement e : map.getValue()) {
-				NBTTagCompound eTag = e.writeData(new NBTTagCompound(), type);
-				if (!eTag.hasNoTags()) {
-					subList.appendTag(eTag);
-				}
+				NBTTagCompound eTag = DisplayElementHelper.saveElement(new NBTTagCompound(), e, type);
+				subList.appendTag(eTag);
 			}
 			if (!subList.hasNoTags()) {
 				NBTTagCompound elementsTag = new NBTTagCompound();
@@ -150,9 +170,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				elementsTag.setTag("list", subList);
 				tagList.appendTag(elementsTag);
 			}
-
 		}
-
 		nbt.setTag(TAG_NAME, tagList);
 		return nbt;
 	}
@@ -162,29 +180,29 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 	}
 
 	public boolean hasClickables() {
-		if(!clickables.isEmpty()){
+		if (!clickables.isEmpty()) {
 			return true;
 		}
 		List<IElementStorageHolder> allHolders = getAllSubHolders(Lists.newArrayList());
-		for(IElementStorageHolder holder : allHolders){
-			if(!holder.getElements().getClickables().isEmpty()){
+		for (IElementStorageHolder holder : allHolders) {
+			if (!holder.getElements().getClickables().isEmpty()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public List<IClickableElement> getClickables() {		
+	public List<IClickableElement> getClickables() {
 		return clickables;
 	}
 
 	public boolean hasLookables() {
-		if(!lookables.isEmpty()){
+		if (!lookables.isEmpty()) {
 			return true;
 		}
 		List<IElementStorageHolder> allHolders = getAllSubHolders(Lists.newArrayList());
-		for(IElementStorageHolder holder : allHolders){
-			if(!holder.getElements().getClickables().isEmpty()){
+		for (IElementStorageHolder holder : allHolders) {
+			if (!holder.getElements().getClickables().isEmpty()) {
 				return true;
 			}
 		}
@@ -226,14 +244,23 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 		@Override
 		public boolean hasNext() {
-			return (elements != null && elements.hasNext()) || entries.hasNext();
+			if (elements != null && elements.hasNext()) {
+				return true;
+			}
+			Iterator<IDisplayElement> nextList = null;
+			while (nextList == null || !nextList.hasNext()) {
+				if (entries.hasNext()) {
+					nextList = entries.next().getValue().iterator();
+				} else {
+					return false;
+				}
+			}
+			elements = nextList;
+			return true;
 		}
 
 		@Override
 		public IDisplayElement next() {
-			if (elements == null || !elements.hasNext()) {
-				elements = entries.next().getValue().iterator();
-			}
 			return elements.next();
 		}
 

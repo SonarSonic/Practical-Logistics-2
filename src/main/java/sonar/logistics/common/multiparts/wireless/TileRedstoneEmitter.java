@@ -7,7 +7,6 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;

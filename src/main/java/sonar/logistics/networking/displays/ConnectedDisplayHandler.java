@@ -2,11 +2,7 @@ package sonar.logistics.networking.displays;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -14,8 +10,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableConnectionType;
@@ -23,7 +17,6 @@ import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.networking.LogisticsNetwork;
 import sonar.logistics.networking.cabling.AbstractConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.packets.PacketConnectedDisplayRemove;

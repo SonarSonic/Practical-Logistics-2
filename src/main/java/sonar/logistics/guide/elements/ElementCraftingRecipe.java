@@ -12,7 +12,6 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.recipes.RecipeUtils;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.client.LogisticsColours;

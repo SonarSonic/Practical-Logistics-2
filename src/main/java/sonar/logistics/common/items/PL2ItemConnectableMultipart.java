@@ -8,25 +8,18 @@ import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
 import mcmultipart.api.slot.EnumCenterSlot;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.logistics.api.cabling.ICable;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.readers.IReader;
-import sonar.logistics.common.multiparts.cables.TileDataCable;
 import sonar.logistics.common.multiparts.readers.BlockAbstractReader;
-import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.displays.DisplayHelper;
 
 /** for multiparts which are placed onto cables, this automatically flips them so they face the most logical direction depending on the block clicked BEHAVIOUR: CLICK A CABLE: Placed on the side of the cable. CLICKED ON A BLOCK: Placed on the clicked blocks side. */

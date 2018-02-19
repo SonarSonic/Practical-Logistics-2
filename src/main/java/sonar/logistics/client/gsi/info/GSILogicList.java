@@ -18,7 +18,6 @@ import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.IDisplayInfo;
@@ -28,7 +27,7 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gsi.AbstractGSI;
-import sonar.logistics.client.gsi.GSIHelper;
+import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gsi.IGSIListViewer;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
@@ -189,11 +188,11 @@ public class GSILogicList extends AbstractGSI<LogicInfoList> implements IGSIList
 		case FLUID:
 			slot = (perPage * pageCount) + InteractionHelper.getSlot(click, renderInfo, 1, 1);
 			StoredFluidStack fluid = slot >= 0 && slot < list.size() ? ((MonitoredFluidStack) list.get(slot)).getStoredStack() : null;
-			return GSIHelper.createFluidClickPacket(fluid, info.networkID.getObject());
+			return GSIClickPacketHelper.createFluidClickPacket(fluid, info.networkID.getObject());
 		case ITEM:
 			slot = (perPage * pageCount) + InteractionHelper.getSlot(click, renderInfo, 2, 2);
 			StoredItemStack item = slot >= 0 && slot < list.size() ? ((MonitoredItemStack) list.get(slot)).getStoredStack() : null;
-			return GSIHelper.createItemClickPacket(item, info.networkID.getObject());
+			return GSIClickPacketHelper.createItemClickPacket(item, info.networkID.getObject());
 		case NONE:
 			break;
 		default:

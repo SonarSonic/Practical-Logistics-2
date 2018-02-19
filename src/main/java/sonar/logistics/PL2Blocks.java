@@ -1,6 +1,5 @@
 package sonar.logistics;
 
-import mcmultipart.api.item.ItemBlockMultipart;
 import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

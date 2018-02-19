@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import sonar.logistics.PL2;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;

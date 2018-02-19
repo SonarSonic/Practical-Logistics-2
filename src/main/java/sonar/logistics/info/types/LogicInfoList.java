@@ -1,18 +1,18 @@
 package sonar.logistics.info.types;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.helpers.NBTHelper;
+import java.util.List;
+
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.DisplayInfo;
+import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.NetworkItemElement;
+import sonar.logistics.api.displays.elements.NetworkItemListElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.client.gsi.IGSIPacketHandler;
-import sonar.logistics.helpers.InteractionHelper;
+import sonar.logistics.api.info.InfoUUID;
 
 @LogicInfoType(id = LogicInfoList.id, modid = PL2Constants.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList> {
@@ -77,5 +77,10 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	@Override
 	public String getClientType() {
 		return "list";
+	}
+
+	@Override
+	public void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
+		toAdd.add(new NetworkItemListElement(uuid));
 	}
 }
