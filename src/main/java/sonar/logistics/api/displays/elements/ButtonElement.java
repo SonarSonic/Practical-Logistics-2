@@ -1,6 +1,21 @@
 package sonar.logistics.api.displays.elements;
 
+import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.disableBlend;
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
+import static net.minecraft.client.renderer.GlStateManager.disableTexture2D;
+import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
+import static net.minecraft.client.renderer.GlStateManager.enableBlend;
+import static net.minecraft.client.renderer.GlStateManager.enableLighting;
+import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
+
 import java.util.List;
+
+import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
@@ -10,11 +25,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.client.gui.GuiSonar;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.client.LogisticsColours;
 
 @DisplayElementType(id = ButtonElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 //only works for square buttons atm
@@ -51,6 +69,33 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 		if (isPlayerLooking()) {
 			/** renders a blue select box around the button if has been clicked */
 			RenderHelper.drawModalRectWithCustomSizedTexture(0, 0, (15 * 16) * 0.0625, (15 * 16) * 0.0625, 1, 1, 16, 16);
+			
+			
+			double displayScale = 0.064;// FIXME
+			pushMatrix();
+			GlStateManager.translate(getActualScaling()[WIDTH]/getActualScaling()[SCALE], 0, -0.005);
+			scale(displayScale, displayScale, displayScale);
+			int textWidth = RenderHelper.fontRenderer.getStringWidth(hoverString);
+
+			RenderHelper.saveBlendState();
+
+			disableTexture2D();
+			enableBlend();
+			enableAlpha();
+			disableLighting();
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			int left = 0, top = 0, right = textWidth, bottom = 8, colour = LogisticsColours.blue_overlay.getRGB();
+			GuiSonar.drawTransparentRect(left, top, right, bottom, colour * 4);
+			translate(0, 0, -0.004);
+			FontHelper.text(hoverString, 0, 0, -1);
+
+			enableLighting();
+			disableAlpha();
+			disableBlend();
+			enableTexture2D();
+			RenderHelper.restoreBlendState();
+			popMatrix();
+
 		}
 	}
 

@@ -58,11 +58,14 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		resize(translate, scale, pScale);
 		containerIdentity = identity;
 	}
-	
-	public void resize( double[] translate, double[] scale, double pScale){
+
+	public void resize(double[] translate, double[] scale, double pScale) {
 		createdTranslation = DisplayElementHelper.percentageFromScale(translate, gsi.getDisplayScaling());
 		createdScaling = DisplayElementHelper.percentageFromScale(scale, gsi.getDisplayScaling());
 		percentageScale = pScale;
+		translation = null;
+		maxElementScaling = null;
+		maxElementScaling = null;
 	}
 
 	public DisplayGSI getGSI() {
@@ -79,17 +82,18 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 			translate(getTranslation()[0], getTranslation()[1], getTranslation()[2]);
 
 			elements.forEach(IDisplayRenderable::updateRender);
-			InfoRenderer.align(getAlignmentTranslation());
-			InfoRenderer.renderElementStorageHolder(this);
+			DisplayElementHelper.align(getAlignmentTranslation());
+			DisplayElementHelper.renderElementStorageHolder(this);
 			if (!gsi.isEditContainer(this)) {
-				translate(0,0,-0.02);				
-				if(gsi.isElementSelectionMode){
-					if(gsi.selected_identities.contains(getContainerIdentity())){
+				translate(0, 0, -0.02);
+				if (gsi.isElementSelectionMode) {
+					if (gsi.selected_identities.contains(getContainerIdentity())) {
 						DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], gsi.selectionType.getTypeColour());
 					}
 				}
-				translate(0,0,-0.002);		
-				
+				/*
+				translate(0, 0, -0.002);
+
 				CustomColour green = new CustomColour(255, 255, 255);
 				double borderWidth = 0.0625 / 8;
 				DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], borderWidth, green.getRGB());
@@ -97,6 +101,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 
 				DisplayElementHelper.drawRect(0, 0, borderWidth, getContainerMaxScaling()[1], green.getRGB());
 				DisplayElementHelper.drawRect(getContainerMaxScaling()[0] - borderWidth, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB());
+				*/
 			}
 			popMatrix();
 		}
@@ -119,7 +124,6 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public Tuple<IDisplayElement, double[]> getClickBoxes(double x, double y) {
 		double[] align = getAlignmentTranslation();
 
-		Map<IDisplayElement, Double[]> boxes = Maps.newHashMap();
 		for (IDisplayElement e : elements) {// FIXME
 			// for (IDisplayElement e : elements.getClickables()) {
 			if (!(e instanceof IElementStorageHolder)) {
@@ -215,7 +219,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	/** the maximum scale of an element */
 	public double[] getMaxScaling() {
 		if (maxElementScaling == null) {
-			maxElementScaling = DisplayElementHelper.scale(getContainerMaxScaling(), percentageScale);
+			maxElementScaling = DisplayElementHelper.scaleArray(getContainerMaxScaling(), percentageScale);
 			maxElementScaling[SCALE] = 1;
 		}
 		return maxElementScaling;
@@ -323,7 +327,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		case FILL_SCALED_CONTAINER:
 			return getMaxScaling();
 		default:
-			return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), getMaxScaling(), 1);
+			return DisplayElementHelper.getScaling(element.getUnscaledWidthHeight(), getMaxScaling(), 1);
 		}
 	}
 
@@ -335,18 +339,18 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		case FILL_SCALED_CONTAINER:
 			return getMaxScaling();
 		default:
-			return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), element.getMaxScaling(), 1);
+			return DisplayElementHelper.getScaling(element.getUnscaledWidthHeight(), element.getMaxScaling(), 1);
 		}
 	}
 
 	@Override
 	public double[] getAlignmentTranslation() {
-		return InfoRenderer.alignArray(getContainerMaxScaling(), getMaxScaling(), WidthAlignment.LEFT, HeightAlignment.TOP);
+		return DisplayElementHelper.alignArray(getContainerMaxScaling(), getMaxScaling(), WidthAlignment.LEFT, HeightAlignment.TOP);
 	}
 
 	@Override
 	public double[] getAlignmentTranslation(IDisplayElement e) {
-		return InfoRenderer.alignArray(getContainerMaxScaling(), e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
+		return DisplayElementHelper.alignArray(getContainerMaxScaling(), e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
 	}
 
 }

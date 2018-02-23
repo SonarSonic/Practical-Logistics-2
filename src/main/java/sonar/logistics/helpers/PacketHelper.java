@@ -19,6 +19,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
@@ -102,7 +103,14 @@ public class PacketHelper {
 			NBTTagCompound infoTag = packetList.getCompoundTagAt(i);
 			InfoUUID id = NBTHelper.instanceNBTSyncable(InfoUUID.class, infoTag);
 			if (save) {
-				PL2.getClientManager().setInfo(id, InfoHelper.readInfoFromNBT(infoTag));
+				IInfo currentInfo = PL2.getClientManager().getInfoFromUUID(id);
+				IInfo newInfo = InfoHelper.readInfoFromNBT(infoTag);
+				if (currentInfo == null || !currentInfo.isMatchingType(newInfo)) {
+					PL2.getClientManager().setInfo(id, newInfo);
+				}else{
+					currentInfo.readData(infoTag, type);
+					PL2.getClientManager().onInfoChanged(id, currentInfo);
+				}
 			} else {
 				IInfo currentInfo = PL2.getClientManager().getInfoFromUUID(id);
 				if (currentInfo != null) {
@@ -176,7 +184,7 @@ public class PacketHelper {
 		}
 		PL2ListenerList list = reader.getListenerList();
 		types: for (ListenerType type : ListenerType.ALL) {
-			if (type == ListenerType.OLD_GUI_LISTENER){// || type == ListenerType.OLD_DISPLAY_LISTENER) {
+			if (type == ListenerType.OLD_GUI_LISTENER) {// || type == ListenerType.OLD_DISPLAY_LISTENER) {
 				sendStandardListenerPacket(reader, updateList, listUUID);
 				continue;
 			}

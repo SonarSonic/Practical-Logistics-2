@@ -1,5 +1,7 @@
 package sonar.logistics.helpers;
 
+import static net.minecraft.client.renderer.GlStateManager.*;
+
 import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Nullable;
@@ -18,7 +20,9 @@ import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.ElementFillType;
 import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.HeightAlignment;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.WidthAlignment;
 
 public class DisplayElementHelper {
 
@@ -98,12 +102,78 @@ public class DisplayElementHelper {
 		return Math.min(multiple * (Math.floor(Math.abs(original / multiple))), max);
 	}
 
-	public static double[] scale(double[] toScale, double scale) {
+	public static double[] scaleArray(double[] toScale, double scale) {
 		double[] newScale = new double[toScale.length];
 		for (int i = 0; i < newScale.length; i++) {
 			newScale[i] = toScale[i] * scale;
 		}
 		return newScale;
+	}
+	
+	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
+
+	/** @param holder the holder to render*/
+	public static void renderElementStorageHolder(IElementStorageHolder holder) {
+		for (IDisplayElement e : holder.getElements()) {
+			holder.startElementRender(e);
+			pushMatrix();
+			align(holder.getAlignmentTranslation(e));
+			double scale = e.getActualScaling()[SCALE];
+			scale(scale, scale, scale);
+			//pushMatrix();
+			e.render();
+			//popMatrix();
+			popMatrix();
+			holder.endElementRender(e);
+		}
+	}
+	
+	public static double[] alignArray(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
+		double x = alignWidth(actualListScaling, actualElementScaling, width);
+		double y = alignHeight(actualListScaling, actualElementScaling, height);
+		double z = 0;
+		return new double[]{x, y, z};
+	}
+
+	public static void align(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
+		double[] alignArray = alignArray(actualListScaling, actualElementScaling, width, height);
+		align(alignArray);
+	}
+	
+	public static void align(double[] align){
+		translate(align[WIDTH], align[HEIGHT], 0);
+	}
+
+	public static double alignWidth(double[] actualListScaling, double[] actualElementScaling, WidthAlignment align) {
+		switch (align) {
+		case CENTERED:
+			return (actualListScaling[WIDTH] / 2) - (actualElementScaling[WIDTH] / 2);
+		case LEFT:
+			break;
+		case RIGHT:
+			return actualListScaling[WIDTH] - actualElementScaling[WIDTH];
+		}
+		return 0;
+	}
+
+	public static double alignHeight(double[] actualListScaling, double[] actualElementScaling, HeightAlignment align) {
+		switch (align) {
+		case CENTERED:
+			return (actualListScaling[HEIGHT] / 2) - (actualElementScaling[HEIGHT] / 2);
+		case TOP:
+			break;
+		case BOTTOM:
+			return actualListScaling[HEIGHT] - actualElementScaling[HEIGHT];
+		}
+		return 0;
+	}
+
+	/** scales the unscaled width and height to match the given scaling returned in the form, actual width, actual height, scale factor */
+	public static double[] getScaling(int[] unscaled, double[] scaling, double percentageFill) {
+		double actualElementScale = Math.min(scaling[0] / unscaled[0], scaling[1] / unscaled[1]);
+		double actualElementWidth = (unscaled[0] * actualElementScale) * percentageFill;
+		double actualElementHeight = (unscaled[1] * actualElementScale) * percentageFill;
+		return new double[] { actualElementWidth, actualElementHeight, actualElementScale };
 	}
 
 	public static void drawGrid(double left, double top, double right, double bottom, double xSizing, double ySizing, int color) {

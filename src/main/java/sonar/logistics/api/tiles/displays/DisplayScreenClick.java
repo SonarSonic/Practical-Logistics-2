@@ -4,6 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.helpers.InteractionHelper;
 
 public class DisplayScreenClick {
 
@@ -54,6 +55,10 @@ public class DisplayScreenClick {
 		click.doubleClick = nbt.getBoolean("doubleClick");		
 		return click;
 		
+	}
+	
+	public double[] getCoordinates(){
+		return InteractionHelper.getClickCoordinates(this);
 	}
 	
 }

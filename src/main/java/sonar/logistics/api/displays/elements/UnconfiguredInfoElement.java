@@ -8,35 +8,40 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.helpers.FontHelper;
+import net.minecraft.world.World;
+import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.integration.multipart.TileSonarMultipart;
+import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.ElementFillType;
 import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.helpers.InfoRenderer;
-import sonar.logistics.info.types.InfoError;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.helpers.DisplayElementHelper;
 
 @DisplayElementType(id = UnconfiguredInfoElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class UnconfiguredInfoElement extends AbstractDisplayElement {
+public class UnconfiguredInfoElement extends AbstractDisplayElement implements ILookableElement, IClickableElement, IFlexibleGui {
 
 	public List<IDisplayElement> elements;
 	public InfoUUID uuid;
 
-	public UnconfiguredInfoElement(){
+	public UnconfiguredInfoElement() {
 		this.width_align = WidthAlignment.LEFT;
 		this.height_align = HeightAlignment.TOP;
 	}
-	
-	public UnconfiguredInfoElement(InfoUUID uuid){
-		this.uuid=uuid;		
+
+	public UnconfiguredInfoElement(InfoUUID uuid) {
+		this.uuid = uuid;
 		this.width_align = WidthAlignment.LEFT;
 		this.height_align = HeightAlignment.TOP;
 	}
+
 	public void updateRender() {
 		if (elements == null) {
 			updateInfoElements();
@@ -44,16 +49,16 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement {
 		elements.forEach(IDisplayElement::updateRender);
 	}
 
-	public void render() {		
+	public void render() {
 		for (IDisplayElement e : elements) {
 			pushMatrix();
-			InfoRenderer.align(getHolder().getAlignmentTranslation(e));
+			DisplayElementHelper.align(getHolder().getAlignmentTranslation(e));
 			double scale = e.getActualScaling()[SCALE];
 			scale(scale, scale, scale);
 			e.render();
 			popMatrix();
 		}
-		
+
 	}
 
 	@Override
@@ -63,19 +68,18 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement {
 	}
 
 	public void updateInfoElements() {
-		
+
 		IInfo info = getGSI().getCachedInfo(uuid);
 		if (info == null) {
 			elements = Lists.newArrayList();
 			return;
-			
+
 		}
 		List<IDisplayElement> nElements = Lists.newArrayList();
 		info.createDefaultElements(nElements, getHolder(), uuid);
 		nElements.forEach(e -> e.setHolder(getHolder()));
 		elements = nElements;
-		
-		
+
 	}
 
 	public List<IDisplayElement> getInfoElements() {
@@ -84,10 +88,10 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement {
 		}
 		return elements;
 	}
-	
+
 	@Override
 	public double[] getMaxScaling() {
-		return new double[]{getHolder().getContainer().getContainerMaxScaling()[WIDTH], getHolder().getMaxScaling()[HEIGHT], 1};
+		return new double[] { getHolder().getContainer().getContainerMaxScaling()[WIDTH], getHolder().getContainer().getContainerMaxScaling()[HEIGHT], 1 };
 	}
 
 	@Override
@@ -128,6 +132,57 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement {
 	@Override
 	public String getRegisteredName() {
 		return REGISTRY_NAME;
+	}
+
+	@Override
+	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+		if (elements == null) {
+			return -1;
+		}
+		for (IDisplayElement e : elements) {
+			if (e instanceof IClickableElement) {
+				double[] align = getHolder().getAlignmentTranslation(e);
+
+				double subSubClickX = subClickX - align[0];
+				double subSubClickY = subClickY - align[1];
+				int gui = ((IClickableElement) e).onGSIClicked(click, player, subSubClickX, subSubClickY);
+				if (gui != -1) {
+					return gui;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	@Override
+	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		if (elements != null) {
+			for (IDisplayElement e : elements) {
+				if (e instanceof IFlexibleGui) {
+					Object element = ((IFlexibleGui) e).getServerElement(obj, id, world, player, tag);
+					if (element != null) {
+						return element;
+					}
+				}
+			}
+		}
+		return id == 0 ? new ContainerMultipartSync((TileSonarMultipart) obj) : null;
+	}
+
+	@Override
+	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		if (elements != null) {
+			for (IDisplayElement e : elements) {
+				if (e instanceof IFlexibleGui) {
+					Object element = ((IFlexibleGui) e).getClientElement(obj, id, world, player, tag);
+					if (element != null) {
+						return element;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }

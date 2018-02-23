@@ -21,7 +21,9 @@ import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.displays.elements.IInfoRequirement;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.packets.PacketGSIElement;
 
 public class GSIElementPacketHelper {

@@ -16,6 +16,7 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
 
@@ -75,7 +76,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	}
 
 	public void render() {
-		InfoRenderer.renderElementStorageHolder(this);
+		DisplayElementHelper.renderElementStorageHolder(this);
 	}
 
 	@Override
@@ -195,7 +196,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	public double[] createMaxScaling(IDisplayElement element) {
 		double fill = element.getPercentageFill() == 0 ? percentageFill : element.getPercentageFill();
 		double maxIndividualHeight = getMaxScaling()[HEIGHT] / elements.getElementCount();
-		double[] maxScaling = InfoRenderer.getScaling(element.getUnscaledWidthHeight(), new double[] { getMaxScaling()[0], maxIndividualHeight, getMaxScaling()[2] }, fill);
+		double[] maxScaling = DisplayElementHelper.getScaling(element.getUnscaledWidthHeight(), new double[] { getMaxScaling()[0], maxIndividualHeight, getMaxScaling()[2] }, fill);
 		return maxScaling;
 	}
 
@@ -207,7 +208,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 			return new double[] { actualElementWidth, actualElementHeight, actualElementScale };
 		}
 		double maxIndividualHeight = holder.getActualScaling()[HEIGHT] / elements.getElementCount();
-		return InfoRenderer.getScaling(element.getUnscaledWidthHeight(), new double[] { getActualScaling()[0], maxIndividualHeight, getActualScaling()[2] }, 1);
+		return DisplayElementHelper.getScaling(element.getUnscaledWidthHeight(), new double[] { getActualScaling()[0], maxIndividualHeight, getActualScaling()[2] }, 1);
 	}
 
 	@Override
@@ -251,11 +252,11 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	@Override
 	public double[] getAlignmentTranslation() {
-		return InfoRenderer.alignArray(holder.getMaxScaling(), getActualScaling(), width_align, height_align);
+		return DisplayElementHelper.alignArray(holder.getMaxScaling(), getActualScaling(), width_align, height_align);
 	}
 
 	@Override
 	public double[] getAlignmentTranslation(IDisplayElement e) {
-		return InfoRenderer.alignArray(new double[] { getActualScaling()[0], e.getMaxScaling()[1], e.getMaxScaling()[2] }, e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
+		return DisplayElementHelper.alignArray(new double[] { getActualScaling()[0], e.getMaxScaling()[1], e.getMaxScaling()[2] }, e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
 	}
 }

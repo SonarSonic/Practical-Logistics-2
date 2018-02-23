@@ -165,7 +165,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				}
 			} else {
 				Tuple<IDisplayElement, double[]> e = getElementFromXY(click.clickX - 0.0625, click.clickY - 0.0625);
-				if ((e.getFirst() == null || !isEditContainer(e.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
+				if ((e == null || e.getFirst() == null || !isEditContainer(e.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
 					for (DisplayElementContainer container : containers.values()) {
 						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX - 0.0625, click.clickY - 0.0625)) {
 							onElementSelected(container.getContainerIdentity(), type);
@@ -224,7 +224,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void render() {
-		if (lastLookElementUpdate == 0 || (System.currentTimeMillis() - lastLookElementUpdate) > 200) {
+		if (lastLookElementUpdate == 0 || (System.currentTimeMillis() - lastLookElementUpdate) > 50) {
 			lastLookElementUpdate = System.currentTimeMillis();
 			updateLookElement();
 		}
@@ -232,7 +232,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		// renders viewable the display element containers
 
 		if (isGridSelectionMode) {
-			GlStateManager.translate(0, 0, -0.005);
+			GlStateManager.translate(0, 0, -0.01);
 			GlStateManager.pushMatrix();
 
 			// render the other containers
@@ -246,7 +246,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 			/// renders the click selections
 			if (clickPosition1 != null) {
-				GlStateManager.translate(0, 0, -0.001);
+				GlStateManager.translate(0, 0, -0.01);
 				double[] click2 = clickPosition2 == null ? clickPosition1 : clickPosition2;
 				double clickStartX = getGridXPosition(Math.min(clickPosition1[0], click2[0]));
 				double clickStartY = getGridYPosition(Math.min(clickPosition1[1], click2[1]));
@@ -256,7 +256,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			}
 
 			/// render the grid
-			GlStateManager.translate(0, 0, -0.001);
+			GlStateManager.translate(0, 0, -0.01);
 			CustomColour green = new CustomColour(174, 227, 227);
 			DisplayElementHelper.drawGrid(0, 0, getDisplayScaling()[0], getDisplayScaling()[1], getGridXScale(), getGridYScale(), green.getRGB());
 
@@ -351,6 +351,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void exitGridSelectionMode() {
+		isElementSelectionMode = false;
 		isGridSelectionMode = false;
 		clickPosition1 = null;
 		clickPosition2 = null;
@@ -414,9 +415,19 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void onInfoChanged(InfoUUID uuid, IInfo info) {
-		/// FIXME DON'T DO THIS FOR EVERYTHING
 		updateCachedInfo();
-		updateScaling();
+		for(DisplayElementContainer c : containers.values()){
+			boolean update = false;
+			for(IDisplayElement e : c.getElements()){
+				if(e.getInfoReferences().contains(uuid)){
+					update=true;
+					break;
+				}
+			}
+			if(update){
+				c.updateActualScaling();
+			}
+		}
 	}
 
 	//// INFO REFERENCES \\\\
