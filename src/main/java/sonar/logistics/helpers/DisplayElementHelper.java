@@ -237,7 +237,8 @@ public class DisplayElementHelper {
 		float f = (float) (color >> 16 & 255) / 255.0F;
 		float f1 = (float) (color >> 8 & 255) / 255.0F;
 		float f2 = (float) (color & 255) / 255.0F;
-		GlStateManager.disableLighting();
+		//GlStateManager.disableLighting();
+		
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		GlStateManager.enableBlend();
@@ -260,6 +261,7 @@ public class DisplayElementHelper {
 		RenderHelper.restoreBlendState();
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableBlend();
-		GlStateManager.enableLighting();
+		
+		//GlStateManager.enableLighting();
 	}
 }

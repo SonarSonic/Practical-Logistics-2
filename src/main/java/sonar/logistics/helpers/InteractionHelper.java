@@ -210,8 +210,33 @@ public class InteractionHelper {
 	/* @Deprecated public static double[] getPositionedClickBox(IInfoContainer container, int pos) { double[] displaySize = container.getDisplayScaling(); double width = displaySize[0], height = displaySize[1]; switch (container.getLayout()) { case DUAL: return new double[] { 0, pos == 1 ? height / 2 : 0, pos == 1 ? width : width / 2, pos == 1 ? height : height / 2 }; case GRID: return new double[] { (pos == 1 || pos == 3 ? width / 2 : 0), (pos == 2 || pos == 3 ? height / 2 : 0), (pos == 1 || pos == 3 ? width : width / 2), (pos == 2 || pos == 3 ? height : height / 2) }; case LIST: return new double[] { 0, pos * (height / 4), width, (pos + 1) * (height / 4) }; default: return new double[] { 0, 0, width, height }; } }
 	 * @Deprecated public static boolean canBeClickedStandard(DisplayInfo renderInfo, DisplayScreenClick click) { double[] intersect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition()); double x = click.clickX; double y = click.clickY; if (x >= intersect[0] + 0.0625 && x <= intersect[2] + 0.0625 && y >= intersect[1] + 0.0625 && y <= intersect[3] + 0.0625) { // add one pixel for the border of the screen return true; } return false; } */
 
+	public static boolean withinX(double x, double[] clickBox) {
+		return x >= Math.min(clickBox[0], clickBox[2]) && x <= Math.max(clickBox[0], clickBox[2]);
+	}
+
+	public static boolean withinY(double y, double[] clickBox) {
+		return y >= Math.min(clickBox[1], clickBox[3]) && y <= Math.max(clickBox[1], clickBox[3]);
+	}
+
+	public static boolean overlapX(double x, double[] clickBox) {
+		return x >= Math.min(clickBox[0], clickBox[2]) && x <= Math.max(clickBox[0], clickBox[2]);
+	}
+
+	public static boolean overlapY(double y, double[] clickBox) {
+		return y >= Math.min(clickBox[1], clickBox[3]) && y <= Math.max(clickBox[1], clickBox[3]);
+	}
+	
 	public static boolean checkClick(double x, double y, double[] clickBox) {
-		return x >= clickBox[0] && x <= clickBox[2] && y >= clickBox[1] && y <= clickBox[3];
+		return withinX(x, clickBox) && withinY(y, clickBox);
+	}
+
+	public static boolean checkOverlap(double[] elementBox, double[] clickBox) {
+		if (elementBox.length != 4 || clickBox.length != 4) {
+			return false;
+		}
+		boolean xOverlap = overlapX(elementBox[0], clickBox) || overlapX(elementBox[2], clickBox) || overlapX(clickBox[0], elementBox)|| overlapX(clickBox[1], elementBox);
+		boolean yOverlap = overlapY(elementBox[1], clickBox) || overlapY(elementBox[3], clickBox) || overlapY(clickBox[1], elementBox) || overlapY(clickBox[3], elementBox);
+		return xOverlap && yOverlap;
 	}
 
 	public static double[] getClickPosition(EnumFacing face, float hitX, float hitY, float hitZ) {
@@ -235,9 +260,9 @@ public class InteractionHelper {
 	public static double[] getClickCoordinates(DisplayScreenClick click) {
 		IDisplay d = click.gsi.getDisplay().getActualDisplay();
 		BlockPos dPos = d.getCoords().getBlockPos();
-		double x = dPos.getX()+0.5;
-		double y = dPos.getY()+0.5;
-		double z = dPos.getZ()+0.5;
+		double x = dPos.getX() + 0.5;
+		double y = dPos.getY() + 0.5;
+		double z = dPos.getZ() + 0.5;
 		switch (d.getCableFace()) {
 		case DOWN:
 			y -= 1;

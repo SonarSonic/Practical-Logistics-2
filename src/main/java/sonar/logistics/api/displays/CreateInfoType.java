@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import sonar.logistics.api.displays.buttons.EmptyInfoElement;
 import sonar.logistics.api.displays.elements.DisplayElementContainer;
 import sonar.logistics.api.displays.elements.DisplayElementList;
+import sonar.logistics.api.displays.elements.StyledTextElement;
 import sonar.logistics.api.displays.elements.TextDisplayElement;
 
 public enum CreateInfoType {
@@ -19,25 +20,24 @@ public enum CreateInfoType {
 		@Nullable
 		public IDisplayElement create(DisplayElementContainer c);
 	}
-	
-	public static IDisplayElement createInfo(DisplayElementContainer c){
+
+	public static IDisplayElement createInfo(DisplayElementContainer c) {
 		EmptyInfoElement e = new EmptyInfoElement();
 		c.getElements().addElement(e);
 		return e;
 	}
-	
-	public static IDisplayElement createImage(DisplayElementContainer c){
+
+	public static IDisplayElement createImage(DisplayElementContainer c) {
 		return null;
 	}
-	
-	public static IDisplayElement createButton(DisplayElementContainer c){
+
+	public static IDisplayElement createButton(DisplayElementContainer c) {
 		return null;
 	}
-	
-	public static IDisplayElement createText(DisplayElementContainer c){
-		DisplayElementList e = new DisplayElementList();
+
+	public static IDisplayElement createText(DisplayElementContainer c) {
+		StyledTextElement e = new StyledTextElement("CLICK TO EDIT TEXT");
 		c.getElements().addElement(e);
-		e.getElements().addElement(new TextDisplayElement("CLICK TO EDIT TEXT"));
 		return e;
 	}
 }

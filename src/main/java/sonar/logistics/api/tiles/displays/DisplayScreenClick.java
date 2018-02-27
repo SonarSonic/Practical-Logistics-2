@@ -14,11 +14,16 @@ public class DisplayScreenClick {
 	public BlockPos clickPos;
 	public int identity;
 	public boolean doubleClick = false;
+	public boolean fakeGuiClick = false;
 	
 	public DisplayScreenClick setClickPosition(double[] clickPosition){
 		this.clickX = clickPosition[0];
 		this.clickY = clickPosition[1];
 		return this;
+	}
+	
+	public boolean isFakeGuiClick(){
+		return fakeGuiClick;
 	}
 	
 	public void setDoubleClick(boolean bool){

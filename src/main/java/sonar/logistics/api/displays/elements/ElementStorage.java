@@ -60,6 +60,12 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				return e;
 			}
 		}
+		for(IElementStorageHolder holder : this.getSubHolders()){
+			IDisplayElement e = holder.getElements().getElementFromIdentity(identity);
+			if(e!=null){
+				return e;
+			}
+		}
 		return null;
 	}
 

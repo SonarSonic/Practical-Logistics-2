@@ -129,13 +129,6 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 		return ElementFillType.FILL_CONTAINER;
 	}
 
-	public static final String REGISTRY_NAME = "n_item_l";
-
-	@Override
-	public String getRegisteredName() {
-		return REGISTRY_NAME;
-	}
-
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
 
@@ -202,6 +195,13 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 	@Override
 	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return new GuiEditDisplayElement(this.getHolder().getContainer(), this);
+	}
+
+	public static final String REGISTRY_NAME = "n_item_l";
+
+	@Override
+	public String getRegisteredName() {
+		return REGISTRY_NAME;
 	}
 
 }

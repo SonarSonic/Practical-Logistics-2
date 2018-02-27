@@ -91,17 +91,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 						DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], gsi.selectionType.getTypeColour());
 					}
 				}
-				/*
-				translate(0, 0, -0.002);
-
-				CustomColour green = new CustomColour(255, 255, 255);
-				double borderWidth = 0.0625 / 8;
-				DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], borderWidth, green.getRGB());
-				DisplayElementHelper.drawRect(0, getContainerMaxScaling()[1] - borderWidth, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB());
-
-				DisplayElementHelper.drawRect(0, 0, borderWidth, getContainerMaxScaling()[1], green.getRGB());
-				DisplayElementHelper.drawRect(getContainerMaxScaling()[0] - borderWidth, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB());
-				*/
+				/* translate(0, 0, -0.002); CustomColour green = new CustomColour(255, 255, 255); double borderWidth = 0.0625 / 8; DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], borderWidth, green.getRGB()); DisplayElementHelper.drawRect(0, getContainerMaxScaling()[1] - borderWidth, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB()); DisplayElementHelper.drawRect(0, 0, borderWidth, getContainerMaxScaling()[1], green.getRGB()); DisplayElementHelper.drawRect(getContainerMaxScaling()[0] - borderWidth, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB()); */
 			}
 			popMatrix();
 		}
@@ -122,11 +112,11 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	}
 
 	public Tuple<IDisplayElement, double[]> getClickBoxes(double x, double y) {
-		double[] align = getAlignmentTranslation();
 
+		double[] align = getAlignmentTranslation();
 		for (IDisplayElement e : elements) {// FIXME
 			// for (IDisplayElement e : elements.getClickables()) {
-			if (!(e instanceof IElementStorageHolder)) {
+			if (!(e instanceof IElementStorageHolder)) { // FIXME
 				double[] alignArray = getAlignmentTranslation(e);
 				double startX = align[0] + alignArray[0];
 				double startY = align[1] + alignArray[1];
@@ -346,6 +336,18 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	@Override
 	public double[] getAlignmentTranslation() {
 		return DisplayElementHelper.alignArray(getContainerMaxScaling(), getMaxScaling(), WidthAlignment.LEFT, HeightAlignment.TOP);
+	}
+
+	public double[] getFullAlignmentTranslation(IDisplayElement e) {
+		double[] containerAlign = getAlignmentTranslation();
+		double[] holderAlign = new double[] { 0, 0, 0 };
+		double[] elementAlign = e.getHolder().getAlignmentTranslation(e);
+		if ((e.getHolder() instanceof IDisplayElement)) {
+			holderAlign = getAlignmentTranslation((IDisplayElement) e.getHolder());
+		}
+		double fullX = containerAlign[WIDTH] + holderAlign[WIDTH] + elementAlign[WIDTH];
+		double fullY = containerAlign[HEIGHT] + holderAlign[HEIGHT] + elementAlign[HEIGHT];
+		return new double[] { fullX, fullY, elementAlign[SCALE] };
 	}
 
 	@Override

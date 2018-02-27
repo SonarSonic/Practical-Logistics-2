@@ -488,6 +488,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				return e;
 			}
 		}
+		
 		return null;
 	}
 

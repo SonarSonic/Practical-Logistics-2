@@ -45,6 +45,7 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 	}
 
 	public static void doCreateDefaultElements(IInfo info, List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
+		/*FIXME
 		DisplayElementList list = new DisplayElementList(h);
 		CompoundTextElement first = new CompoundTextElement(CompoundTextElement.REF);
 		CompoundTextElement second = new CompoundTextElement(CompoundTextElement.REF + " " + CompoundTextElement.REF + " " + CompoundTextElement.REF);
@@ -58,6 +59,7 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 		list.getElements().addElement(first);
 		list.getElements().addElement(second);
 		toAdd.add(list);
+		*/
 	}
 
 	public boolean isValid();

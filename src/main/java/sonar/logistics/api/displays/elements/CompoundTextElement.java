@@ -22,7 +22,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.InfoRenderer;
 
-@DisplayElementType(id = CompoundTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
+@Deprecated
+//@DisplayElementType(id = CompoundTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class CompoundTextElement extends AbstractDisplayElement {
 
 	private String unformattedText;

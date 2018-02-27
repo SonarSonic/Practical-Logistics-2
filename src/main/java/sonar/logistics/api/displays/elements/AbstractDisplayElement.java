@@ -50,7 +50,6 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 		unscaledWidthHeight = null;
 		maxScaling = null;
 		actualScaling = null;
-		// holder.updateActualScaling();
 	}
 
 	@Override

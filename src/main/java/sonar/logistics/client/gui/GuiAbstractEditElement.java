@@ -1,66 +1,58 @@
 package sonar.logistics.client.gui;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.HeightAlignment;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.WidthAlignment;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.GuiAbstractEditElement.SpecialFormatButton;
+import sonar.logistics.client.gui.GuiAbstractEditElement.TextColourButton;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
 
-public class GuiEditDisplayElement extends GuiLogistics {
+public class GuiAbstractEditElement extends GuiLogistics {
 
 	public DisplayElementContainer c;
-	public IDisplayElement e;
 	public long lastClickTime;
-	public TextFormatting currentColour = null;
-	public List<TextFormatting> specialFormats = Lists.newArrayList();
+	public int currentColour = -1;
+	public List<TextFormatting> specials = Lists.newArrayList();
 
-	double userScaling = 1;
-	double percentageFill;
-	double[] scaling, unscaled;
-	double actualLeft, actualTop, actualElementScale, actualElementWidth, actualElementHeight;
+	public double userScaling = 1;
+	public double percentageFill;
+	public double[] scaling, unscaled;
+	public double actualLeft, actualTop, actualElementScale, actualElementWidth, actualElementHeight;
 
-	public GuiEditDisplayElement(DisplayElementContainer c, IDisplayElement e) {
+	public GuiAbstractEditElement(DisplayElementContainer c) {
 		super(new ContainerMultipartSync((TileSonarMultipart) c.getGSI().getDisplay().getActualDisplay()), c.getGSI().getDisplay());
+		//DisplayElementContainer copy = new DisplayElementContainer();
+		//NBTTagCompound copyTag = new NBTTagCompound();
+		//c.writeData(copyTag, SyncType.SAVE);
+		//copy.readData(copyTag, SyncType.SAVE);
 		this.c = c;
-		this.e = e;
 	}
 
 	@Override
@@ -70,22 +62,6 @@ public class GuiEditDisplayElement extends GuiLogistics {
 		ySize = 256;
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
-
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 198, guiTop + 150, 11 * 16, 0, "Align Left", "Aligns the element to the left"));
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 198 + 20, guiTop + 150, 11 * 16, 16, "Align Centre", "Aligns the element to the centre"));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 198 + 40, guiTop + 150, 11 * 16, 32, "Align Right", "Aligns the element to the right"));
-		this.buttonList.add(new SpecialFormatButton(this, TextFormatting.BOLD, 3, guiLeft + 198, guiTop + 150 + 20, 11 * 16, 48, "Bold", "Make the selected text bold"));
-		this.buttonList.add(new SpecialFormatButton(this, TextFormatting.ITALIC, 4, guiLeft + 198 + 20, guiTop + 150 + 20, 11 * 16, 64, "Italic", "Italicize the selected text"));
-		this.buttonList.add(new SpecialFormatButton(this, TextFormatting.UNDERLINE, 5, guiLeft + 198 + 40, guiTop + 150 + 20, 11 * 16, 80, "Underline", "Underline the selected text"));
-		this.buttonList.add(new SpecialFormatButton(this, TextFormatting.STRIKETHROUGH, 6, guiLeft + 198, guiTop + 150 + 40, 11 * 16, 96, "Strikethrough", "Draw a line through the middle of the selected text"));
-		this.buttonList.add(new SpecialFormatButton(this, TextFormatting.OBFUSCATED, 7, guiLeft + 198 + 20, guiTop + 150 + 40, 2 * 16, 16 * 5, "Obfuscate", "Obfuscates the selected text"));
-		this.buttonList.add(new LogisticsButton(this, 8, guiLeft + 198 + 40, guiTop + 150 + 40, 11 * 16, 112, "Font Colour", "Change the colour of the selected text"));
-
-		for (int i = 0; i < 16; i++) {
-			TextFormatting format = TextFormatting.values()[i];
-			this.buttonList.add(new TextColourButton(this, 16 + i, guiLeft + 2 + i * 16, guiTop + 210, format));
-		}
-
 		// this.buttonList.add(new GuiButton(2, guiLeft + 130 - 3, guiTop + 25, 40, 20, "+0.1 s"));
 
 		percentageFill = 1;
@@ -98,45 +74,38 @@ public class GuiEditDisplayElement extends GuiLogistics {
 		actualElementHeight = (unscaled[1] * actualElementScale) * percentageFill;
 	}
 
-	public void changeSelectedColour(TextFormatting colour) {
-		currentColour = colour;
+	public final void changeSelectedColour(TextFormatting colour) {
+		int formattingColour = RenderHelper.getTextFormattingColour(colour);
+		int r = (int) (formattingColour >> 16 & 255);
+		int g = (int) (formattingColour >> 8 & 255);
+		int b = (int) (formattingColour & 255);
+		currentColour = FontHelper.getIntFromColor(r, g, b);
+		onColourChanged(currentColour);
 	}
 
-	public void toggleSpecialFormatting(TextFormatting format) {
-		if (specialFormats.contains(format)) {
-			specialFormats.remove(format);
+	public final void toggleSpecialFormatting(TextFormatting format) {
+		if (specials.contains(format)) {
+			specials.remove(format);
+			onSpecialFormatChanged(format, false);
 		} else {
-			specialFormats.add(format);
+			specials.add(format);
+			onSpecialFormatChanged(format, true);
 		}
 	}
-
-	public void selectMouse() {
-
+	
+	public void onColourChanged(int newColour){
+		
+	}
+	
+	public void onSpecialFormatChanged(TextFormatting format, boolean enabled){
+		
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) throws IOException {
-		super.actionPerformed(button);
-		if (button instanceof TextColourButton) {
-			changeSelectedColour(((TextColourButton) button).colour);
-		}
-		if (button instanceof SpecialFormatButton) {
-			toggleSpecialFormatting(((SpecialFormatButton) button).specialFormat);
-		}
-
-	}
-
-	@Override
-	public void drawGuiContainerForegroundLayer(int x, int y) {
-		super.drawGuiContainerForegroundLayer(x, y);
-
-	}
-
-	@Override
-	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+	public void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
 		// userScaling = 1;
 		// double userMovement = new double[] { 45, 70, 20 };
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1f, 1f, 1f, 1f);
 		drawTransparentRect(this.guiLeft, this.guiTop + xSize / 2 + 20, this.guiLeft + this.xSize, this.guiTop + xSize / 2 + 20 + 80, LogisticsColours.layers[1].getRGB());
 		drawTransparentRect(this.guiLeft + 1, this.guiTop + 1 + xSize / 2 + 20, this.guiLeft + this.xSize - 1, this.guiTop + xSize / 2 + 20 + 80 - 1, LogisticsColours.layers[2].getRGB());
 		renderScroller(scroller);
@@ -144,75 +113,96 @@ public class GuiEditDisplayElement extends GuiLogistics {
 		double[] actualScaling = getActualScaling();
 		GlStateManager.pushMatrix();
 		DisplayElementHelper.align(getAlignmentTranslation());
+		// screen border
 		DisplayElementHelper.drawRect(-pixel, -pixel, actualScaling[0] + pixel, actualScaling[1] + pixel, new CustomColour(174, 227, 227).getRGB());
+		// screen background
 		DisplayElementHelper.drawRect(0, 0, actualScaling[0], actualScaling[1], new CustomColour(40, 40, 40).getRGB());
-		GlStateManager.scale(getActualScaling()[2], getActualScaling()[2], 0.01);
+
+		GlStateManager.scale(getActualScaling()[2], getActualScaling()[2], 1);
 		GlStateManager.translate(0, 0, 1);
-		DisplayElementHelper.renderElementStorageHolder(c);
-		// GlStateManager.enableDepth();
+		renderContainer(partialTicks, x, y);
 		GlStateManager.popMatrix();
 	}
 
-	public double[] getAlignmentTranslation() {
+	/** all translation scaling applied */
+	public void renderContainer(float partialTicks, int x, int y) {
+		DisplayElementHelper.renderElementStorageHolder(c);
+	}
+
+	public final double[] getAlignmentTranslation() {
 		double x = (actualLeft + (scaling[0] - actualElementWidth) / 2) + ((1 - userScaling) * actualElementWidth / 2);
 		double y = (actualTop + (scaling[1] - actualElementHeight) / 2) + ((1 - userScaling) * actualElementHeight / 2);
 		double z = 0.001;
 		return new double[] { x, y, z };
 	}
 
-	public double[] getActualScaling() {
+	public final double[] getActualScaling() {
 		return new double[] { actualElementWidth * userScaling, actualElementHeight * userScaling, actualElementScale * userScaling };
+	}
+
+	public boolean skipContainerClick() {
+		return false;
 	}
 
 	@Override
 	public void mouseClicked(int x, int y, int key) throws IOException {
-		Tuple<IDisplayElement, double[]> click = getElementAtXY(x, y);
-		if (click != null) {
-			boolean isDoubleClick = isDoubleClick();
-			double clickX = (x - getAlignmentTranslation()[0]) / getActualScaling()[2];
-			double clickY = (y - getAlignmentTranslation()[1]) / getActualScaling()[2];
-			DisplayScreenClick fakeClick = createFakeClick(c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick, key);
-			onDisplayElementClicked(click.getFirst(), fakeClick, click.getSecond());
-			return;
+		Tuple<Boolean, double[]> canClick = canClickContainer(x, y);
+		if (skipContainerClick() || !canClick.getFirst() || !doContainerClick(canClick.getSecond()[0], canClick.getSecond()[1], key)) {
+			super.mouseClicked(x, y, key);
 		}
-		super.mouseClicked(x, y, key);
 	}
 
-	public Tuple<IDisplayElement, double[]> getElementAtXY(int x, int y) {
+	public boolean doContainerClick(double clickX, double clickY, int key) {
+		Tuple<IDisplayElement, double[]> click = getElementAtXY(clickX, clickY);
+		if (click != null) {
+			DisplayScreenClick fakeClick = createFakeClick(c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
+			onDisplayElementClicked(click.getFirst(), fakeClick, click.getSecond());
+			return true;
+		}
+		return false;
+	}
+
+	public Tuple<Boolean, double[]> canClickContainer(int x, int y) {
 		double startX = getAlignmentTranslation()[0];
 		double startY = getAlignmentTranslation()[1];
 		double endX = startX + getActualScaling()[0];
 		double endY = startY + getActualScaling()[1];
 		if (InteractionHelper.checkClick(x, y, new double[] { startX, startY, endX, endY })) {
-			Tuple<IDisplayElement, double[]> click = null;
 			double clickX = (x - startX) / getActualScaling()[2];
 			double clickY = (y - startY) / getActualScaling()[2];
-			for (IDisplayElement e : c.elements) {
-				if (!(e instanceof IElementStorageHolder)) {
-					double[] alignArray = c.getAlignmentTranslation(e);
-					double startXC = alignArray[0];
-					double startYC = alignArray[1];
-					double endXC = alignArray[0] + e.getActualScaling()[0];
-					double endYC = alignArray[1] + e.getActualScaling()[1];
-					double[] eBox = new double[] { startXC, startYC, endXC, endYC };
-					if (InteractionHelper.checkClick(clickX, clickY, eBox)) {
-						double subClickX = clickX - startXC;
-						double subClickY = clickY - startYC;
-						return new Tuple(e, new double[] { subClickX, subClickY });
-					}
-				}
-			}
-			for (IElementStorageHolder h : c.elements.getSubHolders()) {
-				Tuple<IDisplayElement, double[]> clicked = h.getClickBoxes(x, y);
-				if (clicked != null) {
-					return clicked;
+			return new Tuple(true, new double[] { clickX, clickY });
+		}
+		return new Tuple(false, new double[2]);
+	}
+
+	/**element could be null*/
+	public final Tuple<IDisplayElement, double[]> getElementAtXY(double clickX, double clickY) {
+		Tuple<IDisplayElement, double[]> click = null;
+		for (IDisplayElement e : c.elements) {
+			if (!(e instanceof IElementStorageHolder)) {
+				double[] alignArray = c.getAlignmentTranslation(e);
+				double startXC = alignArray[0];
+				double startYC = alignArray[1];
+				double endXC = alignArray[0] + e.getActualScaling()[0];
+				double endYC = alignArray[1] + e.getActualScaling()[1];
+				double[] eBox = new double[] { startXC, startYC, endXC, endYC };
+				if (InteractionHelper.checkClick(clickX, clickY, eBox)) {
+					double subClickX = clickX - startXC;
+					double subClickY = clickY - startYC;
+					return new Tuple(e, new double[] { subClickX, subClickY });
 				}
 			}
 		}
-		return null;
+		for (IElementStorageHolder h : c.elements.getSubHolders()) {
+			Tuple<IDisplayElement, double[]> clicked = h.getClickBoxes(clickX, clickY);
+			if (clicked != null) {
+				return clicked;
+			}
+		}
+		return new Tuple(null, new double[] { clickX, clickY });
 	}
 
-	public DisplayScreenClick createFakeClick(double clickX, double clickY, boolean doubleClick, int key) {
+	public final DisplayScreenClick createFakeClick(double clickX, double clickY, boolean doubleClick, int key) {
 		DisplayScreenClick fakeClick = new DisplayScreenClick();
 		fakeClick.gsi = c.getGSI();
 		fakeClick.type = key == 0 ? BlockInteractionType.LEFT : BlockInteractionType.RIGHT;
@@ -221,19 +211,20 @@ public class GuiEditDisplayElement extends GuiLogistics {
 		fakeClick.clickPos = c.getGSI().getDisplay().getActualDisplay().getCoords().getBlockPos();
 		fakeClick.identity = c.getGSI().getDisplayGSIIdentity();
 		fakeClick.doubleClick = false;
+		fakeClick.fakeGuiClick = true;
 		return fakeClick;
 	}
 
-	public boolean isDoubleClick() {
+	public final boolean isDoubleClick() {
 		boolean isDoubleClick = false;
-		if (mc.getMinecraft().world.getTotalWorldTime() - lastClickTime < 10) {
+		if (mc.getMinecraft().world.getTotalWorldTime() - lastClickTime < 5) {
 			isDoubleClick = true;
 		}
 		lastClickTime = mc.getMinecraft().world.getTotalWorldTime();
 		return isDoubleClick;
 	}
 
-	public void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
+	public final void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
 		if (e instanceof IClickableElement) {
 			((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
 		}
@@ -242,10 +233,27 @@ public class GuiEditDisplayElement extends GuiLogistics {
 	public static class SpecialFormatButton extends LogisticsButton {
 
 		public TextFormatting specialFormat;
+		public final GuiAbstractEditElement gui;
 
-		public SpecialFormatButton(GuiSonar sonar, TextFormatting specialFormat, int id, int x, int y, int texX, int texY, String buttonText, String helpKey) {
-			super(sonar, id, x, y, texX, texY, buttonText, helpKey);
+		public SpecialFormatButton(GuiAbstractEditElement gui, TextFormatting specialFormat, int id, int x, int y, int texX, int texY, String buttonText, String helpKey) {
+			super(gui, id, x, y, texX, texY, buttonText, helpKey);
+			this.gui = gui;
 			this.specialFormat = specialFormat;
+		}
+
+		@Override
+		public void drawButton(Minecraft mc, int x, int y, float partialTicks) {
+			if (this.visible) {
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				this.hovered = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
+				mc.getTextureManager().bindTexture(texture);
+				this.drawTexturedModalRect(this.x, this.y, getTextureX(), getTextureY(), sizeX + 1, sizeY + 1);
+
+				// select
+				if (gui.specials.contains(specialFormat)) {
+					this.drawTexturedModalRect(this.x, this.y, (15 * 16), (15 * 16), sizeX + 1, sizeY + 1);
+				}
+			}
 		}
 
 	}
@@ -255,9 +263,9 @@ public class GuiEditDisplayElement extends GuiLogistics {
 		public int formattingColour;
 		public int formattingShadow;
 		public TextFormatting colour;
-		public final GuiEditDisplayElement gui;
+		public final GuiAbstractEditElement gui;
 
-		public TextColourButton(GuiEditDisplayElement gui, int id, int x, int y, TextFormatting c) {
+		public TextColourButton(GuiAbstractEditElement gui, int id, int x, int y, TextFormatting c) {
 			super(id, x, y, 12, 12, c.getFriendlyName());
 			this.gui = gui;
 			formattingColour = RenderHelper.getTextFormattingColour(c);
@@ -270,7 +278,6 @@ public class GuiEditDisplayElement extends GuiLogistics {
 			// super.drawButton(mc, x, y, partialTicks);
 			if (this.visible) {
 				this.hovered = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
-				boolean isSelected = gui.currentColour != null && gui.currentColour == colour;
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				int r = (int) (formattingColour >> 16 & 255);
 				int g = (int) (formattingColour >> 8 & 255);
@@ -278,8 +285,12 @@ public class GuiEditDisplayElement extends GuiLogistics {
 				int rS = (int) (formattingShadow >> 16 & 255);
 				int gS = (int) (formattingShadow >> 8 & 255);
 				int bS = (int) (formattingShadow & 255);
-				drawRect(this.x, this.y, this.x + 12, this.y + 12, isSelected ? -1 : new CustomColour(rS, gS, bS).getRGB());
-				drawRect(this.x + 1, this.y + 1, this.x + 11, this.y + 11, new CustomColour(r, g, b).getRGB());
+				int shadowRGB = new CustomColour(rS, gS, bS).getRGB();
+				int colourRGB = new CustomColour(r, g, b).getRGB();
+				
+				boolean isSelected = gui.currentColour == colourRGB;
+				drawRect(this.x, this.y, this.x + 12, this.y + 12, isSelected ? -1 : shadowRGB);
+				drawRect(this.x + 1, this.y + 1, this.x + 11, this.y + 11, colourRGB);
 			}
 
 		}
@@ -296,5 +307,4 @@ public class GuiEditDisplayElement extends GuiLogistics {
 	public ResourceLocation getBackground() {
 		return null;
 	}
-
 }
