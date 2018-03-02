@@ -1,0 +1,32 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model":"practicallogistics2:reader",
+        "textures": {
+            "0":"practicallogistics2:model/fluid_reader",
+            "particle":"practicallogistics2:blocks/data_cable"
+        }
+     },
+    "variants": {
+        "normal":[],
+        "inventory": [{    
+            "model":"practicallogistics2:reader"
+        }],
+        "display":{
+            "true":{            
+                "model":"practicallogistics2:readerwithdisplay"
+            },
+            "false":{            
+                "model":"practicallogistics2:reader"
+            }        
+        },  
+        "facing":{  
+            "north":{"x": 90, "y": 180},            
+            "south":{"x": 90, "y": 0},      
+            "west":{"x": 90, "y": 90}, 
+            "east":{"x": 90, "y": 270},
+            "up":{"x": 180},
+            "down":{}
+        }         
+    }
+}

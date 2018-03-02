@@ -1,0 +1,42 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model":"practicallogistics2:transfernode",
+        "textures": {
+            "particle":"practicallogistics2:blocks/data_cable"
+        }
+     },
+    "variants": {
+        "inventory": [{}],
+        "transfer":{
+            "add":{
+                "textures": {
+                    "0": "practicallogistics2:model/transfer_node_add"
+                 }
+            },
+            "remove":{            
+                "textures": {
+                    "0": "practicallogistics2:model/transfer_node_remove"
+                 }
+            },
+            "add_remove":{            
+                "textures": {
+                    "0": "practicallogistics2:model/transfer_node_add_remove"
+                 }
+            },
+            "passive":{
+                "textures": {
+                    "0": "practicallogistics2:model/transfer_node_passive"
+                 }
+            }            
+        },
+        "facing":{  
+            "north":{"x": 90, "y": 180},            
+            "south":{"x": 90, "y": 0},      
+            "west":{"x": 90, "y": 90}, 
+            "east":{"x": 90, "y": 270},
+            "up":{"x": 180},
+            "down":{}
+        }         
+    }
+}
