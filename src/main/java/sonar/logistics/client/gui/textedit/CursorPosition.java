@@ -25,7 +25,11 @@ public class CursorPosition {
 	}
 
 	public void setCursor(int[] set) {
-		setCursor(set[0], set[1]);
+		if (set == null) {
+			removeCursor();
+		} else {
+			setCursor(set[0], set[1]);
+		}
 	}
 
 	public void setCursor(int x, int y) {

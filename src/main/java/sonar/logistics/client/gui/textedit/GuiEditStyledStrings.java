@@ -18,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.xml.ws.Holder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -135,7 +137,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		List<TextSelection> allSelection = getAllSelections();
 		for (StyledStringLine s : text) {
 			text.preRender(s);
-			if (cursorPosition.validPosition() && i == cursorPosition.y) {
+			if (i == cursorPosition.y) {
 				renderCursor(s);
 			}
 			s.render();
@@ -149,10 +151,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 
 	public void renderCursor(StyledStringLine text) {
 		if (cursorPosition.validPosition()) {
-			// FIXME - RENDER CURSOR - DOESN'T CHECK FORMATTED STRINGS!
-
-			String currentString = text.getCachedUnformattedString();
-			int cursorPos = cursorPosition.x == 0 ? 0 : RenderHelper.fontRenderer.getStringWidth(currentString.substring(0, Math.min(cursorPosition.x, currentString.length())));
+			int cursorPos = getCursorRenderPos(text);
 			GlStateManager.translate(0, 0, 0.1);
 			GlStateManager.disableTexture2D();
 			GlStateManager.enableBlend();
@@ -163,6 +162,32 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 			GlStateManager.enableTexture2D();
 			GlStateManager.translate(0, 0, -0.1);
 		}
+	}
+
+	public int getCursorRenderPos(StyledStringLine c) {
+		return getCursorRenderPos(c, cursorPosition.getTypingIndex(this));
+	}
+
+	public int getCursorRenderPos(StyledStringLine c, int index) {
+		int i = 0;
+		if (!c.getStrings().isEmpty()) {
+			int start = 0, end = index;
+			if (end == 0) {
+				return 0;
+			}
+			int index_count = 0;
+			for (StyledString ss : c.getStrings()) {
+				int subEnd = Math.min(index_count + ss.getStringLength(), end) - index_count;
+				if (subEnd > 0) {
+					String unformatted = ss.getTextFormattingStyle() + ss.getUnformattedString().substring(0, subEnd);
+					i += RenderHelper.fontRenderer.getStringWidth(unformatted);
+					index_count += ss.getStringLength();
+				} else {
+					// System.out.println("whyo");
+				}
+			}
+		}
+		return i;
 	}
 
 	public void renderSelections(List<TextSelection> toRender, StyledStringLine line, int i) {
@@ -181,7 +206,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 					int end = subSelect[1];
 					int subIndex = 0;
 					int subWidth = 0;
-					for (StyledString ss : line.strings) {
+					for (StyledString ss : line.getStrings()) {
 						int selectStart = Math.max(subIndex, start);
 						int selectEnd = Math.min(subIndex + ss.getStringLength(), end);
 						int subStart = selectStart - subIndex;
@@ -215,7 +240,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 
 	/** for every StyledString */
 	public void forStrings(Consumer<StyledString> format) {
-		text.forEach(t -> t.strings.forEach(ss -> format.accept(ss)));
+		text.forEach(t -> t.getStrings().forEach(ss -> format.accept(ss)));
 	}
 
 	public void onColourChanged(int newColour) {
@@ -253,60 +278,61 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		});
 	}
 
+	public void deleteAllSelected() {
+		formatSelections(ss -> null);
+		selectPosition.removeCursor();
+		savedSelections.clear();
+	}
+
 	public void formatSelections(Function<StyledString, StyledString> action) {
-		// int i = 0;
-		List<TextSelection> allSelects = getAllSelections();
-		for (TextSelection select : allSelects) {
+		formatSelections(getAllSelections(), action);
+	}
+
+	public void formatSelections(List<TextSelection> selects, Function<StyledString, StyledString> action) {
+		for (TextSelection select : selects) {
 			for (int y = select.startY; y <= select.endY; y++) {
 				StyledStringLine c = getLine(y);
 				if (c == null) {
 					continue;
 				}
 				int[] subSelect = select.getSubStringSize(c.getCachedUnformattedString(), y);
-				if (subSelect[0] != -1 && subSelect[1] != -1) {
-					int start = subSelect[0];
-					int end = subSelect[1];
-					List<StyledString> newStrings = Lists.newArrayList();
-					int subIndex = 0;
-					for (StyledString ss : c.strings) {
-						int stringStart = subIndex;
-						int stringEnd = subIndex + ss.getStringLength();
+				int start = subSelect[0], end = subSelect[1];
+				if (start != -1 && end != -1) {
+					List<StyledString> formatted_strings = Lists.newArrayList();
 
-						int selectStart = Math.max(stringStart, start);
-						int selectEnd = Math.min(stringEnd, end);
+					int index_count = 0;
+					for (StyledString ss : c.getStrings()) {
+						int subStart = Math.max(index_count, start) - index_count;
+						int subEnd = Math.min(index_count + ss.getStringLength(), end) - index_count;
 
-						int subStart = selectStart - subIndex;
-						int subEnd = selectEnd - subIndex;
 						if (subStart >= 0 && subStart < subEnd) {
-							String text = ss.getUnformattedString();
-							String before = subStart == 0 ? "" : text.substring(0, subStart);
-							String formatString = text.substring(subStart, subEnd);
-							String after = subEnd == text.length() ? "" : text.substring(subEnd, text.length());
-
-							addWithCombine(newStrings, new StyledString(before, ss.getStyle().copy()));
-							addWithCombine(newStrings, action.apply(new StyledString(formatString, ss.getStyle().copy())));
-							addWithCombine(newStrings, new StyledString(after, ss.getStyle().copy()));
-
+							String[] subStrings = getSubStrings(subStart, subEnd, ss.getUnformattedString());
+							addWithCombine(formatted_strings, new StyledString(subStrings[0], ss.getStyle().copy()));
+							addWithCombine(formatted_strings, action.apply(new StyledString(subStrings[1], ss.getStyle().copy())));
+							addWithCombine(formatted_strings, new StyledString(subStrings[2], ss.getStyle().copy()));
 						} else {
-							addWithCombine(newStrings, ss);
+							addWithCombine(formatted_strings, ss);
 						}
 
-						subIndex += ss.getStringLength();
+						index_count += ss.getStringLength();
 					}
 
-					/* for (StyledString ss : c.strings) { String text = ss.getUnformattedString(); int subIndex = 0; int elementStart = index + subIndex; int elementEnd = elementStart + text.length() - subIndex; if (InteractionHelper.overlapX(elementStart, new double[] { next.getStartX(), 0, next.getEndX(), 0 }) || InteractionHelper.overlapX(elementEnd, new double[] { next.getStartX(), 0, next.getEndX(), 0 })) { int stringStart = next.getStartX() - elementStart; int stringEnd = Math.max(text.length(), next.getEndX() - elementEnd); String before = subIndex < stringStart ? text.substring(subIndex, stringStart) : ""; if (!before.isEmpty()) { addWithCombine(newStrings, new StyledString(before, ss.getStyle().copy())); } // if (actualStart >= 0 && actualStart < text.length()) { String select = (stringStart < 0 || stringEnd < 0) ? "" : text.substring(stringStart, stringEnd); if (!select.isEmpty()) { StyledString formatted = action.apply(new StyledString(select, ss.getStyle().copy())); addWithCombine(newStrings, formatted); } subIndex += before.length() + select.length(); } if (next.getEndX() == index + subIndex) { break; } String after = subIndex == text.length() - 1 ? "" : text.substring(subIndex); if (!after.isEmpty()) { addWithCombine(newStrings, new StyledString(after, ss.getStyle().copy())); } index += ss.getStringLength(); } */
-					c.strings = newStrings;
-					// newStrings = newStrings;
+					c.setStrings(formatted_strings);
 				}
 			}
 		}
-		/* for (StyledStringCompound c : text) { List<StyledString> newStrings = Lists.newArrayList(); int index = 0; boolean started = false; boolean finished = false; for (StyledString ss : c.strings) { String text = ss.getUnformattedString(); Iterator<TextSelection> it = allSelects.iterator(); int subIndex = 0; while (it.hasNext()) { TextSelection next = it.next(); int elementStart = index + subIndex; int elementEnd = elementStart + text.length() - subIndex; if (InteractionHelper.overlapX(elementStart, new double[] { next.getStartX(), 0, next.getEndX(), 0 }) || InteractionHelper.overlapX(elementEnd, new double[] { next.getStartX(), 0, next.getEndX(), 0 })) { int stringStart = next.getStartX() - elementStart; int stringEnd = Math.max(text.length(), next.getEndX() - elementEnd); String before = subIndex < stringStart ? text.substring(subIndex, stringStart) : ""; if (!before.isEmpty()) { addWithCombine(newStrings, new StyledString(before, ss.getStyle().copy())); } // if (actualStart >= 0 && actualStart < text.length()) { String select = (stringStart < 0 || stringEnd < 0) ? "" : text.substring(stringStart, stringEnd); if (!select.isEmpty()) { StyledString formatted = action.apply(new StyledString(select, ss.getStyle().copy())); addWithCombine(newStrings, formatted); } subIndex += before.length() + select.length(); } if (next.getEndX() == index + subIndex) { break; } } String after = subIndex == text.length() - 1 ? "" : text.substring(subIndex); if (!after.isEmpty()) { addWithCombine(newStrings, new StyledString(after, ss.getStyle().copy())); } index += ss.getStringLength(); } c.strings = newStrings; i++; } */
 		GuiActions.UPDATE_TEXT_SCALING.trigger(this);
+		text.getHolder().getContainer().updateActualScaling();
 
 	}
 
-	/* public void addSelection(int indexY, int startX, int finishX, TextSelectionType type) { boolean ctrl_key = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL); if (ctrl_key) { combineAllSelections(); // if (type == TextSelectionType.SET_SELECTION) { // type = TextSelectionType.COMBINE; // } } switch (type) { /* case COMBINE: if (startX != finishX) { toCombine.putIfAbsent(indexY, Lists.newArrayList()); List<TextSelection> sortingSelections = Lists.newArrayList(toCombine.get(indexY)); sortingSelections.add(new TextSelection(startX, finishX)); sortingSelections.sort(new Comparator<TextSelection>() { public int compare(TextSelection str1, TextSelection str2) { return SonarHelper.compareWithDirection(str1.getStart(), str2.getStart(), SortingDirection.UP); } }); List<TextSelection> newSelections = Lists.newArrayList(); sortingSelections.forEach(s -> TextSelection.addWithCombine(newSelections, s)); toCombine.put(indexY, newSelections); } break; */
-	/* case DESELECT_ALL: savedSelections.clear(); newSelections.clear(); break; case SELECT_ALL: savedSelections.clear(); int i = 0; for (StyledStringCompound e : text) { newSelections.put(i, Lists.newArrayList(new TextSelection(0, e.toString().length()))); i++; } break; case SET_LINE: newSelections.clear(); newSelections.put(indexY, Lists.newArrayList(new TextSelection(startX, finishX))); break; case SET_SELECTION: newSelections.clear(); newSelections.put(indexY, Lists.newArrayList(new TextSelection(startX, finishX))); break; default: break; } } */
+	public String[] getSubStrings(int subStart, int subEnd, String s) {
+		String before_string = subStart == 0 ? "" : s.substring(0, subStart);
+		String format_string = s.substring(subStart, subEnd);
+		String after_string = subEnd == s.length() ? "" : s.substring(subEnd, s.length());
+		return new String[] { before_string, format_string, after_string };
+	}
+
 	public void addWithCombine(List<StyledString> strings, StyledString ss) {
 		if (ss == null || ss.getUnformattedString().isEmpty()) {
 			return; // deletion
@@ -325,8 +351,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 	}
 
 	public boolean doContainerClick(double clickX, double clickY, int key) {
-		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
-		Tuple<StyledStringLine, Integer> click = getStyledStringAtXY(clickX, clickY);
+		Tuple<StyledStringLine, Integer> click = getLineClicked(clickX, clickY);
 		if (click != null && click.getSecond() >= 0) {
 			StyledStringLine ss = click.getFirst();
 			if (isDoubleClick()) {
@@ -342,7 +367,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 					}
 					selectPosition.removeCursor();
 				}
-				cursorPosition.setCursor(getIndexClick(formatted, element.getSecond()[0]), click.getSecond());
+				cursorPosition.setCursor(getDragPositionFromContainerXY(clickX, clickY));
 				lastCursorClick = mc.getSystemTime();
 			}
 			return true;
@@ -351,7 +376,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 			cursorPosition.removeCursor();
 			selectPosition.removeCursor();
 			GuiActions.DESELECT_ALL.trigger(this);
-		}else{
+		} else {
 			cursorPosition.setCursor(0, 0);
 		}
 
@@ -371,7 +396,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 				} else {
 					cursorPosition.setCursor(getDragPositionFromMouseXY(x, y));
 				}
-			} else if (lastCursorClick + 400 < mc.getSystemTime()) {
+			} else if (lastCursorClick + 100 < mc.getSystemTime()) {
 				isDragging = Mouse.isButtonDown(0);
 				lastCursorClick = mc.getSystemTime();
 				if (isDragging) {
@@ -390,31 +415,27 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		return getDragPositionFromContainerXY(canClick.getSecond()[0], canClick.getSecond()[1]);
 	}
 
-	public int[] getDragPositionFromContainerXY(double xClick, double yClick) {
-		Tuple<IDisplayElement, double[]> element = getElementAtXY(xClick, yClick);
-		Tuple<StyledStringLine, Integer> click = getStyledStringAtXY(xClick, yClick);
-		if (click != null && click.getSecond() >= 0) {
-			String formatted = click.getFirst().getCachedUnformattedString();
-			return new int[] { getIndexClick(formatted, element.getSecond()[0]), click.getSecond() };
+	public int[] getDragPositionFromContainerXY(double clickX, double clickY) {
+		int[] index = getIndexClicked(clickX, clickY);
+		if (index != null) {
+			return index;
 		}
 		double[] align = text.getHolder().getAlignmentTranslation(text);
-		if (xClick < align[0] || yClick < align[1]) {
+		if (clickX < align[0] || clickY < align[1]) {
 			return new int[] { 0, 0 };
 		}
-		return new int[] { getLineLength(getLineCount() - 1), getLineCount() - 1 };
+		Tuple<StyledStringLine, Integer> click = getLineClicked(clickX, clickY);
+		int closestLine = Math.min(getLineCount() - 1, click.getSecond() == -1 ? getLineCount() - 1 : click.getSecond());
+		return new int[] { getLineLength(closestLine), closestLine };
 	}
 
-	public int getIndexClick(String eString, double eWidth) {
-		return FontHelper.getIndexFromPixel(eString, (int) Math.ceil((InfoRenderer.getStringWidth(eString) * (eWidth / text.getActualScaling()[0])) + 3F));
-	}
+	/* public int getIndexClick(String eString, double eWidth) { return FontHelper.getIndexFromPixel(eString, (int) Math.ceil((InfoRenderer.getStringWidth(eString) * (eWidth / text.getActualScaling()[0])) + 3F)); } */
 
 	/* public double[] getTextDragStart(int mouseX, int mouseY) { return textDragStart; } public double[] getTextDragEnd(int mouseX, int mouseY) { if (textDragEnd == null) { return findClosestValidTextDrag(mouseX, mouseY); } return textDragEnd; } public double[] findClosestValidTextDrag(int mouseX, int mouseY) { double startX = getAlignmentTranslation()[0]; double startY = getAlignmentTranslation()[1]; double endX = startX + getActualScaling()[0]; double endY = startY + getActualScaling()[1]; double validX = mouseX <= startX ? startX : mouseX >= endX ? endX : mouseX; double validY = mouseY <= startY ? startY : mouseY >= endY ? endY : mouseY; double dragX = (validX - startX) / getActualScaling()[2]; double dragY = (validY - startY) / getActualScaling()[2]; return new double[] { dragX, dragY }; } public void updateSelectedText(int mouseX, int mouseY) { double[] start = getTextDragStart(mouseX, mouseY); double[] end = getTextDragEnd(mouseX, mouseY); if (start != null && end != null) { setSelections(start, end); } } public void setSelections(double[] start, double[] end) { double[] guiAlign = getAlignmentTranslation(); double[] worldRenderOffset = c.getAlignmentTranslation(); double[] alignArray = c.getFullAlignmentTranslation(text); double startXC = alignArray[0] - worldRenderOffset[0]; double startYC = alignArray[1] - worldRenderOffset[1]; double endXC = alignArray[0] - worldRenderOffset[0] + text.getActualScaling()[0]; double endYC = alignArray[1] - worldRenderOffset[1] + text.getActualScaling()[1]; double[] eBox = new double[] { startXC, startYC, endXC, endYC }; boolean cursorAtTop = start[1] <= end[1]; // if false, cursor is at the bottom double[] clickBox = new double[] { Math.min(start[0], end[0]), Math.min(start[1], end[1]), Math.max(start[0], end[0]), Math.max(start[1], end[1]) }; if (InteractionHelper.checkOverlap(eBox, clickBox)) { double subStartX = Math.max(0, clickBox[0] - startXC); double subStartY = Math.max(0, clickBox[1] - startYC); double subEndX = Math.min(text.getActualScaling()[0], clickBox[2] - startXC); double subEndY = Math.min(text.getActualScaling()[1], clickBox[3] - startYC); double[] subBox = new double[] { subStartX, subStartY, subEndX, subEndY }; double height = 0; int i = 0; int newCursorY = -1; int newCursorIndex = -1; for (StyledStringCompound c : text) { // do x alignment double cHeight = c.getStringHeight() * text.getActualScaling()[2]; double[] compoundBox = new double[] { 0, height, text.getActualScaling()[0], height + cHeight }; if (InteractionHelper.checkOverlap(compoundBox, subBox)) { String formatted = c.getCachedUnformattedString(); int startX = FontHelper.getIndexFromPixel(formatted, (int) Math.ceil((InfoRenderer.getStringWidth(formatted) * (subBox[0] / text.getActualScaling()[0])) + 3F)); int finishX = FontHelper.getIndexFromPixel(formatted, (int) Math.ceil((InfoRenderer.getStringWidth(formatted) * (subBox[2] / text.getActualScaling()[0])) + 3F)); addSelection(i, startX, finishX, TextSelectionType.SET_LINE); if (newCursorY == -1 || cursorAtTop ? i < newCursorY : i > newCursorY) { newCursorY = i; newCursorIndex = cursorAtTop ? startX : finishX; } } height += cHeight; i++; } cursorY = newCursorY; cursorX = newCursorIndex; } } */
 
 	//// CURSOR POSITION \\\\
 
 	//// SELECTION POSITION \\\\
-
-	/* FIXME - DO SHIFT ARROW SELECTION, HAVE TWO POSITIONS, CURSOR AND DRAG POSITIONpublic void trimSelections(int lineMove, int indexMove) { if (lineMove != 0) { int newLine = cursorY - lineMove; if (newLine >= 0) { } } Map<Integer, List<TextSelection>> combine_map = Maps.newHashMap(toCombine); for (Entry<Integer, List<TextSelection>> e : combine_map.entrySet()) { } } */
 
 	public List<TextSelection> getAllSelections() {
 		List<TextSelection> stored_map = savedSelections;
@@ -448,8 +469,121 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		selectPosition.removeCursor();
 	}
 
+	public boolean hasSelections() {
+		return selectPosition.validPosition() || !savedSelections.isEmpty();
+	}
+
 	public int moveLastSelectionIndex() {
 		return 0;
+	}
+
+	/// special key actions
+
+	public void onCarriageReturn() {
+		if (cursorPosition.validPosition()) {
+			GuiActions.DELETE_SELECTED.action.trigger(this);
+
+			TextSelection afterCursor = new TextSelection(cursorPosition.x, cursorPosition.y, Integer.MAX_VALUE, cursorPosition.y);
+			StyledStringLine line = new StyledStringLine();
+			formatSelections(ss -> {
+				line.addWithCombine(ss);
+				return null;
+			});
+			text.addNewLine(cursorPosition.y + 1, line);
+			cursorPosition.setCursor(0, cursorPosition.y + 1);
+		}
+	}
+
+	public void addText(String toAppend) {
+		if (cursorPosition.validPosition()) {
+			if (hasSelections()) {
+				GuiActions.DELETE_SELECTED.action.trigger(this);
+			}
+			StyledStringLine line = cursorPosition.getTypingLine(this);
+			if (line != null) {
+				if (cursorPosition.x == 0) {
+					if (line.getStrings().isEmpty()) {
+						line.setStrings(Lists.newArrayList(new StyledString(toAppend, createStylingFromEnabled())));
+					} else {
+						StyledString addTo = line.getStrings().get(0);
+						addTo.setUnformattedString(toAppend + addTo.getUnformattedString());
+					}
+					cursorPosition.moveX(this, toAppend.length());
+				} else {
+					Holder<Boolean> hold = new Holder(false);
+					formatSelections(Lists.newArrayList(getTypeBox()), ss -> {
+						ss.setUnformattedString(ss.getUnformattedString() + toAppend);
+						hold.value = true;
+						return ss;
+					});
+					if (hold.value) {
+						cursorPosition.moveX(this, toAppend.length());
+					}
+				}
+			} else {
+
+				// FIXME should we add another line instead?
+			}
+		}
+	}
+
+	public void removeText(int key) {
+		if (cursorPosition.validPosition()) {
+			if (hasSelections()) {
+				GuiActions.DELETE_SELECTED.action.trigger(this);
+			} else {
+				StyledStringLine line = cursorPosition.getTypingLine(this);
+				if (line == null) {
+					return;
+				}
+				if (line.getStrings().isEmpty()) {
+					if (text.getLines().size() != 1) {
+						text.deleteLine(cursorPosition.y);
+						cursorPosition.setCursor(Integer.MAX_VALUE, Math.max(0, cursorPosition.y));
+					}
+					return;
+				}
+				Holder<Boolean> hold = new Holder(false);
+				if (key == Keyboard.KEY_DELETE) {
+					formatSelections(Lists.newArrayList(getDeleteBox()), ss -> {
+						hold.value = true;
+						return null;
+					});
+				} else {
+					formatSelections(Lists.newArrayList(getBackspaceBox()), ss -> {
+						hold.value = true;
+						return null;
+					});
+				}
+				if (hold.value) {
+					cursorPosition.moveX(this, key == Keyboard.KEY_DELETE ? 0 : -1);
+				}
+			}
+		}
+	}
+
+	public TextSelection getTypeBox() {
+		int typeIndex = cursorPosition.getTypingIndex(this);
+		return new TextSelection(typeIndex - 1, typeIndex, cursorPosition.y, cursorPosition.y);
+	}
+
+	public TextSelection getBackspaceBox() {
+		int typeIndex = cursorPosition.getTypingIndex(this);
+		return new TextSelection(typeIndex - 1, typeIndex, cursorPosition.y, cursorPosition.y);
+	}
+
+	public TextSelection getDeleteBox() {
+		int typeIndex = cursorPosition.getTypingIndex(this);
+		return new TextSelection(typeIndex, typeIndex + 1, cursorPosition.y, cursorPosition.y);
+	}
+
+	public SonarStyling createStylingFromEnabled() {
+		SonarStyling styling = new SonarStyling();
+
+		styling.rgb = currentColour;
+		styling.toggleSpecialFormatting(specials, true);
+
+		return styling;
 	}
 
 	/* public void setSelectedText(ITextElement e, double[] start, double[] end) { double[] guiAlign = getAlignmentTranslation(); double[] worldRenderOffset = c.getAlignmentTranslation(); double[] alignArray = c.getFullAlignmentTranslation(e); double startXC = alignArray[0] - worldRenderOffset[0]; double startYC = alignArray[1] - worldRenderOffset[1]; double endXC = alignArray[0] - worldRenderOffset[0] + e.getActualScaling()[0]; double endYC = alignArray[1] - worldRenderOffset[1] + e.getActualScaling()[1]; double[] eBox = new double[] { startXC, startYC, endXC, endYC }; double[] clickBox = new double[] { Math.min(start[0], end[0]), Math.min(start[1], end[1]), Math.max(start[0], end[0]), Math.max(start[1], end[1]) }; if (InteractionHelper.checkOverlap(eBox, clickBox)) { double subStartX = Math.max(0, clickBox[0] - startXC); double subStartY = Math.max(0, clickBox[1] - startYC); double subEndX = Math.min(e.getActualScaling()[0], clickBox[2] - startXC); double subEndY = Math.min(e.getActualScaling()[1], clickBox[3] - startYC); TextSelectionType type = (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) ? TextSelectionType.COMBINE : TextSelectionType.SET_SELECTION; addSelection(e, new double[] { subStartX, subStartY }, new double[] { subEndX, subEndY }, type); } else { addSelection(e, new double[2], new double[2], TextSelectionType.DESELECT_ALL); } } */
@@ -463,7 +597,7 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 				return;
 			} else if (ChatAllowedCharacters.isAllowedCharacter(c)) {
 				// get end of selection and delete all selection.
-				cursorPosition.x = ss.addText(cursorPosition.x, Character.toString(c));
+				addText(Character.toString(c));
 				return;
 			}
 
@@ -474,7 +608,24 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		super.keyTyped(c, i);
 	}
 
-	public final Tuple<StyledStringLine, Integer> getStyledStringAtXY(double clickX, double clickY) {
+	public final int[] getIndexClicked(double clickX, double clickY) {
+		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
+		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+			int[] clicked = ((StyledTextElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
+			return clicked;
+		}
+		return null;
+	}
+
+	public final Tuple<StyledStringLine, Integer> getLineClicked(double clickX, double clickY) {
+		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
+		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+			return ((StyledTextElement) element.getFirst()).getLineClicked(element.getSecond()[0], element.getSecond()[1]);
+		}
+		return new Tuple(null, -1);
+	}
+
+	public final Tuple<StyledString, Integer> getStringClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
 		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
 			return ((StyledTextElement) element.getFirst()).getStringClicked(element.getSecond()[0], element.getSecond()[1]);
@@ -482,9 +633,17 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		return new Tuple(null, -1);
 	}
 
+	public final Tuple<Character, Integer> getCharClicked(double clickX, double clickY) {
+		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
+		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+			return ((StyledTextElement) element.getFirst()).getCharClicked(element.getSecond()[0], element.getSecond()[1]);
+		}
+		return new Tuple(null, -1);
+	}
+
 	@Override
 	public int getLineCount() {
-		return text.textLines.size();
+		return text.getLines().size();
 	}
 
 	@Override
@@ -517,6 +676,6 @@ public class GuiEditStyledStrings extends GuiAbstractEditElement implements ILin
 		if (line >= getLineCount()) {
 			return null;
 		}
-		return text.textLines.get(line);
+		return text.getLines().get(line);
 	}
 }

@@ -4,7 +4,7 @@ public enum GuiActions implements IGuiAction {
 
 	SELECT_ALL(t -> t.selectAll()),
 	DESELECT_ALL(t -> t.deselectAll()),
-	DELETE_ALL(t -> t.formatSelections(null)),
+	DELETE_SELECTED(t -> t.deleteAllSelected()),
 	UPDATE_TEXT_SCALING(t -> t.text.onElementChanged());
 
 	public IGuiAction action;

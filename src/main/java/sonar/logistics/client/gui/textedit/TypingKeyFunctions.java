@@ -28,8 +28,9 @@ Ctrl S
 	COPY((c, i) -> GuiScreen.isKeyComboCtrlC(i), (gui, string, chr, key) -> {}),//FIXME
 	PASTE((c, i) -> GuiScreen.isKeyComboCtrlV(i), (gui, string, chr, key) -> {}),//FIXME
 	CUT((c, i) -> GuiScreen.isKeyComboCtrlX(i), (gui, string, chr, key) -> {}),//FIXME
-	BACKSPACE((c, i) -> i==Keyboard.KEY_BACK, (gui, string, chr, key) -> string.backspaceText(gui.cursorPosition.getTypingIndex(gui), 1)),//
-	DEL((c, i) -> i==Keyboard.KEY_DELETE, (gui, string, chr, key) -> string.deleteText(gui.cursorPosition.getTypingIndex(gui), 1));//
+	BACKSPACE((c, i) -> i==Keyboard.KEY_BACK, (gui, string, chr, key) -> gui.removeText(key)),//
+	DEL((c, i) -> i==Keyboard.KEY_DELETE, (gui, string, chr, key) -> gui.removeText(key)),
+	ENTER((c, i) -> i==Keyboard.KEY_RETURN || i==Keyboard.KEY_NUMPADENTER, (gui, string, chr, key) -> gui.onCarriageReturn());//
 
 	public IKeyMatch key;
 	public ITypingAction action;

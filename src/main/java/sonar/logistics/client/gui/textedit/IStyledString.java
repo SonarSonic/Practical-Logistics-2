@@ -24,8 +24,8 @@ public interface IStyledString {
 	
 	public int getStringWidth();
 	
-	public boolean canCombine(StyledString ss);
+	public boolean canCombine(IStyledString ss);
 	
-	public void combine(StyledString ss);
+	public void combine(IStyledString ss);
 	
 }

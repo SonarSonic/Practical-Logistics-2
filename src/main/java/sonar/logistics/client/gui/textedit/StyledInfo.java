@@ -11,20 +11,20 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 
-public class StyledString implements IStyledString, INBTSyncable {
+public class StyledInfo implements IStyledString, INBTSyncable {
 
 	public String string;
 	public SonarStyling style;
 
 	private String formattingString;
 
-	public StyledString() {}
+	public StyledInfo() {}
 
-	public StyledString(String string) {
+	public StyledInfo(String string) {
 		this(string, new SonarStyling());
 	}
 
-	public StyledString(String string, SonarStyling style) {
+	public StyledInfo(String string, SonarStyling style) {
 		this.string = string;
 		this.style = style;
 	}
@@ -86,7 +86,7 @@ public class StyledString implements IStyledString, INBTSyncable {
 
 	@Override
 	public boolean canCombine(IStyledString ss) {
-		return ss instanceof StyledString && ss.getStyle().matching(style);
+		return ss instanceof StyledInfo && ss.getStyle().matching(style);
 	}
 
 	public void combine(IStyledString ss) {
