@@ -56,7 +56,7 @@ public class PacketClientEmitters implements IMessage {
 	public static class Handler implements IMessageHandler<PacketClientEmitters, IMessage> {
 		@Override
 		public IMessage onMessage(PacketClientEmitters message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				public void run() {
 					PL2.getClientManager().clientEmitters = message.emitters;
 				}

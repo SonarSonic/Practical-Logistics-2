@@ -57,7 +57,7 @@ public class PacketMonitoredList implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				public void run() {
 					if (message.list != null) {
 						ILogicListenable viewable = PL2.getClientManager().monitors.get(message.identity);

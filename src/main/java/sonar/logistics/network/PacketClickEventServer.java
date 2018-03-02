@@ -47,7 +47,7 @@ public class PacketClickEventServer implements IMessage {
 		@Override
 		public IMessage onMessage(PacketClickEventServer message, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 					public void run() {
 						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 						if (player != null) {

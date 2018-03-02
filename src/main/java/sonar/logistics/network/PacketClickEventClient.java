@@ -53,7 +53,7 @@ public class PacketClickEventClient extends PacketMultipart {
 		public IMessage processMessage(PacketClickEventClient message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 					@Override
 					public void run() {
 						EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);

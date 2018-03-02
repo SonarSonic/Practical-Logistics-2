@@ -51,7 +51,7 @@ public class PacketItemInteractionText implements IMessage {
 			// RenderInteractionOverlay.stored(message.stored);
 			// RenderInteractionOverlay.change(message.changed);
 
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				public void run() {
 					GuiNewChat chatGui = Minecraft.getMinecraft().ingameGUI.getChatGUI();
 					if (lastStack == null || !lastStack.isItemEqual(message.stack)) {

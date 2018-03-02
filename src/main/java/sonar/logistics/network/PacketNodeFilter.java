@@ -64,7 +64,7 @@ public class PacketNodeFilter extends PacketMultipart {
 	public static class Handler extends PacketMultipartHandler<PacketNodeFilter> {
 		@Override
 		public IMessage processMessage(PacketNodeFilter message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 
 				@Override
 				public void run() {

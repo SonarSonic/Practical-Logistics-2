@@ -11,13 +11,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.GuiSonarTile;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.client.LogisticsColours;
 
-public class GuiLogistics extends GuiSonar {
+public class GuiLogistics extends GuiSonarTile {
 
 	public static final ResourceLocation playerInv = new ResourceLocation(PL2Constants.MODID + ":textures/gui/player_inventory.png");
 	public SonarScroller scroller;
@@ -45,14 +46,14 @@ public class GuiLogistics extends GuiSonar {
 		if (scroller != null && scroller.renderScroller) {
 			if (scroller.orientation.isVertical()) {
 				int scrollYPos = scroller.top + (int) ((float) (scroller.length - 17) * scroller.getCurrentScroll());
-				drawRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
-				drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
-				drawRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
+				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
 			}else{
 				int scrollXPos = scroller.left + (int) ((float) (scroller.width - 17) * scroller.getCurrentScroll());
-				drawRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());				
-				drawRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8, LogisticsColours.layers[2].getRGB());
-				drawRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8,  LogisticsColours.layers[2].getRGB());				
+				drawTransparentRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());				
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8,  LogisticsColours.layers[2].getRGB());				
 			}
 		}
 	}

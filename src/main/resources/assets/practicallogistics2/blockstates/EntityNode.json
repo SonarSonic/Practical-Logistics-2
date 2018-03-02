@@ -1,7 +1,7 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model":"practicallogistics2:EntityNode_Base",
+        "model":"practicallogistics2:entitynode_base",
         "textures": {
             "node":"practicallogistics2:model/entity_node",
             "0":"practicallogistics2:model/data_cable",
@@ -13,7 +13,7 @@
         "inventory": [{    
             "x": 180,
             "submodel": {
-                "node": { "model":"practicallogistics2:EntityNode_Spinner" }
+                "node": { "model":"practicallogistics2:entitynode_spinner" }
              }
         }],
         "facing":{  

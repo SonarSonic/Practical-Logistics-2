@@ -39,7 +39,7 @@ public class PacketInfoUpdates implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketInfoUpdates message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				public void run() {
 					PacketHelper.receiveInfoUpdate(message.tag, message.type);
 				}

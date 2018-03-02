@@ -44,7 +44,7 @@ public class PacketChannels implements IMessage {
 	public static class Handler implements IMessageHandler<PacketChannels, IMessage> {
 		@Override
 		public IMessage onMessage(PacketChannels message, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				public void run() {
 					if (message.list != null)
 						PL2.getClientManager().channelMap.put(message.registryID, message.list);

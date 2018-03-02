@@ -60,7 +60,7 @@ public class PacketWirelessStorage implements IMessage {
 		@Override
 		public IMessage onMessage(PacketWirelessStorage message, MessageContext ctx) {
 
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				public void run() {
 					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 					if (player == null || player.getEntityWorld().isRemote) {

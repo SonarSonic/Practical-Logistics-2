@@ -1,10 +1,6 @@
 package sonar.logistics.common.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.InfoReaderPart;

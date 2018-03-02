@@ -1,7 +1,7 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model":"practicallogistics2:DataReceiver",
+        "model":"practicallogistics2:datareceiver",
         "textures": {
             "node":"practicallogistics2:model/emitter",
             "0":"practicallogistics2:model/emitter",
@@ -11,7 +11,7 @@
     "variants": {
         "normal":[],
         "inventory": [{    
-            "model":"practicallogistics2:DataReceiver"
+            "model":"practicallogistics2:datareceiver"
         }],
         "facing":{  
             "north":{"x": 90, "y": 180},            

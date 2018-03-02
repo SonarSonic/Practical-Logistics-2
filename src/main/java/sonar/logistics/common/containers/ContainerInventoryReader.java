@@ -7,10 +7,9 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.IFlexibleContainer;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.helpers.InventoryHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
+import sonar.core.utils.SonarCompat;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
@@ -55,7 +54,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
-		ItemStack itemstack = InventoryHelper.EMPTY;
+		ItemStack itemstack = SonarCompat.getEmpty();
 		Slot slot = (Slot) this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
@@ -78,24 +77,24 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 				}
 			} else if (id < 27) {
 				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			} else if (id >= 27 && id < 36) {
 				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 36, false)) {
-				return InventoryHelper.EMPTY;
+				return SonarCompat.getEmpty();
 			}
 
 			if (itemstack1.stackSize == 0) {
-				slot.putStack(InventoryHelper.EMPTY);
+				slot.putStack(SonarCompat.getEmpty());
 			} else {
 				slot.onSlotChanged();
 			}
 
 			if (itemstack1.stackSize == itemstack.stackSize) {
-				return InventoryHelper.EMPTY;
+				return SonarCompat.getEmpty();
 			}
 
 			slot.onPickupFromSlot(player, itemstack1);

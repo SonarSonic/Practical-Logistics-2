@@ -56,7 +56,7 @@ public class PacketInventoryReader extends PacketMultipart {
 	public static class Handler extends PacketMultipartHandler<PacketInventoryReader> {
 		@Override
 		public IMessage processMessage(PacketInventoryReader message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 				@Override
 				public void run() {
 					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);

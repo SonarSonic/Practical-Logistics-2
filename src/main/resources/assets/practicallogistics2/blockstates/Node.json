@@ -1,7 +1,7 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model":"practicallogistics2:Node",
+        "model":"practicallogistics2:node",
         "textures": {
             "node":"practicallogistics2:model/node",
             "0":"practicallogistics2:model/data_cable",
@@ -11,7 +11,7 @@
     "variants": {
         "normal":[],
         "inventory": [{    
-            "model":"practicallogistics2:Node"
+            "model":"practicallogistics2:node"
         }],
         "facing":{  
             "north":{"x": 90, "y": 180},            

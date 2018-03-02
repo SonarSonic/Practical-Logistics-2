@@ -64,7 +64,7 @@ public class PacketEmitterStatement extends PacketMultipart {
 	public static class Handler extends PacketMultipartHandler<PacketEmitterStatement> {
 		@Override
 		public IMessage processMessage(PacketEmitterStatement message, IMultipartContainer target, IMultipart part, MessageContext ctx) {
-			SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 
 				@Override
 				public void run() {

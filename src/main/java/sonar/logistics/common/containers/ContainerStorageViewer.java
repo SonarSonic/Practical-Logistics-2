@@ -6,9 +6,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.slots.SlotLimiter;
+import sonar.core.utils.SonarCompat;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
@@ -71,22 +71,22 @@ public class ContainerStorageViewer extends Container {
 				}
 			} else if (id < 27) {
 				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			} else if (id >= 27 && id < 36) {
 				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			}
 
 			if (itemstack1.stackSize == 0) {
-				slot.putStack(InventoryHelper.EMPTY);
+				slot.putStack(SonarCompat.getEmpty());
 			} else {
 				slot.onSlotChanged();
 			}
 
 			if (itemstack1.stackSize == itemstack.stackSize) {
-				return InventoryHelper.EMPTY;
+				return SonarCompat.getEmpty();
 			}
 
 			slot.onPickupFromSlot(player, itemstack1);

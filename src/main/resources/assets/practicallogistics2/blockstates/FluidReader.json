@@ -1,7 +1,7 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model":"practicallogistics2:Reader",
+        "model":"practicallogistics2:reader",
         "textures": {
             "0":"practicallogistics2:model/fluid_reader",
             "particle":"practicallogistics2:blocks/data_cable"
@@ -10,14 +10,14 @@
     "variants": {
         "normal":[],
         "inventory": [{    
-            "model":"practicallogistics2:Reader"
+            "model":"practicallogistics2:reader"
         }],
         "display":{
             "true":{            
-                "model":"practicallogistics2:ReaderWithDisplay"
+                "model":"practicallogistics2:readerwithdisplay"
             },
             "false":{            
-                "model":"practicallogistics2:Reader"
+                "model":"practicallogistics2:reader"
             }        
         },  
         "facing":{  

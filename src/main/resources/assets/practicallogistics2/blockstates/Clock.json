@@ -1,7 +1,7 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model":"practicallogistics2:ClockWithoutHand",
+        "model":"practicallogistics2:clockwithouthand",
         "textures": {
             "particle":"practicallogistics2:blocks/data_cable"
         }
@@ -9,15 +9,15 @@
     "variants": {
         "normal":[],
         "inventory": [{    
-            "model":"practicallogistics2:Clock",
+            "model":"practicallogistics2:clock",
             "x": 180
         }],
         "hand":{
             "true":{
-                "model":"practicallogistics2:ClockHand"            
+                "model":"practicallogistics2:clockhand"            
             },
             "false":{
-                "model":"practicallogistics2:ClockWithoutHand"              
+                "model":"practicallogistics2:clockwithouthand"              
             }
         },
         "facing":{  

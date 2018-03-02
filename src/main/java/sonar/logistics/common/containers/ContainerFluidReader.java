@@ -7,10 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
-import sonar.core.helpers.InventoryHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
+import sonar.core.utils.SonarCompat;
 import sonar.logistics.api.tiles.readers.FluidReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.FluidReaderPart;
@@ -43,7 +43,7 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
-		ItemStack itemstack = InventoryHelper.EMPTY;
+		ItemStack itemstack = SonarCompat.getEmpty();
 		Slot slot = (Slot) this.inventorySlots.get(par2);
 
 		if (slot != null && slot.getHasStack()) {
@@ -68,25 +68,25 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 					}
 				}
 				if (!this.mergeItemStack(itemstack1.copy(), 0, INV_START, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			} else if (par2 >= INV_START && par2 < HOTBAR_START) {
 				if (!this.mergeItemStack(itemstack1, HOTBAR_START, HOTBAR_END + 1, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			} else if (par2 >= HOTBAR_START && par2 < HOTBAR_END + 1) {
 				if (!this.mergeItemStack(itemstack1, INV_START, INV_END + 1, false)) {
-					return InventoryHelper.EMPTY;
+					return SonarCompat.getEmpty();
 				}
 			}
 			if (itemstack1.stackSize == 0) {
-				slot.putStack(InventoryHelper.EMPTY);
+				slot.putStack(SonarCompat.getEmpty());
 			} else {
 				slot.onSlotChanged();
 			}
 
 			if (itemstack1.stackSize == itemstack.stackSize) {
-				return InventoryHelper.EMPTY;
+				return SonarCompat.getEmpty();
 			}
 
 			slot.onPickupFromSlot(par1EntityPlayer, itemstack1);

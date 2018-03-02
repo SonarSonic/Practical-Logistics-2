@@ -66,7 +66,7 @@ public class PacketLocalProviders implements IMessage {
 		public IMessage onMessage(PacketLocalProviders message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 
-				SonarCore.proxy.getThreadListener(ctx).addScheduledTask(new Runnable() {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(new Runnable() {
 					public void run() {
 						Map<Integer, List<ClientLocalProvider>> monitors = PL2.getClientManager().clientLogicMonitors;
 						if (monitors.get(message.screenIdentity) == null) {

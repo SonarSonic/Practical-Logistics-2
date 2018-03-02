@@ -1,9 +1,9 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model":"practicallogistics2:RedstoneSignaller",
+        "model":"practicallogistics2:redstonesignaller",
         "textures": {
-            "0":"practicallogistics2:model/redstoneEmitter_off",
+            "0":"practicallogistics2:model/redstoneemitter_off",
             "particle":"practicallogistics2:blocks/data_cable"
         }
      },
@@ -13,8 +13,8 @@
             "x": 180
         }],
         "active":{
-            "true":{"textures": {"0":"practicallogistics2:model/redstoneEmitter_on"}},
-            "false":{"textures": {"0":"practicallogistics2:model/redstoneEmitter_off"}}
+            "true":{"textures": {"0":"practicallogistics2:model/redstoneemitter_on"}},
+            "false":{"textures": {"0":"practicallogistics2:model/redstoneemitter_off"}}
         },        
         "facing":{  
             "north":{"x": 90, "y": 180},            
