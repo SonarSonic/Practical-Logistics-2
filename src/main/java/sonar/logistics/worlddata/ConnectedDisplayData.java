@@ -16,10 +16,14 @@ import sonar.logistics.networking.displays.ConnectedDisplayHandler;
 
 public class ConnectedDisplayData extends WorldSavedData {
 
-	public static final String tag = "sonar.logistics.networks.displays";
+	public static final String IDENTIFIER = "sonar.logistics.networks.displays";
 
-	public ConnectedDisplayData(String string) {
-		super(tag);
+	public ConnectedDisplayData(String name) {
+		super(name);
+	}
+
+	public ConnectedDisplayData() {
+		super(IDENTIFIER);
 	}
 
 	@Override
@@ -61,16 +65,5 @@ public class ConnectedDisplayData extends WorldSavedData {
 
 	public boolean isDirty() {
 		return true;
-	}
-
-	public static ConnectedDisplayData get(World world) {
-		MapStorage storage = world.getMapStorage();
-		ConnectedDisplayData instance = (ConnectedDisplayData) storage.getOrLoadData(ConnectedDisplayData.class, tag);
-
-		if (instance == null) {
-			instance = new ConnectedDisplayData(tag);
-			storage.setData(tag, instance);
-		}
-		return instance;
 	}
 }

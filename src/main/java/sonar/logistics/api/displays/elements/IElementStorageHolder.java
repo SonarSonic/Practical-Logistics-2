@@ -1,7 +1,8 @@
 package sonar.logistics.api.displays.elements;
 
 import net.minecraft.util.Tuple;
-import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.ElementStorage;
 
 public interface IElementStorageHolder {
 

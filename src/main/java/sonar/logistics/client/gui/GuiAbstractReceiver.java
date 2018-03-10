@@ -49,7 +49,7 @@ public abstract class GuiAbstractReceiver extends GuiSelectionList<ClientWireles
 	@Override
 	public void renderInfo(ClientWirelessEmitter info, int yPos) {
 		int colour = LogisticsColours.white_text.getRGB();
-		FontHelper.text(info.name.getObject(), InfoRenderer.identifierLeft, yPos, colour);
+		FontHelper.text(info.name.getObject(), InfoRenderer.left_offset, yPos, colour);
 		FontHelper.text(info.coords.getCoords().toString(), (int) ((1.0 / 0.75) * (130)), yPos, colour);
 	}
 

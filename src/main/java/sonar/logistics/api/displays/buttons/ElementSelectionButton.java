@@ -2,8 +2,7 @@ package sonar.logistics.api.displays.buttons;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.logistics.api.displays.CreateInfoType;
-import sonar.logistics.api.displays.ElementSelectionType;
-import sonar.logistics.api.displays.elements.ButtonElement;
+import sonar.logistics.api.displays.elements.ElementSelectionType;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 
 public class ElementSelectionButton extends ButtonElement {

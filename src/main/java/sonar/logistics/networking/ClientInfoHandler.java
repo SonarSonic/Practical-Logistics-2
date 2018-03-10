@@ -12,7 +12,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.world.World;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.displays.InfoReference;
+import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;

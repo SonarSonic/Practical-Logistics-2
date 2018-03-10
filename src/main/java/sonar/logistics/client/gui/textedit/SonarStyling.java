@@ -17,6 +17,7 @@ public class SonarStyling implements INBTSyncable {
 	public boolean underlined = false;
 	public boolean strikethrough = false;
 	public boolean obfuscated = false;
+	public ITextClickAction action = null;
 
 	public SonarStyling() {}
 
@@ -29,6 +30,7 @@ public class SonarStyling implements INBTSyncable {
 		style.underlined = underlined;
 		style.strikethrough = strikethrough;
 		style.obfuscated = obfuscated;
+		style.action = action;
 		return style;
 	}
 
@@ -67,7 +69,8 @@ public class SonarStyling implements INBTSyncable {
 		}
 		return s.toString();
 	}
-
+	
+	/**make sure you notify the StyledString of the change*/
 	public void toggleSpecialFormatting(List<TextFormatting> formatting, boolean enable) {
 		for (TextFormatting format : formatting) {
 			if (format.isFancyStyling()) {
@@ -89,7 +92,6 @@ public class SonarStyling implements INBTSyncable {
 					break;
 				default:
 					break;
-
 				}
 			}
 		}
@@ -101,6 +103,9 @@ public class SonarStyling implements INBTSyncable {
 	}
 
 	public boolean matching(SonarStyling ss) {
+		if (ss.action != null || action != null) {
+			return false;
+		}
 		int[] colour = this.getColourArray();
 		int[] compareColour = ss.getColourArray();
 		for (int i = 0; i < colour.length; i++) {

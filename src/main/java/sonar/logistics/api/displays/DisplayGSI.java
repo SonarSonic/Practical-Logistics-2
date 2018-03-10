@@ -41,14 +41,14 @@ import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.buttons.CreateElementButton;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.DisplayElementList;
-import sonar.logistics.api.displays.elements.EditContainer;
-import sonar.logistics.api.displays.elements.HeightAlignment;
+import sonar.logistics.api.displays.elements.ElementSelectionType;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.ILookableElement;
-import sonar.logistics.api.displays.elements.WidthAlignment;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayElementList;
+import sonar.logistics.api.displays.storage.EditContainer;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -416,16 +416,12 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public void onInfoChanged(InfoUUID uuid, IInfo info) {
 		updateCachedInfo();
-		for(DisplayElementContainer c : containers.values()){
-			boolean update = false;
-			for(IDisplayElement e : c.getElements()){
-				if(e.getInfoReferences().contains(uuid)){
-					update=true;
+		for (DisplayElementContainer c : containers.values()) {
+			for (IDisplayElement e : c.getElements()) {
+				if (e.getInfoReferences().contains(uuid)) {
+					e.onInfoReferenceChanged(uuid, info);
 					break;
 				}
-			}
-			if(update){
-				c.updateActualScaling();
 			}
 		}
 	}
@@ -488,7 +484,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				return e;
 			}
 		}
-		
+
 		return null;
 	}
 

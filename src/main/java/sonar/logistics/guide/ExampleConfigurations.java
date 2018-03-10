@@ -17,7 +17,7 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.ItemChangeableList;
 import sonar.logistics.api.register.RegistryType;

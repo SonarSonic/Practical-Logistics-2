@@ -38,10 +38,10 @@ import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
-import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.elements.HeightAlignment;
+import sonar.logistics.api.displays.HeightAlignment;
+import sonar.logistics.api.displays.WidthAlignment;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.WidthAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.displays.DisplayType;
@@ -266,27 +266,32 @@ public class InfoRenderer {
 		return newMatrix[i];
 	}
 
-	public static int identifierLeft = (int) ((1.0 / 0.75) * 10);
-	public static int objectLeft = (int) ((1.0 / 0.75) * (10 + 92));
-	public static int kindLeft = (int) ((1.0 / 0.75) * (10 + 92 + 92));
+	public static int left_offset = (int) ((1.0 / 0.75) * 10);
+	public static int middle_offset = (int) ((1.0 / 0.75) * (10 + 92));
+	public static int right_offset = (int) ((1.0 / 0.75) * (10 + 92 + 92));
 
 	public static void renderMonitorInfoInGUI(IInfo info, int yPos, int colour) {
 		if (info instanceof INameableInfo) {
 			INameableInfo directInfo = (INameableInfo) info;
 			if (!directInfo.isHeader() && directInfo.isValid()) {
-				FontHelper.text(directInfo.getClientIdentifier(), identifierLeft, yPos, colour);
-				FontHelper.text(directInfo.getClientObject(), objectLeft, yPos, colour);
-				FontHelper.text(directInfo.getClientType(), kindLeft, yPos, colour);
+				renderTripleStringIntoGUI(directInfo.getClientIdentifier(), directInfo.getClientObject(), directInfo.getClientType(), yPos, colour);
 			} else if (directInfo instanceof LogicInfo) {
 				String category = ((LogicInfo) directInfo).getRegistryType().name();
-				FontHelper.text(category.substring(0, 1) + category.substring(1).toLowerCase(), identifierLeft + 4, yPos, colour);
+				FontHelper.text(category.substring(0, 1) + category.substring(1).toLowerCase(), left_offset + 4, yPos, colour);
 			}
 		} else if (info instanceof MonitoredBlockCoords) {
 			MonitoredBlockCoords directInfo = (MonitoredBlockCoords) info;
-			FontHelper.text(directInfo.getCoords().toString(), identifierLeft, yPos, colour);
+			FontHelper.text(directInfo.getCoords().toString(), left_offset, yPos, colour);
 		}
 	}
-
+	
+	/**TODO adaptive scaling version*/
+	public static void renderTripleStringIntoGUI(String left, String middle, String right, int yPos, int colour){
+		FontHelper.text(left, left_offset, yPos, colour);
+		FontHelper.text(middle, middle_offset, yPos, colour);
+		FontHelper.text(right, right_offset, yPos, colour);
+	}
+	
 	public static final double ITEM_SPACING = 22.7;
 	public static final double FLUID_DIMENSION = (14 * 0.0625);
 

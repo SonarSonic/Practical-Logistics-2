@@ -18,11 +18,14 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.ElementFillType;
-import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.elements.HeightAlignment;
+import sonar.logistics.api.displays.HeightAlignment;
+import sonar.logistics.api.displays.WidthAlignment;
+import sonar.logistics.api.displays.elements.ElementFillType;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.WidthAlignment;
+import sonar.logistics.client.gui.textedit.IStyledString;
+import sonar.logistics.client.gui.textedit.StyledString;
+import sonar.logistics.client.gui.textedit.StyledStringLine;
 
 public class DisplayElementHelper {
 
@@ -54,6 +57,43 @@ public class DisplayElementHelper {
 		}
 		if (obj != null) {
 			obj.setHolder(holder);
+			obj.readData(tag, SyncType.SAVE);
+			return obj;
+		}
+		return null;
+	}
+
+	public static int getRegisteredID(IStyledString info) {
+		return PL2ASMLoader.sstringIDs.get(info.getRegisteredName());
+	}
+
+	public static Class<? extends IStyledString> getStyledStringClass(int id) {
+		return PL2ASMLoader.sstringIClasses.get(id);
+	}
+
+	public static NBTTagCompound saveStyledString(NBTTagCompound tag, IStyledString string, SyncType type) {
+		if (!(string instanceof StyledString)) {
+			tag.setInteger("SSiD", getRegisteredID(string));
+		}
+		return string.writeData(tag, type);
+	}
+
+	public static IStyledString loadStyledString(StyledStringLine line, NBTTagCompound tag) {
+		int elementID = tag.getInteger("SSiD");
+		Class<? extends IStyledString> clazz = elementID == 0 ? StyledString.class : getStyledStringClass(elementID);
+		return instanceStyledString(clazz, line, tag);
+	}
+
+	@Nullable
+	public static <T extends IStyledString> T instanceStyledString(Class<T> classType, StyledStringLine line, NBTTagCompound tag) {
+		T obj = null;
+		try {
+			obj = classType.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
+		}
+		if (obj != null) {
+			obj.setLine(line);
 			obj.readData(tag, SyncType.SAVE);
 			return obj;
 		}
@@ -109,10 +149,10 @@ public class DisplayElementHelper {
 		}
 		return newScale;
 	}
-	
+
 	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
 
-	/** @param holder the holder to render*/
+	/** @param holder the holder to render */
 	public static void renderElementStorageHolder(IElementStorageHolder holder) {
 		for (IDisplayElement e : holder.getElements()) {
 			holder.startElementRender(e);
@@ -120,27 +160,27 @@ public class DisplayElementHelper {
 			align(holder.getAlignmentTranslation(e));
 			double scale = e.getActualScaling()[SCALE];
 			scale(scale, scale, scale);
-			//pushMatrix();
+			// pushMatrix();
 			e.render();
-			//popMatrix();
+			// popMatrix();
 			popMatrix();
 			holder.endElementRender(e);
 		}
 	}
-	
+
 	public static double[] alignArray(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
 		double x = alignWidth(actualListScaling, actualElementScaling, width);
 		double y = alignHeight(actualListScaling, actualElementScaling, height);
 		double z = 0;
-		return new double[]{x, y, z};
+		return new double[] { x, y, z };
 	}
 
 	public static void align(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
 		double[] alignArray = alignArray(actualListScaling, actualElementScaling, width, height);
 		align(alignArray);
 	}
-	
-	public static void align(double[] align){
+
+	public static void align(double[] align) {
 		translate(align[WIDTH], align[HEIGHT], 0);
 	}
 
@@ -237,8 +277,8 @@ public class DisplayElementHelper {
 		float f = (float) (color >> 16 & 255) / 255.0F;
 		float f1 = (float) (color >> 8 & 255) / 255.0F;
 		float f2 = (float) (color & 255) / 255.0F;
-		//GlStateManager.disableLighting();
-		
+		// GlStateManager.disableLighting();
+
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		GlStateManager.enableBlend();
@@ -261,7 +301,7 @@ public class DisplayElementHelper {
 		RenderHelper.restoreBlendState();
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableBlend();
-		
-		//GlStateManager.enableLighting();
+
+		// GlStateManager.enableLighting();
 	}
 }

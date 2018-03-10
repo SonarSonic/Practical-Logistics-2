@@ -72,6 +72,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	}
 
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
 		this.listHeight = GuiState.LIST == state ? 24 : 12;
 		super.initGui();
 		switch (state) {
@@ -397,7 +398,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 					InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 				} else {
 
-					FontHelper.text("-", InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
+					FontHelper.text("-", InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
 				}
 			} else if (info instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) info;
@@ -430,8 +431,8 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 						infoObj2 = statement.obj.get().toString();
 					}
 				}
-				FontHelper.text(infoType1 + ": " + TextFormatting.WHITE + TextFormatting.ITALIC + infoObj1 + " " + TextFormatting.DARK_AQUA + ((LogicOperator) statement.operator.getObject()).operation + TextFormatting.RESET + " " + infoType2 + ": " + TextFormatting.WHITE + TextFormatting.ITALIC + infoObj2, InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
-				FontHelper.text("Current State: " + (statement.wasTrue.getObject() ? TextFormatting.GREEN : TextFormatting.RED) + statement.wasTrue.getObject(), InfoRenderer.identifierLeft, yPos + 14, LogisticsColours.white_text.getRGB());
+				FontHelper.text(infoType1 + ": " + TextFormatting.WHITE + TextFormatting.ITALIC + infoObj1 + " " + TextFormatting.DARK_AQUA + ((LogicOperator) statement.operator.getObject()).operation + TextFormatting.RESET + " " + infoType2 + ": " + TextFormatting.WHITE + TextFormatting.ITALIC + infoObj2, InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
+				FontHelper.text("Current State: " + (statement.wasTrue.getObject() ? TextFormatting.GREEN : TextFormatting.RED) + statement.wasTrue.getObject(), InfoRenderer.left_offset, yPos + 14, LogisticsColours.white_text.getRGB());
 
 			}
 			break;
@@ -440,17 +441,17 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			if (info instanceof ComparableObject) {
 				ComparableObject comparable = (ComparableObject) info;
-				FontHelper.text(comparable.string, InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
+				FontHelper.text(comparable.string, InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
 				if (comparable.object != null) {
 					if (comparable.object instanceof Item) {
-						FontHelper.text(((MonitoredItemStack) comparable.source).getItemStack().getDisplayName(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
+						FontHelper.text(((MonitoredItemStack) comparable.source).getItemStack().getDisplayName(), InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
 					} else {
-						FontHelper.text(comparable.object.toString(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
+						FontHelper.text(comparable.object.toString(), InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
 					}
-					FontHelper.text(ObjectType.getInfoType(comparable.object).toString().toLowerCase(), InfoRenderer.kindLeft, yPos, LogisticsColours.white_text.getRGB());
+					FontHelper.text(ObjectType.getInfoType(comparable.object).toString().toLowerCase(), InfoRenderer.right_offset, yPos, LogisticsColours.white_text.getRGB());
 
 				} else {
-					FontHelper.text("ERROR", InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
+					FontHelper.text("ERROR", InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
 				}
 			}
 			break;

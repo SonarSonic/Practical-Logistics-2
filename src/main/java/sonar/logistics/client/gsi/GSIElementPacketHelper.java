@@ -17,9 +17,11 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.CreateInfoType;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
+import sonar.logistics.api.displays.elements.AbstractDisplayElement;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IInfoRequirement;
+import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
@@ -172,6 +174,26 @@ public class GSIElementPacketHelper {
 			c.resize(translate, scale, pScale);
 			c.updateActualScaling();
 			gsi.sendInfoContainerPacket();
+		}
+	}
+
+	//// DELETE CONTAINERS \\\\
+
+	public static NBTTagCompound createTextSavePacket(StyledTextElement text) {
+		NBTTagCompound tag = new NBTTagCompound();
+		writePacketID(tag, GSIElementPackets.TEXT_SAVE);
+		tag.setTag("save_text", text.writeData(new NBTTagCompound(), SyncType.SAVE));
+		return tag;
+	}
+
+	public static void doTextSavePacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		if (element instanceof StyledTextElement) {
+			NBTTagCompound tag = packetTag.getCompoundTag("save_text");
+			tag.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, element.getElementIdentity());
+			element.readData(tag, SyncType.SAVE);
+			//gsi.updateInfoReferences();
+			//gsi.updateCachedInfo();
+			((StyledTextElement) element).updateTextContents();
 		}
 	}
 

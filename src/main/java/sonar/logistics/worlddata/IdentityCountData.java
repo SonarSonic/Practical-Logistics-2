@@ -8,11 +8,15 @@ import sonar.logistics.PL2;
 
 public class IdentityCountData extends WorldSavedData {
 
-	public static final String tag = "sonar.logistics.networks.identitycount";
+	public static final String IDENTIFIER = "sonar.logistics.networks.identitycount";
 	public int IDENTITY_COUNT = -1;
 
-	public IdentityCountData(String string) {
-		super(string);
+	public IdentityCountData(String name) {
+		super(name);
+	}
+
+	public IdentityCountData() {
+		super(IDENTIFIER);
 	}
 
 	@Override
@@ -30,16 +34,5 @@ public class IdentityCountData extends WorldSavedData {
 
 	public boolean isDirty() {
 		return true;
-	}
-
-	public static IdentityCountData get(World world) {
-		MapStorage storage = world.getMapStorage();
-		IdentityCountData instance = (IdentityCountData) storage.getOrLoadData(IdentityCountData.class, tag);
-
-		if (instance == null) {
-			instance = new IdentityCountData(tag);
-			storage.setData(tag, instance);
-		}
-		return instance;
 	}
 }

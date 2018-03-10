@@ -11,7 +11,7 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.DisplayInfo;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;

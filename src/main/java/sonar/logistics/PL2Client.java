@@ -55,7 +55,7 @@ import sonar.logistics.info.types.ProgressInfo;
 
 public class PL2Client extends PL2Common implements ILocalisationHandler {
 	
-	IGSIRegistry GSI_REGISTRY = new GSIRegistry();
+	//IGSIRegistry GSI_REGISTRY = new GSIRegistry();
 	
 	public void registerRenderThings() {
 		
@@ -80,7 +80,8 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 	}
 
 	public IGSIRegistry getGSIRegistry(){
-		return GSI_REGISTRY;
+		//return GSI_REGISTRY;
+		return null;
 	}
 	
 	public void preInit(FMLPreInitializationEvent event) {

@@ -41,11 +41,12 @@ public class GuiLogistics extends GuiSonarTile {
 				drawTransparentRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
 				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
 				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
-			}else{
-				int scrollXPos = scroller.left + (int) ((float) (scroller.width - 17) * scroller.getCurrentScroll());
-				drawTransparentRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());				
-				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8, LogisticsColours.layers[2].getRGB());
-				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15,scroller.top + 8,  LogisticsColours.layers[2].getRGB());				
+			} else {
+				int scrollXPos = scroller.left + (int) ((float) (scroller.width - 15) * scroller.getCurrentScroll());
+				drawTransparentRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
+
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15, scroller.top + scroller.length -2, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15, scroller.top + scroller.length - 2, LogisticsColours.layers[2].getRGB());
 			}
 		}
 	}

@@ -3,20 +3,30 @@ package sonar.logistics.client.gui.textedit;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.xml.ws.Holder;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.logistics.PL2Constants;
+import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.asm.StyledStringType;
+import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 
+@StyledStringType(id = StyledString.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledString implements IStyledString, INBTSyncable {
 
 	public String string;
-	public SonarStyling style;
+	private SonarStyling style;
 
 	private String formattingString;
+	private StyledStringLine line;
 
 	public StyledString() {}
 
@@ -29,8 +39,19 @@ public class StyledString implements IStyledString, INBTSyncable {
 		this.style = style;
 	}
 
+	public IStyledString setLine(StyledStringLine line) {
+		this.line = line;
+		return this;
+	}
+
+	public StyledStringLine getLine() {
+		return line;
+	}
+
 	public String setUnformattedString(String s) {
-		return string = s;
+		string = s;
+		updateTextContents();
+		return getUnformattedString();
 	}
 
 	public String getUnformattedString() {
@@ -41,14 +62,21 @@ public class StyledString implements IStyledString, INBTSyncable {
 		return style.getTextFormattingString();
 	}
 
+	private String cachedFormattedString = null;
+
 	@Override
 	public String getFormattedString() {
-		return getTextFormattingStyle() + getUnformattedString();
+		if (cachedFormattedString == null) {
+			cachedFormattedString = getTextFormattingStyle() + getUnformattedString();
+		}
+		return cachedFormattedString;
 	}
 
 	@Override
 	public SonarStyling setStyle(SonarStyling f) {
-		return style = f;
+		style = f;
+		onStyleChanged();
+		return getStyle();
 	}
 
 	@Override
@@ -62,13 +90,65 @@ public class StyledString implements IStyledString, INBTSyncable {
 	}
 
 	@Override
+	public void onStyleChanged() {
+		updateTextContents();
+	}
+
+	public void updateTextContents() {
+		this.cachedWidth = -1;
+		this.cachedFormattedString = null;
+		if (this.getLine() != null) {
+			this.getLine().updateTextContents();
+		}
+	}
+
+	public void updateTextScaling() {
+		if (this.getLine() != null) {
+			this.getLine().updateTextScaling();
+		}
+	}
+
+	@Override
 	public int getStringLength() {
 		return getUnformattedString().length();
 	}
 
+	private int cachedWidth = -1;
+
 	@Override
 	public int getStringWidth() {
-		return RenderHelper.fontRenderer.getStringWidth(getFormattedString());
+		if (cachedWidth == -1) {
+			cachedWidth = RenderHelper.fontRenderer.getStringWidth(getFormattedString());
+		}
+		return cachedWidth;
+	}
+
+	@Override
+	public IStyledString copy() {
+		return new StyledString(string, style.copy());
+	}
+
+	@Override
+	public Tuple<Character, Integer> getCharClicked(int yPos, Holder<Double> subClickX, Holder<Double> subClickY) {
+		double[] scaling = DisplayElementHelper.getScaling(getText().getUnscaledWidthHeight(), getText().getMaxScaling(), 100);
+		String unformatted = getUnformattedString();
+		String formatting = getTextFormattingStyle();
+		int length = unformatted.length();
+		double x = 0;
+		for (int i = 0; i < length; i++) {
+			String charString = formatting + unformatted.charAt(i);
+			int charStringWidth = RenderHelper.fontRenderer.getStringWidth(charString);
+
+			double width = charStringWidth * scaling[2];
+			if (x <= subClickX.value && x + width >= subClickX.value) {
+				subClickX.value = x;
+				return new Tuple(unformatted.charAt(i), i);
+			} else if (i == 0 && subClickX.value < x) {
+				return new Tuple(null, -2);
+			}
+			x += width;
+		}
+		return new Tuple(null, -1);
 	}
 
 	@Override
@@ -92,5 +172,12 @@ public class StyledString implements IStyledString, INBTSyncable {
 	public void combine(IStyledString ss) {
 		int previousLength = getStringLength();
 		this.setUnformattedString(this.getUnformattedString() + ss.getUnformattedString());
+	}
+
+	public static final String REGISTRY_NAME = "s_s";
+
+	@Override
+	public String getRegisteredName() {
+		return REGISTRY_NAME;
 	}
 }

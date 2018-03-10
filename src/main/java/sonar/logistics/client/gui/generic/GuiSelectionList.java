@@ -136,7 +136,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	@Override
 	public void mouseClicked(int x, int y, int button) throws IOException {
 		super.mouseClicked(x, y, button);
-
+		/*
 		if (enableListRendering) {
 			if (button == 1) {
 				for (int l = 0; l < this.buttonList.size(); ++l) {
@@ -154,6 +154,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 				}
 			}
 		}
+		*/
 	}
 
 	public void mouseReleased(int mouseX, int mouseY, int state) {

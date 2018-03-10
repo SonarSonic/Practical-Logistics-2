@@ -3,10 +3,10 @@ package sonar.logistics.api.displays;
 import javax.annotation.Nullable;
 
 import sonar.logistics.api.displays.buttons.EmptyInfoElement;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.DisplayElementList;
-import sonar.logistics.api.displays.elements.StyledTextElement;
-import sonar.logistics.api.displays.elements.TextDisplayElement;
+import sonar.logistics.api.displays.elements.IDisplayElement;
+import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayElementList;
 
 public enum CreateInfoType {
 	INFO(CreateInfoType::createInfo), TEXT(CreateInfoType::createText), IMAGE(CreateInfoType::createInfo), BUTTON(CreateInfoType::createButton);

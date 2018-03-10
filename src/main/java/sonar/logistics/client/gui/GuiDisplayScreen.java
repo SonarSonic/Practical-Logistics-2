@@ -300,13 +300,13 @@ public class GuiDisplayScreen extends GuiSelectionList<Object> {
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
-				FontHelper.text("-", InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
+				FontHelper.text("-", InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
 			}
 		} else if (info instanceof IInfoProvider) {
 			IInfoProvider monitor = (IInfoProvider) info;
-			FontHelper.text(monitor.getMultipart().getDisplayName(), InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
-			FontHelper.text(monitor.getCoords().toString(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
-			FontHelper.text("position", InfoRenderer.kindLeft, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.getMultipart().getDisplayName(), InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.getCoords().toString(), InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text("position", InfoRenderer.right_offset, yPos, LogisticsColours.white_text.getRGB());
 		}
 	}
 

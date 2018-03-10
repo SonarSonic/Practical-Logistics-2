@@ -1,9 +1,29 @@
 package sonar.logistics.client.gui.textedit;
 
-public interface IStyledString {
+import java.util.List;
 
+import javax.xml.ws.Holder;
+
+import com.google.common.collect.Lists;
+
+import net.minecraft.util.Tuple;
+import sonar.core.api.nbt.INBTSyncable;
+import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.info.InfoUUID;
+
+public interface IStyledString extends INBTSyncable {
+
+	public Tuple<Character, Integer> getCharClicked(int yPos, Holder<Double> subClickX, Holder<Double> subClickY);
+	
+	public IStyledString setLine(StyledStringLine line);
+	
+	public StyledStringLine getLine();
+	
 	/**the formatting of this string*/
 	public SonarStyling setStyle(SonarStyling formatting);
+	
+	public void onStyleChanged();
 	
 	/**the formatting of this string*/
 	public SonarStyling getStyle();
@@ -28,4 +48,23 @@ public interface IStyledString {
 	
 	public void combine(IStyledString ss);
 	
+	public IStyledString copy();
+	
+	public String getRegisteredName();
+
+	public void updateTextContents();
+
+	public void updateTextScaling();
+	
+	public default List<InfoUUID> getInfoReferences(){
+		return Lists.newArrayList();
+	}
+	
+	public default StyledTextElement getText(){
+		return getLine().getText();
+	}
+	
+	public default DisplayGSI getGSI(){
+		return getLine().getText().getGSI();
+	}
 }

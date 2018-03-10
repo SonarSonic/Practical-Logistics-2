@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 
 public class PacketGSIElement implements IMessage {

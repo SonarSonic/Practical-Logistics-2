@@ -33,8 +33,32 @@ public class CursorPosition {
 	}
 
 	public void setCursor(int x, int y) {
+		setX(x);
+		setY(y);
+	}
+
+	public void setX(int x) {
 		this.x = x;
+	}
+
+	public void setY(int y) {
 		this.y = y;
+	}
+
+	public void setYToFirst() {
+		this.y = 0;
+	}
+
+	public void setXToFirst() {
+		this.x = 0;
+	}
+
+	public void setYToLast(ILineCounter counter) {
+		this.y = counter.getLineCount() - 1;
+	}
+
+	public void setXToLast(ILineCounter counter) {
+		this.x = y == -1 ? -1 : counter.getLineLength(y);
 	}
 
 	public void moveX(ILineCounter counter, int moveX) {
@@ -45,11 +69,17 @@ public class CursorPosition {
 		int length = counter.getLineLength(y);
 		int newIndex = x + moveX;
 		if (newIndex > length) {
+			int oldY = y;
 			moveY(counter, 1);
+			if (y != oldY)
+				setXToFirst();
 			return;
 		}
 		if (newIndex < 0) {
+			int oldY = y;
 			moveY(counter, -1);
+			if (y != oldY)
+				setXToLast(counter);
 			return;
 		}
 		x = newIndex < 0 ? 0 : newIndex;

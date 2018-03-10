@@ -43,13 +43,13 @@ import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.ITextElement;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.HeightAlignment;
+import sonar.logistics.api.displays.HeightAlignment;
+import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.WidthAlignment;
+import sonar.logistics.api.displays.elements.ITextElement;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
@@ -305,9 +305,6 @@ public class GuiEditTextElement extends GuiAbstractEditElement {
 			selectAllText();
 			return;
 		}
-		if (isCloseKey(i) || c == 4) {
-			deselectAllText();
-		}
 		if (cursorElement != null) {
 			if (ChatAllowedCharacters.isAllowedCharacter(c)) {
 				deselectAllText();
@@ -319,7 +316,9 @@ public class GuiEditTextElement extends GuiAbstractEditElement {
 				// deleteAllSelected();
 				//cursorElement.getStyledStringCompound().removeText(1);
 			}
-		}else{
+		}
+		if (isCloseKey(i) || c == 4) {
+			deselectAllText();
 		}
 		super.keyTyped(c, i);
 	}

@@ -61,23 +61,6 @@ public class PL2Events {
 	}
 
 	@SubscribeEvent
-	public void onWorldLoad(WorldEvent.Load event) {
-		if (!event.getWorld().isRemote) {
-			IdentityCountData.get(event.getWorld());
-			ConnectedDisplayData.get(event.getWorld());
-
-		}
-	}
-
-	@SubscribeEvent
-	public void onWorldSave(WorldEvent.Save event) {
-		if (!event.getWorld().isRemote) {
-			IdentityCountData.get(event.getWorld());
-			ConnectedDisplayData.get(event.getWorld());
-		}
-	}
-
-	@SubscribeEvent
 	public void onEntityJoin(EntityJoinWorldEvent event) {
 		TileArray.entityChanged = true;
 	}

@@ -14,7 +14,7 @@ public enum GuiActions implements IGuiAction {
 	}
 
 	@Override
-	public void trigger(GuiEditStyledStrings trigger) {
+	public void trigger(GuiStyledStringFunctions trigger) {
 		action.trigger(trigger);
 	}
 

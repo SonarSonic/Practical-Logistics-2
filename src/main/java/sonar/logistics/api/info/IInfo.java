@@ -6,14 +6,16 @@ import com.google.common.collect.Lists;
 
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.displays.IDisplayElement;
-import sonar.logistics.api.displays.InfoReference;
-import sonar.logistics.api.displays.ReferenceType;
-import sonar.logistics.api.displays.elements.CompoundTextElement;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.DisplayElementList;
+import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.displays.references.InfoReference;
+import sonar.logistics.api.displays.references.ReferenceType;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayElementList;
 import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.client.gui.textedit.StyledInfo;
+import sonar.logistics.client.gui.textedit.StyledStringLine;
 
 /** for your info to be registered you must use {@link LogicInfoType} implement this for all types of info */
 public interface IInfo<T extends IInfo> extends INBTSyncable {
@@ -45,21 +47,12 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 	}
 
 	public static void doCreateDefaultElements(IInfo info, List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
-		/*FIXME
-		DisplayElementList list = new DisplayElementList(h);
-		CompoundTextElement first = new CompoundTextElement(CompoundTextElement.REF);
-		CompoundTextElement second = new CompoundTextElement(CompoundTextElement.REF + " " + CompoundTextElement.REF + " " + CompoundTextElement.REF);
-		List<InfoReference> firstRefs = Lists.newArrayList(), secondRefs = Lists.newArrayList();
-		firstRefs.add(new InfoReference(uuid, ReferenceType.IDENTIFIER, -1));
-		secondRefs.add(new InfoReference(uuid, ReferenceType.PREFIX, -1));
-		secondRefs.add(new InfoReference(uuid, ReferenceType.RAW_INFO, -1));
-		secondRefs.add(new InfoReference(uuid, ReferenceType.SUFFIX, -1));
-		first.setReferences(firstRefs);
-		second.setReferences(secondRefs);
-		list.getElements().addElement(first);
-		list.getElements().addElement(second);
-		toAdd.add(list);
-		*/
+		StyledTextElement element = new StyledTextElement();
+		StyledStringLine line1 = new StyledStringLine(element), line2 = new StyledStringLine(element);
+		line1.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.IDENTIFIER)));
+		line2.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.PREFIX), new StyledInfo(uuid, ReferenceType.RAW_INFO), new StyledInfo(uuid, ReferenceType.SUFFIX)));
+		element.setLines(Lists.newArrayList(line1, line2));
+		toAdd.add(element);
 	}
 
 	public boolean isValid();

@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.storage.MapStorage;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -37,6 +39,8 @@ import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.ConnectedDisplayHandler;
+import sonar.logistics.worlddata.ConnectedDisplayData;
+import sonar.logistics.worlddata.IdentityCountData;
 import sonar.logistics.worldgen.SapphireOreGen;
 
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
@@ -139,13 +143,15 @@ public class PL2 {
 	}
 
 	@EventHandler
-	public void serverLoad(FMLServerStartingEvent event) {
+	public void onServerStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandResetInfoRegistry());
-	}
-
-	@EventHandler
-	public void serverLoad(FMLServerStartedEvent event) {
-
+        MapStorage storage = DimensionManager.getWorld(0).getMapStorage();
+        if(storage.getOrLoadData(IdentityCountData.class, IdentityCountData.IDENTIFIER) == null) {
+            storage.setData(IdentityCountData.IDENTIFIER, new IdentityCountData());
+        }
+        if(storage.getOrLoadData(ConnectedDisplayData.class, ConnectedDisplayData.IDENTIFIER) == null) {
+            storage.setData(ConnectedDisplayData.IDENTIFIER, new ConnectedDisplayData());
+        }
 	}
 
 	@EventHandler

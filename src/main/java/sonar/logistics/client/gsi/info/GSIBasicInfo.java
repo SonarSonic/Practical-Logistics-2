@@ -2,12 +2,12 @@ package sonar.logistics.client.gsi.info;
 
 import java.util.List;
 
-import sonar.logistics.api.displays.IDisplayElement;
 import sonar.logistics.api.displays.IDisplayInfo;
-import sonar.logistics.api.displays.IDisplayRenderable;
 import sonar.logistics.api.displays.InfoContainer;
-import sonar.logistics.api.displays.elements.DisplayElementContainer;
-import sonar.logistics.api.displays.elements.TextDisplayElement;
+import sonar.logistics.api.displays.elements.IDisplayElement;
+import sonar.logistics.api.displays.elements.IDisplayRenderable;
+import sonar.logistics.api.displays.elements.types.TextDisplayElement;
+import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.render.RenderInfoProperties;
 import sonar.logistics.client.gsi.AbstractGSI;

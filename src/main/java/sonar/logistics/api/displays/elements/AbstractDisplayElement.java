@@ -3,7 +3,8 @@ package sonar.logistics.api.displays.elements;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.displays.IDisplayElement;
+import sonar.logistics.api.displays.HeightAlignment;
+import sonar.logistics.api.displays.WidthAlignment;
 
 public abstract class AbstractDisplayElement implements IDisplayElement {
 
@@ -15,6 +16,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 	protected WidthAlignment width_align = WidthAlignment.CENTERED;
 	protected HeightAlignment height_align = HeightAlignment.CENTERED;
 	private int identity = -1;
+	public static final String IDENTITY_TAG_NAME = "identity";
 
 	public AbstractDisplayElement() {}
 
@@ -27,12 +29,12 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		identity = nbt.getInteger("identity");
+		identity = nbt.getInteger(IDENTITY_TAG_NAME);
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		nbt.setInteger("identity", getElementIdentity());
+		nbt.setInteger(IDENTITY_TAG_NAME, getElementIdentity());
 		return nbt;
 	}
 
@@ -116,7 +118,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 		return unscaledWidthHeight;
 	}
 
-	int[] createUnscaledWidthHeight() {
+	public int[] createUnscaledWidthHeight() {
 		return new int[] { 1, 1 };
 	}
 

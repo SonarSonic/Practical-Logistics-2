@@ -6,7 +6,9 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.ListHelper;
@@ -19,6 +21,7 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
+import sonar.logistics.client.gui.textedit.InfoUUIDRequest;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoSource extends GuiSelectionList<Object> {
@@ -80,13 +83,13 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
-				FontHelper.text("-", InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
+				FontHelper.text("-", InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
 			}
 		} else if (info instanceof IInfoProvider) {
 			IInfoProvider monitor = (IInfoProvider) info;
-			FontHelper.text(monitor.getMultipart().getDisplayName(), InfoRenderer.identifierLeft, yPos, LogisticsColours.white_text.getRGB());
-			FontHelper.text(monitor.getCoords().toString(), InfoRenderer.objectLeft, yPos, LogisticsColours.white_text.getRGB());
-			FontHelper.text("position", InfoRenderer.kindLeft, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.getMultipart().getDisplayName(), InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.getCoords().toString(), InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text("position", InfoRenderer.right_offset, yPos, LogisticsColours.white_text.getRGB());
 		}
 	}
 
@@ -109,6 +112,10 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 	protected void keyTyped(char c, int i) throws IOException {
 		if (isCloseKey(i) && selected.size() == element.getRequired()) {
 			element.onGuiClosed(selected);
+		}
+		if(element instanceof InfoUUIDRequest){
+			FMLClientHandler.instance().showGuiScreen(((InfoUUIDRequest) element).screen);			
+			return;
 		}
 		super.keyTyped(c, i);
 	}
