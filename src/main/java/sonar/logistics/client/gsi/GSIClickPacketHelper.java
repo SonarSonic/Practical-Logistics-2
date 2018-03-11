@@ -10,13 +10,12 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.DisplayInfo;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.client.gui.GuiDisplayScreen.GuiState;
+import sonar.logistics.client.gui.display.GuiDisplayScreen.GuiState;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.info.types.InfoError;
@@ -26,13 +25,13 @@ public class GSIClickPacketHelper {
 
 	public static final String PACKET_ID = "PktID";
 	public static IGSIClickPacketHandler handler = GSIClickPacketHelper::runGSIClickPacket;
-
+	/*
 	public static IGSI getGSIForInfo(IInfo cachedInfo, DisplayInfo renderInfo) {
 		IInfo info = cachedInfo == null ? InfoError.noData : cachedInfo;
 		IGSI gsi = PL2.proxy.getGSIRegistry().getGSIInstance(info.getID(), renderInfo);
 		return gsi;
 	}
-
+	*/
 	public static IGSIClickPacketHandler getGSIHandler(IInfo info) {
 		return info instanceof IGSIClickPacketHandler ? (IGSIClickPacketHandler) info : GSIClickPacketHelper.handler;
 	}

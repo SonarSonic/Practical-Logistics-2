@@ -20,11 +20,13 @@ import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IInfoRequirement;
-import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.StyledTextElement;
+import sonar.logistics.api.displays.elements.types.UnconfiguredInfoElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.packets.PacketGSIElement;
 
@@ -87,7 +89,7 @@ public class GSIElementPacketHelper {
 	}
 
 	public static void doGuiRequestPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
-		if (element instanceof IFlexibleGui && gsi.getDisplay().getActualDisplay() instanceof TileAbstractDisplay) {
+		if (gsi.getDisplay().getActualDisplay() instanceof TileAbstractDisplay) {
 			NBTTagCompound tag = new NBTTagCompound();
 			int slotID = ((TileAbstractDisplay) gsi.getDisplay().getActualDisplay()).getSlotID();
 			if (slotID == -1) {
@@ -96,8 +98,8 @@ public class GSIElementPacketHelper {
 				tag.setBoolean(FlexibleGuiHandler.MULTIPART, true);
 				tag.setInteger(FlexibleGuiHandler.SLOT_ID, slotID);
 			}
-			tag.setInteger("ELE_ID", element.getElementIdentity());
-			tag.setInteger("CONT_ID", element.getHolder().getContainer().getContainerIdentity());
+			tag.setInteger("ELE_ID", element == null ? -1 : element.getElementIdentity());
+			tag.setInteger("CONT_ID", element == null ? -1 : element.getHolder().getContainer().getContainerIdentity());
 			SonarCore.instance.guiHandler.openGui(false, player, player.getEntityWorld(), gsi.getDisplay().getCoords().getBlockPos(), packetTag.getInteger("GUI_ID"), tag);
 		}
 	}
@@ -152,7 +154,27 @@ public class GSIElementPacketHelper {
 		toDelete.forEach(del -> gsi.removeElementContainer(del));
 	}
 
-	//// DELETE CONTAINERS \\\\
+	//// DELETE ELEMENTS \\\\
+
+	public static NBTTagCompound createDeleteElementsPacket(List<Integer> toDelete) {
+		NBTTagCompound tag = new NBTTagCompound();
+		writePacketID(tag, GSIElementPackets.DELETE_ELEMENTS);
+		NBTTagList list = new NBTTagList();
+		toDelete.forEach(del -> list.appendTag(new NBTTagInt(del)));
+		tag.setTag("del", list);
+		return tag;
+	}
+
+	public static void doDeleteElementsPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		NBTTagList tag = packetTag.getTagList("del", NBT.TAG_INT);
+		List<Integer> toDelete = Lists.newArrayList();
+		for (int i = 0; i < tag.tagCount(); i++) {
+			toDelete.add(tag.getIntAt(i));
+		}
+		toDelete.forEach(del -> gsi.removeElement(del));
+	}
+
+	//// RESIZE CONTAINERS \\\\
 
 	public static NBTTagCompound createResizeContainerPacket(int containerID, double[] translate, double[] scale, double pScale) {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -177,7 +199,35 @@ public class GSIElementPacketHelper {
 		}
 	}
 
-	//// DELETE CONTAINERS \\\\
+	//// CONFIGURE INFO \\\\
+
+	public static NBTTagCompound createConfigureInfoPacket(UnconfiguredInfoElement element) {
+		NBTTagCompound tag = new NBTTagCompound();
+		writePacketID(tag, GSIElementPackets.CONFIGURE_INFO_ELEMENT);
+		NBTTagList list = new NBTTagList();
+		for (IDisplayElement e : element.elements) {
+			if (e != null) {
+				list.appendTag(DisplayElementHelper.saveElement(new NBTTagCompound(), e, SyncType.SAVE));
+			}
+		}
+		tag.setTag("elements", list);
+		return tag;
+	}
+
+	public static void doConfigureInfoPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		if (element instanceof UnconfiguredInfoElement) {
+			element.getHolder().getElements().removeElement(element);
+			NBTTagList tag = packetTag.getTagList("elements", NBT.TAG_COMPOUND);
+			for (int i = 0; i < tag.tagCount(); i++) {
+				NBTTagCompound nbt = tag.getCompoundTagAt(i);
+				nbt.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, PL2.getServerManager().getNextIdentity());
+				IDisplayElement e = DisplayElementHelper.loadElement(nbt, element.getHolder());
+				element.getHolder().getElements().addElement(e);
+			}
+		}
+	}
+
+	//// SAVE TEXT \\\\
 
 	public static NBTTagCompound createTextSavePacket(StyledTextElement text) {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -191,9 +241,9 @@ public class GSIElementPacketHelper {
 			NBTTagCompound tag = packetTag.getCompoundTag("save_text");
 			tag.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, element.getElementIdentity());
 			element.readData(tag, SyncType.SAVE);
-			//gsi.updateInfoReferences();
-			//gsi.updateCachedInfo();
+			// gsi.updateCachedInfo();
 			((StyledTextElement) element).updateTextContents();
+			gsi.updateInfoReferences();
 		}
 	}
 

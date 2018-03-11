@@ -12,8 +12,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -23,6 +25,7 @@ import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -43,6 +46,12 @@ public class NetworkFluidElement extends AbstractInfoElement<MonitoredFluidStack
 		InfoRenderer.renderProgressBarWithSprite(sprite, getActualScaling()[WIDTH], getActualScaling()[HEIGHT], info.fluidStack.getObject().stored, info.fluidStack.getObject().capacity);
 		GlStateManager.enableLighting();
 		GL11.glPopMatrix();
+	}
+
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		//FIXME
+		return null;
 	}
 
 	@Override

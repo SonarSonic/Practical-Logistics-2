@@ -22,13 +22,24 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.IStyledString;
+import sonar.logistics.api.displays.elements.text.SonarStyling;
+import sonar.logistics.api.displays.elements.text.StyledInfo;
+import sonar.logistics.api.displays.elements.text.StyledString;
+import sonar.logistics.api.displays.elements.text.StyledStringHelper;
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
+import sonar.logistics.api.displays.elements.text.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.TextSelection;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
-import sonar.logistics.client.gui.GuiAbstractEditElement;
+import sonar.logistics.client.gui.display.GuiAbstractEditElement;
+import sonar.logistics.client.gui.display.GuiAbstractEditScreen;
+import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 public class GuiStyledStringFunctions extends GuiAbstractEditElement implements ILineCounter {
@@ -37,9 +48,11 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	public final CursorPosition cursorPosition = CursorPosition.newInvalid();
 	public final CursorPosition selectPosition = CursorPosition.newInvalid();
 	public List<TextSelection> savedSelections = Lists.newArrayList();
+	public List<TextFormatting> specials = Lists.newArrayList();
+	public int currentColour = -1;
 
-	public GuiStyledStringFunctions(StyledTextElement text, DisplayElementContainer c) {
-		super(c);
+	public GuiStyledStringFunctions(StyledTextElement text, TileAbstractDisplay display) {
+		super(text.getHolder().getContainer(), display);
 		this.text = text;
 	}
 
@@ -274,7 +287,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 
 	//// RENDERING \\\\
 
-	public void renderContainer(float partialTicks, int x, int y) {
+	public void renderDisplayScreen(float partialTicks, int x, int y) {
 		/* double[] scaling = DisplayElementHelper.getScaling(text.getUnscaledWidthHeight(), text.getMaxScaling(), 100); GlStateManager.scale(scaling[2], scaling[2], scaling[2]); text.getHolder().startElementRender(text); pushMatrix(); DisplayElementHelper.align(text.getHolder().getAlignmentTranslation(text)); double scale = text.getActualScaling()[2]; scale(scale, scale, scale); int i = 0; List<TextSelection> allSelection = getAllSelections(); for (StyledStringLine s : text) { text.preRender(s); if (i == cursorPosition.y) { renderCursor(s); } s.render(); renderSelections(allSelection, s, i); text.postRender(s); i++; } popMatrix(); text.getHolder().endElementRender(text); */
 
 		text.getHolder().startElementRender(text);
@@ -406,13 +419,27 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 		}
 	}
 
+	//// STYLING \\\\
+
+	public final void changeSelectedColour(TextFormatting colour) {
+		onColourChanged(currentColour = FontHelper.getColourFromFormatting(colour));
+	}
+
+	public final void toggleSpecialFormatting(TextFormatting format) {
+		if (specials.contains(format)) {
+			specials.remove(format);
+			onSpecialFormatChanged(format, false);
+		} else {
+			specials.add(format);
+			onSpecialFormatChanged(format, true);
+		}
+	}
+
 	public void onColourChanged(int newColour) {
-		super.onColourChanged(newColour);
 		setTextColourOnSelected(newColour);
 	}
 
 	public void onSpecialFormatChanged(TextFormatting format, boolean enabled) {
-		super.onSpecialFormatChanged(format, enabled);
 		if (enabled) {
 			enableSpecialFormattingOnSelected(Lists.newArrayList(format));
 		} else {
@@ -652,8 +679,8 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	//// CLICK HELPERS \\\\
 
 	public final int[] getIndexClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
-		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
+		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
 			int[] clicked = ((StyledTextElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
 			return clicked;
 		}
@@ -661,24 +688,24 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	}
 
 	public final Tuple<StyledStringLine, Integer> getLineClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
-		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
+		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
 			return ((StyledTextElement) element.getFirst()).getLineClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);
 	}
 
 	public final Tuple<IStyledString, Integer> getStringClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
-		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
+		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
 			return ((StyledTextElement) element.getFirst()).getStringClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);
 	}
 
 	public final Tuple<Character, Integer> getCharClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = getElementAtXY(clickX, clickY);
-		if (element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
+		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
+		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
 			return ((StyledTextElement) element.getFirst()).getCharClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);

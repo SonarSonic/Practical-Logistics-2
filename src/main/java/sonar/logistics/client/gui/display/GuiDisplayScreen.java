@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client.gui.display;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.client.gui.generic.info;
 
 import java.util.List;
 

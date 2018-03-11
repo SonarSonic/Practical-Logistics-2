@@ -21,7 +21,7 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
-import sonar.logistics.client.gui.textedit.InfoUUIDRequest;
+import sonar.logistics.client.gui.generic.info.InfoUUIDRequest;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoSource extends GuiSelectionList<Object> {

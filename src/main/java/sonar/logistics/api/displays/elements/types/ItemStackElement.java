@@ -9,8 +9,10 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -18,6 +20,7 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 @DisplayElementType(id = ItemStackElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class ItemStackElement extends AbstractDisplayElement {
@@ -63,6 +66,12 @@ public class ItemStackElement extends AbstractDisplayElement {
 		*/
 	}
 
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		//FIXME
+		return null;
+	}
+	
 	public StoredItemStack getStoredItem() {
 		return stack;
 	}
@@ -113,8 +122,7 @@ public class ItemStackElement extends AbstractDisplayElement {
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		super.writeData(nbt, type);
 		stack.writeData(nbt, type);
-		return nbt;
-		
+		return nbt;		
 	}
 
 	public static final String REGISTRY_NAME = "s_item";

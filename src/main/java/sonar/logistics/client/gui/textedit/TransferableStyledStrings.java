@@ -6,6 +6,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
 
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
+
+//W.I.P
 public class TransferableStyledStrings implements Transferable  {
 
 	public List<StyledStringLine> lines;

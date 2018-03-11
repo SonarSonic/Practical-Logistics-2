@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.api.displays.elements.text;
 
 import java.util.List;
 import java.util.Locale;
@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 
 import net.minecraftforge.fml.client.config.GuiUtils;
 import sonar.core.utils.CustomColour;
-import sonar.logistics.api.displays.elements.types.StyledTextElement;
 
 public class StyledStringHelper {
 

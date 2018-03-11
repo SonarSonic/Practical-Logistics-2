@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.api.displays.elements.text;
 
 import java.util.Comparator;
 import java.util.List;
@@ -11,83 +11,62 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
+import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.asm.StyledStringType;
-import sonar.logistics.api.displays.references.InfoReference;
-import sonar.logistics.api.displays.references.ReferenceType;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.core.helpers.NBTHelper;
+import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.helpers.SonarHelper;
 
-@StyledStringType(id = StyledInfo.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class StyledInfo implements IStyledString, INBTSyncable {
+@StyledStringType(id = StyledString.REGISTRY_NAME, modid = PL2Constants.MODID)
+public class StyledString implements IStyledString, INBTSyncable {
 
-	public InfoUUID uuid;
-	public ReferenceType refType;
-	public SonarStyling style;
-	
+	public String string;
+	private SonarStyling style;
+
 	private String formattingString;
 	private StyledStringLine line;
 
-	public StyledInfo() {}
+	public StyledString() {}
 
-	public StyledInfo(InfoUUID uuid, ReferenceType type) {
-		this(uuid, type, new SonarStyling());
+	public StyledString(String string) {
+		this(string, new SonarStyling());
 	}
 
-	public StyledInfo(InfoUUID uuid, ReferenceType refType, SonarStyling style) {
-		this.uuid = uuid;
-		this.refType = refType;
+	public StyledString(String string, SonarStyling style) {
+		this.string = string;
 		this.style = style;
 	}
 
-	public IStyledString setLine(StyledStringLine line){
+	public IStyledString setLine(StyledStringLine line) {
 		this.line = line;
 		return this;
 	}
-	
-	public StyledStringLine getLine(){
+
+	public StyledStringLine getLine() {
 		return line;
 	}
 
-	public InfoUUID getInfoUUID() {
-		return this.uuid;
-	}
-
-	public InfoUUID setInfoUUID(InfoUUID uuid) {
-		return this.uuid = uuid;
-	}
-
-	public ReferenceType getReferenceType() {
-		return this.refType;
-	}
-
-	public ReferenceType setReferenceType(ReferenceType refType) {
-		return this.refType = refType;
-	}
-
 	public String setUnformattedString(String s) {
-		//InfoUUID uuid = InfoUUID.fromString(s);
-		//this.updateTextContents();
-		return s;
+		string = s;
+		updateTextContents();
+		return getUnformattedString();
 	}
 
 	public String getUnformattedString() {
-		return "£";
+		return string;
 	}
 
 	public String getTextFormattingStyle() {
 		return style.getTextFormattingString();
 	}
-	
+
 	private String cachedFormattedString = null;
 
 	@Override
 	public String getFormattedString() {
-		if(cachedFormattedString == null){
-			cachedFormattedString = getTextFormattingStyle() + refType.getRefString(PL2.getClientManager().getInfoFromUUID(uuid));
+		if (cachedFormattedString == null) {
+			cachedFormattedString = getTextFormattingStyle() + getUnformattedString();
 		}
 		return cachedFormattedString;
 	}
@@ -105,8 +84,13 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	}
 
 	@Override
+	public String toString() {
+		return getFormattedString();
+	}
+
+	@Override
 	public void onStyleChanged() {
-		this.updateTextContents();
+		updateTextContents();
 	}
 
 	public void updateTextContents() {
@@ -121,12 +105,6 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 		if (this.getLine() != null) {
 			this.getLine().updateTextScaling();
 		}
-	}
-
-
-	@Override
-	public String toString() {
-		return getFormattedString();
 	}
 
 	@Override
@@ -146,45 +124,56 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 
 	@Override
 	public IStyledString copy() {
-		return new StyledInfo(uuid, refType, style.copy());
+		return new StyledString(string, style.copy());
 	}
 
 	@Override
 	public Tuple<Character, Integer> getCharClicked(int yPos, Holder<Double> subClickX, Holder<Double> subClickY) {
-		return new Tuple('£', 0);
+		double[] scaling = DisplayElementHelper.getScaling(getText().getUnscaledWidthHeight(), getText().getMaxScaling(), 100);
+		String unformatted = getUnformattedString();
+		String formatting = getTextFormattingStyle();
+		int length = unformatted.length();
+		double x = 0;
+		for (int i = 0; i < length; i++) {
+			String charString = formatting + unformatted.charAt(i);
+			int charStringWidth = RenderHelper.fontRenderer.getStringWidth(charString);
+
+			double width = charStringWidth * scaling[2];
+			if (x <= subClickX.value && x + width >= subClickX.value) {
+				subClickX.value = x;
+				return new Tuple(unformatted.charAt(i), i);
+			} else if (i == 0 && subClickX.value < x) {
+				return new Tuple(null, -2);
+			}
+			x += width;
+		}
+		return new Tuple(null, -1);
 	}
 
 	@Override
-	public List<InfoUUID> getInfoReferences(){
-		return Lists.newArrayList(uuid);
-	}
-	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		uuid = NBTHelper.instanceNBTSyncable(InfoUUID.class, nbt);
+		string = nbt.getString("s");
 		(style = new SonarStyling()).readData(nbt, type);
-		refType = ReferenceType.values()[nbt.getInteger("rt")];
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		uuid.writeData(nbt, type);
+		nbt.setString("s", string);
 		style.writeData(nbt, type);
-		nbt.setInteger("rt", refType.ordinal());
 		return nbt;
 	}
 
 	@Override
 	public boolean canCombine(IStyledString ss) {
-		//return ss instanceof StyledInfo && ss.getStyle().matching(style);
-		return false;
+		return ss instanceof StyledString && ss.getStyle().matching(style);
 	}
 
 	public void combine(IStyledString ss) {
-		//int previousLength = getStringLength();
-		//this.setUnformattedString(this.getUnformattedString() + ss.getUnformattedString());
+		int previousLength = getStringLength();
+		this.setUnformattedString(this.getUnformattedString() + ss.getUnformattedString());
 	}
 
-	public static final String REGISTRY_NAME = "s_i";
+	public static final String REGISTRY_NAME = "s_s";
 
 	@Override
 	public String getRegisteredName() {

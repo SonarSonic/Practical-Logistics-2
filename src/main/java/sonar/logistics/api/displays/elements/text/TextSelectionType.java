@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.api.displays.elements.text;
 
 public enum TextSelectionType {
 

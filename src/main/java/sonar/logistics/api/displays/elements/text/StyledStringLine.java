@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.api.displays.elements.text;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +18,6 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.types.StyledTextElement;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {

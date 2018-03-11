@@ -1,4 +1,4 @@
-package sonar.logistics.api.displays.elements.types;
+package sonar.logistics.api.displays.elements.text;
 
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
@@ -38,15 +38,12 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
-import sonar.logistics.client.gui.textedit.IStyledString;
-import sonar.logistics.client.gui.textedit.StyledString;
-import sonar.logistics.client.gui.textedit.StyledStringLine;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.PacketHelper;
 
 @DisplayElementType(id = StyledTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class StyledTextElement extends AbstractDisplayElement implements IClickableElement, IFlexibleGui<TileAbstractDisplay>, Iterable<StyledStringLine>, ISpecialAlignment {
+public class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine>, ISpecialAlignment {
 
 	private List<StyledStringLine> textLines = Lists.newArrayList();
 	private List<InfoUUID> uuids;
@@ -87,6 +84,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
 		double max_width = getMaxScaling()[WIDTH];
 
+		GlStateManager.disableLighting();
 		for (StyledStringLine s : this) {
 			preRender(s);
 			GlStateManager.pushMatrix();
@@ -100,7 +98,14 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 			GlStateManager.scale(1 / scaling[2], 1 / scaling[2], 1);
 			GlStateManager.popMatrix();
 			GL11.glTranslated(0, (s.getStringHeight() + spacing) * scaling[2], 0);
+			postRender(s);
 		}
+		GlStateManager.disableLighting();
+	}
+
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		return new GuiEditStyledStrings(this, obj, origin);
 	}
 
 	public List<StyledStringLine> getLines() {
@@ -129,7 +134,8 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		updateTextContents();
 	}
 
-	public void preRender(StyledStringLine c) {}
+	public void preRender(StyledStringLine c) {
+	}
 
 	public void deleteLine(int lineY) {
 		textLines.remove(lineY);
@@ -147,7 +153,6 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 	}
 
 	public void postRender(StyledStringLine c) {
-		GL11.glTranslated(0, c.getStringHeight() + spacing, 0);
 	}
 
 	@Override
@@ -178,7 +183,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 
 	@Override
 	public String getRepresentiveString() {
-		return "TEXT LIST";
+		return "Styled Text";
 	}
 
 	@Override
@@ -189,7 +194,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		} else {
 			player.sendMessage(new TextComponentTranslation("Index: " + "null"));
 		}
-		return 0;
+		return -1;
 	}
 
 	@Nullable
@@ -335,22 +340,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		}
 		return nbt;
 	}
-
-	@Override
-	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		PacketHelper.sendLocalProvidersFromScreen(obj, world, obj.getPos(), player);
-	}
-
-	@Override
-	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return new ContainerMultipartSync(obj);
-	}
-
-	@Override
-	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return new GuiEditStyledStrings(this, this.getHolder().getContainer());
-	}
-
+	
 	private int cachedWidth = -1;
 
 	public int getWidth() {

@@ -35,7 +35,7 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
-import sonar.logistics.client.gui.GuiEditDisplayElement;
+import sonar.logistics.client.gui.display.GuiEditDisplayElement;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
@@ -107,6 +107,12 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 		/* translate(0, 0, -1); depthMask(false); pushMatrix(); final float scaleFactor = 0.5F; final float inverseScaleFactor = 1.0f / scaleFactor; scale(scaleFactor, scaleFactor, scaleFactor); for (int i = start; i < stop; i++) { MonitoredItemStack stack = cachedList.get(i); int current = i - start; int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots)); int yLevel = (int) (Math.floor((current / xSlots))); pushMatrix(); translate((xLevel * ITEM_SPACING) * inverseScaleFactor, (yLevel * ITEM_SPACING) * inverseScaleFactor, 0); String s = "" + stack.getStored(); final int X = (int) (((float) 0 + 15.0f - RenderHelper.fontRenderer.getStringWidth(s) * scaleFactor) * inverseScaleFactor); final int Y = (int) (((float) 0 + 15.0f - 7.0f * scaleFactor) * inverseScaleFactor); RenderHelper.fontRenderer.drawStringWithShadow(s, X, Y, 16777215); popMatrix(); } popMatrix(); depthMask(true); */
 		popMatrix();
 
+	}
+
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		//FIXME
+		return null;
 	}
 
 	public List<MonitoredItemStack> getCachedList(LogicInfoList info, InfoUUID id) {

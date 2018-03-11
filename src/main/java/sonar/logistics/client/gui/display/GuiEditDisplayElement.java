@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui;
+package sonar.logistics.client.gui.display;
 
 import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
@@ -40,6 +40,7 @@ import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;

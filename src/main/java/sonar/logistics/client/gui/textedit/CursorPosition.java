@@ -1,5 +1,7 @@
 package sonar.logistics.client.gui.textedit;
 
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
+
 public class CursorPosition {
 
 	public static CursorPosition newInvalid() {

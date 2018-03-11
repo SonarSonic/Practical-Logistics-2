@@ -28,6 +28,9 @@ import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.client.gui.display.GuiUnconfiguredInfoElement;
+import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 @DisplayElementType(id = UnconfiguredInfoElement.REGISTRY_NAME, modid = PL2Constants.MODID)
@@ -63,7 +66,11 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 			e.render();
 			popMatrix();
 		}
+	}
 
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		return new GuiUnconfiguredInfoElement(obj, this, origin);
 	}
 
 	@Override

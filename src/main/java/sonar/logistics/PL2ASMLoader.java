@@ -20,12 +20,12 @@ import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.StyledStringType;
 import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.displays.elements.IDisplayElement;
+import sonar.logistics.api.displays.elements.text.IStyledString;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
-import sonar.logistics.client.gui.textedit.IStyledString;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.comparators.ILogicComparator;
 

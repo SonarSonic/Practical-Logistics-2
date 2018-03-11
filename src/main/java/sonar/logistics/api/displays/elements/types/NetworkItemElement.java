@@ -9,8 +9,10 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -20,6 +22,7 @@ import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredItemStack;
 
@@ -32,8 +35,7 @@ public class NetworkItemElement extends AbstractInfoElement<MonitoredItemStack> 
 		super(uuid);
 	}
 
-	public void render(MonitoredItemStack info) {
-		
+	public void render(MonitoredItemStack info) {		
 		disableLighting();
 		scale(1, 1 , 0.1); //compresses the item on the z axis
 		rotate(180, 0, 1, 0); // flips the item
@@ -43,8 +45,13 @@ public class NetworkItemElement extends AbstractInfoElement<MonitoredItemStack> 
 		depthMask(false);
 		RenderHelper.renderStoredItemStackOverlay(info.getItemStack(), 0, 0, 0, "" + info.getStored(), false);
 		depthMask(true);
-		enableLighting();
-		
+		enableLighting();		
+	}
+
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		//FIXME
+		return null;
 	}
 
 	@Override

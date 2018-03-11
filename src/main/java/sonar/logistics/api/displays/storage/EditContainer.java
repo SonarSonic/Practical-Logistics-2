@@ -12,6 +12,7 @@ import sonar.logistics.api.displays.buttons.CreateElementButton;
 import sonar.logistics.api.displays.buttons.ElementSelectionButton;
 import sonar.logistics.api.displays.elements.ElementSelectionType;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 public class EditContainer extends DisplayElementContainer {
@@ -28,7 +29,16 @@ public class EditContainer extends DisplayElementContainer {
 		editContainer.getElements().addElement(editList);
 		editList.getElements().addElement(new CreateElementButton(CreateInfoType.INFO, 0, 11, 10, "CREATE INFO"));
 		editList.getElements().addElement(new CreateElementButton(CreateInfoType.TEXT, 1, 11, 11, "CREATE TEXT"));
-		editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.DELETE, 2, 2, 2, "DELETE ELEMENTS"));
+		///editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.DELETE, 2, 2, 2, "DELETE ELEMENTS"));
+		editList.getElements().addElement(new ButtonElement(2, 2, 11, "EDIT ELEMENTS"){
+
+			@Override			
+			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+				click.gsi.requestGui((TileAbstractDisplay) click.gsi.display.getActualDisplay(), player.world, player.getPosition(), player, -1, 0);
+				return -1;
+				
+			}
+		});
 		editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.RESIZE, 3, 2, 3, "RESIZE ELEMENT"));
 		editList.getElements().addElement(new ButtonElement(3, 2, 11, "CLOSE EDIT MODE"){
 

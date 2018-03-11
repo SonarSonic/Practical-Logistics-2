@@ -23,9 +23,9 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.client.gui.textedit.IStyledString;
-import sonar.logistics.client.gui.textedit.StyledString;
-import sonar.logistics.client.gui.textedit.StyledStringLine;
+import sonar.logistics.api.displays.elements.text.IStyledString;
+import sonar.logistics.api.displays.elements.text.StyledString;
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
 
 public class DisplayElementHelper {
 

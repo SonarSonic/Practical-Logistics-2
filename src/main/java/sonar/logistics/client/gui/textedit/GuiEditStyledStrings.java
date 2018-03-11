@@ -1,53 +1,44 @@
 package sonar.logistics.client.gui.textedit;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import javax.xml.ws.Holder;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.config.GuiUtils;
-import sonar.core.helpers.RenderHelper;
-import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.types.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.StyledInfo;
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
+import sonar.logistics.api.displays.elements.text.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.TextSelection;
 import sonar.logistics.api.displays.references.InfoReference;
-import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.client.LogisticsButton;
-import sonar.logistics.client.gui.GuiAbstractEditElement;
 import sonar.logistics.client.gui.GuiInfoReferenceSource;
-import sonar.logistics.helpers.DisplayElementHelper;
+import sonar.logistics.client.gui.display.SpecialFormatButton;
+import sonar.logistics.client.gui.display.TextColourButton;
+import sonar.logistics.client.gui.generic.info.IInfoReferenceRequirementGui;
+import sonar.logistics.client.gui.generic.info.InfoReferenceRequest;
+import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
+import sonar.logistics.client.gui.textedit.hotkeys.HotKeyFunctions;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 public class GuiEditStyledStrings extends GuiStyledStringFunctions implements ILineCounter, IInfoReferenceRequirementGui {
-	public long lastCursorClick = 0;
+	public long lastCursorClick = -1;
 	public boolean isDragging = false;
+	public GuiScreen origin = null;
 
-	public GuiEditStyledStrings(StyledTextElement text, DisplayElementContainer c) {
-		super(text, c);
+	public GuiEditStyledStrings(StyledTextElement text, TileAbstractDisplay display, Object origin) {
+		super(text, display);
+		if (origin != null && origin instanceof GuiScreen) {
+			this.origin = (GuiScreen) origin;
+		}
 	}
 
 	@Override
@@ -127,10 +118,10 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 	}
 
 	@Override
-	public void setSpacingScroller(float scaling) {		
-		//spacing_scroller.currentScroll = scaling;
-		//text.spacing = (int) (scaling * 50);
-		///c.updateActualScaling();
+	public void setSpacingScroller(float scaling) {
+		// spacing_scroller.currentScroll = scaling;
+		// text.spacing = (int) (scaling * 50);
+		/// c.updateActualScaling();
 	}
 
 	@Override
@@ -143,7 +134,7 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 		addStyledStrings(newStrings);
 	}
 
-	public boolean doContainerClick(double clickX, double clickY, int key) {
+	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {
 		if (isDoubleClick()) {
 			GuiActions.SELECT_ALL.trigger(this);
 			lastCursorClick = -1;
@@ -196,6 +187,10 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 		}
 		if (isCloseKey(i)) {
 			save();
+			if (origin != null) {
+				FMLClientHandler.instance().showGuiScreen(origin);
+				return;
+			}
 		}
 		super.keyTyped(c, i);
 	}

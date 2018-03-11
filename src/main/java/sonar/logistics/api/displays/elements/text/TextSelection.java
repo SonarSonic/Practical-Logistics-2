@@ -1,14 +1,16 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.api.displays.elements.text;
 
 import java.util.List;
 import java.util.Map;
 
 import sonar.core.helpers.RenderHelper;
+import sonar.logistics.client.gui.textedit.CursorPosition;
 
 public class TextSelection {
 
-	int startY, endY; // line index
-	int startX, endX;
+	public int startY, endY; // line index
+	public int startX;
+	public int endX;
 
 	public TextSelection(int startX, int endX, int startY, int endY) {
 		this.startX = startX;

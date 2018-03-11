@@ -114,13 +114,13 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		}
 		return uuid;
 	}
-
 	public Tuple<IDisplayElement, double[]> getClickBoxes(double x, double y) {
+		return getClickBoxes(getAlignmentTranslation(), x, y);
+	}
 
-		double[] align = getAlignmentTranslation();
-		for (IDisplayElement e : elements) {// FIXME
-			// for (IDisplayElement e : elements.getClickables()) {
-			if (!(e instanceof IElementStorageHolder)) { // FIXME
+	public Tuple<IDisplayElement, double[]> getClickBoxes(double[] align, double x, double y) {
+		for (IDisplayElement e : elements) {
+			if (!(e instanceof IElementStorageHolder)) {
 				double[] alignArray = getAlignmentTranslation(e);
 				double startX = align[0] + alignArray[0];
 				double startY = align[1] + alignArray[1];
@@ -142,7 +142,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		}
 		return null;
 	}
-
+	
 	public void updateActualScaling() {
 		translation = null;
 		maxContainerScaling = null;

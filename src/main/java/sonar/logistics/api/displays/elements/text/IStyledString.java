@@ -1,4 +1,4 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.api.displays.elements.text;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.elements.types.StyledTextElement;
 import sonar.logistics.api.info.InfoUUID;
 
 public interface IStyledString extends INBTSyncable {

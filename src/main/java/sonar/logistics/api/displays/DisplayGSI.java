@@ -29,6 +29,8 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.integration.multipart.TileSonarMultipart;
+import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.network.sync.DirtyPart;
 import sonar.core.network.sync.IDirtyPart;
 import sonar.core.network.sync.ISyncPart;
@@ -60,11 +62,14 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
+import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.client.gsi.GSIOverlays;
+import sonar.logistics.client.gui.display.GuiEditElementsList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.displays.LocalProviderHandler;
 
 public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListener, IFlexibleGui<IDisplay> {
@@ -176,7 +181,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 					if (e != null && e.getFirst() instanceof IClickableElement) {
 						int gui = ((IClickableElement) e.getFirst()).onGSIClicked(click, player, e.getSecond()[0], e.getSecond()[1]);
 						if (gui != -1) {
-							requestGui(part, world, pos, player, e.getFirst(), gui);
+							requestGui(part, world, pos, player, e.getFirst().getElementIdentity(), gui);
 						}
 					}
 				}
@@ -248,17 +253,17 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			if (clickPosition1 != null) {
 				GlStateManager.translate(0, 0, -0.01);
 				double[] click2 = clickPosition2 == null ? clickPosition1 : clickPosition2;
-				double clickStartX = getGridXPosition(Math.min(clickPosition1[0], click2[0]));
-				double clickStartY = getGridYPosition(Math.min(clickPosition1[1], click2[1]));
-				double clickEndX = Math.min(getDisplayScaling()[0], getGridXPosition(Math.max(clickPosition1[0], click2[0])) + getGridXScale());
-				double clickEndY = Math.min(getDisplayScaling()[1], getGridYPosition(Math.max(clickPosition1[1], click2[1])) + getGridYScale());
+				double clickStartX = GSIHelper.getGridXPosition(this, Math.min(clickPosition1[0], click2[0]));
+				double clickStartY = GSIHelper.getGridYPosition(this, Math.min(clickPosition1[1], click2[1]));
+				double clickEndX = Math.min(getDisplayScaling()[0], GSIHelper.getGridXPosition(this, Math.max(clickPosition1[0], click2[0])) + GSIHelper.getGridXScale(this));
+				double clickEndY = Math.min(getDisplayScaling()[1], GSIHelper.getGridYPosition(this, Math.max(clickPosition1[1], click2[1])) + GSIHelper.getGridYScale(this));
 				DisplayElementHelper.drawRect(clickStartX, clickStartY, clickEndX, clickEndY, new CustomColour(49, 145, 88).getRGB());
 			}
 
 			/// render the grid
 			GlStateManager.translate(0, 0, -0.01);
 			CustomColour green = new CustomColour(174, 227, 227);
-			DisplayElementHelper.drawGrid(0, 0, getDisplayScaling()[0], getDisplayScaling()[1], getGridXScale(), getGridYScale(), green.getRGB());
+			DisplayElementHelper.drawGrid(0, 0, getDisplayScaling()[0], getDisplayScaling()[1], GSIHelper.getGridXScale(this), GSIHelper.getGridYScale(this), green.getRGB());
 
 			/// render help overlays
 			/* GlStateManager.translate(0, 0, -0.001); List<String> messages = Lists.newArrayList(); if (clickPosition1 == null && clickPosition2 == null) { messages.add("L-CLICK = SELECT START POSITION"); } else if (clickPosition1 != null && clickPosition2 == null) { messages.add("R-CLICK = SELECT END POSITION"); } else if (clickPosition1 != null && clickPosition2 != null) { messages.add("SHIFT-R = CONFIRM"); } messages.add("SHIFT-L = CANCEL"); InfoRenderer.renderCenteredStringsWithUniformScaling(messages, getDisplayScaling()[0], getDisplayScaling()[1], 0, 0.75, green.getRGB()); */
@@ -304,24 +309,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		isElementSelectionMode = false;
 	}
 
-	//// GRID SELECTION MODE \\\\\
-
-	public double getGridXScale() {
-		return Math.max(getDisplayScaling()[0] / 8, display.getDisplayType().width / 4);
-	}
-
-	public double getGridYScale() {
-		return Math.max(getDisplayScaling()[1] / 8, display.getDisplayType().height / 4);
-	}
-
-	public double getGridXPosition(double x) {
-		return DisplayElementHelper.toNearestMultiple(x, getDisplayScaling()[0], getGridXScale());
-	}
-
-	public double getGridYPosition(double y) {
-		return DisplayElementHelper.toNearestMultiple(y, getDisplayScaling()[1], getGridYScale());
-	}
-
 	public void startResizeSelectionMode(int containerID) {
 		DisplayElementContainer c = getContainer(containerID);
 		if (c != null) {
@@ -359,10 +346,10 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public void finishGridSelectionMode() {
 		double[] click2 = clickPosition2 == null ? clickPosition1 : clickPosition2;
-		double clickStartX = getGridXPosition(Math.min(clickPosition1[0], click2[0]));
-		double clickStartY = getGridYPosition(Math.min(clickPosition1[1], click2[1]));
-		double clickEndX = Math.min(getDisplayScaling()[0], getGridXPosition(Math.max(clickPosition1[0], click2[0])) + getGridXScale());
-		double clickEndY = Math.min(getDisplayScaling()[1], getGridYPosition(Math.max(clickPosition1[1], click2[1])) + getGridYScale());
+		double clickStartX = GSIHelper.getGridXPosition(this, Math.min(clickPosition1[0], click2[0]));
+		double clickStartY = GSIHelper.getGridYPosition(this, Math.min(clickPosition1[1], click2[1]));
+		double clickEndX = Math.min(getDisplayScaling()[0], GSIHelper.getGridXPosition(this, Math.max(clickPosition1[0], click2[0])) + GSIHelper.getGridXScale(this));
+		double clickEndY = Math.min(getDisplayScaling()[1], GSIHelper.getGridYPosition(this, Math.max(clickPosition1[1], click2[1])) + GSIHelper.getGridYScale(this));
 		if (createInfo != null) {
 			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createInfoAdditionPacket(new double[] { clickStartX, clickStartY, 0 }, new double[] { clickEndX - clickStartX, clickEndY - clickStartY, 1 }, 0.5, createInfo), -1, this);
 		} else {
@@ -473,8 +460,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	//// GUIS \\\\
 
-	public void requestGui(TileAbstractDisplay display, World world, BlockPos pos, EntityPlayer player, IDisplayElement element, int guiID) {
-		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createGuiRequestPacket(guiID), element.getElementIdentity(), this);
+	public void requestGui(TileAbstractDisplay display, World world, BlockPos pos, EntityPlayer player, int elementIdentity, int guiID) {
+		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createGuiRequestPacket(guiID), elementIdentity, this);
 	}
 
 	public IDisplayElement getElementFromIdentity(int identity) {
@@ -488,10 +475,10 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		return null;
 	}
 
-	public IFlexibleGui getElementFromGuiPacket(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		DisplayElementContainer c = getContainer(tag.getInteger("CONT_ID"));
+	public IFlexibleGui getElementFromGuiPacket(IDisplay obj, int containerID, int elementID, World world, EntityPlayer player, NBTTagCompound tag) {
+		DisplayElementContainer c = getContainer(containerID);
 		if (c != null) {
-			IDisplayElement e = c.getElements().getElementFromIdentity(tag.getInteger("ELE_ID"));
+			IDisplayElement e = c.getElements().getElementFromIdentity(elementID);
 			if (e instanceof IFlexibleGui) {
 				return (IFlexibleGui) e;
 			}
@@ -500,24 +487,55 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void onGuiOpened(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		IFlexibleGui guiHandler = getElementFromGuiPacket(obj, id, world, player, tag);
-		if (guiHandler != null) {
-			guiHandler.onGuiOpened(obj, id, world, player, tag);
+		int containerID = tag.getInteger("CONT_ID");
+		int elementID = tag.getInteger("ELE_ID");
+		if (containerID == -1 || elementID == -1) {
+			switch (id) {
+			case 0:
+				TileAbstractDisplay display = (TileAbstractDisplay) obj.getActualDisplay();
+				PacketHelper.sendLocalProvidersFromScreen(display, world, display.getPos(), player);
+				break;
+			}
+		} else {
+			IFlexibleGui guiHandler = getElementFromGuiPacket(obj, containerID, elementID, world, player, tag);
+			if (guiHandler != null) {
+				guiHandler.onGuiOpened(obj, id, world, player, tag);
+			}
 		}
 	}
 
 	public Object getServerElement(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		IFlexibleGui guiHandler = getElementFromGuiPacket(obj, id, world, player, tag);
-		if (guiHandler != null) {
-			return guiHandler.getServerElement(obj, id, world, player, tag);
+		int containerID = tag.getInteger("CONT_ID");
+		int elementID = tag.getInteger("ELE_ID");
+		if (containerID == -1 || elementID == -1) {
+			switch (id) {
+			case 0:
+				TileAbstractDisplay display = (TileAbstractDisplay) obj.getActualDisplay();
+				return new ContainerMultipartSync(display);
+			}
+		} else {
+			IFlexibleGui guiHandler = getElementFromGuiPacket(obj, containerID, elementID, world, player, tag);
+			if (guiHandler != null) {
+				return guiHandler.getServerElement(obj, id, world, player, tag);
+			}
 		}
 		return null;
 	}
 
 	public Object getClientElement(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		IFlexibleGui guiHandler = getElementFromGuiPacket(obj, id, world, player, tag);
-		if (guiHandler != null) {
-			return guiHandler.getClientElement(obj, id, world, player, tag);
+		int containerID = tag.getInteger("CONT_ID");
+		int elementID = tag.getInteger("ELE_ID");
+		if (containerID == -1 || elementID == -1) {
+			switch (id) {
+			case 0:
+				TileAbstractDisplay display = (TileAbstractDisplay) obj.getActualDisplay();
+				return new GuiEditElementsList(this, display);
+			}
+		} else {
+			IFlexibleGui guiHandler = getElementFromGuiPacket(obj, containerID, elementID, world, player, tag);
+			if (guiHandler != null) {
+				return guiHandler.getClientElement(obj, id, world, player, tag);
+			}
 		}
 		return null;
 	}
@@ -558,6 +576,21 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public void removeElement(int containerID, IDisplayElement element) {
 		containers.get(containerID).getElements().removeElement(element);
+	}
+
+	public void removeElement(int identity) {
+		IDisplayElement element = getElementFromIdentity(identity);
+		if (element != null) {
+			IElementStorageHolder holder = element.getHolder();
+			holder.getElements().removeElement(element);
+			if (holder.getElements().getElementCount() == 0) {
+				if (holder instanceof DisplayElementContainer) {
+					containers.remove(holder);
+				} else if (holder instanceof IDisplayElement) {
+					removeElement(((IDisplayElement) holder).getElementIdentity());
+				}
+			}
+		}
 	}
 
 	public void onElementAdded(IElementStorageHolder c, IDisplayElement e) {

@@ -6,6 +6,9 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
@@ -13,6 +16,7 @@ import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.client.LogisticsColours;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.ProgressInfo;
 
@@ -28,8 +32,7 @@ public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {
 	}
 
 	@Override
-	public void render(ProgressInfo info) {
-		
+	public void render(ProgressInfo info) {		
 		GL11.glPushMatrix();
 		GlStateManager.disableLighting();
 		GL11.glTranslated(0, 0, 0.001);
@@ -39,6 +42,12 @@ public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {
 		InfoRenderer.renderProgressBar(getActualScaling()[WIDTH], getActualScaling()[HEIGHT], num1 < 0 ? 0 : num1, num2);
 		GlStateManager.enableLighting();
 		GL11.glPopMatrix();
+	}
+
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		//FIXME
+		return null;
 	}
 
 	@Override

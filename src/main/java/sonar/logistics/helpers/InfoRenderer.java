@@ -268,7 +268,7 @@ public class InfoRenderer {
 
 	public static int left_offset = (int) ((1.0 / 0.75) * 10);
 	public static int middle_offset = (int) ((1.0 / 0.75) * (10 + 92));
-	public static int right_offset = (int) ((1.0 / 0.75) * (10 + 92 + 92));
+	public static int right_offset = (int) ((1.0 / 0.75) * (92 + 92));
 
 	public static void renderMonitorInfoInGUI(IInfo info, int yPos, int colour) {
 		if (info instanceof INameableInfo) {

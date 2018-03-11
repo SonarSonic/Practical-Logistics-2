@@ -1,4 +1,6 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.client.gui.textedit.hotkeys;
+
+import sonar.logistics.client.gui.textedit.GuiStyledStringFunctions;
 
 public enum GuiActions implements IGuiAction {
 

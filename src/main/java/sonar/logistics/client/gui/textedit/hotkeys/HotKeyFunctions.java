@@ -1,10 +1,12 @@
-package sonar.logistics.client.gui.textedit;
+package sonar.logistics.client.gui.textedit.hotkeys;
 
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.text.TextFormatting;
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
+import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 
 public enum HotKeyFunctions {
 
