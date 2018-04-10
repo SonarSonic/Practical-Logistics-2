@@ -1,16 +1,15 @@
 package sonar.logistics.api.viewers;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 import sonar.logistics.api.viewers.ListenerType.UpdateType;
 
 public class UpdateListenerList {
 
-	private Map<UpdateType, ListenerType> types = Maps.newHashMap(); // sub type with the current ListenerType
-	private Map<UpdateType, Boolean> canAdd = Maps.newHashMap(); // sub type with the current ListenerType
+	private Map<UpdateType, ListenerType> types = new HashMap<>(); // sub type with the current ListenerType
+	private Map<UpdateType, Boolean> canAdd = new HashMap<>(); // sub type with the current ListenerType
 	private UpdateType[] validTypes;
 
 	public UpdateListenerList() {

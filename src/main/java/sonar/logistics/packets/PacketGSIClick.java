@@ -9,10 +9,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
-import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public class PacketGSIClick implements IMessage {
 
@@ -47,16 +47,14 @@ public class PacketGSIClick implements IMessage {
 		@Override
 		public IMessage onMessage(PacketGSIClick message, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null) {
-					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						DisplayGSI gsi = PL2.getServerManager().getDisplayGSI(message.click.identity);
-						if (gsi != null) {
-							message.click.gsi = gsi;
-							GSIClickPacketHelper.handler.runGSIClickPacket(gsi, message.click, player, message.clickTag);
-						}
-					});
-				}
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					DisplayGSI gsi = ServerInfoHandler.instance().getGSI(message.click.identity);
+					if (gsi != null) {
+						message.click.gsi = gsi;
+						GSIClickPacketHelper.handler.runGSIClickPacket(gsi, message.click, player, message.clickTag);
+					}
+				});
 			}
 			return null;
 		}

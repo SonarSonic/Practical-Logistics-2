@@ -1,10 +1,6 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
-import net.minecraft.util.text.TextFormatting;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
-import sonar.logistics.api.displays.elements.text.TextSelectionType;
 
 public interface ITextElement extends IDisplayElement {
 

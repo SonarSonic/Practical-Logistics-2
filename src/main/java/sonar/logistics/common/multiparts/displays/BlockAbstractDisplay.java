@@ -106,7 +106,8 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 			float hitX = (float) (rayResult.hitVec.x - (double) pos.getX());
 			float hitY = (float) (rayResult.hitVec.y - (double) pos.getY());
 			float hitZ = (float) (rayResult.hitVec.z - (double) pos.getZ());
-			display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
+			if (display.getGSI() != null)
+				display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
 
 		}
 

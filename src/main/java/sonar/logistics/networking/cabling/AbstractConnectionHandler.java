@@ -1,5 +1,6 @@
 package sonar.logistics.networking.cabling;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 
 	public LogisticsNetworkHandler NetworkManager() {
 		if (NetworkManager == null) {
-			NetworkManager = PL2.instance.networkManager;
+			NetworkManager = PL2.instance.proxy.networkManager;
 		}
 		return NetworkManager;
 	}
@@ -45,7 +46,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 
 	public List<T> getConnections(int registryID) {
 		List<T> coords;
-		return (registryID == -1 || (coords = connections.get(registryID)) == null) ? Lists.newArrayList() : coords;
+		return (registryID == -1 || (coords = connections.get(registryID)) == null) ? new ArrayList<>() : coords;
 	}
 
 	public void addConnections(int registryID, List<T> connections) {
@@ -53,7 +54,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 	}
 
 	public int addConnection(T cable) {
-		List<Pair<ConnectableType, Integer>> connections = Lists.newArrayList();
+		List<Pair<ConnectableType, Integer>> connections = new ArrayList<>();
 		int cableID = cable.getRegistryID();
 		int lastSize = -1;
 		BlockCoords coords = cable.getCoords();
@@ -116,7 +117,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 											// connected
 
 			if (!allConnections.isEmpty()) {
-				List<Integer> newNetworks = Lists.newArrayList();
+				List<Integer> newNetworks = new ArrayList<>();
 				allConnections.forEach(oldCable -> oldCable.setRegistryID(-1));
 
 				if (!allConnections.isEmpty()) {

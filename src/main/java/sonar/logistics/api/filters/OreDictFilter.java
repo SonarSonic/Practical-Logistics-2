@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -50,7 +48,7 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 	}
 
 	public void removeOreDict(String oreName) {
-		ArrayList<String> toRemove = Lists.newArrayList();
+		ArrayList<String> toRemove = new ArrayList<>();
 		for (String string : oreDict.getObjects()) {
 			if (string.equals(oreName)) {
 				toRemove.add(string);
@@ -86,7 +84,7 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 
 	public ArrayList<Integer> getOres() {
 		if (ints == null) {
-			ArrayList ores = Lists.newArrayList();
+			ArrayList ores = new ArrayList<>();
 			for (String string : oreDict.objs) {
 				int id = OreDictionary.getOreID(string);
 				if (!ores.contains(id)) {

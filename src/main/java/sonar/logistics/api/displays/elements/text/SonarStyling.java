@@ -3,22 +3,20 @@ package sonar.logistics.api.displays.elements.text;
 import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.client.gui.textedit.ITextClickAction;
 
 public class SonarStyling implements INBTSyncable {
 
 	public int rgb = -1;
 	public int bgd = -1;
+	public int action_id = -1;
 	public boolean bold = false;
 	public boolean italic = false;
 	public boolean underlined = false;
 	public boolean strikethrough = false;
 	public boolean obfuscated = false;
-	public ITextClickAction action = null;
 
 	public SonarStyling() {}
 
@@ -31,7 +29,7 @@ public class SonarStyling implements INBTSyncable {
 		style.underlined = underlined;
 		style.strikethrough = strikethrough;
 		style.obfuscated = obfuscated;
-		style.action = action;
+		style.action_id = action_id;
 		return style;
 	}
 
@@ -49,6 +47,14 @@ public class SonarStyling implements INBTSyncable {
 
 	public int getBackgroundColour() {
 		return bgd;
+	}
+
+	public void setActionID(int actionID) {
+		action_id = actionID;
+	}
+
+	public int getActionID() {
+		return action_id;
 	}
 
 	public String getTextFormattingString() {
@@ -70,8 +76,8 @@ public class SonarStyling implements INBTSyncable {
 		}
 		return s.toString();
 	}
-	
-	/**make sure you notify the StyledString of the change*/
+
+	/** make sure you notify the StyledString of the change */
 	public void toggleSpecialFormatting(List<TextFormatting> formatting, boolean enable) {
 		for (TextFormatting format : formatting) {
 			if (format.isFancyStyling()) {
@@ -104,11 +110,8 @@ public class SonarStyling implements INBTSyncable {
 	}
 
 	public boolean matching(SonarStyling ss) {
-		if (ss.action != null || action != null) {
-			return false;
-		}
-		int[] colour = this.getColourArray();
-		int[] compareColour = ss.getColourArray();
+		int[] colour = this.getIntFormatting();
+		int[] compareColour = ss.getIntFormatting();
 		for (int i = 0; i < colour.length; i++) {
 			if (colour[i] != compareColour[i]) {
 				return false;
@@ -128,7 +131,7 @@ public class SonarStyling implements INBTSyncable {
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		if (!nbt.getBoolean("def")) {
-			fromColourArray(nbt.getIntArray("c"));
+			fromIntFormatting(nbt.getIntArray("c"));
 			fromByteFormatting(nbt.getByteArray("f"));
 		}
 	}
@@ -138,22 +141,27 @@ public class SonarStyling implements INBTSyncable {
 		boolean save = needsSave();
 		nbt.setBoolean("def", !save);
 		if (save) {
-			nbt.setIntArray("c", getColourArray());
+			nbt.setIntArray("c", getIntFormatting());
 			nbt.setByteArray("f", getByteFormatting());
 		}
 		return nbt;
 	}
 
-	public int[] getColourArray() {
-		int[] colours = new int[2];
+	public int[] getIntFormatting() {
+		int[] colours = new int[3];
 		colours[0] = rgb;
 		colours[1] = bgd;
+		colours[2] = action_id;
 		return colours;
 	}
 
-	public void fromColourArray(int[] colours) {
+	public void fromIntFormatting(int[] colours) {
+		if (colours.length != 3) {
+			return;
+		}
 		rgb = colours[0];
 		bgd = colours[1];
+		action_id = colours[2];
 	}
 
 	public byte[] getByteFormatting() {

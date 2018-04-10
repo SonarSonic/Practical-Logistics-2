@@ -4,6 +4,8 @@ import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +19,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
@@ -34,25 +35,22 @@ import sonar.logistics.api.displays.elements.text.StyledStringHelper;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.TextSelection;
-import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.client.gsi.GSIElementPacketHelper;
-import sonar.logistics.client.gui.display.GuiAbstractEditElement;
-import sonar.logistics.client.gui.display.GuiAbstractEditScreen;
+import sonar.logistics.client.gui.display.GuiAbstractEditElements;
 import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
-public class GuiStyledStringFunctions extends GuiAbstractEditElement implements ILineCounter {
+public class GuiStyledStringFunctions extends GuiAbstractEditElements implements ILineCounter {
 
 	public final StyledTextElement text;
 	public final CursorPosition cursorPosition = CursorPosition.newInvalid();
 	public final CursorPosition selectPosition = CursorPosition.newInvalid();
-	public List<TextSelection> savedSelections = Lists.newArrayList();
-	public List<TextFormatting> specials = Lists.newArrayList();
+	public List<TextSelection> savedSelections = new ArrayList<>();
+	public List<TextFormatting> specials = new ArrayList<>();
 	public int currentColour = -1;
 
 	public GuiStyledStringFunctions(StyledTextElement text, TileAbstractDisplay display) {
-		super(text.getHolder().getContainer(), display);
+		super(text, text.getHolder().getContainer(), display);
 		this.text = text;
 	}
 
@@ -148,7 +146,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 				});
 				if (string.value != null) {
 					addStyledStrings(Lists.newArrayList(new StyledString(toAppend, string.value.getStyle().copy())));
-					/* List<IStyledString> newStrings = Lists.newArrayList(); for(IStyledString ss : string.value.getLine()){ newStrings.add(ss); if(ss==string.value){ newStrings.add(new StyledString(toAppend, ss.getStyle().copy())); } } string.value.getLine().setStrings(newStrings); */
+					/* List<IStyledString> newStrings = new ArrayList<>(); for(IStyledString ss : string.value.getLine()){ newStrings.add(ss); if(ss==string.value){ newStrings.add(new StyledString(toAppend, ss.getStyle().copy())); } } string.value.getLine().setStrings(newStrings); */
 					hold.value = true;
 				}
 
@@ -236,11 +234,6 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 		return false;
 	}
 
-	public void save() {
-		super.save();
-		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createTextSavePacket(text), text.getElementIdentity(), text.getGSI());
-	}
-
 	public void cut() {
 		copy();
 		formatSelections((line, ss) -> null);
@@ -268,7 +261,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	}
 
 	public List<StyledStringLine> getStyledLinesFromString(String string) {
-		List<StyledStringLine> lines = Lists.newArrayList();
+		List<StyledStringLine> lines = new ArrayList<>();
 		String[] splits = string.split("\n");
 		for (String s : splits) {
 			StyledStringLine line = new StyledStringLine(text);
@@ -310,15 +303,18 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 				translate(max_width - element, 0, 0);
 			GlStateManager.scale(scaling[2], scaling[2], 1);
 
+			//GlStateManager.disableBlend();
+			GlStateManager.disableLighting();
+			GlStateManager.color(1F, 1F, 1F, 1F);
+			s.render();
 			if (i == cursorPosition.y) {
 				renderCursor(s);
 			}
-			s.render();
 			renderSelections(allSelection, s, i);
 			GlStateManager.scale(1 / scaling[2], 1 / scaling[2], 1);
 			GlStateManager.popMatrix();
 			GL11.glTranslated(0, s.getStringHeight() * scaling[2], 0);
-			// text.postRender(s);
+			text.postRender(s);
 			i++;
 		}
 		popMatrix();
@@ -334,6 +330,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 			GlStateManager.enableBlend();
 			GlStateManager.disableTexture2D();
 			GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
+			//GlStateManager.color(1F, 1F, 1F, 1F);
 			RenderHelper.drawRect((cursorPos), 0, (cursorPos + 1), 9);
 			GlStateManager.disableBlend();
 			GlStateManager.enableTexture2D();
@@ -422,7 +419,8 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	//// STYLING \\\\
 
 	public final void changeSelectedColour(TextFormatting colour) {
-		onColourChanged(currentColour = FontHelper.getColourFromFormatting(colour));
+		setTextColourOnSelected(currentColour = FontHelper.getColourFromFormatting(colour));
+		onColourChanged(currentColour);
 	}
 
 	public final void toggleSpecialFormatting(TextFormatting format) {
@@ -436,7 +434,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	}
 
 	public void onColourChanged(int newColour) {
-		setTextColourOnSelected(newColour);
+		
 	}
 
 	public void onSpecialFormatChanged(TextFormatting format, boolean enabled) {
@@ -454,7 +452,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 		List<TextSelection> stored_map = savedSelections;
 		boolean hasCursorSelection = cursorPosition.validPosition() && selectPosition.validPosition();
 		if (hasCursorSelection) {
-			stored_map = Lists.newArrayList();
+			stored_map = new ArrayList<>();
 			for (TextSelection s : savedSelections) {
 				stored_map.add(new TextSelection(s.startX, s.endX, s.endY, s.endY));
 			}
@@ -612,7 +610,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 				int[] subSelect = select.getSubStringSize(c.getCachedUnformattedString(), y);
 				int start = subSelect[0], end = subSelect[1];
 				if (start != -1 && end != -1) {
-					List<IStyledString> formatted_strings = Lists.newArrayList();
+					List<IStyledString> formatted_strings = new ArrayList<>();
 
 					int index_count = 0;
 					for (IStyledString ss : c.getStrings()) {
@@ -651,7 +649,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 	}
 
 	public void formatSelectedLines(List<TextSelection> selects, Function<StyledStringLine, StyledStringLine> action) {
-		Map<Integer, StyledStringLine> lines = Maps.newHashMap();
+		Map<Integer, StyledStringLine> lines = new HashMap<>();
 		for (TextSelection select : selects) {
 			for (int y = select.startY; y <= select.endY; y++) {
 				StyledStringLine c = getLine(y);
@@ -660,7 +658,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElement implements 
 				}
 			}
 		}
-		List<StyledStringLine> toRemove = Lists.newArrayList();
+		List<StyledStringLine> toRemove = new ArrayList<>();
 		for (Entry<Integer, StyledStringLine> line : lines.entrySet()) {
 			StyledStringLine newLine = action.apply(line.getValue());
 			if (newLine == null) {

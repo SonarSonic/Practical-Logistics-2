@@ -1,6 +1,9 @@
 package sonar.logistics.helpers;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -12,15 +15,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.SonarCore;
-import sonar.core.api.nbt.INBTSyncable;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2ASMLoader;
-import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.HeightAlignment;
+import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.text.IStyledString;
@@ -100,6 +100,39 @@ public class DisplayElementHelper {
 		return null;
 	}
 
+	public static int getRegisteredID(IDisplayAction info) {
+		return PL2ASMLoader.displayActionIDs.get(info.getRegisteredName());
+	}
+
+	public static Class<? extends IDisplayAction> getDisplayActionClass(int id) {
+		return PL2ASMLoader.displayActionIClasses.get(id);
+	}
+
+	public static NBTTagCompound saveDisplayAction(NBTTagCompound tag, IDisplayAction info, SyncType type) {
+		tag.setInteger("AiD", getRegisteredID(info));
+		return info.writeData(tag, type);
+	}
+
+	public static IDisplayAction loadDisplayAction(NBTTagCompound tag) {
+		int elementID = tag.getInteger("AiD");
+		return instanceDisplayAction(getDisplayActionClass(elementID), tag);
+	}
+
+	@Nullable
+	public static <T extends IDisplayAction> T instanceDisplayAction(Class<T> classType, NBTTagCompound tag) {
+		T obj = null;
+		try {
+			obj = classType.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
+		}
+		if (obj != null) {
+			obj.readData(tag, SyncType.SAVE);
+			return obj;
+		}
+		return null;
+	}
+
 	public static double[] scaleFromPercentage(double[] percentage, double[] toFit) {
 		double[] scale = new double[percentage.length];
 		int max = Math.min(percentage.length, toFit.length);
@@ -154,18 +187,21 @@ public class DisplayElementHelper {
 
 	/** @param holder the holder to render */
 	public static void renderElementStorageHolder(IElementStorageHolder holder) {
-		for (IDisplayElement e : holder.getElements()) {
-			holder.startElementRender(e);
-			pushMatrix();
-			align(holder.getAlignmentTranslation(e));
-			double scale = e.getActualScaling()[SCALE];
-			scale(scale, scale, scale);
-			// pushMatrix();
-			e.render();
-			// popMatrix();
-			popMatrix();
-			holder.endElementRender(e);
-		}
+		holder.getElements().forEach(e -> renderElementInHolder(holder, e));
+	}
+
+	public static void renderElementInHolder(IElementStorageHolder holder, IDisplayElement e) {
+		holder.startElementRender(e);
+		pushMatrix();
+		align(holder.getAlignmentTranslation(e));
+		double scale = e.getActualScaling()[SCALE];
+		scale(scale, scale, scale);
+		// pushMatrix();
+		e.render();
+		// popMatrix();
+		popMatrix();
+		holder.endElementRender(e);
+
 	}
 
 	public static double[] alignArray(double[] actualListScaling, double[] actualElementScaling, WidthAlignment width, HeightAlignment height) {
@@ -277,7 +313,7 @@ public class DisplayElementHelper {
 		float f = (float) (color >> 16 & 255) / 255.0F;
 		float f1 = (float) (color >> 8 & 255) / 255.0F;
 		float f2 = (float) (color & 255) / 255.0F;
-		// GlStateManager.disableLighting();
+		GlStateManager.disableLighting();
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -285,7 +321,7 @@ public class DisplayElementHelper {
 		GlStateManager.disableTexture2D();
 		RenderHelper.saveBlendState();
 		// GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		// GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
 		GlStateManager.color(f, f1, f2, f3);
 
@@ -302,6 +338,6 @@ public class DisplayElementHelper {
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableBlend();
 
-		// GlStateManager.enableLighting();
+		GlStateManager.enableLighting();
 	}
 }

@@ -2,7 +2,6 @@ package sonar.logistics.common.multiparts.displays;
 
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -18,8 +17,8 @@ import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
-import sonar.logistics.networking.displays.ConnectedDisplayHandler;
-import sonar.logistics.networking.displays.ConnectedDisplayHandler.ConnectedDisplayChange;
+import sonar.logistics.networking.displays.ConnectedDisplayChange;
+import sonar.logistics.networking.displays.DisplayHandler;
 
 public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILargeDisplay {
 
@@ -33,28 +32,23 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		syncList.addParts(shouldRender, connected_display_ID, isLocked);
 	}
 
-	public void updateDefaultInfo() {
-		if (this.getConnectedDisplay() != null && shouldRender()) {
-			super.updateDefaultInfo();
-		}
-	}
-
 	//// IInfoDisplay \\\\
 
 	@Override
 	public int getInfoContainerID() {
-		return getConnectedDisplay().getInfoContainerID();
+		ConnectedDisplay display = getConnectedDisplay();
+		return display == null ? -1 : display.getInfoContainerID();
 	}
 
 	@Override
 	public void handleUpdateTag(NBTTagCompound tag) {
 		super.handleUpdateTag(tag);
-		// overrideDisplay = PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
 	}
 
 	@Override
 	public DisplayGSI getGSI() {
-		return getConnectedDisplay().getGSI();
+		ConnectedDisplay display = getConnectedDisplay();
+		return display == null ? null : getConnectedDisplay().getGSI();
 	}
 
 	@Override
@@ -76,8 +70,9 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 
 	@Override
 	public void setRegistryID(int id) {
-		connected_display_ID.setObject(id);
-		// SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
+		if (connected_display_ID.getObject() != id) {
+			connected_display_ID.setObject(id);
+		}
 	}
 
 	@Override
@@ -85,7 +80,10 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		if (isClient() && overrideDisplay != null) {
 			return overrideDisplay;
 		}
-		return PL2.getInfoManager(world.isRemote).getOrCreateDisplayScreen(getWorld(), this, getRegistryID());
+		if (this.getRegistryID() != -1) {
+			return PL2.proxy.getInfoManager(isClient()).getConnectedDisplay(getRegistryID());
+		}
+		return null;
 	}
 
 	@Override
@@ -110,12 +108,12 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	//// NETWORK \\\\
 	public void onNetworkConnect(ILogisticsNetwork network) {
 		super.onNetworkConnect(network);
-		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
+		DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 	}
 
 	public void onNetworkDisconnect(ILogisticsNetwork network) {
 		super.onNetworkDisconnect(network);
-		ConnectedDisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
+		DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 	}
 
 	@Override
@@ -136,23 +134,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		info.add("Should Render " + this.shouldRender.getObject());
 	}
 
-	//// EVENTS \\\\
-	@Override
-	public void onFirstTick() {
-		super.onFirstTick();
-		if (isServer()) {
-			ConnectedDisplayHandler.instance().queueDisplayAddition(this);
-		}
-	}
-
-	@Override
-	public void invalidate() {
-		super.invalidate();
-		if (isServer()) {
-			ConnectedDisplayHandler.instance().queueDisplayRemoval(this);
-		}
-	}
-
 	public boolean isLocked() {
 		return this.isLocked.getObject() || getConnectedDisplay() != null && getConnectedDisplay().isLocked.getObject();
 	}
@@ -171,69 +152,13 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public void readData(NBTTagCompound tag, SyncType type) {
 		super.readData(tag, type);
 		if (type.isType(SyncType.SPECIAL)) {
-			getGSI().readData(tag, SyncType.SAVE);			
+			getGSI().readData(tag, SyncType.SAVE);
 		}
 	}
 
-	@Override
-	public void writePacket(ByteBuf buf, int id) {
-		super.writePacket(buf, id);
-		switch (id) {
-		case 5:
-			shouldRender.writeToBuf(buf);
-			break;
-		}
-	}
-
-	@Override
-	public void readPacket(ByteBuf buf, int id) {
-		super.readPacket(buf, id);
-		switch (id) {
-		case 5:
-			this.shouldRender.readFromBuf(buf);
-			break;
-		case 6:
-			ConnectedDisplayHandler.setDisplayLocking(getRegistryID(), !getConnectedDisplay().isLocked.getObject());
-			break;
-		}
-	}
-	/*
-	@Override
-	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		// TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
-		// return new ContainerMultipartSync(part);
-		return null;
-	}
-
-	@Override
-	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		// TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
-		// return new GuiDisplayScreen(part, part.getGSI(), GuiState.values()[id], tag.getInteger("infopos"));
-		return null;
-	}
-
-	@Override
-	public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		if (!world.isRemote) {
-			DisplayElementContainer cont = getGSI().addElementContainer(new double[] { 0, 0, 0 }, getGSI().getDisplayScaling(), 0.5);
-			//cont.getElements().addElement(new TextDisplayElement(cont, "HELLO SAVE ME!"));
-			
-			List<String> strings = SonarHelper.convertArray(FontHelper.translate(TextFormatting.BOLD + ""+ TextFormatting.UNDERLINE + "Videotape by Radiohead"+ "-" + "When I'm at the pearly gates-This will be on my videotape, my videotape-Mephistopheles is just beneath-And he's reaching up to grab me- + -This is one for the good days-And I have it all here-In red, blue, green-Red, blue, green- + -You are my center-When I spin away-Out of control on videotape-On videotape-On videotape-On videotape-On videotape-On videotape- + -This is my way of saying goodbye-Because I can't do it face to face-I'm talking to you after it's too late-No matter what happens now-You shouldn't be afraid-Because I know today has been-the most perfect day I've ever seen").split("-"));
-			DisplayElementList list = new DisplayElementList();
-			for(String t : strings){
-				list.getElements().addElement(new TextDisplayElement(t));
-			}
-			cont.getElements().addElement(list);
-		}
-		GuiState state = GuiState.values()[id];
-		TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen();
-		SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player);
-		PL2.network.sendTo(new PacketConnectedDisplayUpdate(getConnectedDisplay(), getRegistryID()), (EntityPlayerMP) player);
-		if (state.needsSources())
-			PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player);
-
-	}
-	*/
+	/* @Override public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) { // TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen(); // return new ContainerMultipartSync(part); return null; }
+	 * @Override public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) { // TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen(); // return new GuiDisplayScreen(part, part.getGSI(), GuiState.values()[id], tag.getInteger("infopos")); return null; }
+	 * @Override public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) { if (!world.isRemote) { DisplayElementContainer cont = getGSI().addElementContainer(new double[] { 0, 0, 0 }, getGSI().getDisplayScaling(), 0.5); //cont.getElements().addElement(new TextDisplayElement(cont, "HELLO SAVE ME!")); List<String> strings = SonarHelper.convertArray(FontHelper.translate(TextFormatting.BOLD + ""+ TextFormatting.UNDERLINE + "Videotape by Radiohead"+ "-" + "When I'm at the pearly gates-This will be on my videotape, my videotape-Mephistopheles is just beneath-And he's reaching up to grab me- + -This is one for the good days-And I have it all here-In red, blue, green-Red, blue, green- + -You are my center-When I spin away-Out of control on videotape-On videotape-On videotape-On videotape-On videotape-On videotape- + -This is my way of saying goodbye-Because I can't do it face to face-I'm talking to you after it's too late-No matter what happens now-You shouldn't be afraid-Because I know today has been-the most perfect day I've ever seen").split("-")); DisplayElementList list = new DisplayElementList(); for(String t : strings){ list.getElements().addElement(new TextDisplayElement(t)); } cont.getElements().addElement(list); } GuiState state = GuiState.values()[id]; TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen(); SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player); PL2.network.sendTo(new PacketConnectedDisplayUpdate(getConnectedDisplay(), getRegistryID()), (EntityPlayerMP) player); if (state.needsSources()) PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player); } */
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
 		return CableRenderType.INTERNAL;
@@ -243,9 +168,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public boolean isBlocked(EnumFacing dir) {
 		return false;
 	}
-
-	@Override
-	public void updateCableRenders() {}
 
 	@Override
 	public void setLocked(boolean locked) {

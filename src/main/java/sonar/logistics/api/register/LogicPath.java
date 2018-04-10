@@ -2,10 +2,8 @@ package sonar.logistics.api.register;
 
 import java.util.ArrayList;
 
-import com.google.common.collect.Lists;
-
 public class LogicPath {
-	public ArrayList path = Lists.newArrayList();
+	public ArrayList path = new ArrayList<>();
 	public Class<?> start;
 	public Object startObj;
 	public RegistryType type;

@@ -46,12 +46,12 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 	
 	@Override
 	public AbstractChangeableList<MonitoredItemStack> getServerItems() {
-		return PL2.getInfoManager(world.isRemote).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_ITEM_ID));
+		return PL2.proxy.getInfoManager(isClient()).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_ITEM_ID));
 	}
 
 	@Override
 	public AbstractChangeableList<MonitoredFluidStack> getServerFluids() {
-		return PL2.getInfoManager(world.isRemote).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_FLUID_ID));
+		return PL2.proxy.getInfoManager(isClient()).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_FLUID_ID));
 	}
 
 	//// LIST READER \\\\

@@ -4,6 +4,7 @@ import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.scale;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -29,7 +30,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gui.display.GuiUnconfiguredInfoElement;
-import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
@@ -79,15 +79,23 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 		elements = null;
 	}
 
+	@Override
+	public void onInfoReferenceChanged(InfoUUID uuid, IInfo info) {
+		if (uuid.equals(this.uuid)) {
+			updateInfoElements();
+			getInfoElements().stream().filter(e -> e != null).forEach(e -> e.onInfoReferenceChanged(uuid, info));
+		}
+	}
+
 	public void updateInfoElements() {
 
 		IInfo info = getGSI().getCachedInfo(uuid);
 		if (info == null) {
-			elements = Lists.newArrayList();
+			elements = new ArrayList<>();
 			return;
 
 		}
-		List<IDisplayElement> nElements = Lists.newArrayList();
+		List<IDisplayElement> nElements = new ArrayList<>();
 		info.createDefaultElements(nElements, getHolder(), uuid);
 		nElements.forEach(e -> e.setHolder(getHolder()));
 		elements = nElements;
@@ -118,7 +126,7 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 
 	@Override
 	public String getRepresentiveString() {
-		return uuid.toString();
+		return "Unconfigured: " + uuid.toString();
 	}
 
 	@Override

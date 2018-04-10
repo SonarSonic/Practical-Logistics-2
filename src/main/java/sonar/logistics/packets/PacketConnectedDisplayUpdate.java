@@ -1,27 +1,31 @@
 package sonar.logistics.packets;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockCoords;
-import sonar.logistics.PL2;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.cabling.CableHelper;
-import sonar.logistics.networking.displays.ConnectedDisplayHandler;
+import sonar.logistics.networking.displays.DisplayHandler;
 
 public class PacketConnectedDisplayUpdate implements IMessage {
 
-	public ByteBuf savedBuf;
+	public NBTTagCompound saved;
 	public ConnectedDisplay screen;
 	public int topLeft;
 	public int listSize;
@@ -43,16 +47,13 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 		topLeft = buf.readInt();
 
 		listSize = buf.readInt();
-		connectedIdentities = Lists.newArrayList();
-		connectedCoords = Lists.newArrayList();
+		connectedIdentities = new ArrayList<>();
+		connectedCoords = new ArrayList<>();
 		for (int i = 0; i < listSize; i++) {
 			connectedIdentities.add(buf.readInt());
 			connectedCoords.add(BlockCoords.readFromBuf(buf));
 		}
-
-		savedBuf = buf;
-		buf.retain();
-
+		saved = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
@@ -60,14 +61,13 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 		buf.writeInt(registryID);
 		buf.writeInt(screen.getTopLeftScreen().getIdentity());
 
-		List<ILargeDisplay> displays = ConnectedDisplayHandler.instance().getConnections(registryID);
+		List<ILargeDisplay> displays = DisplayHandler.instance().getConnections(registryID);
 		buf.writeInt(displays.size());
 		displays.forEach(display -> {
 			buf.writeInt(display.getIdentity());
 			BlockCoords.writeToBuf(buf, display.getCoords());
 		});
-
-		screen.writeToBuf(buf);
+		ByteBufUtils.writeTag(buf, screen.writeData(new NBTTagCompound(), SyncType.SAVE));
 	}
 
 	public static class Handler implements IMessageHandler<PacketConnectedDisplayUpdate, IMessage> {
@@ -76,37 +76,48 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 		public IMessage onMessage(PacketConnectedDisplayUpdate message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					if (message.screen == null) {
-						message.screen = PL2.getClientManager().getConnectedDisplays().getOrDefault(message.registryID, new ConnectedDisplay(message.registryID));
-					}
-					message.screen.readFromBuf(message.savedBuf);
-					PL2.getClientManager().getConnectedDisplays().put(message.registryID, message.screen);
-
-					for (int i = 0; i < message.listSize; i++) {
-						int iden = message.connectedIdentities.get(i);
-						IDisplay display = PL2.getClientManager().getDisplay(iden);
-						if (display == null) {
-							BlockCoords coords = message.connectedCoords.get(i);
-							display = CableHelper.getDisplay(coords.getWorld(), coords.getBlockPos(), EnumDisplayFaceSlot.fromFace(message.screen.getCableFace()));
-						}
-						if (display != null && display instanceof ILargeDisplay) {
-							ILargeDisplay large = ((ILargeDisplay) display);
-							large.setRegistryID(message.registryID);
-							boolean isTopLeft = iden == message.topLeft;
-							large.setShouldRender(isTopLeft);
-							if (isTopLeft) {
-								message.screen.setTopLeftScreen(large, isTopLeft);
-							}
-							BlockCoords coords = large.getCoords();
-							coords.getWorld().markBlockRangeForRenderUpdate(coords.getBlockPos(), coords.getBlockPos());
-
-						}
-					}
-
-					message.savedBuf.release();
+					doMessage(message, ctx);
 				});
 			}
 			return null;
+		}
+
+		public static void doMessage(PacketConnectedDisplayUpdate message, MessageContext ctx) {
+
+			World world = SonarCore.proxy.getPlayerEntity(ctx).getEntityWorld();
+			if (message.screen == null) {
+				ClientInfoHandler.instance().getConnectedDisplays().putIfAbsent(message.registryID, ConnectedDisplay.loadDisplay(world, message.registryID));
+				message.screen = ClientInfoHandler.instance().getConnectedDisplays().get(message.registryID);				
+			}
+			message.screen.readData(message.saved, SyncType.SAVE);		
+			message.screen.getGSI().updateScaling();
+			if(!message.screen.getGSI().isValid()){
+				message.screen.getGSI().validate();
+			}
+			
+			ClientInfoHandler.instance().getConnectedDisplays().put(message.registryID, message.screen);
+			for (int i = 0; i < message.listSize; i++) {
+				int iden = message.connectedIdentities.get(i);
+				IDisplay display = ClientInfoHandler.instance().displays_tile.get(iden);
+				if (display == null) {
+					BlockCoords coords = message.connectedCoords.get(i);
+					display = CableHelper.getDisplay(world, coords.getBlockPos(), EnumDisplayFaceSlot.fromFace(message.screen.getCableFace()));
+					ClientInfoHandler.instance().displays_tile.put(iden, display);
+				}
+				if (display != null && display instanceof TileLargeDisplayScreen) {
+					TileLargeDisplayScreen large = ((TileLargeDisplayScreen) display);
+					large.identity.setObject(iden);
+					large.setRegistryID(message.registryID);
+					boolean isTopLeft = iden == message.topLeft;
+					large.setShouldRender(isTopLeft);
+					if (isTopLeft) {
+						message.screen.setTopLeftScreen(large, isTopLeft);
+					}
+					BlockCoords coords = large.getCoords();
+					world.markBlockRangeForRenderUpdate(coords.getBlockPos(), coords.getBlockPos());
+				}
+			}
+
 		}
 	}
 }

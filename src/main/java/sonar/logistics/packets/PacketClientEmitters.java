@@ -1,8 +1,7 @@
 package sonar.logistics.packets;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,9 +14,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.api.wireless.WirelessConnectionType;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class PacketClientEmitters implements IMessage {
 
@@ -35,7 +34,7 @@ public class PacketClientEmitters implements IMessage {
 	public void fromBytes(ByteBuf buf) {
 		type = WirelessConnectionType.values()[buf.readInt()];
 		NBTTagCompound tag = ByteBufUtils.readTag(buf);
-		emitters = Lists.newArrayList();
+		emitters = new ArrayList<>();
 		if (tag.hasKey("emitters")) {
 			NBTTagList tagList = tag.getTagList("emitters", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
@@ -63,10 +62,10 @@ public class PacketClientEmitters implements IMessage {
 			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 				switch(message.type){
 				case DATA:
-					PL2.getClientManager().clientDataEmitters = message.emitters;
+					ClientInfoHandler.instance().clientDataEmitters = message.emitters;
 					break;
 				case REDSTONE:
-					PL2.getClientManager().clientRedstoneEmitters = message.emitters;
+					ClientInfoHandler.instance().clientRedstoneEmitters = message.emitters;
 					break;
 				default:
 					break;

@@ -2,16 +2,18 @@ package sonar.logistics.api.displays.elements.text;
 
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.sound.sampled.Line;
 import javax.xml.ws.Holder;
 
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,13 +23,13 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
-import sonar.core.api.IFlexibleGui;
+import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
@@ -36,18 +38,18 @@ import sonar.logistics.api.displays.elements.ISpecialAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.logistics.helpers.PacketHelper;
 
 @DisplayElementType(id = StyledTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine>, ISpecialAlignment {
 
-	private List<StyledStringLine> textLines = Lists.newArrayList();
+	private Map<Integer, IDisplayAction> actions = Maps.newHashMap();
+	private List<StyledStringLine> textLines = new ArrayList<>();
 	private List<InfoUUID> uuids;
 	public int spacing = 0;
+	public int action_id_count = 0;
 	public boolean updateTextScaling = true, updateTextContents = true;
 
 	public StyledTextElement() {}
@@ -65,18 +67,35 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		super.updateRender();
 		if (updateTextContents) {
 			if (uuids != null && !uuids.isEmpty()) {
-				this.getGSI().removeInfoReferences(uuids);
+				// this.getGSI().removeInfoReferences(uuids);
 			}
 			this.uuids = null;
 			this.cachedWidth = -1;
 			this.cachedHeight = -1;
-			this.getGSI().addInfoReferences(getInfoReferences());
-			onElementChanged();
+			/// getGSI().addInfoReferences(getInfoReferences());
+			unscaledWidthHeight = null;
+			maxScaling = null;
+			actualScaling = null;
 			updateTextContents = false;
+			getGSI().updateInfoReferences();
 		} else if (updateTextScaling) {
-			onElementChanged();
 			updateTextScaling = false;
 		}
+	}
+
+	@Override
+	public void onElementChanged() {
+		updateTextContents();
+	}
+
+	public int addAction(IDisplayAction action) {
+		int id = action_id_count + 1;
+		actions.put(id, action);
+		return id;
+	}
+
+	public @Nullable IDisplayAction getAction(int action_id) {
+		return actions.get(action_id);
 	}
 
 	@Override
@@ -105,7 +124,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return new GuiEditStyledStrings(this, obj, origin);
+		return GuiSonar.withOrigin(new GuiEditStyledStrings(this, obj), origin);
 	}
 
 	public List<StyledStringLine> getLines() {
@@ -134,8 +153,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		updateTextContents();
 	}
 
-	public void preRender(StyledStringLine c) {
-	}
+	public void preRender(StyledStringLine c) {}
 
 	public void deleteLine(int lineY) {
 		textLines.remove(lineY);
@@ -152,13 +170,12 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		updateTextContents();
 	}
 
-	public void postRender(StyledStringLine c) {
-	}
+	public void postRender(StyledStringLine c) {}
 
 	@Override
 	public List<InfoUUID> getInfoReferences() {
 		if (uuids == null) {
-			List<InfoUUID> references = Lists.newArrayList();
+			List<InfoUUID> references = new ArrayList<>();
 			forEach(line -> line.forEach(s -> ListHelper.addWithCheck(references, s.getInfoReferences())));
 			uuids = references;
 		}
@@ -188,6 +205,14 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+		Tuple<IStyledString, Integer> string = getStringClicked(subClickX, subClickY);
+		if (string.getFirst() != null) {
+			IDisplayAction action = getAction(string.getFirst().getStyle().action_id);
+			if (action != null) {
+				return action.doAction(click, player, subClickX, subClickY);
+			}
+		}
+
 		int[] index = getIndexClicked(new Holder(subClickX), new Holder(subClickY));
 		if (index != null) {
 			player.sendMessage(new TextComponentTranslation("Index: " + "x: " + index[0] + " y: " + index[1]));
@@ -317,7 +342,7 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		super.readData(nbt, type);
-		List<StyledStringLine> newLines = Lists.newArrayList();
+		List<StyledStringLine> newLines = new ArrayList<>();
 		NBTTagList tagList = nbt.getTagList("ssc", NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound ssTag = tagList.getCompoundTagAt(i);
@@ -326,21 +351,50 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 			newLines.add(ss);
 		}
 		textLines = newLines;
+
+		NBTTagList actionList = nbt.getTagList("actions", NBT.TAG_COMPOUND);
+		for (int i = 0; i < actionList.tagCount(); i++) {
+			NBTTagCompound actionTag = actionList.getCompoundTagAt(i);
+			int saved_id = actionTag.getInteger("saved_id");
+			IDisplayAction action = DisplayElementHelper.loadDisplayAction(actionTag);
+			actions.put(saved_id, action);
+		}
+
+		action_id_count = nbt.getInteger("action_id");
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		super.writeData(nbt, type);
+		List<Integer> actions_to_save = new ArrayList<>();
 		NBTTagList tagList = new NBTTagList();
 		for (StyledStringLine ss : textLines) {
 			tagList.appendTag(ss.writeData(new NBTTagCompound(), type));
+			ListHelper.addWithCheck(actions_to_save, ss.getContainedActions());
 		}
 		if (!tagList.hasNoTags()) {
 			nbt.setTag("ssc", tagList);
 		}
+		NBTTagList actionList = new NBTTagList();
+		for (Integer i : actions_to_save) {
+			if (i != -1) {
+				IDisplayAction action = actions.get(i);
+				if (action != null) {
+					NBTTagCompound actionTag = new NBTTagCompound();
+					DisplayElementHelper.saveDisplayAction(actionTag, action, type);
+					actionTag.setInteger("saved_id", i);
+					actionList.appendTag(actionTag);
+				}
+			}
+		}
+		if (!actionList.hasNoTags()) {
+			nbt.setTag("actions", actionList);
+		}
+
+		nbt.setInteger("action_id", action_id_count);
 		return nbt;
 	}
-	
+
 	private int cachedWidth = -1;
 
 	public int getWidth() {

@@ -3,9 +3,7 @@ package sonar.logistics.api.displays.elements;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.core.api.IFlexibleGui;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.displays.DisplayGSI;
@@ -14,7 +12,6 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.PacketHelper;
 
 public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 

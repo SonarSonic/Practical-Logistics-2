@@ -1,10 +1,8 @@
 package sonar.logistics.worlddata;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
-import sonar.logistics.PL2;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public class IdentityCountData extends WorldSavedData {
 
@@ -22,12 +20,12 @@ public class IdentityCountData extends WorldSavedData {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		IDENTITY_COUNT = nbt.getInteger("count");
-		PL2.getServerManager().setIdentityCount(IDENTITY_COUNT);
+		ServerInfoHandler.instance().setIdentityCount(IDENTITY_COUNT);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		IDENTITY_COUNT = PL2.getServerManager().getIdentityCount();
+		IDENTITY_COUNT = ServerInfoHandler.instance().getIdentityCount();
 		compound.setInteger("count", IDENTITY_COUNT);
 		return compound;
 	}

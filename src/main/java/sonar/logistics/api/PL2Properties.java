@@ -23,7 +23,8 @@ public class PL2Properties {
 	public static final PropertyCableFace WEST = PropertyCableFace.create(EnumFacing.WEST);
 	public static final PropertyCableFace DOWN = PropertyCableFace.create(EnumFacing.DOWN);
 	public static final PropertyCableFace UP = PropertyCableFace.create(EnumFacing.UP);
-	public static final PropertyCableFace[] PROPS = new PropertyCableFace[] { NORTH, EAST, SOUTH, WEST, DOWN, UP };
+	public static final PropertyCableFace[] CABLE_FACES = new PropertyCableFace[] { NORTH, EAST, SOUTH, WEST, DOWN, UP };
+	
 
 	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.<NodeTransferMode>create("transfer", NodeTransferMode.class);
 
@@ -41,7 +42,7 @@ public class PL2Properties {
 		public static PropertyCableFace create(EnumFacing face) {
 			return new PropertyCableFace(face, SonarHelper.convertArray(CableRenderType.values()));
 		}
-	}	
+	}
 	
 	public static AxisAlignedBB getCableBox(CableRenderType connect, EnumFacing face) {
 		double p = 0.0625;

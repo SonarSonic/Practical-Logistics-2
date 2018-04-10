@@ -12,15 +12,19 @@ import sonar.logistics.api.displays.DisplayGSI;
 
 public interface IDisplay extends INetworkTile, ISyncableListener, ISonarListener, IFlexibleGui<IDisplay> {
 
-	public int getInfoContainerID();
+	int getInfoContainerID();
 
-	public DisplayGSI getGSI();
+	DisplayGSI getGSI();
 
-	public EnumFacing getCableFace();
+	EnumFacing getCableFace();
 
-	public DisplayType getDisplayType();
+	DisplayType getDisplayType();
 
-	public void sendInfoContainerPacket();
+	default void onInfoContainerPacket(){}
+
+	default void onGSIValidate(){}
+
+	default void onGSIInvalidate(){}
 	
 	public IDisplay getActualDisplay();
 

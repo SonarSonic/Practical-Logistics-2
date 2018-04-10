@@ -8,7 +8,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -19,15 +18,14 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.networking.LogisticsNetworkHandler;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
 import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
-import sonar.logistics.networking.displays.ConnectedDisplayHandler;
-import sonar.logistics.worlddata.ConnectedDisplayData;
-import sonar.logistics.worlddata.IdentityCountData;
+import sonar.logistics.networking.displays.DisplayHandler;
 
 public class PL2Events {
 
@@ -45,11 +43,11 @@ public class PL2Events {
 			CableConnectionHandler.instance().tick();
 			RedstoneConnectionHandler.instance().tick();
 			LogisticsNetworkHandler.instance().tick();
-			PL2.getServerManager().tick();	
+			ServerInfoHandler.instance().tick();	
 					
 			WirelessDataManager.instance().tick();
 			WirelessRedstoneManager.instance().tick();
-			ConnectedDisplayHandler.instance().tick();
+			DisplayHandler.instance().tick();
 			TileArray.entityChanged = false;
 			
 			updateTick = System.nanoTime() - tickStart;

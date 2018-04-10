@@ -5,11 +5,10 @@ import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
 import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -19,7 +18,7 @@ import sonar.core.utils.Pair;
 
 public class RenderBlockSelection {
 
-	public static Map<BlockCoords, Pair<Long, Boolean>> positions = Maps.newHashMap();
+	public static Map<BlockCoords, Pair<Long, Boolean>> positions = new HashMap<>();
 	public static int displayTime = 8000;
 
 	public static void tick(RenderWorldLastEvent evt) {

@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
@@ -33,20 +34,25 @@ public class GSIOverlays {
 
 	public static void tick(DrawBlockHighlightEvent evt) {
 		EnumFacing face = evt.getTarget().sideHit;
-		BlockPos clickPos = evt.getTarget().getBlockPos();
 		if (face != null) {
+			BlockPos clickPos = evt.getTarget().getBlockPos();
 			IPartSlot slot = EnumDisplayFaceSlot.fromFace(face);
 			Optional<IMultipartTile> tile = MultipartHelper.getPartTile(evt.getPlayer().getEntityWorld(), clickPos, slot);
 			if (tile.isPresent() && tile.get() instanceof IDisplay) {
-				Vec3d vec = evt.getTarget().hitVec;
-				float hitX = (float) (vec.x - (double) clickPos.getX());
-				float hitY = (float) (vec.y - (double) clickPos.getY());
-				float hitZ = (float) (vec.z - (double) clickPos.getZ());
 				IDisplay display = (IDisplay) tile.get();
 				if (display != null && display instanceof TileLargeDisplayScreen) {
-					display = ((TileLargeDisplayScreen) display).getConnectedDisplay().getTopLeftScreen();
+					ConnectedDisplay connectedDisplay = ((TileLargeDisplayScreen) display).getConnectedDisplay();
+					if (connectedDisplay != null) {
+						display = connectedDisplay.getTopLeftScreen();
+					}else{
+						display = null;
+					}
 				}
 				if (display != null) {
+					Vec3d vec = evt.getTarget().hitVec;
+					float hitX = (float) (vec.x - (double) clickPos.getX());
+					float hitY = (float) (vec.y - (double) clickPos.getY());
+					float hitZ = (float) (vec.z - (double) clickPos.getZ());
 					currentLook = InteractionHelper.getLookPosition(display.getGSI(), clickPos, face, hitX, hitY, hitZ);
 					return;
 				}

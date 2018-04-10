@@ -13,7 +13,6 @@ import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.networking.displays.LocalProviderHandler;
 
 public class PacketLocalProviderSelection extends PacketMultipart {
 

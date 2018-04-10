@@ -1,9 +1,8 @@
 package sonar.logistics.info.providers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import appeng.api.AEApi;
 import appeng.api.storage.IMEInventoryHandler;
@@ -36,7 +35,7 @@ public class AE2DriveProvider implements ITileInfoProvider {
 	@Override
 	public void provide(IMasterInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, Block block, TileEntity tile) {
 		TileDrive drives = (TileDrive) tile;
-		List<AE2DriveInfo> allInfo = Lists.newArrayList();
+		List<AE2DriveInfo> allInfo = new ArrayList<>();
 		long totalBytes = 0;
 		long usedBytes = 0;
 		long totalTypes = 0;
@@ -44,7 +43,7 @@ public class AE2DriveProvider implements ITileInfoProvider {
 		long itemCount = 0;
 		for (int i = 0; i < drives.getInternalInventory().getSlots(); i++) {
 			ItemStack is = drives.getInternalInventory().getStackInSlot(i);
-			List<IMEInventoryHandler> handlers = Lists.newArrayList();
+			List<IMEInventoryHandler> handlers = new ArrayList<>();
 			if (is != null) {
 				IMEInventoryHandler itemInventory = AEApi.instance().registries().cell().getCellInventory(is, null, Api.INSTANCE.storage().getStorageChannel(IItemStorageChannel.class)); //should ISaveProvider by null?
 				IMEInventoryHandler fluidInventory = AEApi.instance().registries().cell().getCellInventory(is, null, Api.INSTANCE.storage().getStorageChannel(IFluidStorageChannel.class));

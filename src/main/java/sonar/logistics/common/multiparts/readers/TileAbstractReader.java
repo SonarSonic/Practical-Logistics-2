@@ -1,13 +1,12 @@
 package sonar.logistics.common.multiparts.readers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import mcmultipart.api.multipart.IMultipartTile;
@@ -47,6 +46,7 @@ import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogistics implements INetworkReader<T>, IByteBufTile, IFlexibleGui {
@@ -84,7 +84,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public void onNetworkDisconnect(ILogisticsNetwork network) {
 		super.onNetworkDisconnect(network);
 		for (int i = 0; i < getMaxInfo(); i++) {
-			PL2.getServerManager().changeInfo(this, new InfoUUID(this, i), InfoError.noData);
+			ServerInfoHandler.instance().changeInfo(this, new InfoUUID(this, i), InfoError.noData);
 		}
 	}
 	//// ILogicMonitor \\\\
@@ -109,7 +109,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	}
 
 	public List<NodeConnection> getUsedChannels(Map<NodeConnection, AbstractChangeableList<T>> channels) {
-		List<NodeConnection> usedChannels = Lists.newArrayList();
+		List<NodeConnection> usedChannels = new ArrayList<>();
 		ChannelList readerChannels = getChannels();
 		for (Entry<NodeConnection, AbstractChangeableList<T>> entry : channels.entrySet()) {
 			if (readerChannels.isMonitored(entry.getKey())) {
@@ -126,7 +126,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	@Override
 	public List<INetworkHandler> getValidHandlers() {
 		if (validHandlers == null) {
-			validHandlers = addValidHandlers(Lists.newArrayList());
+			validHandlers = addValidHandlers(new ArrayList<>());
 		}
 		return validHandlers;
 	}
@@ -134,7 +134,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	@Nullable
 	public AbstractChangeableList<T> getMonitoredList() {
 		InfoUUID id = new InfoUUID(getIdentity(), 0);
-		return PL2.getInfoManager(world.isRemote).getMonitoredList(id);
+		return PL2.proxy.getInfoManager(isClient()).getMonitoredList(id);
 	}
 
 	//// IChannelledTile \\\\

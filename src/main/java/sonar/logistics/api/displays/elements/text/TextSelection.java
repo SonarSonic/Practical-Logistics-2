@@ -1,9 +1,7 @@
 package sonar.logistics.api.displays.elements.text;
 
 import java.util.List;
-import java.util.Map;
 
-import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.gui.textedit.CursorPosition;
 
 public class TextSelection {

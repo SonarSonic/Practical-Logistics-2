@@ -7,25 +7,23 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Maps;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
+import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
@@ -39,16 +37,18 @@ public class ServerInfoHandler implements IInfoManager {
 
 	// server side
 	private int IDENTITY_COUNT; // gives unique identity to all PL2 Tiles ( which connect to networks), they can then be retrieved via their identity.
-	// public List<InfoUUID> changedInfo = Lists.newArrayList();
-	public Map<ILogicListenable, List<Integer>> changedInfo = Maps.newHashMap(); // in the form of READER IDENTITY and then CHANGED INFO
-	public Map<Integer, IDisplay> displays = Maps.newHashMap();
+	public Map<ILogicListenable, List<Integer>> changedInfo = new HashMap<>(); // in the form of READER IDENTITY and then CHANGED INFO
+	public Map<Integer, DisplayGSI> displays = new HashMap<>();
 	public boolean markDisplaysDirty = true;
-	private Map<InfoUUID, IInfo> info = Maps.newHashMap();
-	public Map<InfoUUID, AbstractChangeableList> monitoredLists = Maps.newHashMap();
-	public Map<Integer, ILogicListenable> identityTiles = Maps.newHashMap();
-	public Map<Integer, ConnectedDisplay> connectedDisplays = Maps.newHashMap();
-	// public Map<Integer, DisplayInteractionEvent> clickEvents = Maps.newHashMap();
-	public Map<Integer, List<ChunkPos>> chunksToUpdate = Maps.newHashMap();
+	private Map<InfoUUID, IInfo> info = new HashMap<>();
+	public Map<InfoUUID, AbstractChangeableList> monitoredLists = new HashMap<>();
+	public Map<Integer, ILogicListenable> identityTiles = new HashMap<>();
+	public Map<Integer, ConnectedDisplay> connectedDisplays = new HashMap<>();
+	public Map<Integer, List<ChunkPos>> chunksToUpdate = new HashMap<>();
+
+	public static ServerInfoHandler instance(){
+		return (ServerInfoHandler) PL2.proxy.getServerManager();
+	}
 
 	public boolean newChunks = false;
 
@@ -87,18 +87,9 @@ public class ServerInfoHandler implements IInfoManager {
 	public IInfo getInfoFromUUID(InfoUUID uuid) {
 		return info.get(uuid);
 	}
-
-	public ConnectedDisplay getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID) {
-		if (registryID != -1) {
-			Map<Integer, ConnectedDisplay> displays = getConnectedDisplays();
-			ConnectedDisplay toSet = displays.get(registryID);
-			if (toSet == null) {
-				displays.put(registryID, new ConnectedDisplay(display));
-				toSet = displays.get(registryID);
-			}
-			return toSet;
-		}
-		return new ConnectedDisplay(display);// kills Ait
+	
+	public ConnectedDisplay getConnectedDisplay(int iden) {
+		return connectedDisplays.get(iden);
 	}
 
 	public void addIdentityTile(ILogicListenable logicTile) {
@@ -122,28 +113,38 @@ public class ServerInfoHandler implements IInfoManager {
 	}
 
 	public void addDisplay(IDisplay display) {
-		if (!displays.containsValue(display)) {
-			displays.put(display.getIdentity(), display);
-			ChunkViewerHandler.instance().onDisplayAdded(display);
-			LocalProviderHandler.onDisplayAdded(display);
+		DisplayGSI gsi = display.getGSI();
+		if (gsi != null && gsi.getDisplay() != null && display.getCoords() != null && !displays.containsValue(gsi)) {
+			validateGSI(display, gsi);
 		}
 	}
 
 	public void removeDisplay(IDisplay display) {
-		displays.remove(display.getIdentity());
-		ChunkViewerHandler.instance().onDisplayRemoved(display);
-		LocalProviderHandler.onDisplayRemoved(display);
+		DisplayGSI gsi = display.getGSI();
+		if (gsi != null && gsi.getDisplay() != null && display.getCoords() != null) {
+			invalidateGSI(display, gsi);
+		}
+	}
+
+	public void validateGSI(IDisplay display, DisplayGSI gsi) {
+		if (gsi.getDisplay().getCoords() != null) {
+			if (display == gsi.getDisplay().getActualDisplay()) {
+				ChunkViewerHandler.instance().onDisplayAdded(gsi);
+				gsi.validate();
+				gsi.sendInfoContainerPacket();
+			}
+		}
+	}
+
+	public void invalidateGSI(IDisplay display, DisplayGSI gsi) {
+		ChunkViewerHandler.instance().onDisplayRemoved(gsi);
+		gsi.invalidate();
 	}
 
 	@Override
-	public IDisplay getDisplay(int iden) {
+	public DisplayGSI getGSI(int iden) {
 		return displays.get(iden);
 	}
-
-	public ConnectedDisplay getConnectedDisplay(int iden) {
-		return connectedDisplays.get(iden);
-	}
-
 	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
 		List<ChunkPos> chunks = chunksToUpdate.computeIfAbsent(dimension, FunctionHelper.ARRAY);
 		if (!chunks.contains(chunkPos)) {

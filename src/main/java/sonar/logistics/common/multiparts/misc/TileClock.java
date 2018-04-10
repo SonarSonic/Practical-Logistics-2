@@ -27,6 +27,7 @@ import sonar.logistics.client.gui.GuiClock;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.info.types.ClockInfo;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public class TileClock extends TileSidedLogistics implements IInfoProvider, IByteBufTile, IFlexibleGui {
 
@@ -87,9 +88,9 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity(), 0);
-			IInfo oldInfo = PL2.getServerManager().getInfoFromUUID(id);
+			IInfo oldInfo = ServerInfoHandler.instance().getInfoFromUUID(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
-				PL2.getServerManager().changeInfo(this, id, info);
+				ServerInfoHandler.instance().changeInfo(this, id, info);
 			}
 		}
 	}
@@ -98,7 +99,7 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 
 	@Override
 	public IInfo getMonitorInfo(int pos) {
-		return PL2.getInfoManager(world.isRemote).getInfoFromUUID(new InfoUUID(getIdentity(), 0));
+		return PL2.proxy.getInfoManager(isClient()).getInfoFromUUID(new InfoUUID(getIdentity(), 0));
 	}
 
 	@Override
@@ -119,8 +120,8 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 
 	//// EVENTS \\\\
 
-	public void validate() {
-		super.validate();
+	public void onFirstTick() {
+		super.onFirstTick();
 		if (isServer()) {
 			setClockInfo();
 		}

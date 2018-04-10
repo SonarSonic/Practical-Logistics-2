@@ -3,9 +3,7 @@ package sonar.logistics.api.displays.elements;
 import java.util.List;
 
 import sonar.core.helpers.FontHelper;
-import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 
 public enum ElementSelectionType {

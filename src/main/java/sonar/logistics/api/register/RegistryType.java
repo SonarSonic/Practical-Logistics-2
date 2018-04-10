@@ -3,8 +3,6 @@ package sonar.logistics.api.register;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -42,7 +40,7 @@ public enum RegistryType {
 	}
 
 	public static List<Class<?>> buildList() {
-		ArrayList<Class<?>> classes = Lists.newArrayList();
+		ArrayList<Class<?>> classes = new ArrayList<>();
 		for (RegistryType type : values()) {
 			if (type.classType != null) {
 				classes.add(type.classType);

@@ -1,9 +1,8 @@
 package sonar.logistics.networking.transfers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import sonar.core.helpers.InventoryHelper.DefaultTransferOverride;
 import sonar.logistics.api.filters.ITransferFilteredTile;
@@ -24,7 +23,7 @@ import sonar.logistics.networking.items.ItemHelper;
 //TODO make it possible to have one without a handler that is linked some other wayy
 public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler> extends DefaultNetworkChannels {
 
-	private List<ITransferFilteredTile> nodes = Lists.newArrayList();
+	private List<ITransferFilteredTile> nodes = new ArrayList<>();
 	private Iterator<ITransferFilteredTile> nodeIterator;
 	private int nodesPerTick = 0;
 	private DefaultTransferOverride override = new DefaultTransferOverride(128); // make one for the fluids

@@ -1,8 +1,7 @@
 package sonar.logistics.commands;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -19,7 +18,7 @@ public class CommandResetInfoRegistry implements ICommand {
 	private final List aliases;
 
 	public CommandResetInfoRegistry() {
-		aliases = Lists.newArrayList();
+		aliases = new ArrayList<>();
 		aliases.add("resetRegistry");
 		aliases.add("resetReg");
 	}

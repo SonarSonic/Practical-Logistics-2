@@ -15,7 +15,6 @@ import sonar.core.network.sync.SyncEnergyType;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -31,6 +30,7 @@ import sonar.logistics.common.containers.ContainerEnergyReader;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.energy.EnergyHelper;
 import sonar.logistics.networking.energy.EnergyNetworkHandler;
 
@@ -98,7 +98,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 			break;
 
 		}
-		PL2.getServerManager().changeInfo(this, uuid, info);
+		ServerInfoHandler.instance().changeInfo(this, uuid, info);
 	}
 
 	//// IChannelledTile \\\\

@@ -6,7 +6,6 @@ import java.util.Map;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
@@ -22,6 +21,7 @@ import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.ProgressInfo;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.networking.subnetworks.NetworkWatcherHandler;
 
@@ -54,7 +54,7 @@ public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> 
 					latestInfo = info != null ? info.getSaveableInfo() : InfoError.noData;
 				}
 			}
-			PL2.getServerManager().changeInfo(this, id, latestInfo);
+			ServerInfoHandler.instance().changeInfo(this, id, latestInfo);
 		}
 	}
 	@Override

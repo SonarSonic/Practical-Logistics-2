@@ -1,18 +1,18 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.ListHelper;
-import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IInfoRequirement;
 import sonar.logistics.api.info.IInfo;
@@ -23,6 +23,7 @@ import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.client.gui.generic.info.InfoUUIDRequest;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class GuiInfoSource extends GuiSelectionList<Object> {
 
@@ -47,6 +48,13 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 		for (int i = 0; i < size; i++) {
 			this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * 12), listWidth, listHeight));
 		}
+	}
+	
+	@Override
+	public void drawGuiContainerForegroundLayer(int x, int y) {
+		super.drawGuiContainerForegroundLayer(x, y);
+		FontHelper.textCentre(TextFormatting.BOLD + "Info Source", xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre("Select data to display", xSize, 18, LogisticsColours.white_text);
 	}
 
 	@Override
@@ -79,7 +87,7 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			IInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
+			IInfo monitorInfo = ClientInfoHandler.instance().info.get((InfoUUID) info);
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
@@ -122,7 +130,7 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 
 	@Override
 	public void setInfo() {
-		infoList = Lists.newArrayList(PL2.getClientManager().sortedLogicMonitors.getOrDefault(gsi.getDisplayGSIIdentity(), Lists.newArrayList()));
+		infoList = Lists.newArrayList(ClientInfoHandler.instance().sortedLogicMonitors.getOrDefault(gsi.getDisplayGSIIdentity(), new ArrayList<>()));
 	}
 
 }

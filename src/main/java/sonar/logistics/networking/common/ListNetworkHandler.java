@@ -1,12 +1,10 @@
 package sonar.logistics.networking.common;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -23,6 +21,7 @@ import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.helpers.PacketHelper;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChangeableList> implements INetworkListHandler<I, L> {
 
@@ -37,7 +36,7 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 	}
 	
 	public AbstractChangeableList<I> getUUIDLatestList(InfoUUID uuid){
-		AbstractChangeableList<I> updateList = PL2.getServerManager().getMonitoredList(uuid);
+		AbstractChangeableList<I> updateList = ServerInfoHandler.instance().getMonitoredList(uuid);
 		return updateList ==null ? newChangeableList() : updateList;
 	}
 
@@ -98,14 +97,14 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 	public Pair<InfoUUID, AbstractChangeableList<I>> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, AbstractChangeableList<I>> channelLists, boolean send) {
 		InfoUUID uuid = getReaderUUID(reader);
 		if (network.validateTile(reader)) {
-			List<NodeConnection> usedChannels = Lists.newArrayList();
+			List<NodeConnection> usedChannels = new ArrayList<>();
 			AbstractChangeableList<I> updateList = getUUIDLatestList(uuid);
 			updateList.saveStates();
 			AbstractChangeableList<I> viewableList = reader.getViewableList(updateList, uuid, channelLists, usedChannels);
 			if (reader instanceof INetworkReader) {
 				((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels, uuid);
 			}
-			PL2.getServerManager().monitoredLists.put(uuid, updateList);
+			ServerInfoHandler.instance().monitoredLists.put(uuid, updateList);
 			if (send && (!updateList.wasLastListNull || updateList.wasLastListNull != updateList.getList().isEmpty()))
 				PacketHelper.sendReaderToListeners(reader, updateList, uuid);
 			return new Pair(uuid, updateList);

@@ -1,10 +1,9 @@
 package sonar.logistics.client.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -130,7 +129,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		if (search == null || search.isEmpty() || search.equals(" ") || search.equals(""))
 			return part.getMonitoredList().createSaveableList();
 		else {
-			List<MonitoredFluidStack> searchlist = Lists.newArrayList();
+			List<MonitoredFluidStack> searchlist = new ArrayList<>();
 			List<MonitoredFluidStack> cached = part.getMonitoredList().createSaveableList();
 			for (MonitoredFluidStack stack : cached) {
 				StoredFluidStack fluidStack = stack.getStoredStack();
@@ -143,7 +142,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	}
 
 	@Override
-	public void onGridClicked(MonitoredFluidStack selection, int pos, int button, boolean empty) {
+	public void onGridClicked(MonitoredFluidStack selection, int x, int y, int pos, int button, boolean empty) {
 		if (empty) {
 			return;
 		}
@@ -225,7 +224,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	@Override
 	public void renderElementToolTip(MonitoredFluidStack element, int x, int y) {
 		StoredFluidStack fluidStack = element.getStoredStack();
-		List list = Lists.newArrayList();
+		List list = new ArrayList<>();
 		list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 		if (fluidStack.stored != 0) {
 			list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");

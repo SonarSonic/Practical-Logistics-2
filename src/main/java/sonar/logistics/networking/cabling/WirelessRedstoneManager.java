@@ -12,7 +12,7 @@ import sonar.logistics.api.wireless.WirelessConnectionType;
 public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNetwork, IRedstoneEmitter, IRedstoneReceiver> {
 
 	public static WirelessRedstoneManager instance() {
-		return PL2.instance.wirelessRedstoneManager;
+		return PL2.instance.proxy.wirelessRedstoneManager;
 	}
 
 	@Override

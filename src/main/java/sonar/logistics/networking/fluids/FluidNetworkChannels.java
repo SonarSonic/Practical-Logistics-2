@@ -1,8 +1,7 @@
 package sonar.logistics.networking.fluids;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
@@ -18,7 +17,7 @@ import sonar.logistics.networking.common.ListNetworkChannels;
 
 public class FluidNetworkChannels extends ListNetworkChannels<MonitoredFluidStack, FluidNetworkHandler> {
 
-	public List<FluidStack> forRapidUpdate = Lists.newArrayList();
+	public List<FluidStack> forRapidUpdate = new ArrayList<>();
 
 	public FluidNetworkChannels(ILogisticsNetwork network) {
 		super(FluidNetworkHandler.INSTANCE, network);

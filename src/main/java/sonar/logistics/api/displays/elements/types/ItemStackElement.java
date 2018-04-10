@@ -2,11 +2,10 @@ package sonar.logistics.api.displays.elements.types;
 
 import static net.minecraft.client.renderer.GlStateManager.scale;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -98,7 +97,7 @@ public class ItemStackElement extends AbstractDisplayElement {
 
 	@Override
 	public List<InfoUUID> getInfoReferences() {
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 
 	@Override

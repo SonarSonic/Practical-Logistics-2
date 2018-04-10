@@ -1,16 +1,11 @@
 package sonar.logistics.client.gui.generic.info;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IInfoReferenceRequirement;
-import sonar.logistics.api.displays.elements.IInfoRequirement;
 import sonar.logistics.api.displays.references.InfoReference;
-import sonar.logistics.api.info.InfoUUID;
 
 public class InfoReferenceRequest implements IInfoReferenceRequirement {
 
@@ -19,7 +14,7 @@ public class InfoReferenceRequest implements IInfoReferenceRequirement {
 	public int requestSize;
 	
 	public InfoReferenceRequest(GuiScreen screen, int requestSize){
-		this(screen, Lists.newArrayList(), requestSize);
+		this(screen, new ArrayList<>(), requestSize);
 	}
 	
 	public InfoReferenceRequest(GuiScreen screen, List<InfoReference> list, int requestSize){
@@ -41,7 +36,7 @@ public class InfoReferenceRequest implements IInfoReferenceRequirement {
 	@Override
 	public void onGuiClosed(List<InfoReference> selected) {
 		if(screen instanceof IInfoReferenceRequirementGui){
-			((IInfoReferenceRequirementGui) screen).onRequirementCompleted(selected);
+			((IInfoReferenceRequirementGui) screen).onReferenceRequirementCompleted(selected);
 		}
 	}
 	

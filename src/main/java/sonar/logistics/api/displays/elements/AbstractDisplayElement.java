@@ -2,16 +2,16 @@ package sonar.logistics.api.displays.elements;
 
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
 	public IElementStorageHolder holder;
-	private double[] maxScaling, actualScaling;
-	private int[] unscaledWidthHeight;
+	protected double[] maxScaling, actualScaling;
+	protected int[] unscaledWidthHeight;
 	protected double percentageFill = 1;
 	protected WidthAlignment width_align = WidthAlignment.CENTERED;
 	protected HeightAlignment height_align = HeightAlignment.CENTERED;
@@ -22,7 +22,7 @@ public abstract class AbstractDisplayElement implements IDisplayElement {
 
 	public int getElementIdentity() {
 		if (identity == -1) {
-			identity = PL2.getServerManager().getNextIdentity();
+			identity = ServerInfoHandler.instance().getNextIdentity();
 		}
 		return identity;
 	}

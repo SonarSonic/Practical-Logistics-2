@@ -1,6 +1,8 @@
 package sonar.logistics.networking;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,11 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Maps;
-
-import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.displays.references.InfoReference;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -20,34 +21,54 @@ import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
+import sonar.logistics.networking.events.NetworkPartEvent;
 
 public class ClientInfoHandler implements IInfoManager {
 
 	private Map<Integer, ConnectedDisplay> connectedDisplays = new ConcurrentHashMap<Integer, ConnectedDisplay>();
-	public Map<Integer, IDisplay> displays = Maps.newHashMap();
+	public Map<Integer, DisplayGSI> displays_gsi = new HashMap<>();
+	public Map<Integer, IDisplay> displays_tile = new HashMap<>();
 
-	// public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = Maps.newLinkedHashMap();
-	public Map<InfoUUID, IInfo> info = Maps.newLinkedHashMap();
+	// public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = new LinkedHashMap<>();
+	public Map<InfoUUID, IInfo> info = new LinkedHashMap<>();
 
 	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, List<Object>>();
 	public Map<Integer, List<ClientLocalProvider>> clientLogicMonitors = new ConcurrentHashMap<Integer, List<ClientLocalProvider>>();
 
-	public Map<InfoUUID, AbstractChangeableList> changeableLists = Maps.newLinkedHashMap();
-	public Map<Integer, ILogicListenable> identityTiles = Maps.newLinkedHashMap();
+	public Map<InfoUUID, AbstractChangeableList> changeableLists = new LinkedHashMap<>();
+	public Map<Integer, ILogicListenable> identityTiles = new LinkedHashMap<>();
 	public Map<Integer, InfoChangeableList> channelMap = new ConcurrentHashMap<Integer, InfoChangeableList>();
 
 	// emitters
 	public List<ClientWirelessEmitter> clientDataEmitters = new ArrayList<ClientWirelessEmitter>();
 	public List<ClientWirelessEmitter> clientRedstoneEmitters = new ArrayList<ClientWirelessEmitter>();
 
+	public static ClientInfoHandler instance(){
+		return (ClientInfoHandler) PL2.proxy.getClientManager();
+	}	
+	
+	@SubscribeEvent
+	public void onPartAdded(NetworkPartEvent.AddedPart event){
+		if(event.tile instanceof IDisplay && event.world.isRemote){
+			addDisplay((IDisplay) event.tile);
+		}
+	}
+
+	@SubscribeEvent
+	public void onPartRemoved(NetworkPartEvent.RemovedPart event){
+		if(event.tile instanceof IDisplay && event.world.isRemote){
+			removeDisplay((IDisplay) event.tile);
+		}
+	}	
+	
 	@Override
 	public void removeAll() {
 		connectedDisplays.clear();
-		displays.clear();
+		displays_gsi.clear();
+		displays_tile.clear();
 		info.clear();
 		sortedLogicMonitors.clear();
 		clientLogicMonitors.clear();
@@ -84,18 +105,18 @@ public class ClientInfoHandler implements IInfoManager {
 	}
 
 	@Override
-	public IDisplay getDisplay(int iden) {
-		return displays.get(iden);
+	public DisplayGSI getGSI(int iden) {
+		return displays_gsi.get(iden);
 	}
 
 	public void addDisplay(IDisplay display) {
-		if (!displays.containsValue(display)) {
-			displays.put(display.getIdentity(), display);
+		if (!displays_tile.containsValue(display)) {
+			displays_tile.put(display.getIdentity(), display);
 		}
 	}
 
 	public void removeDisplay(IDisplay display) {
-		displays.remove(display.getIdentity());
+		displays_tile.remove(display.getIdentity());
 	}
 
 	@Override
@@ -109,17 +130,17 @@ public class ClientInfoHandler implements IInfoManager {
 	}
 
 	public void onInfoChanged(InfoUUID uuid, IInfo info) {
-		for (IDisplay display : displays.values()) {
-			if (display.getGSI().isDisplayingUUID(uuid)) {
-				display.getGSI().onInfoChanged(uuid, info);
+		for (DisplayGSI display : displays_gsi.values()) {
+			if (display.isDisplayingUUID(uuid)) {
+				display.onInfoChanged(uuid, info);
 			}
 		}
 	}
 
 	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
-		for (IDisplay display : displays.values()) {
-			if (display.getGSI().isDisplayingUUID(uuid)) {
-				display.getGSI().onMonitoredListChanged(uuid, list);
+		for (DisplayGSI display : displays_gsi.values()) {
+			if (display.isDisplayingUUID(uuid)) {
+				display.onMonitoredListChanged(uuid, list);
 			}
 		}
 	}
@@ -132,16 +153,6 @@ public class ClientInfoHandler implements IInfoManager {
 			}
 		}
 		return UniversalChangeableList.newChangeableList();
-	}
-
-	public ConnectedDisplay getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID) {
-		Map<Integer, ConnectedDisplay> displays = getConnectedDisplays();
-		ConnectedDisplay toSet = displays.get(registryID);
-		if (toSet == null) {
-			displays.put(registryID, new ConnectedDisplay(display));
-			toSet = displays.get(registryID);
-		}
-		return toSet;
 	}
 
 	@Override

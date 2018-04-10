@@ -13,20 +13,19 @@ import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.scale;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -72,12 +71,12 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 		if (isPlayerLooking()) {
 			/** renders a blue select box around the button if has been clicked */
 			RenderHelper.drawModalRectWithCustomSizedTexture(0, 0, (15 * 16) * 0.0625, (15 * 16) * 0.0625, 1, 1, 16, 16);
-			
-			
-			double displayScale = 0.064;// FIXME
+
+			double displayScale = 0.02;// FIXME
 			pushMatrix();
-			GlStateManager.translate(getActualScaling()[WIDTH]/getActualScaling()[SCALE], 0, -0.005);
-			scale(displayScale, displayScale, displayScale);
+			translate(getActualScaling()[WIDTH] / getActualScaling()[SCALE], 0, -0.005);
+			scale(1 / getActualScaling()[SCALE], 1 / getActualScaling()[SCALE], 1);
+			scale(displayScale, displayScale, 1);
 			int textWidth = RenderHelper.fontRenderer.getStringWidth(hoverString);
 
 			RenderHelper.saveBlendState();
@@ -104,7 +103,7 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 
 	@Override
 	public List<InfoUUID> getInfoReferences() {
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 
 	@Override

@@ -1,28 +1,21 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
-
-import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.ListHelper;
-import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IInfoReferenceRequirement;
-import sonar.logistics.api.displays.elements.IInfoRequirement;
 import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.api.displays.references.ReferenceType;
-import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
@@ -30,14 +23,14 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.client.gui.generic.info.InfoReferenceRequest;
-import sonar.logistics.client.gui.generic.info.InfoUUIDRequest;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 
 	public IInfoReferenceRequirement element;
 	public List<InfoReference> selected;
-	public List<InfoUUID> expanded = Lists.newArrayList();
+	public List<InfoUUID> expanded = new ArrayList<>();
 	public DisplayGSI gsi;
 
 	public GuiInfoReferenceSource(IInfoReferenceRequirement element, DisplayGSI gsi, Container container) {
@@ -57,6 +50,13 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 		//for (int i = 0; i < size; i++) {
 		//	this.buttonList.add(new SelectionButton(this, 10 + i, guiLeft + 7, guiTop + 29 + (i * 12), listWidth, listHeight));
 		//}
+	}
+	
+	@Override
+	public void drawGuiContainerForegroundLayer(int x, int y) {
+		super.drawGuiContainerForegroundLayer(x, y);
+		FontHelper.textCentre("Info Source", xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre("Select data to display", xSize, 18, LogisticsColours.grey_text);
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			last = PL2.getClientManager().info.get((InfoUUID) info);
+			last = ClientInfoHandler.instance().info.get((InfoUUID) info);
 			if (last != null) {
 				InfoRenderer.renderMonitorInfoInGUI(last, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
@@ -154,13 +154,13 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 
 	@Override
 	public void setInfo() {
-		List<Object> newInfo = Lists.newArrayList(PL2.getClientManager().sortedLogicMonitors.getOrDefault(gsi.getDisplayGSIIdentity(), Lists.newArrayList()));
+		List<Object> newInfo = Lists.newArrayList(ClientInfoHandler.instance().sortedLogicMonitors.getOrDefault(gsi.getDisplayGSIIdentity(), new ArrayList<>()));
 		if (!expanded.isEmpty()) {
 			ListIterator it = newInfo.listIterator();
 			while (it.hasNext()) {
 				Object next = it.next();
 				if (next instanceof InfoUUID && expanded.contains(next)) {
-					IInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) next);
+					IInfo monitorInfo = ClientInfoHandler.instance().info.get((InfoUUID) next);
 					for (ReferenceType type : ReferenceType.values()) {
 						it.add(new InfoReference((InfoUUID) next, type, monitorInfo.getID().hashCode()));
 					}

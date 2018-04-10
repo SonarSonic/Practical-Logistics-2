@@ -1,8 +1,7 @@
 package sonar.logistics.client.gui.generic.info;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +17,7 @@ public class InfoUUIDRequest implements IInfoRequirement {
 	
 	public InfoUUIDRequest(GuiScreen screen, int requestSize){
 		this.screen = screen;
-		this.info = Lists.newArrayList();
+		this.info = new ArrayList<>();
 		this.requestSize = requestSize;
 	}
 
@@ -35,7 +34,7 @@ public class InfoUUIDRequest implements IInfoRequirement {
 	@Override
 	public void onGuiClosed(List<InfoUUID> selected) {
 		if(screen instanceof IInfoUUIDRequirementGui){
-			((IInfoUUIDRequirementGui) screen).onRequirementCompleted(selected);
+			((IInfoUUIDRequirementGui) screen).onInfoUUIDRequirementCompleted(selected);
 		}
 	}
 

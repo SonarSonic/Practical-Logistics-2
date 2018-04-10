@@ -1,10 +1,9 @@
 package sonar.logistics.api.tiles.signaller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.collect.Lists;
 
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.SyncEnum;
@@ -86,7 +85,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 			IInfo info1 = info.get(id);
 			if (info1 != null && info1 instanceof IComparableInfo) {
 				IComparableInfo provider1 = (IComparableInfo) info1;
-				ComparableObject obj = ComparableObject.getComparableObject(provider1.getComparableObjects(Lists.newArrayList()), key);
+				ComparableObject obj = ComparableObject.getComparableObject(provider1.getComparableObjects(new ArrayList<>()), key);
 				if (getComparator() != null && getComparator().isValidObject(obj.object)) {
 					return obj.object;
 				}

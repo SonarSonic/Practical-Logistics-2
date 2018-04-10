@@ -17,11 +17,10 @@ import static net.minecraft.client.renderer.GlStateManager.rotate;
 import static net.minecraft.client.renderer.GlStateManager.scale;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,14 +36,10 @@ import net.minecraftforge.client.ForgeHooksClient;
 import sonar.core.client.BlockModelsCache;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.helpers.SonarHelper;
 import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -60,7 +55,7 @@ public class InfoRenderer {
 		double compressedHeight = 0;
 		double maximumWidth = 0;
 		int unscaledMaximumWidth = 0;
-		List<Double[]> matrices = Lists.newArrayList();
+		List<Double[]> matrices = new ArrayList<>();
 
 		for (int i = 0; i < toDisplay.size(); i++) {
 			String s = toDisplay.get(i);
@@ -169,7 +164,7 @@ public class InfoRenderer {
 	}
 
 	public static void renderBox(double width, double height) {
-		GlStateManager.depthMask(true);
+		//GlStateManager.depthMask(true);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -189,7 +184,7 @@ public class InfoRenderer {
 	}
 
 	public static void renderProgressBar(double width, double height, double d, double e) {
-		GlStateManager.depthMask(true);
+		//GlStateManager.depthMask(true);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);

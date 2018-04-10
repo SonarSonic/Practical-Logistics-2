@@ -1,6 +1,6 @@
 package sonar.logistics.api.displays.storage;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.logistics.api.displays.CreateInfoType;
@@ -9,14 +9,12 @@ import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.buttons.ButtonElement;
 import sonar.logistics.api.displays.buttons.CreateElementButton;
-import sonar.logistics.api.displays.buttons.ElementSelectionButton;
-import sonar.logistics.api.displays.elements.ElementSelectionType;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.DisplayElementHelper;
 
 public class EditContainer extends DisplayElementContainer {
-
+	
 	public static EditContainer addEditContainer(DisplayGSI gsi) {
 		double[] scaling = new double[] { gsi.display.getDisplayType().width / 4, gsi.display.getDisplayType().height / 1.5, 1 };
 		EditContainer editContainer = new EditContainer(gsi, new double[] { 0, 0, 0 }, scaling, 1, gsi.EDIT_CONTAINER_ID);
@@ -30,7 +28,7 @@ public class EditContainer extends DisplayElementContainer {
 		editList.getElements().addElement(new CreateElementButton(CreateInfoType.INFO, 0, 11, 10, "CREATE INFO"));
 		editList.getElements().addElement(new CreateElementButton(CreateInfoType.TEXT, 1, 11, 11, "CREATE TEXT"));
 		///editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.DELETE, 2, 2, 2, "DELETE ELEMENTS"));
-		editList.getElements().addElement(new ButtonElement(2, 2, 11, "EDIT ELEMENTS"){
+		editList.getElements().addElement(new ButtonElement(2, 12, 0, "EDIT ELEMENTS"){
 
 			@Override			
 			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
@@ -39,12 +37,12 @@ public class EditContainer extends DisplayElementContainer {
 				
 			}
 		});
-		editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.RESIZE, 3, 2, 3, "RESIZE ELEMENT"));
+		//editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.RESIZE, 3, 12, 1, "RESIZE ELEMENT"));
 		editList.getElements().addElement(new ButtonElement(3, 2, 11, "CLOSE EDIT MODE"){
 
 			@Override			
 			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
-				click.gsi.edit_mode.setObject(false);
+				GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditModePacket(false), -1, gsi);
 				return -1;
 				
 			}

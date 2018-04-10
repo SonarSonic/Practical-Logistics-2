@@ -5,8 +5,13 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import sonar.core.api.utils.TileAdditionType;
+import sonar.core.api.utils.TileRemovalType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.listener.ISonarListenable;
@@ -24,9 +29,10 @@ import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.info.types.MonitoredBlockCoords;
+import sonar.logistics.networking.ServerInfoHandler;
+import sonar.logistics.networking.events.NetworkPartEvent;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.sync.SyncTileMessages;
@@ -35,7 +41,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 
 	public static final TileMessage[] defaultValidStates = new TileMessage[] { TileMessage.NO_NETWORK };
 	public ILogisticsNetwork network = EmptyLogisticsNetwork.INSTANCE;
-	private SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
+	public SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
 	public SyncTagType.INT networkID = (INT) new SyncTagType.INT(0).setDefault(-1);
 	public SyncTileMessages states = new SyncTileMessages(this, 101);
 
@@ -72,7 +78,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 
 	public int getIdentity() {
 		if (identity.getObject() == -1 && this.isServer()) {
-			identity.setObject(PL2.getServerManager().getNextIdentity());
+			identity.setObject(ServerInfoHandler.instance().getNextIdentity());
 		}
 		return identity.getObject();
 	}
@@ -82,18 +88,54 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		return !tileEntityInvalid;
 	}
 
+	public boolean PART_ADDED = false;
+
+	public void doAdditionEvent() {
+		if (!PART_ADDED) {
+			MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, getWorld(), TileAdditionType.ADD));
+			PART_ADDED = true;
+		}
+	}
+
+	public void doRemovalEvent() {
+		if (PART_ADDED) {
+			MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, getWorld(), TileRemovalType.REMOVE));
+			PART_ADDED = false;
+		}
+	}
+
 	@Override
 	public void onFirstTick() {
 		super.onFirstTick();
-		if (this instanceof ILogicListenable)
-			PL2.getInfoManager(world.isRemote).addIdentityTile((ILogicListenable) this);
+		if (isServer()) { //only on server, the client is only added when identity is known
+			doAdditionEvent();
+		}
 	}
 
-	public void invalidate() {
+	@Override
+	public final void invalidate() {
 		super.invalidate();
-		if (this instanceof ILogicListenable)
-			PL2.getInfoManager(world.isRemote).removeIdentityTile((ILogicListenable) this);
+		if (getIdentity() != -1) {
+			doRemovalEvent();
+		}
 	}
+
+	@Override
+	public void handlePartUpdateTag(NBTTagCompound tag) {
+		super.handlePartUpdateTag(tag);
+		if (isClient()) {
+			doAdditionEvent();
+		}
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+		super.onDataPacket(net, packet);
+		if (isClient()) {
+			doAdditionEvent();
+		}
+	}
+
 
 	@Override
 	public void onNetworkConnect(ILogisticsNetwork network) {

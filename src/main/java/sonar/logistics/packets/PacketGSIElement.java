@@ -9,10 +9,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
-import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public class PacketGSIElement implements IMessage {
 
@@ -49,7 +49,7 @@ public class PacketGSIElement implements IMessage {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 				if (player != null) {
 					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						DisplayGSI gsi = PL2.getServerManager().getDisplayGSI(message.gsiIdentity);
+						DisplayGSI gsi = ServerInfoHandler.instance().getGSI(message.gsiIdentity);
 						if (gsi != null) {
 							IDisplayElement e = gsi.getElementFromIdentity(message.elementIdentity);
 							GSIElementPacketHelper.handler.runGSIElementPacket(gsi, e, player, message.clickTag);

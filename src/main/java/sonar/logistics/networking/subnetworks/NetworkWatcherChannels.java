@@ -1,9 +1,8 @@
 package sonar.logistics.networking.subnetworks;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -16,7 +15,7 @@ import sonar.logistics.networking.common.DefaultNetworkChannels;
 
 public class NetworkWatcherChannels extends DefaultNetworkChannels {
 
-	public List<IListReader<IProvidableInfo>> readers = Lists.newArrayList();
+	public List<IListReader<IProvidableInfo>> readers = new ArrayList<>();
 	protected Iterator<IListReader<IProvidableInfo>> readerIterator;
 	public AbstractChangeableList<IProvidableInfo> networkList = new InfoChangeableList();
 	public boolean shouldRapidUpdate;

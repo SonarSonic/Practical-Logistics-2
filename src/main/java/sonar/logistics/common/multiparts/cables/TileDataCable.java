@@ -1,8 +1,7 @@
 package sonar.logistics.common.multiparts.cables;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +12,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import sonar.core.api.utils.TileAdditionType;
+import sonar.core.api.utils.TileRemovalType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -31,6 +33,7 @@ import sonar.logistics.api.operator.OperatorMode;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
+import sonar.logistics.networking.events.NetworkCableEvent;
 
 public class TileDataCable extends TileSonarMultipart implements IDataCable, IOperatorTile, IOperatorProvider {
 
@@ -42,23 +45,17 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	public ILogisticsNetwork getNetwork() {
 		return LogisticsNetworkHandler.instance().getNetwork(registryID);
 	}
-
-	@Override
-	public void onFirstTick() {
+	
+	public final void onFirstTick(){
 		super.onFirstTick();
-		if (isServer()) {
-			CableConnectionHandler.instance().queueCableAddition(this);
-		}
+		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(this, getWorld(), TileAdditionType.ADD));
 	}
 
-	@Override
-	public void invalidate() {
+	public final void invalidate() {
 		super.invalidate();
-		if (isServer()) {
-			CableConnectionHandler.instance().queueCableRemoval(this);
-		}
+		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(this, getWorld(), TileRemovalType.REMOVE));
 	}
-
+	/*
 	@Override
 	public void updateCableRenders() {
 		if (isServer()) {
@@ -68,6 +65,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 		}
 	}
+	*/
 
 	public CableRenderType getRenderType(EnumFacing face) {
 		return CableRenderType.values()[isConnected[face.ordinal()]];
@@ -139,7 +137,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (mode == OperatorMode.DEFAULT) {
 			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player, world);
-			Pair<RayTraceResult, AxisAlignedBB> trace = RayTraceHelper.rayTraceBoxes(pos, look.getLeft(), look.getRight(), BlockDataCable.getSelectionBoxes(world, pos, Lists.newArrayList()));
+			Pair<RayTraceResult, AxisAlignedBB> trace = RayTraceHelper.rayTraceBoxes(pos, look.getLeft(), look.getRight(), BlockDataCable.getSelectionBoxes(world, pos, new ArrayList<>()));
 
 			if (trace.b instanceof LabelledAxisAlignedBB) {
 				if (isClient()) {

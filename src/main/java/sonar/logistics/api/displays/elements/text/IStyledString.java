@@ -1,10 +1,9 @@
 package sonar.logistics.api.displays.elements.text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.ws.Holder;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
@@ -56,7 +55,7 @@ public interface IStyledString extends INBTSyncable {
 	public void updateTextScaling();
 	
 	public default List<InfoUUID> getInfoReferences(){
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 	
 	public default StyledTextElement getText(){

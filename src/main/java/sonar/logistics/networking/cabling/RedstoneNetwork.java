@@ -1,5 +1,6 @@
 package sonar.logistics.networking.cabling;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -16,12 +17,12 @@ import sonar.logistics.api.wireless.IRedstoneReceiver;
 
 public class RedstoneNetwork implements IRedstoneNetwork {
 
-	public final List<IRedstonePowerProvider> providers = Lists.newArrayList(); // local providers
-	public final List<IRedstoneReceiver> receivers = Lists.newArrayList(); // receivers
-	public final List<IRedstoneEmitter> emitters = Lists.newArrayList(); // emitters
+	public final List<IRedstonePowerProvider> providers = new ArrayList<>(); // local providers
+	public final List<IRedstoneReceiver> receivers = new ArrayList<>(); // receivers
+	public final List<IRedstoneEmitter> emitters = new ArrayList<>(); // emitters
 	public final ListenableList<IRedstoneNetwork> subNetworks = new ListenableList(this, 2);
-	public final List<IRedstoneConnectable> toAdd = Lists.newArrayList();
-	public final List<IRedstoneConnectable> toRemove = Lists.newArrayList();
+	public final List<IRedstoneConnectable> toAdd = new ArrayList<>();
+	public final List<IRedstoneConnectable> toRemove = new ArrayList<>();
 	public int registryID = -1;
 	public int localPower = 0, globalPower = 0, actualPower = 0;
 	public boolean cablesChanged = true;
@@ -176,7 +177,7 @@ public class RedstoneNetwork implements IRedstoneNetwork {
 	}
 
 	public static List<IRedstoneNetwork> getAllNetworks(IRedstoneNetwork network, int networkType) {
-		List<IRedstoneNetwork> networks = Lists.newArrayList();
+		List<IRedstoneNetwork> networks = new ArrayList<>();
 		addSubNetworks(networks, network, networkType);
 		return networks;
 	}

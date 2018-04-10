@@ -1,9 +1,8 @@
 package sonar.logistics.networking.cabling;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
@@ -33,7 +32,7 @@ public class RedstoneCableHelper {
 	}
 
 	public static List<IRedstoneConnectable> getConnectables(IRedstoneCable cable) {
-		List<IRedstoneConnectable> logicTiles = Lists.newArrayList();
+		List<IRedstoneConnectable> logicTiles = new ArrayList<>();
 		for (EnumFacing face : EnumFacing.values()) {
 			ICableConnectable connection = CableHelper.getConnection(cable, face, CableConnectionType.NETWORK, false);
 			if (connection != null && !(connection instanceof IRedstoneCable) && connection instanceof IRedstoneConnectable) {

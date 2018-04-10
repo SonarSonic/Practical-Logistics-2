@@ -1,5 +1,6 @@
 package sonar.logistics.guide;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class GuidePageHelper {
 		}
 
 		int index = 0;
-		List<Integer> pageIDs = Lists.newArrayList();
+		List<Integer> pageIDs = new ArrayList<>();
 		while ((index = value.indexOf(PAGE_LINK)) != -1) {
 			String toTest = value.substring(index + 1);
 			int side = toTest.indexOf(PAGE_LINK);
@@ -65,7 +66,7 @@ public class GuidePageHelper {
 			}
 		}
 
-		return GuidePageHelper.createLines(current, ordinal, lineTally, info, Lists.newArrayList(), Lists.newArrayList(pageIDs).iterator(), links, value);
+		return GuidePageHelper.createLines(current, ordinal, lineTally, info, new ArrayList<>(), Lists.newArrayList(pageIDs).iterator(), links, value);
 	}
 
 	/** splits the {@link ElementInfo} info individual page lines to be rendered, it also adds and {@link ElementLink}s to the list */

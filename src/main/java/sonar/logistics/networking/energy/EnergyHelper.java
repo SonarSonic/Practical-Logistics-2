@@ -1,9 +1,8 @@
 package sonar.logistics.networking.energy;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import sonar.core.SonarCore;
 import sonar.core.api.energy.EnergyType;
@@ -20,7 +19,7 @@ import sonar.logistics.info.types.MonitoredEnergyStack;
 public class EnergyHelper extends EnergyWrapper {
 
 	public List<ISonarEnergyHandler> getProviders(EnergyType type) {
-		List<ISonarEnergyHandler> providers = Lists.newArrayList();
+		List<ISonarEnergyHandler> providers = new ArrayList<>();
 		List<ISonarEnergyHandler> handlers = SonarCore.energyHandlers;
 		for (ISonarEnergyHandler provider : handlers) {
 			if (provider.getProvidedType().getName().equals(type.getName())) {

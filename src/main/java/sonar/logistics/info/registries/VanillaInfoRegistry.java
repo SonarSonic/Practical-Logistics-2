@@ -1,9 +1,9 @@
 package sonar.logistics.info.registries;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -70,7 +70,7 @@ public class VanillaInfoRegistry extends IInfoRegistry {
 
 	@Override
 	public void registerAllFields(IMasterInfoRegistry registry) {
-		Map<String, Integer> furnaceFields = Maps.newHashMap();
+		Map<String, Integer> furnaceFields = new HashMap<>();
 		furnaceFields.put("furnaceBurnTime", 0);
 		furnaceFields.put("currentItemBurnTime", 1);
 		furnaceFields.put("cookTime", 2);

@@ -40,6 +40,7 @@ import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.packets.PacketEmitterStatement;
 
 public class GuiStatementList extends GuiSelectionList<Object> {
@@ -248,10 +249,10 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			boolean has1 = false, has2 = false;
 
 			if (InfoUUID.valid(uuid1)) {
-				IInfo monitorInfo = PL2.getClientManager().info.get(uuid1).copy();
+				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid1).copy();
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
-					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList()), currentFilter.key1.getObject());
+					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>()), currentFilter.key1.getObject());
 					if (obj != null) {
 						has1 = true;
 						obj1 = currentFilter.key1.getObject() + " - " + obj.object.toString();
@@ -260,10 +261,10 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			}
 			if (currentFilter.getInputType().usesInfo()) {
 				if (InfoUUID.valid(uuid2)) {
-					IInfo monitorInfo = PL2.getClientManager().info.get(uuid2).copy();
+					IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid2).copy();
 					if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
-						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList()), currentFilter.key2.getObject());
+						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>()), currentFilter.key2.getObject());
 						if (obj != null) {
 							has2 = true;
 							obj2 = currentFilter.key2.getObject() + " - " + obj.object.toString();
@@ -297,7 +298,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			uuid1 = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (InfoUUID.valid(uuid1)) {
-				IInfo monitorInfo = PL2.getClientManager().info.get(uuid1);
+				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid1);
 				if (monitorInfo != null) {
 					FontHelper.textCentre("Info Type: " + monitorInfo.getID().toUpperCase(), xSize, 6, LogisticsColours.white_text.getRGB());
 					GlStateManager.scale(0.75, 0.75, 0.75);
@@ -393,7 +394,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case CHANNELS:
 			if (info instanceof InfoUUID) {
-				IInfo monitorInfo = PL2.getClientManager().info.get((InfoUUID) info);
+				IInfo monitorInfo = ClientInfoHandler.instance().info.get((InfoUUID) info);
 				if (monitorInfo != null) {
 					InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 				} else {
@@ -402,7 +403,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				}
 			} else if (info instanceof IInfoProvider) {
 				IInfoProvider monitor = (IInfoProvider) info;
-				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), LogisticsHelper.getCoordItem(monitor.getCoords())), yPos + 1, LogisticsColours.white_text.getRGB());
+				InfoRenderer.renderMonitorInfoInGUI(new MonitoredBlockCoords(monitor.getCoords(), LogisticsHelper.getCoordItem(monitor.getCoords(), mc.world)), yPos + 1, LogisticsColours.white_text.getRGB());
 			}
 			break;
 		case LIST:
@@ -462,14 +463,14 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 	public Pair<String, String> getInfoTypeAndObjectStrings(InfoUUID id, String key) {
 		String infoType = "INFO", infoObj = "NULL";
-		IInfo monitorInfo = PL2.getClientManager().info.get(id);
+		IInfo monitorInfo = ClientInfoHandler.instance().info.get(id);
 		if (monitorInfo instanceof INameableInfo) {
 			infoType = ((INameableInfo) monitorInfo).getClientIdentifier();
 		} else {
 			infoType = monitorInfo != null ? monitorInfo.toString() : "INFO 1";
 		}
 		if (monitorInfo instanceof IComparableInfo && key != null) {
-			List<ComparableObject> infoList = ((IComparableInfo) monitorInfo).getComparableObjects(Lists.newArrayList());
+			List<ComparableObject> infoList = ((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>());
 			ComparableObject obj = ComparableObject.getComparableObject(infoList, key);
 			if (obj != null && obj.object != null) {
 				infoObj = obj.object.toString();
@@ -536,12 +537,12 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STATEMENT:
 			break;
 		case CHANNELS:
-			infoList = Lists.newArrayList(PL2.getClientManager().sortedLogicMonitors.getOrDefault(tile.getIdentity(), Lists.newArrayList()));
+			infoList = Lists.newArrayList(ClientInfoHandler.instance().sortedLogicMonitors.getOrDefault(tile.getIdentity(), new ArrayList<>()));
 			break;
 		case STRING:
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (InfoUUID.valid(uuid)) {
-				IInfo monitorInfo = PL2.getClientManager().info.get(uuid);
+				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid);
 				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;
 					List objects = new ArrayList<ComparableObject>();
@@ -550,7 +551,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 					break;
 				}
 			}
-			infoList = Lists.newArrayList();
+			infoList = new ArrayList<>();
 			break;
 		default:
 			break;

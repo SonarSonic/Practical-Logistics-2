@@ -2,11 +2,10 @@ package sonar.logistics.api.displays.storage;
 
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
@@ -29,7 +28,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	public boolean uniformScaling = true;
 	public double minScale = 1;
 	public ElementStorage elements = new ElementStorage(this);
-	public List<InfoUUID> references = Lists.newArrayList();
+	public List<InfoUUID> references = new ArrayList<>();
 
 	public DisplayElementList() {
 		super();
@@ -91,7 +90,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	@Override
 	public Tuple<IDisplayElement, double[]> getClickBoxes(double x, double y) {
 		double[] align = holder.getAlignmentTranslation(this);
-		Map<IDisplayElement, Double[]> boxes = Maps.newHashMap();
+		Map<IDisplayElement, Double[]> boxes = new HashMap<>();
 		double heightOffset = 0;
 		for (IDisplayElement e : elements) { // we can't only iterate over clickables because we need the heightOffset
 			if (e instanceof IElementStorageHolder) {
@@ -214,7 +213,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	@Override
 	public List<InfoUUID> getInfoReferences() {
-		List<InfoUUID> uuid = Lists.newArrayList();
+		List<InfoUUID> uuid = new ArrayList<>();
 		for(IDisplayElement s : elements){
 			ListHelper.addWithCheck(uuid, s.getInfoReferences());
 		}		

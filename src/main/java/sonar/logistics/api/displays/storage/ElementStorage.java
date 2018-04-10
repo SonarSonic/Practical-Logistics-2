@@ -1,13 +1,12 @@
 package sonar.logistics.api.displays.storage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -25,10 +24,10 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	public static final String TAG_NAME = "element_storage";
 
-	protected Map<Integer, List<IDisplayElement>> elements = Maps.newHashMap();
-	protected List<IClickableElement> clickables = Lists.newArrayList();
-	protected List<ILookableElement> lookables = Lists.newArrayList();
-	protected List<IElementStorageHolder> holders = Lists.newArrayList();
+	protected Map<Integer, List<IDisplayElement>> elements = new HashMap<>();
+	protected List<IClickableElement> clickables = new ArrayList<>();
+	protected List<ILookableElement> lookables = new ArrayList<>();
+	protected List<IElementStorageHolder> holders = new ArrayList<>();
 	public IElementStorageHolder holder;
 	public int elementCount;
 
@@ -38,7 +37,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	public void addElement(IDisplayElement e) {
 		int id = DisplayElementHelper.getRegisteredID(e);
-		elements.putIfAbsent(id, Lists.newArrayList());
+		elements.putIfAbsent(id, new ArrayList<>());
 		if (ListHelper.addWithCheck(elements.get(id), e)) {
 			if (e instanceof IClickableElement) {
 				ListHelper.addWithCheck(clickables, (IClickableElement) e);
@@ -49,7 +48,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	public void removeElement(IDisplayElement e) {
 		int id = DisplayElementHelper.getRegisteredID(e);
-		if (elements.getOrDefault(id, Lists.newArrayList()).remove(e)) {
+		if (elements.getOrDefault(id, new ArrayList<>()).remove(e)) {
 			if (e instanceof IClickableElement) {
 				clickables.remove((IClickableElement) e);
 			}
@@ -75,7 +74,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 	/** the replaced element */
 	public IDisplayElement replaceElement(IDisplayElement element, int identity) {
 		int id = DisplayElementHelper.getRegisteredID(element);
-		elements.putIfAbsent(id, Lists.newArrayList());
+		elements.putIfAbsent(id, new ArrayList<>());
 		IDisplayElement toReplace = null;
 		for (IDisplayElement e : holder.getElements()) {
 			if (e.getElementIdentity() == identity) {
@@ -126,7 +125,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		//Map<Integer, List<IDisplayElement>> newElements = Maps.newHashMap();// make sure you get old ones if there are any.
+		//Map<Integer, List<IDisplayElement>> newElements = new HashMap<>();// make sure you get old ones if there are any.
 		//clickables.clear();
 		////lookables.clear();
 		//holders.clear();
@@ -142,7 +141,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				Class<? extends IDisplayElement> currentClass = DisplayElementHelper.getElementClass(registryID);
 
 				NBTTagList subList = elementsTag.getTagList("list", NBT.TAG_COMPOUND);
-				//newElements.putIfAbsent(registryID, Lists.newArrayList());
+				//newElements.putIfAbsent(registryID, new ArrayList<>());
 				//List<IDisplayElement> elements = newElements.get(registryID);
 				for (int s = 0; s < subList.tagCount(); s++) {
 					NBTTagCompound eTag = subList.getCompoundTagAt(s);
@@ -192,7 +191,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 		if (!clickables.isEmpty()) {
 			return true;
 		}
-		List<IElementStorageHolder> allHolders = getAllSubHolders(Lists.newArrayList());
+		List<IElementStorageHolder> allHolders = getAllSubHolders(new ArrayList<>());
 		for (IElementStorageHolder holder : allHolders) {
 			if (!holder.getElements().getClickables().isEmpty()) {
 				return true;
@@ -209,7 +208,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 		if (!lookables.isEmpty()) {
 			return true;
 		}
-		List<IElementStorageHolder> allHolders = getAllSubHolders(Lists.newArrayList());
+		List<IElementStorageHolder> allHolders = getAllSubHolders(new ArrayList<>());
 		for (IElementStorageHolder holder : allHolders) {
 			if (!holder.getElements().getClickables().isEmpty()) {
 				return true;

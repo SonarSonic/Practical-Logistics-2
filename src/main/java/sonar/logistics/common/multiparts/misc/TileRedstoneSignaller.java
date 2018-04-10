@@ -1,11 +1,10 @@
 package sonar.logistics.common.multiparts.misc;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -22,7 +21,6 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -34,6 +32,7 @@ import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.client.gui.generic.GuiStatementList;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.helpers.PacketHelper;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public class TileRedstoneSignaller extends TileSidedLogistics implements ILogisticsTile, IByteBufTile, IFlexibleGui {
 
@@ -57,16 +56,16 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 			isActive.setObject(false);
 			return;
 		}
-		List<InfoUUID> ids = Lists.newArrayList();
+		List<InfoUUID> ids = new ArrayList<>();
 		for (EmitterStatement statement : statements.getObjects()) {
 			statement.addRequiredUUIDs(ids);
 		}
-		Map<InfoUUID, IInfo> infoList = Maps.newHashMap();
+		Map<InfoUUID, IInfo> infoList = new HashMap<>();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				ILogicListenable monitor = PL2.getServerManager().getIdentityTile(id.getIdentity());
+				ILogicListenable monitor = ServerInfoHandler.instance().getIdentityTile(id.getIdentity());
 				if (monitor != null && this.network.getGlobalInfoProviders().contains(monitor)) {
-					IInfo monitorInfo = PL2.getServerManager().getInfoFromUUID(id);
+					IInfo monitorInfo = ServerInfoHandler.instance().getInfoFromUUID(id);
 					if (monitorInfo != null)
 						infoList.put(id, monitorInfo);
 				}

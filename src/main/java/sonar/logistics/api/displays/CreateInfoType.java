@@ -6,7 +6,6 @@ import sonar.logistics.api.displays.buttons.EmptyInfoElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.displays.storage.DisplayElementList;
 
 public enum CreateInfoType {
 	INFO(CreateInfoType::createInfo), TEXT(CreateInfoType::createText), IMAGE(CreateInfoType::createInfo), BUTTON(CreateInfoType::createButton);

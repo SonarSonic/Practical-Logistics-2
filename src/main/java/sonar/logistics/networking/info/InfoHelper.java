@@ -1,10 +1,9 @@
 package sonar.logistics.networking.info;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -112,7 +111,7 @@ public class InfoHelper {
 				return Integer.compare(str1.getSaveableInfo().getRegistryType().sortOrder, str2.getSaveableInfo().getRegistryType().sortOrder);
 			}
 		});
-		List<IProvidableInfo> info = Lists.newArrayList();
+		List<IProvidableInfo> info = new ArrayList<>();
 		IProvidableInfo lastInfo = null;
 		for (IMonitoredValue<IProvidableInfo> value : updateInfo.getList()) {
 			IProvidableInfo blockInfo = value.getSaveableInfo();

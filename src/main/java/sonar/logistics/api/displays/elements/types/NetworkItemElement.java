@@ -1,21 +1,14 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.GlStateManager.depthMask;
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
+import static net.minecraft.client.renderer.GlStateManager.enableLighting;
+import static net.minecraft.client.renderer.GlStateManager.rotate;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
-
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -23,7 +16,6 @@ import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 @DisplayElementType(id = NetworkItemElement.REGISTRY_NAME, modid = PL2Constants.MODID)

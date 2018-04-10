@@ -2,7 +2,6 @@ package sonar.logistics.client.gsi;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.SonarCore;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper;
@@ -15,10 +14,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.client.gui.display.GuiDisplayScreen.GuiState;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.info.types.InfoError;
 import sonar.logistics.packets.PacketGSIClick;
 
 public class GSIClickPacketHelper {
@@ -110,7 +107,7 @@ public class GSIClickPacketHelper {
 			tag.setBoolean(slotID == -1 ? FlexibleGuiHandler.TILEENTITY : FlexibleGuiHandler.MULTIPART, true);
 			tag.setInteger(FlexibleGuiHandler.SLOT_ID, slotID);
 			//tag.setInteger("infopos", displayInfo.id);
-			SonarCore.instance.guiHandler.openGui(false, player, tile.getWorld(), tile.getPos(), GuiState.SOURCE.ordinal(), tag);
+			//SonarCore.instance.guiHandler.openGui(false, player, tile.getWorld(), tile.getPos(), GuiState.SOURCE.ordinal(), tag);
 		}
 		
 	}

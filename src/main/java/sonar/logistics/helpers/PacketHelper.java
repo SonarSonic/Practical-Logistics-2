@@ -1,9 +1,8 @@
 package sonar.logistics.helpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,7 +18,6 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
@@ -36,8 +34,10 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.networking.PL2ListenerList;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.displays.DisplayHelper;
 import sonar.logistics.networking.fluids.FluidNetworkChannels;
 import sonar.logistics.networking.info.InfoHelper;
@@ -52,7 +52,7 @@ public class PacketHelper {
 	public static void sendLocalProvidersFromScreen(TileAbstractDisplay part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		List<ILogicListenable> providers = DisplayHelper.getLocalProviders(part, world, pos);
 		int identity = part.getInfoContainerID();
-		List<ClientLocalProvider> clientMonitors = Lists.newArrayList();
+		List<ClientLocalProvider> clientMonitors = new ArrayList<>();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
 			clientMonitors.add(new ClientLocalProvider(provider));
@@ -62,7 +62,7 @@ public class PacketHelper {
 
 	public static void sendLocalProviders(TileRedstoneSignaller tileRedstoneSignaller, int identity, EntityPlayer player) {
 		List<IInfoProvider> providers = tileRedstoneSignaller.getNetwork().getGlobalInfoProviders();
-		List<ClientLocalProvider> clientProviders = Lists.newArrayList();
+		List<ClientLocalProvider> clientProviders = new ArrayList<>();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
 			clientProviders.add(new ClientLocalProvider(provider));
@@ -103,19 +103,19 @@ public class PacketHelper {
 			NBTTagCompound infoTag = packetList.getCompoundTagAt(i);
 			InfoUUID id = NBTHelper.instanceNBTSyncable(InfoUUID.class, infoTag);
 			if (save) {
-				IInfo currentInfo = PL2.getClientManager().getInfoFromUUID(id);
+				IInfo currentInfo = ClientInfoHandler.instance().getInfoFromUUID(id);
 				IInfo newInfo = InfoHelper.readInfoFromNBT(infoTag);
 				if (currentInfo == null || !currentInfo.isMatchingType(newInfo)) {
-					PL2.getClientManager().setInfo(id, newInfo);
+					ClientInfoHandler.instance().setInfo(id, newInfo);
 				}else{
 					currentInfo.readData(infoTag, type);
-					PL2.getClientManager().onInfoChanged(id, currentInfo);
+					ClientInfoHandler.instance().onInfoChanged(id, currentInfo);
 				}
 			} else {
-				IInfo currentInfo = PL2.getClientManager().getInfoFromUUID(id);
+				IInfo currentInfo = ClientInfoHandler.instance().getInfoFromUUID(id);
 				if (currentInfo != null) {
 					currentInfo.readData(infoTag, type);
-					PL2.getClientManager().setInfo(id, currentInfo);
+					ClientInfoHandler.instance().setInfo(id, currentInfo);
 				}
 			}
 		}
@@ -213,7 +213,7 @@ public class PacketHelper {
 					INetworkReader r = (INetworkReader) reader;
 					for (int i = 0; i < r.getMaxInfo(); i++) {
 						InfoUUID infoID = new InfoUUID(reader.getIdentity(), i);
-						IInfo info = PL2.getServerManager().getInfoFromUUID(infoID);
+						IInfo info = ServerInfoHandler.instance().getInfoFromUUID(infoID);
 						if (info != null) {
 							NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
 							nbt = infoID.writeData(nbt, SyncType.SAVE);

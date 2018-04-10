@@ -1,8 +1,7 @@
 package sonar.logistics.networking.fluids;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.SonarCore;
@@ -42,7 +41,7 @@ public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack,
 		for (ISonarFluidHandler provider : providers) {
 			TileEntity fluidTile = connection.coords.getTileEntity();
 			if (fluidTile != null && provider.canHandleFluids(fluidTile, connection.face)) {
-				List<StoredFluidStack> info = Lists.newArrayList();
+				List<StoredFluidStack> info = new ArrayList<>();
 				StorageSize size = provider.getFluids(info, fluidTile, connection.face);
 				list.sizing.add(size);
 				for (StoredFluidStack fluid : info) {

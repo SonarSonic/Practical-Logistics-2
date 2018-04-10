@@ -23,7 +23,6 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.PL2API;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayLayout;
@@ -81,7 +80,6 @@ public class InteractionHelper {
 					if (extract != null) {
 						BlockPos pos = click.clickPos.offset(facing);
 						long r = extract.stored;
-
 						double[] coords = click.getCoordinates();
 						SonarAPI.getItemHelper().spawnStoredItemStackDouble(extract, player.getEntityWorld(), coords[0], coords[1], coords[2], facing);
 

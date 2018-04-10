@@ -1,9 +1,8 @@
 package sonar.logistics.common.multiparts.wireless;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +53,7 @@ public abstract class TileAbstractReceiver<E extends IWirelessEmitter, R extends
 	}
 
 	public List<E> getEmitters() {
-		List<E> emitters = Lists.newArrayList();
+		List<E> emitters = new ArrayList<>();
 		for (ClientWirelessEmitter dataEmitter : clientEmitters.getObjects()) {
 			E emitter = getWirelessHandler().getEmitter(dataEmitter.getIdentity());
 			if (emitter != null && emitter.canPlayerConnect(playerUUID.getUUID()).isConnected()) {

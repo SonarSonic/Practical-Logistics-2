@@ -1,5 +1,7 @@
 package sonar.logistics.client.gui.display;
 
+import static net.minecraft.client.renderer.GlStateManager.scale;
+
 import java.io.IOException;
 
 import net.minecraft.client.renderer.GlStateManager;
@@ -7,16 +9,13 @@ import net.minecraft.util.Tuple;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.displays.elements.IClickableElement;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.client.gui.textedit.GuiStyledStringFunctions;
 import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 public abstract class GuiAbstractEditScreen extends GuiLogistics {
 
@@ -78,8 +77,9 @@ public abstract class GuiAbstractEditScreen extends GuiLogistics {
 		//// SCREEN BORDER & BACKGROUND \\\\
 		DisplayElementHelper.drawRect(-pixel, -pixel, actualScaling[0] + pixel, actualScaling[1] + pixel, new CustomColour(174, 227, 227).getRGB());
 		DisplayElementHelper.drawRect(0, 0, actualScaling[0], actualScaling[1], new CustomColour(40, 40, 40).getRGB());
-		GlStateManager.scale(getActualScaling()[2], getActualScaling()[2], 1);
+		GlStateManager.scale(actualScaling[2], actualScaling[2], actualScaling[2]);
 		GlStateManager.translate(0, 0, 1);
+		scale(1, 1, -1);
 		renderDisplayScreen(partialTicks, x, y);
 		GlStateManager.popMatrix();
 	}
@@ -127,11 +127,5 @@ public abstract class GuiAbstractEditScreen extends GuiLogistics {
 		}
 		lastClickTime = mc.getMinecraft().world.getTotalWorldTime();
 		return isDoubleClick;
-	}
-
-	public final void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
-		if (e instanceof IClickableElement) {
-			((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
-		}
 	}
 }

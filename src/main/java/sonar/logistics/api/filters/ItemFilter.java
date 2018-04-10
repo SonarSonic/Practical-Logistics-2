@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -49,7 +47,7 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 	}
 
 	public void removeItem(StoredItemStack stack) {
-		ArrayList<StoredItemStack> toRemove = Lists.newArrayList();
+		ArrayList<StoredItemStack> toRemove = new ArrayList<>();
 		for (StoredItemStack item : list.objs) {
 			if (item.equalStack(stack.item)) {
 				toRemove.add(item);

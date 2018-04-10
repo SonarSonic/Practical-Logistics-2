@@ -1,14 +1,15 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.GuiHelpOverlay;
+import sonar.core.helpers.FontHelper;
 import sonar.core.network.FlexibleGuiHandler;
+import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.client.HelpOverlays;
 import sonar.logistics.client.LogisticsButton;
@@ -61,14 +62,14 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		//FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
-		//FontHelper.textCentre(PL2Translate.INFO_READER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
+		FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
+		FontHelper.textCentre(PL2Translate.INFO_READER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 		overlay.drawOverlay(this, x, y);
 	}
 
 	public void setInfo() {
 		if (!part.getChannels().hasChannels()) {
-			infoList = Lists.newArrayList();
+			infoList = new ArrayList<>();
 		} else {
 			infoList = part.getMonitoredList().createSaveableList();
 		}

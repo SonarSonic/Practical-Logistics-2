@@ -1,12 +1,13 @@
 package sonar.logistics.networking.common;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ListenerTally;
@@ -32,13 +33,13 @@ import sonar.logistics.networking.CacheHandler;
 public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels implements INetworkListChannels<H> {
 
 	public final H handler;
-	public List<IListReader<M>> readers = Lists.newArrayList();
+	public List<IListReader<M>> readers = new ArrayList<>();
 	protected Iterator<IListReader<M>> readerIterator;
 	public boolean shouldRapidUpdate;
 	protected int readersPerTick = 0;
 
-	public Map<Integer, List<NodeConnection>> usedChannels = Maps.newHashMap();// identity of the reader and the channels it uses
-	public Map<NodeConnection, AbstractChangeableList<M>> channels = Maps.newHashMap();
+	public Map<Integer, List<NodeConnection>> usedChannels = new HashMap<>();// identity of the reader and the channels it uses
+	public Map<NodeConnection, AbstractChangeableList<M>> channels = new HashMap<>();
 	protected Iterator<Entry<NodeConnection, AbstractChangeableList<M>>> channelIterator;
 	protected int channelsPerTick = 0;
 
@@ -141,7 +142,7 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 
 	@Override
 	public void onChannelsChanged() {
-		channels = handler.getAllChannels(Maps.newHashMap(), network);
+		channels = handler.getAllChannels(new HashMap<>(), network);
 		readers.forEach(reader -> updateReaderUsedChannels(reader));
 		tickChannels();
 	}

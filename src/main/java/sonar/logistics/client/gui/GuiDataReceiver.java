@@ -3,10 +3,10 @@ package sonar.logistics.client.gui;
 import com.google.common.collect.Lists;
 
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.wireless.TileAbstractReceiver;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class GuiDataReceiver extends GuiAbstractReceiver {
 
@@ -22,6 +22,6 @@ public class GuiDataReceiver extends GuiAbstractReceiver {
 	}
 
 	public void setInfo() {
-		infoList = Lists.newArrayList(PL2.getClientManager().clientDataEmitters);
+		infoList = Lists.newArrayList(ClientInfoHandler.instance().clientDataEmitters);
 	}
 }

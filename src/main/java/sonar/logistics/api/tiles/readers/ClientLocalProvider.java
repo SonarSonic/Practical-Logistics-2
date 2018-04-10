@@ -13,9 +13,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
+import sonar.logistics.networking.ClientInfoHandler;
 
 /** used when syncing Logic Monitors for display in the Display Screen with the
  * client, since some may not be loaded on client side. */
@@ -56,7 +56,7 @@ public class ClientLocalProvider implements INBTSyncable {
 	}
 
 	public ILogicListenable getViewable() {
-		ILogicListenable viewable = PL2.getClientManager().getIdentityTile(identity.getObject());
+		ILogicListenable viewable = ClientInfoHandler.instance().getIdentityTile(identity.getObject());
 		if (viewable != null && viewable instanceof ILogicListenable) {
 			ILogicListenable partViewer = (ILogicListenable) viewable;
 			viewable = (ILogicListenable) viewable;

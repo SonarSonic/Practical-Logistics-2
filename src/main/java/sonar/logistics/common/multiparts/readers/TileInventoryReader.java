@@ -18,7 +18,6 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
-import sonar.logistics.PL2;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -46,6 +45,7 @@ import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
 import sonar.logistics.networking.items.ItemNetworkHandler;
@@ -156,7 +156,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 		default:
 			break;
 		}
-		PL2.getServerManager().changeInfo(this, uuid, info);
+		ServerInfoHandler.instance().changeInfo(this, uuid, info);
 	}
 
 	//// IChannelledTile \\\\

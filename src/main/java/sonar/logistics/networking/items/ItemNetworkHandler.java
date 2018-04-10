@@ -1,8 +1,7 @@
 package sonar.logistics.networking.items;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,7 +48,7 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack, I
 			for (ISonarInventoryHandler provider : providers) {
 				if (provider.canHandleItems(tile, connection.face)) {
 					if (!provider.isLargeInventory() || channels.updateLargeInventory()) {
-						List<StoredItemStack> info = Lists.newArrayList();
+						List<StoredItemStack> info = new ArrayList<>();
 						StorageSize size = provider.getItems(info, tile, connection.face);
 						newList.sizing.add(size);
 						for (StoredItemStack item : info) {
@@ -67,7 +66,7 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack, I
 	public ItemChangeableList updateInfo(ItemNetworkChannels channels, ItemChangeableList newList, EntityConnection connection) {
 		Entity entity = connection.entity;
 		if (entity instanceof EntityPlayer) {
-			List<StoredItemStack> info = Lists.newArrayList();
+			List<StoredItemStack> info = new ArrayList<>();
 			StorageSize size = GenericInventoryHandler.getItems(info, ((EntityPlayer) entity).inventory, null);
 			newList.sizing.add(size);
 			for (StoredItemStack item : info) {

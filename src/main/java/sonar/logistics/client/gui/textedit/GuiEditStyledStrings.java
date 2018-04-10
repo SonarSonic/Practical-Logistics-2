@@ -1,6 +1,7 @@
 package sonar.logistics.client.gui.textedit;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -14,31 +15,31 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import sonar.logistics.api.displays.WidthAlignment;
+import sonar.logistics.api.displays.actions.ClickHyperlink;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.TextSelection;
 import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.client.LogisticsButton;
+import sonar.logistics.client.gui.GuiHyperlinkAdd;
 import sonar.logistics.client.gui.GuiInfoReferenceSource;
 import sonar.logistics.client.gui.display.SpecialFormatButton;
 import sonar.logistics.client.gui.display.TextColourButton;
+import sonar.logistics.client.gui.generic.info.HyperlinkRequest;
+import sonar.logistics.client.gui.generic.info.IHyperlinkRequirementGui;
 import sonar.logistics.client.gui.generic.info.IInfoReferenceRequirementGui;
 import sonar.logistics.client.gui.generic.info.InfoReferenceRequest;
 import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
 import sonar.logistics.client.gui.textedit.hotkeys.HotKeyFunctions;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
-public class GuiEditStyledStrings extends GuiStyledStringFunctions implements ILineCounter, IInfoReferenceRequirementGui {
+public class GuiEditStyledStrings extends GuiStyledStringFunctions implements ILineCounter, IInfoReferenceRequirementGui, IHyperlinkRequirementGui {
 	public long lastCursorClick = -1;
 	public boolean isDragging = false;
-	public GuiScreen origin = null;
 
-	public GuiEditStyledStrings(StyledTextElement text, TileAbstractDisplay display, Object origin) {
+	public GuiEditStyledStrings(StyledTextElement text, TileAbstractDisplay display) {
 		super(text, display);
-		if (origin != null && origin instanceof GuiScreen) {
-			this.origin = (GuiScreen) origin;
-		}
 	}
 
 	@Override
@@ -60,7 +61,11 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 
 		for (int i = 0; i < 16; i++) {
 			TextFormatting format = TextFormatting.values()[i];
-			this.buttonList.add(new TextColourButton(this, 16 + i, guiLeft + 2 + i * 16, guiTop + 210, format));
+			this.buttonList.add(new TextColourButton(this, 16 + i, guiLeft + 2 + i * 16, guiTop + 210, format) {
+				public boolean isSelected() {
+					return currentColour == colourRGB;
+				}
+			});
 		}
 		this.setSpacingScroller(text.spacing / 50);
 		this.cursorPosition.setYToLast(this);
@@ -108,7 +113,9 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 				}
 				break;
 			case 10:
-				// hyperlink
+				if (cursorPosition.validPosition()) {
+					FMLClientHandler.instance().showGuiScreen(new GuiHyperlinkAdd(new HyperlinkRequest(this), text.getGSI(), this.inventorySlots));
+				}
 				break;
 			case 11:
 				// action
@@ -125,13 +132,23 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 	}
 
 	@Override
-	public void onRequirementCompleted(List<InfoReference> selected) {
+	public void onReferenceRequirementCompleted(List<InfoReference> selected) {
 		if (selected.isEmpty()) {
 			return;
 		}
-		List newStrings = Lists.newArrayList();
+		List newStrings = new ArrayList<>();
 		selected.forEach(ref -> newStrings.add(new StyledInfo(ref.uuid, ref.refType, createStylingFromEnabled())));
 		addStyledStrings(newStrings);
+	}
+
+	@Override
+	public void onHyperlinkRequirementCompleted(String hyperlink) {
+		int id = text.addAction(new ClickHyperlink(hyperlink));
+
+		formatSelections((line, string) -> {
+			string.getStyle().setActionID(id);
+			return string;
+		});
 	}
 
 	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {
@@ -184,13 +201,6 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 		GuiActions.UPDATE_TEXT_SCALING.trigger(this);
 		if (triggered) {
 			return;
-		}
-		if (isCloseKey(i)) {
-			save();
-			if (origin != null) {
-				FMLClientHandler.instance().showGuiScreen(origin);
-				return;
-			}
 		}
 		super.keyTyped(c, i);
 	}

@@ -1,11 +1,10 @@
 package sonar.logistics.networking.cabling;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.api.container.IMultipartContainer;
 import mcmultipart.api.multipart.IMultipartTile;
@@ -140,7 +139,7 @@ public class CableHelper extends CablingWrapper {
 	}
 
 	public static List<IInfoProvider> getLocalMonitors(IDataCable cable) {
-		List<IInfoProvider> logicTiles = Lists.newArrayList();
+		List<IInfoProvider> logicTiles = new ArrayList<>();
 		for (EnumFacing face : EnumFacing.values()) {
 			ICableConnectable connect = getConnection(cable, face, CableConnectionType.VISUAL, false, false);
 			if (connect instanceof IInfoProvider) {
@@ -163,7 +162,7 @@ public class CableHelper extends CablingWrapper {
 	}
 
 	public static <T> List<T> getConnectedTiles(IDataCable cable, SonarValidation validate) {
-		List<T> logicTiles = Lists.newArrayList();
+		List<T> logicTiles = new ArrayList<>();
 		for (EnumFacing face : EnumFacing.values()) {
 			ICableConnectable connection = getConnection(cable, face, CableConnectionType.NETWORK, false);
 			if (connection != null && !(connection instanceof IDataCable) && validate.isValid(connection)) {

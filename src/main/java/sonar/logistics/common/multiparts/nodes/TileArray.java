@@ -1,8 +1,7 @@
 package sonar.logistics.common.multiparts.nodes;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,7 +27,7 @@ import sonar.logistics.networking.CacheHandler;
 public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui {
 
 	public static boolean entityChanged = true;
-	public List<NodeConnection> channels = Lists.newArrayList();
+	public List<NodeConnection> channels = new ArrayList<>();
 
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
 	public SonarInventory inventory = new SonarInventory(this, 8) {
@@ -57,11 +56,11 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 	}
 
 	public void updateConnectionLists() {
-		List<NodeConnection> channels = Lists.newArrayList();
+		List<NodeConnection> channels = new ArrayList<>();
 		for (int i = 0; i < 8; i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
 			if (stack != null && stack.getItem() instanceof ITransceiver && stack.hasTagCompound()) {
-				NodeConnection connect = LogisticsHelper.getTransceiverNode(this, stack);
+				NodeConnection connect = LogisticsHelper.getTransceiverNode(this, world, stack);
 				if (!channels.contains(connect)) {
 					channels.add(connect);
 				}
@@ -83,12 +82,9 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 	}
 
 	//// EVENTS \\\\
-	public void validate() {
-		super.validate();
+	public void onFirstTick() {
+		super.onFirstTick();
 		this.updateConnectionLists();
-		if (this.isClient()) {
-			this.requestSyncPacket();
-		}
 	}
 
 	public void onSyncPacketRequested(EntityPlayer player) {

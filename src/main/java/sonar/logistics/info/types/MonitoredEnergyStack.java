@@ -42,7 +42,7 @@ public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> impleme
 	public MonitoredEnergyStack(StoredEnergyStack stack, MonitoredBlockCoords coords) {
 		this.energyStack.setObject(stack);
 		this.coords.setInfo(coords);
-		this.dropStack.setObject(new StoredItemStack(LogisticsHelper.getCoordItem(coords.getCoords())));
+		this.dropStack.setObject(new StoredItemStack(LogisticsHelper.getCoordItem(coords.getCoords(), coords.getCoords().getWorld())));
 	}
 
 	@Override

@@ -20,7 +20,7 @@ import sonar.logistics.networking.transfers.TransferNetworkChannels;
 public abstract class CacheHandler<T> {
 
 	public static ArrayList<CacheHandler> getValidCaches(INetworkListener tile) {
-		ArrayList<CacheHandler> valid = Lists.newArrayList();
+		ArrayList<CacheHandler> valid = new ArrayList<>();
 		for (CacheHandler handler : CacheHandler.handlers) {
 			if (handler.clazz.isInstance(tile)) {
 				valid.add(handler);

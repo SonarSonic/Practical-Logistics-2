@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -24,8 +22,8 @@ import sonar.logistics.api.utils.ChannelType;
 
 public class ChannelList implements ISyncPart {
 
-	public List<BlockCoords> coordList = Lists.newArrayList();
-	public List<UUID> uuidList = Lists.newArrayList();
+	public List<BlockCoords> coordList = new ArrayList<>();
+	public List<UUID> uuidList = new ArrayList<>();
 	public int identity;
 	public final int tagID;
 	public ISyncableListener listener;
@@ -206,7 +204,7 @@ public class ChannelList implements ISyncPart {
 	}
 
 	public List<UUID> readUUIDS(NBTTagCompound nbt) {
-		ArrayList<UUID> uuids = Lists.newArrayList();
+		ArrayList<UUID> uuids = new ArrayList<>();
 		NBTTagList list = nbt.getTagList("uuids", NBT.TAG_COMPOUND);
 		for (int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound uuidTag = list.getCompoundTagAt(i);

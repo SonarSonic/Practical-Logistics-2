@@ -1,12 +1,10 @@
 package sonar.logistics.helpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -14,8 +12,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
-import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
@@ -33,6 +31,7 @@ import sonar.logistics.api.wireless.IEntityTransceiver;
 import sonar.logistics.api.wireless.ITileTransceiver;
 import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.LogisticsNetworkHandler;
+import sonar.logistics.networking.ServerInfoHandler;
 
 public class LogisticsHelper {
 
@@ -45,7 +44,7 @@ public class LogisticsHelper {
 
 	/** gets a list of all valid networks from the provided network ids */
 	public static List<ILogisticsNetwork> getNetworks(List<Integer> ids) {
-		List<ILogisticsNetwork> networks = Lists.newArrayList();
+		List<ILogisticsNetwork> networks = new ArrayList<>();
 		ids.forEach(id -> {
 			ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(id);
 			if (network != null && network.isValid()) {
@@ -57,8 +56,8 @@ public class LogisticsHelper {
 
 	/** creates a fresh HashMap with all CacheHandlers with ArrayLists placed */
 	public static Map<CacheHandler, List> getCachesMap() {
-		Map<CacheHandler, List> connections = Maps.newHashMap();
-		CacheHandler.handlers.forEach(classType -> connections.put(classType, Lists.newArrayList()));
+		Map<CacheHandler, List> connections = new HashMap<>();
+		CacheHandler.handlers.forEach(classType -> connections.put(classType, new ArrayList<>()));
 		return connections;
 	}
 
@@ -72,7 +71,7 @@ public class LogisticsHelper {
 		return null;
 	}
 
-	public static NodeConnection getTransceiverNode(INetworkTile source, ItemStack stack) {
+	public static NodeConnection getTransceiverNode(INetworkTile source, World world, ItemStack stack) {
 		if (stack.getItem() instanceof ITileTransceiver) {
 			ITileTransceiver trans = (ITileTransceiver) stack.getItem();
 			return new BlockConnection(source, trans.getCoords(stack), trans.getDirection(stack));
@@ -81,7 +80,7 @@ public class LogisticsHelper {
 			IEntityTransceiver trans = (IEntityTransceiver) stack.getItem();
 			UUID uuid = trans.getEntityUUID(stack);
 			if (uuid != null) {
-				for (Entity entity : source.getCoords().getWorld().getLoadedEntityList()) {
+				for (Entity entity : world.getLoadedEntityList()) {
 					if (entity.getPersistentID().equals(uuid)) {
 						return new EntityConnection(source, entity);
 					}
@@ -93,7 +92,7 @@ public class LogisticsHelper {
 	}
 
 	public List<InfoUUID> getConnectedUUIDS(List<IDisplay> displays) {
-		ArrayList<InfoUUID> ids = Lists.newArrayList();
+		ArrayList<InfoUUID> ids = new ArrayList<>();
 		for (IDisplay display : displays) {
 			DisplayGSI container = display.getGSI();
 			container.forEachValidUUID(id -> {
@@ -105,9 +104,9 @@ public class LogisticsHelper {
 	}
 
 	public List<IInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
-		List<IInfo> infoList = Lists.newArrayList();
+		List<IInfo> infoList = new ArrayList<>();
 		for (InfoUUID id : ids) {
-			ILogicListenable monitor = PL2.getServerManager().getIdentityTile(id.getIdentity());
+			ILogicListenable monitor = ServerInfoHandler.instance().getIdentityTile(id.getIdentity());
 			if (monitor != null && monitor instanceof IInfoProvider) {
 				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
 				if (info != null)
@@ -122,10 +121,10 @@ public class LogisticsHelper {
 		return NodeConnection.sortConnections(channels);
 	}
 
-	public static ItemStack getCoordItem(BlockCoords coords) {
+	public static ItemStack getCoordItem(BlockCoords coords, World world) {
 		TileEntity tile = coords.getTileEntity();
 		IBlockState state = coords.getBlockState();
-		ItemStack stack = coords.getBlock().getItem(coords.getWorld(), coords.getBlockPos(), state);
+		ItemStack stack = coords.getBlock().getItem(world, coords.getBlockPos(), state);
 		if (stack == null || stack.isEmpty()) {
 			stack = new ItemStack(Item.getItemFromBlock(state.getBlock()));
 		}

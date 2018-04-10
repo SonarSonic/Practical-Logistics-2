@@ -1,10 +1,9 @@
 package sonar.logistics.guide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -20,7 +19,7 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 
 	public String unlocalizedName;
 	public ItemStack stack;
-	public List<ElementLink> links = Lists.newArrayList();
+	public List<ElementLink> links = new ArrayList<>();
 	public double rotate = 0;
 
 	public BaseItemPage(int pageID, ItemStack stack) {

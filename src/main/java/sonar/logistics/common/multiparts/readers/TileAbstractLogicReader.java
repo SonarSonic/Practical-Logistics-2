@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -16,6 +15,7 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.ProgressInfo;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.sync.SyncMonitoredType;
 
@@ -92,7 +92,7 @@ public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends
 					latestInfo = info != null ? info.b : InfoError.noData;
 				}
 			}
-			PL2.getServerManager().changeInfo(this, id, latestInfo);
+			ServerInfoHandler.instance().changeInfo(this, id, latestInfo);
 		}
 	}
 

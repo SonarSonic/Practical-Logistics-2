@@ -8,7 +8,8 @@ public enum GSIElementPackets {
 	DELETE_ELEMENTS(GSIElementPacketHelper::doDeleteElementsPacket),
 	RESIZE_CONTAINER(GSIElementPacketHelper::doResizeContainerPacket),
 	CONFIGURE_INFO_ELEMENT(GSIElementPacketHelper::doConfigureInfoPacket),
-	TEXT_SAVE(GSIElementPacketHelper::doTextSavePacket);
+	EDIT_MODE(GSIElementPacketHelper::doEditModePacket),
+	EDIT_ELEMENT(GSIElementPacketHelper::doEditElementPacket);
 
 	IGSIElementPacketHandler logic;
 

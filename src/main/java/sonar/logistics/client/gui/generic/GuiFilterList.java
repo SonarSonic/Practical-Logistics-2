@@ -2,6 +2,7 @@ package sonar.logistics.client.gui.generic;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -46,8 +47,6 @@ import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.filters.ItemFilter;
 import sonar.logistics.api.filters.OreDictFilter;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.nodes.TransferType;
 import sonar.logistics.api.utils.ListPacket;
@@ -153,7 +152,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 	protected void renderToolTip(ItemStack stack, int x, int y) {
 		List<String> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-		List<String> newList = Lists.newArrayList();
+		List<String> newList = new ArrayList<>();
 		boolean matches = tile.allowed(stack);
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
@@ -583,7 +582,7 @@ public class GuiFilterList extends GuiSelectionList {
 	public void setString(String string) {
 
 	}
-
+	/*
 	public void drawInfo(int pos, DisplayInfo info) {
 		int width = 162;
 		int height = 20;
@@ -602,7 +601,7 @@ public class GuiFilterList extends GuiSelectionList {
 			FontHelper.text("NO DATA", 11, top + 6, LogisticsColours.white_text.getRGB());
 		}
 	}
-
+	*/
 	@Override
 	public int getColour(int i, int type) {
 		return LogisticsColours.getDefaultSelection().getRGB();

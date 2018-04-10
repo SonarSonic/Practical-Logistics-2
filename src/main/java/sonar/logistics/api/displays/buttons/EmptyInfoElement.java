@@ -1,8 +1,7 @@
 package sonar.logistics.api.displays.buttons;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,7 +58,7 @@ public class EmptyInfoElement extends ButtonElement implements IFlexibleGui<Tile
 
 	@Override
 	public List<InfoUUID> getSelectedInfo() {
-		return Lists.newArrayList(); // nothing selected at the moment
+		return new ArrayList<>(); // nothing selected at the moment
 	}
 
 	@Override

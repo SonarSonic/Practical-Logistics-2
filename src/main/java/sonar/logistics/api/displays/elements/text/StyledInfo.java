@@ -1,6 +1,5 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.ws.Holder;
@@ -10,16 +9,14 @@ import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
+import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
+import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.StyledStringType;
-import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.api.displays.references.ReferenceType;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.core.helpers.NBTHelper;
-import sonar.core.helpers.RenderHelper;
-import sonar.core.helpers.SonarHelper;
+import sonar.logistics.networking.ClientInfoHandler;
 
 @StyledStringType(id = StyledInfo.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledInfo implements IStyledString, INBTSyncable {
@@ -87,7 +84,7 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	@Override
 	public String getFormattedString() {
 		if(cachedFormattedString == null){
-			cachedFormattedString = getTextFormattingStyle() + refType.getRefString(PL2.getClientManager().getInfoFromUUID(uuid));
+			cachedFormattedString = getTextFormattingStyle() + refType.getRefString(ClientInfoHandler.instance().getInfoFromUUID(uuid));
 		}
 		return cachedFormattedString;
 	}

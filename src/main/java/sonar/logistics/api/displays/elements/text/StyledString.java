@@ -1,22 +1,15 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.Comparator;
-import java.util.List;
-
 import javax.xml.ws.Holder;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.asm.StyledStringType;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.core.helpers.RenderHelper;
-import sonar.core.helpers.SonarHelper;
 
 @StyledStringType(id = StyledString.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledString implements IStyledString, INBTSyncable {

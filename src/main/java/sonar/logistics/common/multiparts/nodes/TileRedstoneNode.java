@@ -12,6 +12,7 @@ import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.api.cabling.IRedstonePowerProvider;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
 import sonar.logistics.networking.cabling.IRedstoneNetwork;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
@@ -53,7 +54,7 @@ public class TileRedstoneNode extends TileSonarMultipart implements IRedstoneCon
 	@Override
 	public int getIdentity() {
 		if (identity.getObject() == -1 && this.isServer()) {
-			identity.setObject(PL2.getServerManager().getNextIdentity());
+			identity.setObject(ServerInfoHandler.instance().getNextIdentity());
 		}
 		return identity.getObject();
 	}

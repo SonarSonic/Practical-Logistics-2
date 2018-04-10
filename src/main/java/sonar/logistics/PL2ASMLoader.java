@@ -5,12 +5,11 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.google.common.collect.Maps;
-
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import sonar.core.helpers.ASMLoader;
 import sonar.core.utils.Pair;
+import sonar.logistics.api.asm.DisplayActionType;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.asm.EntityInfoProvider;
 import sonar.logistics.api.asm.InfoRegistry;
@@ -19,6 +18,7 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.StyledStringType;
 import sonar.logistics.api.asm.TileInfoProvider;
+import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.IStyledString;
 import sonar.logistics.api.filters.INodeFilter;
@@ -31,25 +31,30 @@ import sonar.logistics.info.comparators.ILogicComparator;
 
 public class PL2ASMLoader {
 
-	public static LinkedHashMap<Integer, String> infoNames = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Integer> infoIds = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Class<? extends IInfo>> infoClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<Integer, String> infoNames = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Integer> infoIds = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Class<? extends IInfo>> infoClasses = new LinkedHashMap<>();
 	
-	public static LinkedHashMap<Integer, String> elementNames = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Integer> elementIDs = Maps.newLinkedHashMap();
-	public static LinkedHashMap<Integer, Class<? extends IDisplayElement>> elementIClasses = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Class<? extends IDisplayElement>> elementSClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<Integer, String> elementNames = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Integer> elementIDs = new LinkedHashMap<>();
+	public static LinkedHashMap<Integer, Class<? extends IDisplayElement>> elementIClasses = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Class<? extends IDisplayElement>> elementSClasses = new LinkedHashMap<>();
 	
-	public static LinkedHashMap<Integer, String> sstringNames = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Integer> sstringIDs = Maps.newLinkedHashMap();
-	public static LinkedHashMap<Integer, Class<? extends IStyledString>> sstringIClasses = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Class<? extends IStyledString>> sstringSClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<Integer, String> sstringNames = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Integer> sstringIDs = new LinkedHashMap<>();
+	public static LinkedHashMap<Integer, Class<? extends IStyledString>> sstringIClasses = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Class<? extends IStyledString>> sstringSClasses = new LinkedHashMap<>();
 
-	public static LinkedHashMap<Integer, String> comparatorNames = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, Integer> comparatorIds = Maps.newLinkedHashMap();
-	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<Integer, String> comparatorNames = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Integer> comparatorIds = new LinkedHashMap<>();
+	public static LinkedHashMap<String, ILogicComparator> comparatorClasses = new LinkedHashMap<>();
 	
-	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = Maps.newLinkedHashMap();
+	public static LinkedHashMap<Integer, String> displayActionNames = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Integer> displayActionIDs = new LinkedHashMap<>();
+	public static LinkedHashMap<Integer, Class<? extends IDisplayAction>> displayActionIClasses = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Class<? extends IDisplayAction>> displayActionSClasses = new LinkedHashMap<>();
+	
+	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = new LinkedHashMap<>();
 
 	private PL2ASMLoader() {}
 
@@ -57,6 +62,7 @@ public class PL2ASMLoader {
 		ASMDataTable asmDataTable = event.getAsmData();
 		PL2ASMLoader.loadInfoTypes(asmDataTable);
 		PL2ASMLoader.loadDisplayElementTypes(asmDataTable);
+		PL2ASMLoader.loadDisplayActionTypes(asmDataTable);
 		PL2ASMLoader.loadStyledStringTypes(asmDataTable);
 		PL2ASMLoader.loadComparatorTypes(asmDataTable);
 		PL2ASMLoader.loadNodeFilters(asmDataTable);
@@ -66,19 +72,19 @@ public class PL2ASMLoader {
 	}
 
 	public static List<IInfoRegistry> getInfoRegistries(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(asmDataTable, InfoRegistry.class, IInfoRegistry.class, true, false);
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, InfoRegistry.class, IInfoRegistry.class, true, false);
 	}
 
 	public static List<ITileInfoProvider> getTileProviders(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(asmDataTable, TileInfoProvider.class, ITileInfoProvider.class, true, false);
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, TileInfoProvider.class, ITileInfoProvider.class, true, false);
 	}
 
 	public static List<IEntityInfoProvider> getEntityProviders(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(asmDataTable, EntityInfoProvider.class, IEntityInfoProvider.class, true, false);
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, EntityInfoProvider.class, IEntityInfoProvider.class, true, false);
 	}
 
 	public static void loadComparatorTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicComparator.class, ILogicComparator.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, LogicComparator.class, ILogicComparator.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -95,7 +101,7 @@ public class PL2ASMLoader {
 
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(asmDataTable, LogicInfoType.class, IInfo.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, LogicInfoType.class, IInfo.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IInfo>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -108,7 +114,7 @@ public class PL2ASMLoader {
 
 
 	public static void loadDisplayElementTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayElement>>> infoTypes = ASMLoader.getClasses(asmDataTable, DisplayElementType.class, IDisplayElement.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayElement>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, DisplayElementType.class, IDisplayElement.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IDisplayElement>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -122,7 +128,7 @@ public class PL2ASMLoader {
 
 
 	public static void loadStyledStringTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IStyledString>>> infoTypes = ASMLoader.getClasses(asmDataTable, StyledStringType.class, IStyledString.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IStyledString>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, StyledStringType.class, IStyledString.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IStyledString>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -134,8 +140,21 @@ public class PL2ASMLoader {
 		PL2.logger.info("Loaded: " + sstringIDs.size() + " Styled String Types");
 	}
 
+	public static void loadDisplayActionTypes(@Nonnull ASMDataTable asmDataTable) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayAction>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, DisplayActionType.class, IDisplayAction.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends IDisplayAction>> info : infoTypes) {
+			String name = (String) info.a.getAnnotationInfo().get("id");
+			int hashCode = name.hashCode();
+			displayActionNames.put(hashCode, name);
+			displayActionIDs.put(name, hashCode);
+			displayActionSClasses.put(name, info.b);
+			displayActionIClasses.put(hashCode, info.b);
+		}
+		PL2.logger.info("Loaded: " + elementIDs.size() + " DisplayActions");
+	}
+
 	public static void loadNodeFilters(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>>> infoTypes = ASMLoader.getClasses(asmDataTable, NodeFilter.class, INodeFilter.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, NodeFilter.class, INodeFilter.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			filterClasses.put(name, info.b);

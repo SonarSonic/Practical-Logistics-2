@@ -1,10 +1,9 @@
 package sonar.logistics.common.multiparts.cables;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.slot.EnumCenterSlot;
@@ -62,12 +61,12 @@ public class BlockDataCable extends BlockLogistics {
 
 	public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
 		super.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entityIn, isActualState);
-		List<AxisAlignedBB> boxes = getSelectionBoxes(world, pos, Lists.newArrayList());
+		List<AxisAlignedBB> boxes = getSelectionBoxes(world, pos, new ArrayList<>());
 		boxes.forEach(box -> addCollisionBoxToList(pos, entityBox, collidingBoxes, box));
 	}
     @Override
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
-    	return RayTraceHelper.rayTraceBoxes(pos, start, end, getSelectionBoxes(world,pos, Lists.newArrayList())).getLeft();
+    	return RayTraceHelper.rayTraceBoxes(pos, start, end, getSelectionBoxes(world,pos, new ArrayList<>())).getLeft();
     }
 
 	@Deprecated
@@ -107,21 +106,22 @@ public class BlockDataCable extends BlockLogistics {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		
 		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable == null) {
 			return state;
 		}
-		for (PropertyCableFace p : PL2Properties.PROPS) {
+		for (PropertyCableFace p : PL2Properties.CABLE_FACES) {
 			state = state.withProperty(p, CableHelper.getConnectionRenderType(cable, p.face));
-		}		
+		}	
+		//BlockModelShapes shapes = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
+		//Map<IBlockState, ModelResourceLocation> variants = shapes.getBlockStateMapper().getVariants(this);
 		return state;
 	}
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		IBlockState state = this.getDefaultState();
-		for (PropertyCableFace p : PL2Properties.PROPS) {
+		for (PropertyCableFace p : PL2Properties.CABLE_FACES) {
 			state = state.withProperty(p, CableRenderType.NONE);
 		}
 		return state;
@@ -133,7 +133,7 @@ public class BlockDataCable extends BlockLogistics {
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, PL2Properties.PROPS);
+		return new BlockStateContainer(this, PL2Properties.CABLE_FACES);
 	}
 
 	@Override

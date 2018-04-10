@@ -30,7 +30,7 @@ public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {
 
 	@Override
 	public MonitoredBlockCoords getChannel() {
-		return new MonitoredBlockCoords(coords, LogisticsHelper.getCoordItem(coords));
+		return new MonitoredBlockCoords(coords, LogisticsHelper.getCoordItem(coords, coords.getWorld()));
 	}
 
 	@Override

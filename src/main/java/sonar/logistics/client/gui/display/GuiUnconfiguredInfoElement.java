@@ -1,22 +1,17 @@
 package sonar.logistics.client.gui.display;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.core.utils.IWorldPosition;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.types.UnconfiguredInfoElement;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
-import sonar.logistics.client.gui.GuiInfoReferenceSource;
 import sonar.logistics.client.gui.GuiLogistics;
-import sonar.logistics.client.gui.generic.info.InfoReferenceRequest;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
@@ -25,7 +20,7 @@ public class GuiUnconfiguredInfoElement extends GuiLogistics {
 	public GuiScreen origin = null;
 	public UnconfiguredInfoElement element;
 	public TileAbstractDisplay display;
-	public List<IDisplayElement> configured = Lists.newArrayList();
+	public List<IDisplayElement> configured = new ArrayList<>();
 	public int count = 0;
 
 	public GuiUnconfiguredInfoElement(TileAbstractDisplay display, UnconfiguredInfoElement element, Object origin) {

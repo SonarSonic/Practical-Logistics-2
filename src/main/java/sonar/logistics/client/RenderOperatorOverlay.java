@@ -1,11 +1,10 @@
 package sonar.logistics.client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.MCMultiPart;
 import mcmultipart.api.container.IMultipartContainer;
@@ -78,7 +77,7 @@ public class RenderOperatorOverlay {
 			Entity view = Minecraft.getMinecraft().getRenderViewEntity();
 			if (requestPacket)
 				provider.updateOperatorInfo();
-			List<String> infoList = Lists.newArrayList();
+			List<String> infoList = new ArrayList<>();
 			provider.addInfo(infoList);
 			if (infoList.isEmpty()) {
 				return;

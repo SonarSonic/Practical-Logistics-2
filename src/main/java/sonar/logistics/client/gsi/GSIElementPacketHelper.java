@@ -1,8 +1,7 @@
 package sonar.logistics.client.gsi;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,7 +9,6 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.SonarCore;
-import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.FlexibleGuiHandler;
@@ -20,14 +18,12 @@ import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IInfoRequirement;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.types.UnconfiguredInfoElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.logistics.networking.NetworkHelper;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.PacketGSIElement;
 
 public class GSIElementPacketHelper {
@@ -76,7 +72,7 @@ public class GSIElementPacketHelper {
 		double pScale = packetTag.getDouble("pscale");
 		DisplayElementContainer c = gsi.addElementContainer(translate, scale, pScale);
 		IDisplayElement e = CreateInfoType.values()[packetTag.getInteger("type")].logic.create(c);
-		gsi.display.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket();
 	}
 
 	//// REQUEST GUI \\\\
@@ -120,7 +116,7 @@ public class GSIElementPacketHelper {
 		if (element instanceof IInfoRequirement) {
 			IInfoRequirement require = (IInfoRequirement) element;
 			NBTTagList tag = packetTag.getTagList("uuids", NBT.TAG_COMPOUND);
-			List<InfoUUID> required = Lists.newArrayList();
+			List<InfoUUID> required = new ArrayList<>();
 			for (int i = 0; i < tag.tagCount(); i++) {
 				NBTTagCompound nbt = tag.getCompoundTagAt(i);
 				InfoUUID uuid = NBTHelper.instanceNBTSyncable(InfoUUID.class, nbt);
@@ -147,11 +143,12 @@ public class GSIElementPacketHelper {
 
 	public static void doDeleteContainersPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		NBTTagList tag = packetTag.getTagList("del", NBT.TAG_INT);
-		List<Integer> toDelete = Lists.newArrayList();
+		List<Integer> toDelete = new ArrayList<>();
 		for (int i = 0; i < tag.tagCount(); i++) {
 			toDelete.add(tag.getIntAt(i));
 		}
 		toDelete.forEach(del -> gsi.removeElementContainer(del));
+		gsi.sendInfoContainerPacket();
 	}
 
 	//// DELETE ELEMENTS \\\\
@@ -167,11 +164,12 @@ public class GSIElementPacketHelper {
 
 	public static void doDeleteElementsPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		NBTTagList tag = packetTag.getTagList("del", NBT.TAG_INT);
-		List<Integer> toDelete = Lists.newArrayList();
+		List<Integer> toDelete = new ArrayList<>();
 		for (int i = 0; i < tag.tagCount(); i++) {
 			toDelete.add(tag.getIntAt(i));
 		}
 		toDelete.forEach(del -> gsi.removeElement(del));
+		gsi.sendInfoContainerPacket();
 	}
 
 	//// RESIZE CONTAINERS \\\\
@@ -220,31 +218,44 @@ public class GSIElementPacketHelper {
 			NBTTagList tag = packetTag.getTagList("elements", NBT.TAG_COMPOUND);
 			for (int i = 0; i < tag.tagCount(); i++) {
 				NBTTagCompound nbt = tag.getCompoundTagAt(i);
-				nbt.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, PL2.getServerManager().getNextIdentity());
+				nbt.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, ServerInfoHandler.instance().getNextIdentity());
 				IDisplayElement e = DisplayElementHelper.loadElement(nbt, element.getHolder());
 				element.getHolder().getElements().addElement(e);
 			}
+			gsi.sendInfoContainerPacket();
 		}
 	}
 
 	//// SAVE TEXT \\\\
 
-	public static NBTTagCompound createTextSavePacket(StyledTextElement text) {
+	public static NBTTagCompound createEditElementPacket(IDisplayElement e) {
 		NBTTagCompound tag = new NBTTagCompound();
-		writePacketID(tag, GSIElementPackets.TEXT_SAVE);
-		tag.setTag("save_text", text.writeData(new NBTTagCompound(), SyncType.SAVE));
+		writePacketID(tag, GSIElementPackets.EDIT_ELEMENT);
+		tag.setTag("edits", e.writeData(new NBTTagCompound(), SyncType.SAVE));
 		return tag;
 	}
 
-	public static void doTextSavePacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
-		if (element instanceof StyledTextElement) {
-			NBTTagCompound tag = packetTag.getCompoundTag("save_text");
-			tag.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, element.getElementIdentity());
-			element.readData(tag, SyncType.SAVE);
-			// gsi.updateCachedInfo();
-			((StyledTextElement) element).updateTextContents();
-			gsi.updateInfoReferences();
-		}
+	public static void doEditElementPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		NBTTagCompound tag = packetTag.getCompoundTag("edits");
+		tag.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, element.getElementIdentity());
+		element.readData(tag, SyncType.SAVE);
+		element.onElementChanged();
+		gsi.sendInfoContainerPacket();
 	}
+
+	//// EDITMODE \\\\
+
+	public static NBTTagCompound createEditModePacket(boolean set) {
+		NBTTagCompound tag = new NBTTagCompound();
+		writePacketID(tag, GSIElementPackets.EDIT_MODE);
+		tag.setBoolean("edit_mode", set);
+		return tag;
+	}
+
+	public static void doEditModePacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		gsi.edit_mode.setObject(packetTag.getBoolean("edit_mode"));
+		gsi.sendInfoContainerPacket();
+	}
+
 
 }

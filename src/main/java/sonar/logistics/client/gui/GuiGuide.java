@@ -1,12 +1,11 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -78,7 +77,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 
 	public void updateSearchList() {
 		String search = searchField == null ? "" : searchField.getText();
-		List<IGuidePage> searchList = Lists.newArrayList();
+		List<IGuidePage> searchList = new ArrayList<>();
 		for (IGuidePage page : GuidePageRegistry.pages) {
 			if (page != null && page.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 				searchList.add(page);

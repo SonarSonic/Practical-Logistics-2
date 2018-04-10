@@ -1,5 +1,6 @@
 package sonar.logistics.api.info;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -11,10 +12,7 @@ import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
-import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.api.displays.references.ReferenceType;
-import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.displays.storage.DisplayElementList;
 import sonar.logistics.api.register.LogicPath;
 
 /** for your info to be registered you must use {@link LogicInfoType} implement this for all types of info */
@@ -37,7 +35,7 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 	}
 
 	public default void addDefaultElements(IElementStorageHolder h, InfoUUID uuid) {
-		List<IDisplayElement> elements = Lists.newArrayList();
+		List<IDisplayElement> elements = new ArrayList<>();
 		createDefaultElements(elements, h, uuid);
 		elements.forEach(e -> h.getElements().addElement(e));
 	}

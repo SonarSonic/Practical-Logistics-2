@@ -1,9 +1,8 @@
 package sonar.logistics.common.multiparts.wireless;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,7 +57,7 @@ public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter,
 	}
 
 	public List<IRedstoneNetwork> getAllNetworks() {
-		List<IRedstoneNetwork> networks = Lists.newArrayList();
+		List<IRedstoneNetwork> networks = new ArrayList<>();
 		List<Integer> connected = getConnectedNetworks();
 		connected.forEach(id -> RedstoneNetwork.addSubNetworks(networks, RedstoneConnectionHandler.instance().getNetwork(id), IRedstoneNetwork.CONNECTED_NETWORK));
 		networks.remove(rNetwork);
@@ -151,7 +150,7 @@ public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter,
 
 	@Override
 	public List<Integer> getConnectedNetworks() {
-		List<Integer> networks = Lists.newArrayList();
+		List<Integer> networks = new ArrayList<>();
 		List<IRedstoneEmitter> emitters = getEmitters();
 		for (IRedstoneEmitter emitter : emitters) {
 			IRedstoneNetwork rNetwork = emitter.getRedstoneNetwork();

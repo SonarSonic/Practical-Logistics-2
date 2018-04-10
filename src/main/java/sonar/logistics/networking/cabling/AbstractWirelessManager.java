@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
@@ -119,7 +117,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	//// HELPER METHODS \\\\
 
 	public List<E> getEmitters(UUID uuid) {
-		List<E> list = Lists.newArrayList();
+		List<E> list = new ArrayList<>();
 		for (E emitter : emitters) {
 			if (emitter.canPlayerConnect(uuid).isConnected()) {
 				list.add(emitter);
@@ -170,7 +168,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	
 	public ArrayList<ClientWirelessEmitter> getClientEmitters(EntityPlayer player) {
 		List<E> emitters = getEmitters(player.getGameProfile().getId());
-		ArrayList<ClientWirelessEmitter> clientEmitters = Lists.newArrayList();
+		ArrayList<ClientWirelessEmitter> clientEmitters = new ArrayList<>();
 		for (E emitter : emitters) {
 			clientEmitters.add(new ClientWirelessEmitter(emitter));
 		}

@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.lists.types.InfoChangeableList;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
 
 public class PacketChannels implements IMessage {
@@ -30,7 +30,7 @@ public class PacketChannels implements IMessage {
 		registryID = buf.readInt();
 		listTag = ByteBufUtils.readTag(buf);
 		if (listTag != null) {
-			list = InfoHelper.readMonitoredList(listTag, PL2.getClientManager().channelMap.getOrDefault(registryID, new InfoChangeableList()), SyncType.DEFAULT_SYNC);
+			list = InfoHelper.readMonitoredList(listTag, ClientInfoHandler.instance().channelMap.getOrDefault(registryID, new InfoChangeableList()), SyncType.DEFAULT_SYNC);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class PacketChannels implements IMessage {
 		@Override
 		public IMessage onMessage(PacketChannels message, MessageContext ctx) {
 			if (message.list != null)
-				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> PL2.getClientManager().channelMap.put(message.registryID, message.list));
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> ClientInfoHandler.instance().channelMap.put(message.registryID, message.list));
 			return null;
 		}
 	}

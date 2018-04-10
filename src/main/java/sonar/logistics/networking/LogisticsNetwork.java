@@ -1,13 +1,14 @@
 package sonar.logistics.networking;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,9 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.SonarHelper;
-import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerTally;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.lists.types.InfoChangeableList;
@@ -37,15 +36,15 @@ import sonar.logistics.packets.PacketChannels;
 public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public final ListenableList<ILogisticsNetwork> subNetworks = new ListenableList(this, 2);
-	public final Map<Class, INetworkChannels> handlers = Maps.newLinkedHashMap();
-	public List<IInfoProvider> localProviders = Lists.newArrayList();
-	public List<IInfoProvider> globalProviders = Lists.newArrayList();
+	public final Map<Class, INetworkChannels> handlers = new LinkedHashMap<>();
+	public List<IInfoProvider> localProviders = new ArrayList<>();
+	public List<IInfoProvider> globalProviders = new ArrayList<>();
 	private List<NetworkUpdate> toUpdate = SonarHelper.convertArray(NetworkUpdate.values());
 	private List<CacheHandler> changedCaches = Lists.newArrayList(CacheHandler.handlers);
 	private Map<CacheHandler, List> caches = LogisticsHelper.getCachesMap();
 	public Queue<INetworkListener> toAdd = new ConcurrentLinkedQueue<INetworkListener>();
 	public Queue<INetworkListener> toRemove = new ConcurrentLinkedQueue<INetworkListener>();
-	private List<NodeConnection> localChannels = Lists.newArrayList(), globalChannels = Lists.newArrayList(), allChannels = Lists.newArrayList();
+	private List<NodeConnection> localChannels = new ArrayList<>(), globalChannels = new ArrayList<>(), allChannels = new ArrayList<>();
 	private long tickStart = 0;
 	private long updateTick = 0; // in nano seconds
 
@@ -123,7 +122,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public <T> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType) {
-		List<T> tiles = cacheType.isLocal() ? Lists.newArrayList(caches.getOrDefault(handler, Lists.newArrayList())) : Lists.newArrayList();
+		List<T> tiles = cacheType.isLocal() ? Lists.newArrayList(caches.getOrDefault(handler, new ArrayList<>())) : new ArrayList<>();
 		if (cacheType.isGlobal()) {
 			List<ILogisticsNetwork> connected = getAllNetworks(ILogisticsNetwork.CONNECTED_NETWORK);
 			connected.forEach(network -> ListHelper.addWithCheck(tiles, network.getCachedTiles(handler, CacheType.LOCAL)));
@@ -215,7 +214,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public void onCablesChanged() {
-		if (PL2.instance.cableManager.getConnections(getNetworkID()).size() == 0) {
+		if (CableConnectionHandler.instance().getConnections(getNetworkID()).size() == 0) {
 			onNetworkRemoved();
 		} else {
 			markUpdate(NetworkUpdate.CABLES);
@@ -260,7 +259,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public void updateLocalChannels() {
-		List<NodeConnection> channels = Lists.newArrayList();
+		List<NodeConnection> channels = new ArrayList<>();
 		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.LOCAL));
 		// FIXME check there is a new local channel before using onLocalCacheChanged???
 		this.localChannels = Lists.newArrayList(channels);
@@ -268,11 +267,11 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public void updateGlobalChannels() {
-		List<NodeConnection> channels = Lists.newArrayList();
+		List<NodeConnection> channels = new ArrayList<>();
 		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.GLOBAL));
 		this.globalChannels = Lists.newArrayList(channels);
 
-		List<NodeConnection> all = Lists.newArrayList();
+		List<NodeConnection> all = new ArrayList<>();
 		ListHelper.addWithCheck(all, globalChannels);
 		ListHelper.addWithCheck(all, localChannels);
 		NodeConnection.sortConnections(all);
@@ -339,7 +338,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public List<ILogisticsNetwork> getAllNetworks(int networkType) {
-		List<ILogisticsNetwork> networks = Lists.newArrayList();
+		List<ILogisticsNetwork> networks = new ArrayList<>();
 		addSubNetworks(networks, this, networkType);
 		return networks;
 	}
@@ -353,18 +352,6 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 			}
 		}
 	}
-
-	@Override
-	public void onListenerAdded(ListenerTally<ILogisticsNetwork> tally) {}
-
-	@Override
-	public void onListenerRemoved(ListenerTally<ILogisticsNetwork> tally) {}
-
-	@Override
-	public void onSubListenableAdded(ISonarListenable<ILogisticsNetwork> listen) {}
-
-	@Override
-	public void onSubListenableRemoved(ISonarListenable<ILogisticsNetwork> listen) {}
 
 	@Override
 	public ListenableList<ILogisticsNetwork> getListenerList() {

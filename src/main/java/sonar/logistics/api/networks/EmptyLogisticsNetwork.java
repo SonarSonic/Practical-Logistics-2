@@ -1,8 +1,7 @@
 package sonar.logistics.api.networks;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
@@ -87,7 +86,7 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	
 	@Override
 	public List<NodeConnection> getConnections(CacheType cacheType) {
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -97,7 +96,7 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 
 	@Override
 	public <T> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType) {
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -107,12 +106,12 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 
 	@Override
 	public List<IInfoProvider> getLocalInfoProviders() {
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 
 	@Override
 	public List<IInfoProvider> getGlobalInfoProviders() {
-		return Lists.newArrayList();
+		return new ArrayList<>();
 	}
 
 	@Override

@@ -1,22 +1,21 @@
 package sonar.logistics.networking;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerList;
 import sonar.core.listener.PlayerListener;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 /**used on Readers for caching the displays connected to their info*/
 public class PL2ListenerList extends ListenableList<PlayerListener> {
 
-	private ListenerList<IDisplay> displayListeners = new ListenerList<IDisplay>(1);
+	private ListenerList<DisplayGSI> displayListeners = new ListenerList<DisplayGSI>(1);
 
 	public PL2ListenerList(ISonarListenable<PlayerListener> listen, int maxTypes) {
 		super(listen, maxTypes);
@@ -26,7 +25,7 @@ public class PL2ListenerList extends ListenableList<PlayerListener> {
 		List<PlayerListener> listeners = super.getListeners(enums);
 		for (ListenerType type : enums) {
 			if (type == ListenerType.OLD_DISPLAY_LISTENER) {
-				List<IDisplay> displays = displayListeners.getListeners(0);
+				List<DisplayGSI> displays = displayListeners.getListeners(0);
 				List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(displays);
 				players.forEach(player -> {
 					PlayerListener listener = new PlayerListener(player);
@@ -40,8 +39,8 @@ public class PL2ListenerList extends ListenableList<PlayerListener> {
 	}
 	
 	public List<PlayerListener> getDisplayPlayerListeners(){
-		List<PlayerListener> listeners = Lists.newArrayList();
-		List<IDisplay> displays = displayListeners.getListeners(0);
+		List<PlayerListener> listeners = new ArrayList<>();
+		List<DisplayGSI> displays = displayListeners.getListeners(0);
 		List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(displays);
 		players.forEach(player -> {
 			PlayerListener listener = new PlayerListener(player);
@@ -56,8 +55,8 @@ public class PL2ListenerList extends ListenableList<PlayerListener> {
 	public boolean hasListeners() {
 		boolean hasListeners = super.hasListeners();
 		if (!hasListeners) {
-			List<IDisplay> displays = displayListeners.getListeners(0);
-			for (IDisplay display : displays) {
+			List<DisplayGSI> displays = displayListeners.getListeners(0);
+			for (DisplayGSI display : displays) {
 				List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(display);
 				if (!players.isEmpty()) {
 					return true;
@@ -67,7 +66,7 @@ public class PL2ListenerList extends ListenableList<PlayerListener> {
 		return hasListeners;
 	}
 
-	public ListenerList<IDisplay> getDisplayListeners() {
+	public ListenerList<DisplayGSI> getDisplayListeners() {
 		return displayListeners;
 	}
 

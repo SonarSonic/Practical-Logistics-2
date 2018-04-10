@@ -13,7 +13,6 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.types.NetworkFluidElement;
-import sonar.logistics.api.displays.elements.types.NetworkItemElement;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IJoinableInfo;

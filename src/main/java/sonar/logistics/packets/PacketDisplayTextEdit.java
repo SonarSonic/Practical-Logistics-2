@@ -2,8 +2,6 @@ package sonar.logistics.packets;
 
 import java.util.ArrayList;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,7 +34,7 @@ public class PacketDisplayTextEdit extends PacketMultipart {
 	public void fromBytes(ByteBuf buf) {
 		super.fromBytes(buf);
 		infoPosition = buf.readInt();
-		textList = Lists.newArrayList();
+		textList = new ArrayList<>();
 		int maxSize = buf.readInt();
 		for (int i = 0; i < maxSize; i++) {
 			textList.add(ByteBufUtils.readUTF8String(buf));

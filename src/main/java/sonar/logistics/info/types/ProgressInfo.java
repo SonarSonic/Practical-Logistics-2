@@ -1,8 +1,7 @@
 package sonar.logistics.info.types;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
@@ -11,7 +10,6 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.types.NetworkFluidElement;
 import sonar.logistics.api.displays.elements.types.ProgressBarElement;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
@@ -175,11 +173,11 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	@Override
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		if (first != null) {
-			List<ComparableObject> firstObj = first.getComparableObjects(Lists.newArrayList());
+			List<ComparableObject> firstObj = first.getComparableObjects(new ArrayList<>());
 			firstObj.forEach(obj -> objects.add(new ComparableObject(this, "First: " + obj.string, obj.object)));
 		}
 		if (second != null) {
-			List<ComparableObject> firstObj = second.getComparableObjects(Lists.newArrayList());
+			List<ComparableObject> firstObj = second.getComparableObjects(new ArrayList<>());
 			firstObj.forEach(obj -> objects.add(new ComparableObject(this, "Second: " + obj.string, obj.object)));
 		}
 		return objects;

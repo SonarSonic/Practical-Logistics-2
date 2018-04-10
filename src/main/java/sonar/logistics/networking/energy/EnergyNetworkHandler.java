@@ -57,7 +57,7 @@ public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNe
 		}
 		if (maxEnergy != null) {
 			TileEntity tile = connection.coords.getTileEntity();
-			MonitoredEnergyStack coords = new MonitoredEnergyStack(maxEnergy, new MonitoredBlockCoords(connection.coords, LogisticsHelper.getCoordItem(connection.coords)));
+			MonitoredEnergyStack coords = new MonitoredEnergyStack(maxEnergy, new MonitoredBlockCoords(connection.coords, LogisticsHelper.getCoordItem(connection.coords, connection.coords.getWorld())));
 			list.add(coords);
 		}
 		return list;

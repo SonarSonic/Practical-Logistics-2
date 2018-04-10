@@ -1,8 +1,7 @@
 package sonar.logistics.networking.items;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,7 +21,7 @@ import sonar.logistics.networking.common.ListNetworkChannels;
 public class ItemNetworkChannels extends ListNetworkChannels<MonitoredItemStack, INetworkListHandler<MonitoredItemStack, ItemChangeableList>> {
 
 	public boolean updateLargeInventory = false;
-	public List<ItemStack> forRapidUpdate = Lists.newArrayList();
+	public List<ItemStack> forRapidUpdate = new ArrayList<>();
 
 	public ItemNetworkChannels(ILogisticsNetwork network) {
 		super(ItemNetworkHandler.INSTANCE, network);

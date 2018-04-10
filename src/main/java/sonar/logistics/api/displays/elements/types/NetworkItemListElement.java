@@ -1,27 +1,25 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.GlStateManager.color;
+import static net.minecraft.client.renderer.GlStateManager.depthMask;
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
+import static net.minecraft.client.renderer.GlStateManager.disableRescaleNormal;
+import static net.minecraft.client.renderer.GlStateManager.enableLighting;
+import static net.minecraft.client.renderer.GlStateManager.enableRescaleNormal;
+import static net.minecraft.client.renderer.GlStateManager.popMatrix;
+import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
+import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
-
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import sonar.core.api.IFlexibleGui;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.FontHelper;
+import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.integration.multipart.TileSonarMultipart;
-import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
@@ -34,19 +32,19 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
-import sonar.logistics.client.gsi.GSIElementPacketHelper;
-import sonar.logistics.client.gui.display.GuiEditDisplayElement;
+import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
 
 @DisplayElementType(id = NetworkItemListElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> implements IClickableElement, IFlexibleGui<TileAbstractDisplay> {
+public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> implements IClickableElement {
 
 	public int pageCount = 0;
 	public int xSlots, ySlots, perPage = 0;
 	public List<MonitoredItemStack> cachedList = null;
+	public double sharedSize = 7 * 0.0625;
+	public int colour = 16777215;
 
 	public NetworkItemListElement() {}
 
@@ -54,13 +52,16 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 		super(uuid);
 	}
 
+	public double getRenderSize() {
+		return Math.min(sharedSize, Math.min(getActualScaling()[0], getActualScaling()[1]));
+	}
+
 	public void render(LogicInfoList list) {
 		info = getGSI().getCachedInfo(uuid);
 		cachedList = getCachedList(list, uuid);
 		double percent = 0.75;
-		double sharedSize = 7 * 0.0625;
-		double width = sharedSize;
-		double height = sharedSize;
+		double width = getRenderSize();
+		double height = getRenderSize();
 		xSlots = (int) Math.floor(getActualScaling()[WIDTH] / width);
 		ySlots = (int) Math.floor(getActualScaling()[HEIGHT] / height);
 		double X_SPACING = (getActualScaling()[WIDTH] - (xSlots * width)) / xSlots;
@@ -70,10 +71,7 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 
 		pushMatrix();
 		color(1.0F, 1.0F, 1.0F, 1.0F);
-		translate(0, 0, -0.01);
-		rotate(180, 0, 1, 0); // flips the item
-		scale(-1, 1, 1);
-
+		scale(1, 1, -1);
 		enableRescaleNormal();
 		disableLighting();
 
@@ -88,42 +86,40 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
 			int yLevel = (int) (Math.floor((current / xSlots)));
 			translate((xLevel * width) + centreX + (X_SPACING * (xLevel + 0.5D)), (yLevel * height) + centreY + (Y_SPACING * (yLevel + 0.5D)), 0);
-			scale((width / 16) * percent, (height / 16) * percent, 0.001);
 
+			scale((width / 16) * percent, (height / 16) * percent, 0.001);
 			disableLighting();// stored itemstack overlay enables it agaain???
 			RenderHelper.renderItemIntoGUI(stack.getItemStack(), 0, 0);
 			translate(0, 0, 2);
 			depthMask(false);
-			RenderHelper.renderStoredItemStackOverlay(stack.getItemStack(), 0, 0, 0, "" + stack.getStored(), false);
+			RenderHelper.renderStoredItemStackOverlay(stack.getItemStack(), 0, 0, 0, colour, "" + stack.getStored(), false);
 			depthMask(true);
 			popMatrix();
 		}
 		enableLighting();
 		disableRescaleNormal();
 
-		/* double scale = (0.0625*pixelWidth/16); scale(scale, scale, 0.01); RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false); blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA); enableRescaleNormal(); enableAlpha(); alphaFunc(516, 0.1F); enableBlend(); pushMatrix(); for (int i = start; i < stop; i++) { MonitoredItemStack stack = cachedList.get(i); int current = i - start; int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots)); int yLevel = (int) (Math.floor((current / xSlots))); pushMatrix(); GL11.glTranslated(xLevel * ITEM_SPACING, yLevel * ITEM_SPACING, 0); disableLighting(); InfoRenderer.renderItemModelIntoGUI(stack.getItemStack(), 0, 0); popMatrix(); } popMatrix(); disableAlpha(); disableRescaleNormal(); disableLighting(); disableBlend(); */
 		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
-
-		/* translate(0, 0, -1); depthMask(false); pushMatrix(); final float scaleFactor = 0.5F; final float inverseScaleFactor = 1.0f / scaleFactor; scale(scaleFactor, scaleFactor, scaleFactor); for (int i = start; i < stop; i++) { MonitoredItemStack stack = cachedList.get(i); int current = i - start; int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots)); int yLevel = (int) (Math.floor((current / xSlots))); pushMatrix(); translate((xLevel * ITEM_SPACING) * inverseScaleFactor, (yLevel * ITEM_SPACING) * inverseScaleFactor, 0); String s = "" + stack.getStored(); final int X = (int) (((float) 0 + 15.0f - RenderHelper.fontRenderer.getStringWidth(s) * scaleFactor) * inverseScaleFactor); final int Y = (int) (((float) 0 + 15.0f - 7.0f * scaleFactor) * inverseScaleFactor); RenderHelper.fontRenderer.drawStringWithShadow(s, X, Y, 16777215); popMatrix(); } popMatrix(); depthMask(true); */
 		popMatrix();
 
 	}
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		//FIXME
-		return null;
+		return GuiSonar.withOrigin(new GuiEditNetworkItemlist(this, obj), origin);
 	}
 
 	public List<MonitoredItemStack> getCachedList(LogicInfoList info, InfoUUID id) {
 		if (cachedList == null || info.listChanged) {
 			info.listChanged = false;
-			AbstractChangeableList<?> list = PL2.getInfoManager(true).getMonitoredList(id);
-			cachedList = list != null ? (ArrayList<MonitoredItemStack>) list.createSaveableList() : Lists.newArrayList();
+			AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
+			cachedList = list != null ? (ArrayList<MonitoredItemStack>) list.createSaveableList() : new ArrayList<>();
 			if (cachedList.size() < perPage * pageCount - 1) {
 				pageCount = 0;
 			}
 		}
+		AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
+		cachedList = list != null ? (ArrayList<MonitoredItemStack>) list.createSaveableList() : new ArrayList<>();
 		return cachedList;
 	}
 
@@ -141,9 +137,8 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
 
 		double percent = 0.75;
-		double sharedSize = 7 * 0.0625;
-		double width = sharedSize;
-		double height = sharedSize;
+		double width = getRenderSize();
+		double height = getRenderSize();
 		xSlots = (int) Math.floor(getActualScaling()[WIDTH] / width);
 		ySlots = (int) Math.floor(getActualScaling()[HEIGHT] / height);
 		double X_SPACING = (getActualScaling()[WIDTH] - (xSlots * width)) / xSlots;
@@ -174,35 +169,36 @@ public class NetworkItemListElement extends AbstractInfoElement<LogicInfoList> i
 			}
 		}
 		int slot = ((ySlot * xSlots) + xSlot) + start;
-		if (slot < cachedList.size() && info != null && info instanceof LogicInfoList) {
+		if (info != null && info instanceof LogicInfoList) {
 			LogicInfoList list = (LogicInfoList) info;
-			MonitoredItemStack stack = cachedList.get(slot);
-			if (stack != null) {
-				int networkID = stack.getNetworkSource() == -1 ? list.networkID.getObject() : stack.getNetworkSource();
-				player.sendMessage(new TextComponentTranslation("x: " + xSlot + " y: " + ySlot + " s: " + slot));
-				double[] align = this.getHolder().getAlignmentTranslation(this);
-				DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { align[0] + click.clickX - subClickX + xCentre, align[1] + click.clickY - subClickY + yCentre });
-				subClick.setContainerIdentity(click.identity);
-				subClick.setDoubleClick(click.doubleClick);
-				subClick.gsi = click.gsi;
-				subClick.type = click.type;
-				subClick.clickPos = click.clickPos;
-				GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createItemClickPacket(stack.getStoredStack(), networkID), getHolder().getContainer(), subClick);
-			}
+			MonitoredItemStack stack = slot < cachedList.size() ? cachedList.get(slot) : null;
+			int networkID = (stack == null || stack.getNetworkSource() == -1) ? list.networkID.getObject() : stack.getNetworkSource();
+			double[] align = this.getHolder().getAlignmentTranslation(this);
+			DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { click.clickX - 0.5, click.clickY });
+			subClick.setContainerIdentity(click.identity);
+			subClick.setDoubleClick(click.doubleClick);
+			subClick.gsi = click.gsi;
+			subClick.type = click.type;
+			subClick.clickPos = click.clickPos;
+			GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createItemClickPacket(stack == null ? null : stack.getStoredStack(), networkID), getHolder().getContainer(), subClick);
 		}
-		
-		
+
 		return 0;
 	}
 
 	@Override
-	public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return new ContainerMultipartSync(obj);
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		super.readData(nbt, type);
+		sharedSize = nbt.getDouble("sizing");
+		colour = nbt.getInteger("colour");
 	}
 
 	@Override
-	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
-		return new GuiEditDisplayElement(this.getHolder().getContainer(), this);
+	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		super.writeData(nbt, type);
+		nbt.setDouble("sizing", sharedSize);
+		nbt.setInteger("colour", colour);
+		return nbt;
 	}
 
 	public static final String REGISTRY_NAME = "n_item_l";

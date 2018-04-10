@@ -24,6 +24,4 @@ public interface ICable extends IWorldPosition, ICableConnectable {
 	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal);
 	
 	public boolean isBlocked(EnumFacing dir);
-	
-	public void updateCableRenders();
 }

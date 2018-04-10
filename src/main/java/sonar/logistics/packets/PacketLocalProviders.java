@@ -1,9 +1,8 @@
 package sonar.logistics.packets;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,11 +16,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
-import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class PacketLocalProviders implements IMessage {
 
@@ -39,7 +36,7 @@ public class PacketLocalProviders implements IMessage {
 	public void fromBytes(ByteBuf buf) {
 		screenIdentity = buf.readInt();
 		NBTTagCompound tag = ByteBufUtils.readTag(buf);
-		viewables = Lists.newArrayList();
+		viewables = new ArrayList<>();
 		if (tag.hasKey("monitors")) {
 			NBTTagList tagList = tag.getTagList("monitors", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
@@ -67,15 +64,16 @@ public class PacketLocalProviders implements IMessage {
 			if (ctx.side == Side.CLIENT) {
 
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					Map<Integer, List<ClientLocalProvider>> monitors = PL2.getClientManager().clientLogicMonitors;
+					Map<Integer, List<ClientLocalProvider>> monitors = ClientInfoHandler.instance().clientLogicMonitors;
 					if (monitors.get(message.screenIdentity) == null) {
 						monitors.put(message.screenIdentity, message.viewables);
 					} else {
 						monitors.get(message.screenIdentity).clear();
 						monitors.get(message.screenIdentity).addAll(message.viewables);
 					}
-					List<Object> cache = Lists.newArrayList();
+					List<Object> cache = new ArrayList<>();
 					for (ClientLocalProvider clientMonitor : message.viewables) {
+						/*
 						ILogicListenable monitor = clientMonitor.getViewable();
 						if (monitor != null && monitor instanceof IInfoProvider) {
 							int hashCode = monitor.getIdentity();
@@ -84,9 +82,16 @@ public class PacketLocalProviders implements IMessage {
 								cache.add(new InfoUUID(hashCode, i));
 							}
 						}
+						*/
+							int hashCode = clientMonitor.identity.getObject();
+							cache.add(clientMonitor);
+							for (int i = 0; i < 4; i++) {
+								cache.add(new InfoUUID(hashCode, i));
+							}
+						
 					}
 
-					Map<Integer, List<Object>> sortedMonitors = PL2.getClientManager().sortedLogicMonitors;
+					Map<Integer, List<Object>> sortedMonitors = ClientInfoHandler.instance().sortedLogicMonitors;
 					if (sortedMonitors.get(message.screenIdentity) == null) {
 						sortedMonitors.put(message.screenIdentity, cache);
 					} else {

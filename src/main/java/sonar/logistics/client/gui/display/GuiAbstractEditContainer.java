@@ -1,5 +1,7 @@
 package sonar.logistics.client.gui.display;
 
+import java.io.IOException;
+
 import net.minecraft.util.Tuple;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
@@ -12,13 +14,13 @@ import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
-public class GuiAbstractEditElement extends GuiAbstractEditScreen {
+public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 
 	public DisplayElementContainer c;
 	public SonarScroller scaling_scroller;
 	public SonarScroller spacing_scroller;
 
-	public GuiAbstractEditElement(DisplayElementContainer c, TileAbstractDisplay display) {
+	public GuiAbstractEditContainer(DisplayElementContainer c, TileAbstractDisplay display) {
 		super(c.getGSI(), display);
 		this.c = c;
 	}
@@ -38,11 +40,17 @@ public class GuiAbstractEditElement extends GuiAbstractEditScreen {
 	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {
 		Tuple<IDisplayElement, double[]> click = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY); // remove adjustment
 		if (click != null) {
-			DisplayScreenClick fakeClick = GSIHelper.createFakeClick(c, c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
+			DisplayScreenClick fakeClick = GSIHelper.createFakeClick(gsi, c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
 			onDisplayElementClicked(click.getFirst(), fakeClick, click.getSecond());
 			return true;
 		}
 		return false;
+	}
+
+	public void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
+		//if (e instanceof IClickableElement) {
+		//	((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
+		//}
 	}
 
 	@Override
@@ -91,4 +99,12 @@ public class GuiAbstractEditElement extends GuiAbstractEditScreen {
 	}
 
 	public void setSpacingScroller(float scaling) {}
+	
+	@Override
+	protected void keyTyped(char c, int i) throws IOException {
+		if (isCloseKey(i)) {
+			save();
+		}
+		super.keyTyped(c, i);
+	}
 }

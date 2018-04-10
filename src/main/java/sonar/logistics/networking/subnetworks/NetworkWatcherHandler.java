@@ -1,11 +1,9 @@
 package sonar.logistics.networking.subnetworks;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import sonar.core.utils.Pair;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Events;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -23,6 +21,7 @@ import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.registries.LogisticsInfoRegistry;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 
 public class NetworkWatcherHandler implements INetworkHandler {
@@ -74,8 +73,8 @@ public class NetworkWatcherHandler implements INetworkHandler {
 	public Pair<InfoUUID, AbstractChangeableList<IProvidableInfo>> updateAndSendList(ILogisticsNetwork network, IListReader<IProvidableInfo> reader, AbstractChangeableList<IProvidableInfo> networkList, boolean send) {
 		InfoUUID uuid = getReaderUUID(reader);
 		if (network.validateTile(reader)) {
-			List<NodeConnection> usedChannels = Lists.newArrayList();
-			AbstractChangeableList<IProvidableInfo> currentList = PL2.getServerManager().getMonitoredList(uuid);
+			List<NodeConnection> usedChannels = new ArrayList<>();
+			AbstractChangeableList<IProvidableInfo> currentList = ServerInfoHandler.instance().getMonitoredList(uuid);
 			
 			final AbstractChangeableList<IProvidableInfo> updateList = currentList == null ? newChangeableList() : currentList;
 			updateList.saveStates();
@@ -84,7 +83,7 @@ public class NetworkWatcherHandler implements INetworkHandler {
 			if (reader instanceof INetworkReader) {
 				((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels, uuid);
 			}
-			PL2.getServerManager().monitoredLists.put(uuid, updateList);
+			ServerInfoHandler.instance().monitoredLists.put(uuid, updateList);
 			if (send && (!updateList.wasLastListNull || updateList.wasLastListNull != updateList.getList().isEmpty()))
 				PacketHelper.sendReaderToListeners(reader, updateList, uuid);
 			return new Pair(uuid, updateList);

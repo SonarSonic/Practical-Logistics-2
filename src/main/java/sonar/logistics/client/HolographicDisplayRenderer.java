@@ -36,7 +36,7 @@ public class HolographicDisplayRenderer extends TileEntitySpecialRenderer<TileHo
 
 		RenderHelper.offsetRendering(part.getPos(), partialTicks);
 
-		InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), container.width, container.height);
+		InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
 
 		if (part instanceof TileHolographicDisplay) {
 			bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));

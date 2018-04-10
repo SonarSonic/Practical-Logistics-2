@@ -13,7 +13,7 @@ import sonar.logistics.networking.NetworkUpdate;
 public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwork, IDataEmitter, IDataReceiver> {
 
 	public static WirelessDataManager instance() {
-		return PL2.instance.wirelessDataManager;
+		return PL2.instance.proxy.wirelessDataManager;
 	}
 
 	@Override

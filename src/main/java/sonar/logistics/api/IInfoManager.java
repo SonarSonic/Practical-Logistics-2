@@ -4,14 +4,12 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.World;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.viewers.ILogicListenable;
 
 public interface IInfoManager {
@@ -29,17 +27,7 @@ public interface IInfoManager {
 	@Nullable
 	public <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid);
 
-	public default DisplayGSI getDisplayGSI(int iden) {
-		IDisplay display = getDisplay(iden);
-		if (display == null) {
-			display = getConnectedDisplay(iden);
-		}
-		return display == null ? null : display.getGSI();
-	}
-
 	public ConnectedDisplay getConnectedDisplay(int iden);
-
-	public ConnectedDisplay getOrCreateDisplayScreen(World world, ILargeDisplay display, int registryID);
 
 	public void addIdentityTile(ILogicListenable infoProvider);
 
@@ -47,7 +35,7 @@ public interface IInfoManager {
 
 	public void removeAll();
 	
-	public IDisplay getDisplay(int iden);
+	public DisplayGSI getGSI(int iden);
 
 	public void addDisplay(IDisplay display);
 

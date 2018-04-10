@@ -4,16 +4,16 @@ package sonar.logistics.networking.common;
 /*
 public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkListHandler<M>> extends DefaultNetworkChannels<H> implements INetworkListChannels<H> {
 
-	private List<IListReader<M>> readers = Lists.newArrayList();
+	private List<IListReader<M>> readers = new ArrayList<>();
 	private Iterator<IListReader<M>> readerIterator;
 	private int readersPerTick = 0;
 
 	private List<INetworkListChannels<H>> subChannels; // networks which take connections from this one
 	private List<INetworkListChannels<H>> masterChannels; // networks which give connections to this one
 
-	private Map<NodeConnection, MonitoredList<M>> globalInfo = Maps.newHashMap();
-	private Map<NodeConnection, MonitoredList<M>> localInfo = Maps.newHashMap();
-	private Map<NodeConnection, MonitoredList<M>> fullInfo = Maps.newHashMap();
+	private Map<NodeConnection, MonitoredList<M>> globalInfo = new HashMap<>();
+	private Map<NodeConnection, MonitoredList<M>> localInfo = new HashMap<>();
+	private Map<NodeConnection, MonitoredList<M>> fullInfo = new HashMap<>();
 	private Iterator<Entry<NodeConnection, MonitoredList<M>>> channelIterator;
 	private ChannelList currentList;
 	private int channelsPerTick = 0;
@@ -75,7 +75,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 			this.channelIterator = localInfo.entrySet().iterator();
 			this.readerIterator = readers.iterator();
 
-			fullInfo = Maps.newHashMap();
+			fullInfo = new HashMap<>();
 			fullInfo.putAll(localInfo);
 			fullInfo.putAll(globalInfo);
 		}
@@ -113,7 +113,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 	@Override
 	public void createChannelLists() {
 		checkAndLinkChannels();
-		localInfo = handler.getAllChannels(Maps.newHashMap(), network);
+		localInfo = handler.getAllChannels(new HashMap<>(), network);
 		updateTicks();
 	}
 
@@ -188,7 +188,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 	@Override
 	public void addSubChannels(INetworkListChannels<H> channels) {
 		if (subChannels == null)
-			subChannels = Lists.newArrayList();
+			subChannels = new ArrayList<>();
 		if (!subChannels.contains(channels))
 			subChannels.add(channels);
 	}
@@ -201,7 +201,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 	@Override
 	public void addMasterChannels(INetworkListChannels<H> channels) {
 		if (masterChannels == null)
-			masterChannels = Lists.newArrayList();
+			masterChannels = new ArrayList<>();
 		if (!masterChannels.contains(channels)) {
 			masterChannels.add(channels);
 			channels.addSubChannels(this);

@@ -16,7 +16,7 @@ import sonar.logistics.api.utils.CacheType;
 public class LogisticsNetworkHandler {
 
 	public static LogisticsNetworkHandler instance() {
-		return PL2.instance.networkManager;
+		return PL2.instance.proxy.networkManager;
 	}	
 	
 	public Map<Integer, ILogisticsNetwork> cache = new ConcurrentHashMap<Integer, ILogisticsNetwork>();

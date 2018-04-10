@@ -4,13 +4,9 @@ import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
@@ -18,7 +14,6 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
@@ -28,7 +23,6 @@ import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.ISpecialAlignment;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.helpers.InteractionHelper;
 
 public class DisplayElementContainer implements IElementStorageHolder, INBTSyncable {
@@ -108,7 +102,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public void endElementRender(IDisplayElement e) {}
 
 	public List<InfoUUID> getInfoReferences() {
-		List<InfoUUID> uuid = Lists.newArrayList();
+		List<InfoUUID> uuid = new ArrayList<>();
 		for (IDisplayElement s : elements) {
 			ListHelper.addWithCheck(uuid, s.getInfoReferences());
 		}

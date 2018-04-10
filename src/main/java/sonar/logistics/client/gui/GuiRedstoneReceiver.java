@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.multiparts.wireless.TileRedstoneReceiver;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class GuiRedstoneReceiver extends GuiAbstractReceiver {
 
@@ -43,6 +43,6 @@ public class GuiRedstoneReceiver extends GuiAbstractReceiver {
 	}
 
 	public void setInfo() {
-		infoList = Lists.newArrayList(PL2.getClientManager().clientRedstoneEmitters);
+		infoList = Lists.newArrayList(ClientInfoHandler.instance().clientRedstoneEmitters);
 	}
 }

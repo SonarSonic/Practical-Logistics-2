@@ -1,15 +1,27 @@
 package sonar.logistics;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.logistics.client.gsi.IGSIRegistry;
+import sonar.logistics.api.IInfoManager;
+import sonar.logistics.networking.ClientInfoHandler;
+import sonar.logistics.networking.LogisticsNetworkHandler;
+import sonar.logistics.networking.ServerInfoHandler;
+import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
+import sonar.logistics.networking.cabling.WirelessDataManager;
+import sonar.logistics.networking.cabling.WirelessRedstoneManager;
+import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.packets.PacketAddListener;
 import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.PacketClientEmitters;
 import sonar.logistics.packets.PacketConnectedDisplayRemove;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
+import sonar.logistics.packets.PacketDisplayGSIContentsPacket;
+import sonar.logistics.packets.PacketDisplayGSIValidate;
 import sonar.logistics.packets.PacketDisplayTextEdit;
 import sonar.logistics.packets.PacketEmitterStatement;
 import sonar.logistics.packets.PacketGSIClick;
@@ -25,6 +37,15 @@ import sonar.logistics.packets.PacketWirelessStorage;
 
 public class PL2Common {
 
+	public ServerInfoHandler server_info_manager;
+	public LogisticsNetworkHandler networkManager;
+	public WirelessDataManager wirelessDataManager;
+	public WirelessRedstoneManager wirelessRedstoneManager;
+	public CableConnectionHandler cableManager;
+	public RedstoneConnectionHandler redstoneManager;
+	public DisplayHandler server_display_manager;
+	public ChunkViewerHandler chunkViewer;
+	
 	public static void registerPackets() {
 		PL2.network.registerMessage(PacketMonitoredList.Handler.class, PacketMonitoredList.class, 0, Side.CLIENT);
 		PL2.network.registerMessage(PacketChannels.Handler.class, PacketChannels.class, 1, Side.CLIENT);
@@ -45,19 +66,89 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketConnectedDisplayRemove.Handler.class, PacketConnectedDisplayRemove.class, 14, Side.CLIENT);
 		PL2.network.registerMessage(PacketLocalProviderSelection.Handler.class, PacketLocalProviderSelection.class, 15, Side.SERVER);
 		PL2.network.registerMessage(PacketDisplayTextEdit.Handler.class, PacketDisplayTextEdit.class, 16, Side.SERVER);
+		PL2.network.registerMessage(PacketDisplayGSIContentsPacket.Handler.class, PacketDisplayGSIContentsPacket.class, 17, Side.CLIENT);
+		PL2.network.registerMessage(PacketDisplayGSIValidate.Handler.class, PacketDisplayGSIValidate.class, 18, Side.CLIENT);
 	}
 
-	public IGSIRegistry getGSIRegistry(){
+	public ClientInfoHandler getClientManager() {
 		return null;
+	}
+
+	public ServerInfoHandler getServerManager() {
+		return server_info_manager;
+	}
+
+	public IInfoManager getInfoManager(boolean isRemote) {
+		return server_info_manager;
+	}
+
+	public DisplayHandler getDisplayManager(boolean isRemote) {
+		return server_display_manager;
 	}
 	
 	public boolean isUsingOperator() {
 		return false;
 	}
-
+	
 	public void setUsingOperator(boolean bool) {}
+	
+	public void initHandlers(){
+		server_info_manager = new ServerInfoHandler();
+		PL2.logger.info("Initialised Server Info Handler");
+		
+		networkManager = new LogisticsNetworkHandler();
+		PL2.logger.info("Initialised Network Handler");
+		
+		wirelessDataManager = new WirelessDataManager();
+		PL2.logger.info("Initialised Wireless Data Manager");
+		
+		wirelessRedstoneManager = new WirelessRedstoneManager();
+		PL2.logger.info("Initialised Wireless Redstone Manager");
+		
+		cableManager = new CableConnectionHandler();
+		PL2.logger.info("Initialised Cable Connection Handler");
+		
+		redstoneManager = new RedstoneConnectionHandler();
+		PL2.logger.info("Initialised Redstone Connection Handler");
+		
+		server_display_manager = new DisplayHandler();
+		MinecraftForge.EVENT_BUS.register(server_display_manager);
+		PL2.logger.info("Initialised Server Display Handler");
+		
+		chunkViewer = new ChunkViewerHandler();
+		MinecraftForge.EVENT_BUS.register(chunkViewer);
+		PL2.logger.info("Initialised Chunk Viewer Handler");		
+	}
+	
+	public void removeAll(){
+		server_info_manager.removeAll();	
+		PL2.logger.info("Cleared Server Info Handler");	
+		
+		networkManager.removeAll();
+		PL2.logger.info("Cleared Network Handler");
+		
+		wirelessDataManager.removeAll();
+		PL2.logger.info("Cleared Wireless Data Manager");
+		
+		wirelessRedstoneManager.removeAll();
+		PL2.logger.info("Cleared Wireless Redstone Manager");
+		
+		cableManager.removeAll();
+		PL2.logger.info("Cleared Cable Connection Handler");
+		
+		redstoneManager.removeAll();
+		PL2.logger.info("Cleared Redstone Connection Handler");
+		
+		server_display_manager.removeAll();
+		PL2.logger.info("Cleared Server Display Handler");
+		
+		chunkViewer.removeAll();
+		PL2.logger.info("Cleared Chunk Viewer Handler");
+	}
 
-	public void preInit(FMLPreInitializationEvent event) {}
+	public void preInit(FMLPreInitializationEvent event) {
+		initHandlers();
+	}
 
 	public void load(FMLInitializationEvent event) {}
 

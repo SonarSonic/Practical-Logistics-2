@@ -22,6 +22,7 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerEmitterList;
 import sonar.logistics.common.items.WirelessStorageReader;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.packets.PacketWirelessStorage;
 
 public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirelessEmitter> {
@@ -62,7 +63,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirele
 	}
 
 	public void setInfo() {
-		infoList = Lists.newArrayList(PL2.getClientManager().clientDataEmitters);
+		infoList = Lists.newArrayList(ClientInfoHandler.instance().clientDataEmitters);
 	}
 
 	@Override

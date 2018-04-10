@@ -1,9 +1,8 @@
 package sonar.logistics.api.displays.elements.text;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import com.google.common.collect.Lists;
 
 import net.minecraftforge.fml.client.config.GuiUtils;
 import sonar.core.utils.CustomColour;
@@ -35,7 +34,7 @@ public class StyledStringHelper {
 	}
 
 	public static List<StyledString> getStyledStringsFromText(String text) {
-		List<StyledString> lines = Lists.newArrayList();
+		List<StyledString> lines = new ArrayList<>();
 		StringBuilder build = new StringBuilder();
 		SonarStyling style = new SonarStyling();
 

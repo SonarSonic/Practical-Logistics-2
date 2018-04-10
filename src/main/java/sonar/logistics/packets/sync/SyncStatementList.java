@@ -3,8 +3,6 @@ package sonar.logistics.packets.sync;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -17,7 +15,7 @@ import sonar.logistics.networking.info.InfoHelper;
 
 public class SyncStatementList extends SyncPart {
 
-	public List<INodeFilter> objs = Lists.newArrayList();
+	public List<INodeFilter> objs = new ArrayList<>();
 
 	public SyncStatementList(int id) {
 		super(id);
@@ -59,14 +57,14 @@ public class SyncStatementList extends SyncPart {
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		if (nbt.hasKey(getTagName())) {
-			List newObjs = Lists.newArrayList();
+			List newObjs = new ArrayList<>();
 			NBTTagList tagList = nbt.getTagList(getTagName(), Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < tagList.tagCount(); i++) {
 				newObjs.add(InfoHelper.readFilterFromNBT(tagList.getCompoundTagAt(i)));
 			}
 			objs = newObjs;
 		} else if (nbt.getBoolean(getTagName() + "E")) {
-			objs = Lists.newArrayList();
+			objs = new ArrayList<>();
 		}
 	}
 

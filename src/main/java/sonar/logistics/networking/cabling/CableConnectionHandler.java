@@ -1,8 +1,7 @@
 package sonar.logistics.networking.cabling;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.slot.EnumFaceSlot;
@@ -20,11 +19,11 @@ import sonar.logistics.networking.LogisticsNetworkHandler;
 public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable> {
 
 	public static CableConnectionHandler instance() {
-		return PL2.instance.cableManager;
+		return PL2.proxy.cableManager;
 	}
 
-	public final List<IDataCable> addedCables = Lists.newArrayList();
-	public final List<IDataCable> removedCables = Lists.newArrayList();
+	public final List<IDataCable> addedCables = new ArrayList<>();
+	public final List<IDataCable> removedCables = new ArrayList<>();
 
 	public void queueCableAddition(IDataCable cable) {
 		removedCables.remove(cable);
@@ -39,12 +38,10 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	public void tick() {
 		addedCables.forEach(cable -> {
 			addCableToNetwork(cable);
-			cable.updateCableRenders();
 
 		});
 		removedCables.forEach(cable -> {
 			removeCableFromNetwork(cable);
-			// cable.updateCableRenders();
 
 		});
 		addedCables.clear();
@@ -68,13 +65,13 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	//// TILES \\\\
 
 	public void onNeighbourBlockStateChanged(IDataCable cable, BlockPos pos, BlockPos neighbor) {
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	public void onNeighbourTileEntityChanged(IDataCable cable, BlockPos pos, BlockPos neighbor) {
 		ILogisticsNetwork network = cable.getNetwork();
 		CableHelper.getLocalMonitors(cable).forEach(m -> network.addLocalInfoProvider(m));
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	//// NETWORK TILES \\\\
@@ -110,12 +107,12 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	public void addConnectionToNetwork(IDataCable cable, INetworkTile tile) {
 		ILogisticsNetwork network = cable.getNetwork();
 		network.addConnection(tile);
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	public void removeConnectionFromNetwork(IDataCable cable, INetworkTile tile) {
 		cable.getNetwork().removeConnection(tile);
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	/** called only by the logistics network to move connections from network to network */

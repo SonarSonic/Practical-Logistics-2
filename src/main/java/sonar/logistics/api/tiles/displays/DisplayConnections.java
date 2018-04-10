@@ -1,10 +1,9 @@
 package sonar.logistics.api.tiles.displays;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
@@ -29,7 +28,7 @@ public enum DisplayConnections implements IStringSerializable {
 	THREE_W(EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.SOUTH), //
 	ALL(EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.WEST);//
 
-	public static final Map<Integer, List<DisplayConnections>> connections = Maps.newHashMap();
+	public static final Map<Integer, List<DisplayConnections>> connections = new HashMap<>();
 	public static final DisplayConnections[] VALUES = new DisplayConnections[] { NONE, ONE_N, ONE_E, ONE_S, ONE_W, TWO_N, TWO_E, TWO_S, TWO_W, OPPOSITE_1, OPPOSITE_2, THREE_N, THREE_E, THREE_S, THREE_W, ALL };
 
 	static {
@@ -37,7 +36,7 @@ public enum DisplayConnections implements IStringSerializable {
 			int size = connect.getFaces().size();
 			List list = connections.get(size);
 			if (list == null) {
-				connections.put(size, Lists.newArrayList());
+				connections.put(size, new ArrayList<>());
 				list = connections.get(size);
 			}
 			list.add(connect);

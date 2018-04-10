@@ -1,5 +1,6 @@
 package sonar.logistics.networking.items;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -27,7 +28,6 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.helpers.InventoryHelper.ITransferOverride;
 import sonar.core.helpers.SonarHelper;
-import sonar.core.network.PacketInvUpdate;
 import sonar.core.network.PacketStackUpdate;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.PL2API;
@@ -196,7 +196,7 @@ public class ItemHelper extends ItemWrapper {
 		if (inv == null || size == 0) {
 			return add;
 		}
-		List<Integer> empty = Lists.newArrayList();
+		List<Integer> empty = new ArrayList<>();
 		for (int i = 0; i < size; i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (!stack.isEmpty()) {
@@ -206,8 +206,9 @@ public class ItemHelper extends ItemWrapper {
 					add.stored -= used;
 					if (used != 0 && !action.shouldSimulate()) {
 						inv.setInventorySlotContents(i, stack);
+						inv.markDirty();
 						if (!enderChest) {
-							SonarCore.network.sendTo(new PacketInvUpdate(i, stack), (EntityPlayerMP) player);
+							//SonarCore.network.sendTo(new PacketInvUpdate(i, stack), (EntityPlayerMP) player);
 						}
 					}
 					if (add.stored == 0) {
@@ -228,8 +229,9 @@ public class ItemHelper extends ItemWrapper {
 				add.stored -= used;
 				if (!action.shouldSimulate()) {
 					inv.setInventorySlotContents(slot, stack);
+					inv.markDirty();
 					if (!enderChest) {
-						SonarCore.network.sendTo(new PacketInvUpdate(slot, stack), (EntityPlayerMP) player);
+						//SonarCore.network.sendTo(new PacketInvUpdate(slot, stack), (EntityPlayerMP) player);
 					}
 				}
 				if (add.stored == 0) {
@@ -311,7 +313,7 @@ public class ItemHelper extends ItemWrapper {
 		}
 		StoredItemStack stack = new StoredItemStack(add).setStackSize(0);
 		IInventory inv = player.inventory;
-		List<Integer> slots = Lists.newArrayList();
+		List<Integer> slots = new ArrayList<>();
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if (stack.equalStack(item)) {

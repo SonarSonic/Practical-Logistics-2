@@ -1,10 +1,9 @@
 package sonar.logistics.networking.cabling;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -19,17 +18,17 @@ import sonar.logistics.api.cabling.IRedstoneConnectable;
 public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedstoneCable> {
 
 	public static RedstoneConnectionHandler instance() {
-		return PL2.instance.redstoneManager;
+		return PL2.instance.proxy.redstoneManager;
 	}
 
-	public final List<Integer> forUpdate = Lists.newArrayList();
-	public final Map<Integer, Integer> powerCache = Maps.newHashMap();
-	public final List<IRedstoneCable> addedCables = Lists.newArrayList();
-	public final List<IRedstoneCable> removedCables = Lists.newArrayList();
+	public final List<Integer> forUpdate = new ArrayList<>();
+	public final Map<Integer, Integer> powerCache = new HashMap<>();
+	public final List<IRedstoneCable> addedCables = new ArrayList<>();
+	public final List<IRedstoneCable> removedCables = new ArrayList<>();
 
-	public final Map<Integer, IRedstoneNetwork> networks = Maps.newHashMap();
+	public final Map<Integer, IRedstoneNetwork> networks = new HashMap<>();
 
-	/* public final Map<Integer, IRedstoneConnectable> connectors = Maps.newHashMap(); public final List<IRedstoneConnectable> addedConnectors = Lists.newArrayList(); public final List<IRedstoneConnectable> removedConnectors = Lists.newArrayList(); */
+	/* public final Map<Integer, IRedstoneConnectable> connectors = new HashMap<>(); public final List<IRedstoneConnectable> addedConnectors = new ArrayList<>(); public final List<IRedstoneConnectable> removedConnectors = new ArrayList<>(); */
 	public void queueCableAddition(IRedstoneCable cable) {
 		removedCables.remove(cable);
 		addedCables.add(cable);
@@ -51,7 +50,7 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	public void tick() {
 		addedCables.forEach(cable -> {
 			addConnection(cable);
-			cable.updateCableRenders();
+			//cable.updateCableRenders();
 
 		});
 		removedCables.forEach(cable -> {
@@ -107,7 +106,7 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	public void onNeighbourBlockStateChanged(IRedstoneCable cable, BlockPos pos, BlockPos neighbor) {
 		// getNetwork(cable.getRegistryID()).markCablesChanged();
 		markPowerForUpdate(cable.getRegistryID());
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	public void onNeighbourTileEntityChanged(IRedstoneCable cable, BlockPos pos, BlockPos neighbor) {
@@ -117,12 +116,12 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 
 	public void onNeighbourMultipartAdded(IRedstoneCable cable, IRedstoneConnectable connect) {
 		getNetwork(cable.getRegistryID()).markCablesChanged();
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	public void onNeighbourMultipartRemoved(IRedstoneCable cable, IRedstoneConnectable connect) {
 		getNetwork(cable.getRegistryID()).markCablesChanged();
-		cable.updateCableRenders();
+		//cable.updateCableRenders();
 	}
 
 	public void addAllConnectionsToNetwork(IRedstoneCable cable, IRedstoneNetwork network) {

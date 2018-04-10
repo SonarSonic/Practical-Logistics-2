@@ -1,12 +1,11 @@
 package sonar.logistics.api.displays.elements.text;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.Tuple;
@@ -14,6 +13,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.DisplayGSI;
@@ -23,7 +23,7 @@ import sonar.logistics.helpers.DisplayElementHelper;
 public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 
 	private StyledTextElement text;
-	private List<IStyledString> strings = Lists.newArrayList();
+	private List<IStyledString> strings = new ArrayList<>();
 	private int cachedWidth = -1;
 	private String cachedFormattedString;
 	private String cachedUnformattedString;
@@ -72,6 +72,12 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 		this.strings = strings;
 		this.updateTextContents();
 		return this.strings;
+	}
+	
+	public List<Integer> getContainedActions(){
+		List<Integer> actions = new ArrayList<>();
+		forEach(ss -> ListHelper.addWithCheck(actions, ss.getStyle().getActionID()));
+		return actions;
 	}
 
 	public WidthAlignment getAlign() {
@@ -179,7 +185,7 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 
 	public StyledStringLine deepCopy(StyledTextElement text) {
 		StyledStringLine line = new StyledStringLine(text);
-		List<IStyledString> newStrings = Lists.newArrayList();
+		List<IStyledString> newStrings = new ArrayList<>();
 		for (IStyledString ss : strings) {
 			newStrings.add(ss.copy());
 		}

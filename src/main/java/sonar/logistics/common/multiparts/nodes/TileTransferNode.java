@@ -211,14 +211,6 @@ public class TileTransferNode extends TileSidedLogistics implements INode, IOper
 		return listeners;
 	}
 
-	//// EVENTS \\\\
-
-	public void validate() {
-		super.validate();
-		if (isClient())
-			this.requestSyncPacket();
-	}
-
 	//// PACKETS \\\\
 
 	@Override

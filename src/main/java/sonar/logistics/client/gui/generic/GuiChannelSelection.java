@@ -11,7 +11,6 @@ import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.HelpOverlay;
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.PacketFlexibleCloseGui;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.types.InfoChangeableList;
@@ -22,6 +21,7 @@ import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 
@@ -76,7 +76,7 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 	}
 
 	public void setInfo() {
-		infoList = PL2.getClientManager().channelMap.getOrDefault(tile.getNetworkID(), new InfoChangeableList()).createSaveableList();
+		infoList = ClientInfoHandler.instance().channelMap.getOrDefault(tile.getNetworkID(), new InfoChangeableList()).createSaveableList();
 	}
 
 	/// INTERACTION \\\

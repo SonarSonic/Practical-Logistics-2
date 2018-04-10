@@ -1,9 +1,8 @@
 package sonar.logistics.common.multiparts.displays;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.google.common.collect.Lists;
 
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
@@ -23,6 +22,7 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayConnections;
 import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
@@ -50,7 +50,11 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile != null && tile instanceof TileLargeDisplayScreen) {
 			TileLargeDisplayScreen source = ((TileLargeDisplayScreen) tile);
-			TileLargeDisplayScreen display = source.shouldRender.getObject() ? source : (TileLargeDisplayScreen) source.getConnectedDisplay().getTopLeftScreen();
+			ConnectedDisplay connectedDisplay = source.getConnectedDisplay();
+			if(connectedDisplay == null){
+				return false;
+			}
+			TileLargeDisplayScreen display = source.shouldRender.getObject() ? source : (TileLargeDisplayScreen) connectedDisplay.getTopLeftScreen();
 			if (display != null) {
 				if (facing != state.getValue(SonarProperties.ORIENTATION)) {
 					if (!world.isRemote && canOpenGui(player)) {
@@ -68,7 +72,7 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess w, BlockPos pos) {
 		IBlockState currentState = state;
-		List<EnumFacing> faces = Lists.newArrayList();
+		List<EnumFacing> faces = new ArrayList<>();
 		TileEntity tile = w.getTileEntity(pos);
 		if (tile != null && tile instanceof TileLargeDisplayScreen) {
 			TileLargeDisplayScreen screen = (TileLargeDisplayScreen) tile;

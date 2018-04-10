@@ -93,7 +93,8 @@ public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 		drawTransparentRect(guiLeft + 12, guiTop + 170, guiLeft + xSize - 9, guiTop + 252, LogisticsColours.grey_base.getRGB());
 		drawTransparentRect(guiLeft + 13, guiTop + 171, guiLeft + xSize - 10, guiTop + 251, LogisticsColours.blue_overlay.getRGB());
 	}
-	public abstract void onGridClicked(T element, int pos, int button, boolean empty);
+	
+	public abstract void onGridClicked(T selection, int x, int y, int pos, int button, boolean empty);
 
 	public abstract void renderGridElement(T element, int x, int y, int slot);
 
@@ -121,8 +122,8 @@ public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 		}
 
 		@Override
-		public void onGridClicked(T selection, int pos, int button, boolean empty) {
-			selectGrid.onGridClicked(selection, pos, button, empty);
+		public void onGridClicked(T selection, int x, int y, int pos, int button, boolean empty) {
+			selectGrid.onGridClicked(selection, x, y, pos, button, empty);
 		}
 
 		@Override

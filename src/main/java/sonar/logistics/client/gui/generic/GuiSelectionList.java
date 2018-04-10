@@ -1,6 +1,7 @@
 package sonar.logistics.client.gui.generic;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -34,7 +35,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public int listWidth = 226;
 	public int start, finish;
 	private GuiButton rselectButton;
-	public List<T> infoList = Lists.newArrayList();
+	public List<T> infoList = new ArrayList<>();
 
 	@Override
 	public void initGui() {
@@ -69,7 +70,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	public abstract int getColour(int i, int type);
 
 	public List<List<Integer>> getListTypes() {
-		List<Integer> categories = Lists.newArrayList(), data = Lists.newArrayList(), paired = Lists.newArrayList();
+		List<Integer> categories = new ArrayList<>(), data = new ArrayList<>(), paired = new ArrayList<>();
 		if (infoList != null) {
 			for (int i = start; i < finish; i++) {
 				T info = infoList.get(i);
@@ -135,8 +136,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 
 	@Override
 	public void mouseClicked(int x, int y, int button) throws IOException {
-		super.mouseClicked(x, y, button);
-		/*
+		super.mouseClicked(x, y, button);		
 		if (enableListRendering) {
 			if (button == 1) {
 				for (int l = 0; l < this.buttonList.size(); ++l) {
@@ -154,7 +154,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 				}
 			}
 		}
-		*/
+		
 	}
 
 	public void mouseReleased(int mouseX, int mouseY, int state) {

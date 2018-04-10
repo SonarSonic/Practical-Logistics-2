@@ -1,6 +1,7 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -48,6 +49,7 @@ import sonar.logistics.common.containers.ContainerStorageViewer;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.packets.PacketWirelessStorage;
 
@@ -169,16 +171,16 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	public List<IInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
-			AbstractChangeableList<MonitoredItemStack> currentList = PL2.getClientManager().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
+			AbstractChangeableList<MonitoredItemStack> currentList = ClientInfoHandler.instance().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
 			if (currentList == null) {
-				return Lists.newArrayList();
+				return new ArrayList<>();
 			}
 			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
 			if (search == null || search.isEmpty() || search.equals(" ")) {
 				List<IInfo> infolist = Lists.newArrayList(currentList.createSaveableList());
 				return infolist;
 			} else {
-				List<IInfo> searchlist = Lists.newArrayList();
+				List<IInfo> searchlist = new ArrayList<>();
 				List<MonitoredItemStack> cached = currentList.createSaveableList();
 				for (MonitoredItemStack stack : cached) {
 					StoredItemStack item = stack.getStoredStack();
@@ -189,12 +191,12 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				return searchlist;
 			}
 		} else {
-			return PL2.getClientManager().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID)).createSaveableList();
+			return ClientInfoHandler.instance().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID)).createSaveableList();
 		}
 	}
 
 	@Override
-	public void onGridClicked(IInfo info, int pos, int button, boolean empty) {
+	public void onGridClicked(IInfo info, int x, int y, int pos, int button, boolean empty) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			button = 2;
 		}
@@ -276,7 +278,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 		} else if (info instanceof MonitoredFluidStack) {
 			MonitoredFluidStack element = (MonitoredFluidStack) info;
 			StoredFluidStack fluidStack = element.getStoredStack();
-			List list = Lists.newArrayList();
+			List list = new ArrayList<>();
 			list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 			if (fluidStack.stored != 0) {
 				list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");

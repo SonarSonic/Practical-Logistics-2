@@ -16,7 +16,7 @@ public class TileDisplayScreen extends TileAbstractDisplay {
 	@Override
 	public DisplayGSI getGSI() {
 		if (container == null) {
-			container = new DisplayGSI(this, getInfoContainerID());
+			container = new DisplayGSI(this, getWorld(), getInfoContainerID());
 		}
 		return container;
 	}

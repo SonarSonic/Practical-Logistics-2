@@ -1,8 +1,7 @@
 package sonar.logistics.networking.info;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -43,7 +42,7 @@ public class InfoNetworkHandler<I extends IProvidableInfo<I>, L extends InfoChan
 		BlockPos pos = connection.coords.getBlockPos();
 		Block block = connection.coords.getBlock(world);
 		TileEntity tile = connection.coords.getTileEntity(world);
-		List<IProvidableInfo> providedInfo = Lists.newArrayList();
+		List<IProvidableInfo> providedInfo = new ArrayList<>();
 		LogicInfoRegistry.INSTANCE.getTileInfo(providedInfo, face, world, state, pos, face, block, tile);
 
 		for (ITileInfoProvider handler : LogicInfoRegistry.INSTANCE.tileProviders) {
@@ -63,7 +62,7 @@ public class InfoNetworkHandler<I extends IProvidableInfo<I>, L extends InfoChan
 	public L updateInfo(InfoNetworkChannels channels, InfoChangeableList list, EntityConnection connection) {
 		Entity entity = connection.entity;
 		World world = entity.getEntityWorld();
-		List<IProvidableInfo> providedInfo = Lists.newArrayList();
+		List<IProvidableInfo> providedInfo = new ArrayList<>();
 		LogicInfoRegistry.INSTANCE.getEntityInfo(providedInfo, entity);
 		for (IEntityInfoProvider handler : LogicInfoRegistry.INSTANCE.entityProviders) {
 			if (handler.canProvide(world, entity)) {

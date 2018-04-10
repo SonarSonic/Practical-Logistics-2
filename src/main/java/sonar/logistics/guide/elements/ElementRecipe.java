@@ -1,5 +1,6 @@
 package sonar.logistics.guide.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -16,7 +17,7 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 
 	public int x, y, cycle;
 	public EntityPlayer player;
-	public List<List<ItemStack>> stacks = Lists.newArrayList(Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList());
+	public List<List<ItemStack>> stacks = Lists.newArrayList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
 	public List<Integer> positions;
 	public int[][] slots = setSlots();
@@ -72,7 +73,7 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 	public List<Integer> getPos() {
 		cycle++;
 		if (positions == null || cycle == 40) {
-			List<Integer> ints = Lists.newArrayList();
+			List<Integer> ints = new ArrayList<>();
 			for (List<ItemStack> craft : stacks) {
 				int i = craft.isEmpty() ? 0 : Math.abs(SonarCore.rand.nextInt()) % Math.max(craft.size(), 1);
 				ints.add(i);

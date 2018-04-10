@@ -8,11 +8,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.PL2;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
 
 public class PacketMonitoredList implements IMessage {
@@ -58,12 +58,12 @@ public class PacketMonitoredList implements IMessage {
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
 			if (message.listTag != null) {
-				ILogicListenable viewable = PL2.getClientManager().identityTiles.get(message.identity);
+				ILogicListenable viewable = ClientInfoHandler.instance().identityTiles.get(message.identity);
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					AbstractChangeableList list = InfoHelper.readMonitoredList(message.listTag, PL2.getClientManager().getMonitoredList(message.id), message.type);
+					AbstractChangeableList list = InfoHelper.readMonitoredList(message.listTag, ClientInfoHandler.instance().getMonitoredList(message.id), message.type);
 					list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(list, message.id.channelID) : list;
-					PL2.getClientManager().changeableLists.put(message.id, list);
-					PL2.getClientManager().onMonitoredListChanged(message.id, list);
+					ClientInfoHandler.instance().changeableLists.put(message.id, list);
+					ClientInfoHandler.instance().onMonitoredListChanged(message.id, list);
 				});
 			}
 			return null;

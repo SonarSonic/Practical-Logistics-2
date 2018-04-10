@@ -26,7 +26,7 @@ public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDispl
 		if (info != null && isType(info)) {
 			render((T) info);
 		}else{
-			renderNoData();
+			//renderNoData();
 		}
 	}
 

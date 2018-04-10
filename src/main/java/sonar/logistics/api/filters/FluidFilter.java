@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -47,7 +45,7 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 	}
 
 	public void removeFluid(StoredFluidStack stack) {
-		ArrayList<StoredFluidStack> toRemove = Lists.newArrayList();
+		ArrayList<StoredFluidStack> toRemove = new ArrayList<>();
 		for (StoredFluidStack fluid : list.objs) {
 			if (fluid.equalStack(stack.fluid)) {
 				toRemove.add(fluid);

@@ -4,7 +4,7 @@ package sonar.logistics.client;
 /*
 public class CachedInventoryRenderer {
 
-	public List<CachedItemRenderer> renders = Lists.newArrayList();
+	public List<CachedItemRenderer> renders = new ArrayList<>();
 
 	public void update(LogicInfoList info, ItemChangeableList list) {
 		renders = create(info, list);

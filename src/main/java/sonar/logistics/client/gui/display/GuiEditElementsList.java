@@ -1,40 +1,41 @@
 package sonar.logistics.client.gui.display;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.inventory.Container;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import sonar.core.client.gui.IGridGui;
 import sonar.core.client.gui.SelectionGrid;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
-import sonar.core.utils.IWorldPosition;
+import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.helpers.DisplayElementHelper;
 
-public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<IDisplayElement> {
+public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui {
 
-	public Map<SelectionGrid, SonarScroller> grids = Maps.newHashMap();
-	public List<IDisplayElement> elements;
-	public List<IDisplayElement> selected = Lists.newArrayList();
+	public Map<SelectionGrid, SonarScroller> grids = new HashMap<>();
+	public List elements;
+	public List<IDisplayElement> selected = new ArrayList<>();
 
 	public GuiEditElementsList(DisplayGSI gsi, TileAbstractDisplay display) {
 		super(gsi, display);
@@ -44,9 +45,8 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<
 	@Override
 	public void initGui() {
 		super.initGui();
-		// updateElementsList();
 		Keyboard.enableRepeatEvents(true);
-		Map<SelectionGrid, SonarScroller> newgrids = Maps.newHashMap();
+		Map<SelectionGrid, SonarScroller> newgrids = new HashMap<>();
 		addGrids(newgrids);
 		grids = newgrids;
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 4 + 176 + 54, guiTop + 152 + 18 * 2, 32, 2 * 16, PL2Translate.BUTTON_DELETE.t(), ""));
@@ -57,9 +57,10 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<
 	}
 
 	public void updateElementsList() {
-		List<IDisplayElement> elements = Lists.newArrayList();
+		List elements = new ArrayList<>();
 		for (DisplayElementContainer c : gsi.containers.values()) {
 			if (!gsi.isEditContainer(c)) {
+				elements.add(c);
 				for (IDisplayElement e : c.getElements()) {
 					elements.add(e);
 				}
@@ -108,7 +109,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<
 	}
 
 	public List<Integer> getSelectedElementIdentities() {
-		List<Integer> identities = Lists.newArrayList();
+		List<Integer> identities = new ArrayList<>();
 		selected.forEach(e -> identities.add(e.getElementIdentity()));
 		return identities;
 	}
@@ -128,27 +129,48 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<
 	}
 
 	@Override
-	public void onGridClicked(int gridID, IDisplayElement element, int pos, int button, boolean empty) {
-		if (selected.contains(element)) {
-			selected.remove(element);
-		} else {
-			selected.add(element);
+	public void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
+		if (e != null) {
+			if (selected.contains(e)) {
+				selected.removeIf(ee -> e == ee);
+			} else {
+				selected.add((IDisplayElement) e);
+			}
 		}
-
 	}
 
 	@Override
-	public void renderGridElement(int gridID, IDisplayElement element, int x, int y, int slot) {
-		if (selected.contains(element)) {
-			drawTransparentRect(0, 0, defgridElementWidth - 2, defgridElementHeight, LogisticsColours.getDefaultSelection().getRGB());
+	public void onGridClicked(int gridID, Object element, int x, int y, int pos, int button, boolean empty) {
+		if (element instanceof IDisplayElement) {
+			if (selected.contains(element)) {
+				selected.remove(element);
+			} else {
+				selected.add((IDisplayElement) element);
+			}
 		}
-		FontHelper.text(element.getRepresentiveString(), 4, y + 3, -1);
-		FontHelper.text("", 92, y + 3, -1);
-		FontHelper.text(element.getRegisteredName(), 144, y + 3, -1);
 	}
 
 	@Override
-	public void renderElementToolTip(int gridID, IDisplayElement element, int x, int y) {
+	public void renderGridElement(int gridID, Object obj, int x, int y, int slot) {
+		if (obj instanceof IDisplayElement) {
+			IDisplayElement element = (IDisplayElement) obj;
+			if (selected.contains(element)) {
+				GlStateManager.disableLighting();
+				drawTransparentRect(0, 0, defgridElementWidth - 2, defgridElementHeight, LogisticsColours.getDefaultSelection().getRGB());
+			}
+			FontHelper.text(element.getRepresentiveString(), 4, 3, -1);
+			FontHelper.text("", 92, 3, -1);
+			FontHelper.text(element.getRegisteredName(), 144, 3, -1);
+		} else if (obj instanceof DisplayElementContainer) {
+			DisplayElementContainer element = (DisplayElementContainer) obj;
+			GlStateManager.disableLighting();
+			drawTransparentRect(0, 0, defgridElementWidth - 2, defgridElementHeight, LogisticsColours.category.getRGB());
+			FontHelper.text("Element Container: " + element.containerIdentity, 4, 3, -1);
+		}
+	}
+
+	@Override
+	public void renderElementToolTip(int gridID, Object element, int x, int y) {
 
 	}
 
@@ -172,21 +194,44 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
-		renderStrings(x, y);
-		grids.forEach((grid, scroll) -> {
-			renderScroller(scroll);
-			grid.renderGrid(this, x, y);
-		});
 		super.drawGuiContainerForegroundLayer(x, y);
-
+		updateElementsList();
+		GlStateManager.color(1f, 1f, 1f, 1f);
+		renderStrings(x, y);
+		GlStateManager.enableLighting();
+		for (Entry<SelectionGrid, SonarScroller> entry : grids.entrySet()) {
+			renderScroller(entry.getValue());
+			entry.getKey().renderGrid(this, x, y);
+		}
+		GlStateManager.pushMatrix();
+		GlStateManager.disableLighting();
+		DisplayElementHelper.align(getAlignmentTranslation());
+		GlStateManager.translate(-guiLeft, -guiTop, 0);
+		GlStateManager.scale(getActualScaling()[2], getActualScaling()[2], 1);
+		for (DisplayElementContainer container : gsi.containers.values()) {
+			boolean match = selected.stream().anyMatch(e -> e.getHolder().getContainer() == container);
+			if (match && container.canRender() && !gsi.isEditContainer(container)) {
+				double[] translation = container.getTranslation();
+				double[] scaling = container.getContainerMaxScaling();
+				sonar.core.helpers.RenderHelper.saveBlendState();
+				GlStateManager.enableBlend();
+				GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
+				GlStateManager.disableDepth();
+				DisplayElementHelper.drawRect(translation[0], translation[1], translation[0] + scaling[0], translation[1] + scaling[1], new CustomColour(49, 145, 88).getRGB());
+				GlStateManager.disableBlend();
+				sonar.core.helpers.RenderHelper.restoreBlendState();
+			}
+		}
+		GlStateManager.enableLighting();
+		GlStateManager.popMatrix();
 	}
 
-	public void startToolTipRender(int gridID, IDisplayElement selection, int x, int y) {
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+	public void startToolTipRender(int gridID, Object selection, int x, int y) {
+		GlStateManager.disableDepth();
 		GlStateManager.disableLighting();
 		renderElementToolTip(gridID, selection, x, y);
 		GlStateManager.enableLighting();
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GlStateManager.enableDepth();
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 	}
 
@@ -206,6 +251,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui<
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
+		GlStateManager.disableLighting();
 		grids.forEach((grid, scroll) -> {
 			drawTransparentRect(guiLeft + grid.xPos - 1, guiTop + grid.yPos - 1, guiLeft + grid.xPos + (grid.eWidth * grid.gWidth) - 1, guiTop + grid.yPos + (grid.eHeight * grid.gHeight) - 1, LogisticsColours.grey_base.getRGB());
 			drawTransparentRect(guiLeft + grid.xPos, guiTop + grid.yPos, guiLeft + grid.xPos + (grid.eWidth * grid.gWidth) - 2, guiTop + grid.yPos + (grid.eHeight * grid.gHeight) - 2, LogisticsColours.blue_overlay.getRGB());

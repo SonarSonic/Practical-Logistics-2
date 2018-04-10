@@ -1,11 +1,10 @@
 package sonar.logistics.client.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -176,7 +175,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		if (search == null || search.isEmpty() || search.equals(" ")) {
 			return part.getMonitoredList().createSaveableList();
 		} else {
-			List<MonitoredItemStack> searchlist = Lists.newArrayList();
+			List<MonitoredItemStack> searchlist = new ArrayList<>();
 			List<MonitoredItemStack> cached = part.getMonitoredList().createSaveableList();
 			for (MonitoredItemStack stack : cached) {
 				StoredItemStack item = stack.getStoredStack();
@@ -189,7 +188,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	}
 
 	@Override
-	public void onGridClicked(MonitoredItemStack selection, int pos, int button, boolean empty) {
+	public void onGridClicked(MonitoredItemStack selection, int x, int y, int pos, int button, boolean empty) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			button = 2;
 		}
@@ -211,8 +210,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		}
 		ItemStack stack = storedStack.item;
 		GlStateManager.depthMask(false);
-		RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
-		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
+		RenderHelper.renderItem(this, 0, 0, stack);
+		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 0, 0, null, true);
 	}
 
 	@Override

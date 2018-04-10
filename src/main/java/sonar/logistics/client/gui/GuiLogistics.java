@@ -1,8 +1,7 @@
 package sonar.logistics.client.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.client.gui.GuiSonarTile;
@@ -28,7 +27,7 @@ public class GuiLogistics extends GuiSonarTile {
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		drawTransparentRect(this.guiLeft, this.guiTop, this.guiLeft + this.xSize, this.guiTop + this.ySize, LogisticsColours.layers[1].getRGB());
 		drawTransparentRect(this.guiLeft + 1, this.guiTop + 1, this.guiLeft + this.xSize - 1, this.guiTop + this.ySize - 1, LogisticsColours.layers[2].getRGB());
 		renderScroller(scroller);
@@ -52,7 +51,7 @@ public class GuiLogistics extends GuiSonarTile {
 	}
 
 	public void renderPlayerInventory(int xPos, int yPos) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(playerInv);
 		drawTexturedModalRect(this.guiLeft + xPos, this.guiTop + yPos, 0, 0, this.xSize, this.ySize);
 	}

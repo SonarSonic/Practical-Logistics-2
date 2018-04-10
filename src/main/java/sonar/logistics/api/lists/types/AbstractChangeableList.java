@@ -1,18 +1,17 @@
 package sonar.logistics.api.lists.types;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import sonar.logistics.api.lists.IMonitoredValue;
 
 public abstract class AbstractChangeableList<T> {
 
 	public static final Consumer<? super IMonitoredValue> saveState = IMonitoredValue::resetChange;
-	public List<IMonitoredValue<T>> values = Lists.newArrayList();
+	public List<IMonitoredValue<T>> values = new ArrayList<>();
 	public boolean wasLastListNull = false;
 
 	public AbstractChangeableList() {}
@@ -52,7 +51,7 @@ public abstract class AbstractChangeableList<T> {
 	}
 
 	public void saveStates() {
-		List<IMonitoredValue<T>> toDelete = Lists.newArrayList();
+		List<IMonitoredValue<T>> toDelete = new ArrayList<>();
 		values.forEach(value -> {
 			if (value.getChange().shouldDelete()) {
 				toDelete.add(value);
@@ -69,7 +68,7 @@ public abstract class AbstractChangeableList<T> {
 	}
 
 	public List<T> createSaveableList() {
-		List<T> saveable = Lists.newArrayList();
+		List<T> saveable = new ArrayList<>();
 		values.forEach(value -> saveable.add(value.getSaveableInfo()));
 		return saveable;
 	}

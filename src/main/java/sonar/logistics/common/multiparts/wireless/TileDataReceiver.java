@@ -1,8 +1,7 @@
 package sonar.logistics.common.multiparts.wireless;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,7 +21,7 @@ public class TileDataReceiver extends TileAbstractReceiver implements IDataRecei
 		return WirelessDataManager.instance();
 	}
 	
-	public List<Integer> networks = Lists.newArrayList();
+	public List<Integer> networks = new ArrayList<>();
 
 	public void updateStates() {
 		states.markTileMessage(TileMessage.NO_EMITTERS_CONNECTED, clientEmitters.getObjects().isEmpty());
@@ -42,7 +41,7 @@ public class TileDataReceiver extends TileAbstractReceiver implements IDataRecei
 	}
 
 	public List<Integer> getNetworks() {
-		List<Integer> networks = Lists.newArrayList();
+		List<Integer> networks = new ArrayList<>();
 		List<IWirelessEmitter> emitters = getEmitters();
 		for (IWirelessEmitter emitter : emitters) {
 			if (emitter.getNetworkID() != -1) {
