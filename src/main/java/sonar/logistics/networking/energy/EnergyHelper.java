@@ -13,10 +13,9 @@ import sonar.core.utils.SortingDirection;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.readers.EnergyReader.SortingType;
-import sonar.logistics.api.wrappers.EnergyWrapper;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 
-public class EnergyHelper extends EnergyWrapper {
+public class EnergyHelper {
 
 	public List<ISonarEnergyHandler> getProviders(EnergyType type) {
 		List<ISonarEnergyHandler> providers = new ArrayList<>();

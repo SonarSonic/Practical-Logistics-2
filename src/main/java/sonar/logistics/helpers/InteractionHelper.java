@@ -31,6 +31,7 @@ import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.fluids.DummyFluidHandler;
+import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.packets.PacketItemInteractionText;
 
 public class InteractionHelper {
@@ -63,12 +64,12 @@ public class InteractionHelper {
 				if (!stack.isEmpty()) {
 					long changed = 0;
 					if (!click.doubleClick) {
-						changed = PL2API.getItemHelper().insertItemFromPlayer(player, network, player.inventory.currentItem);
+						changed = ItemHelper.insertItemFromPlayer(player, network, player.inventory.currentItem);
 					} else {
-						changed = PL2API.getItemHelper().insertInventoryFromPlayer(player, network, player.inventory.currentItem);
+						changed = ItemHelper.insertInventoryFromPlayer(player, network, player.inventory.currentItem);
 					}
 					if (changed > 0) {
-						long itemCount = PL2API.getItemHelper().getItemCount(stack, network);
+						long itemCount = ItemHelper.getItemCount(stack, network);
 						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
 						PacketHelper.createRapidItemUpdate(Lists.newArrayList(stack), networkID);
 					}
@@ -76,14 +77,14 @@ public class InteractionHelper {
 				break;
 			case REMOVE:
 				if (storedItemStack != null) {
-					StoredItemStack extract = PL2API.getItemHelper().extractItem(network, storedItemStack.copy().setStackSize(toRemove.a));
+					StoredItemStack extract = ItemHelper.extractItem(network, storedItemStack.copy().setStackSize(toRemove.a));
 					if (extract != null) {
 						BlockPos pos = click.clickPos.offset(facing);
 						long r = extract.stored;
 						double[] coords = click.getCoordinates();
 						SonarAPI.getItemHelper().spawnStoredItemStackDouble(extract, player.getEntityWorld(), coords[0], coords[1], coords[2], facing);
 
-						long itemCount = PL2API.getItemHelper().getItemCount(storedItemStack.getItemStack(), network);
+						long itemCount = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
 						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
 						PacketHelper.createRapidItemUpdate(Lists.newArrayList(storedItemStack.getItemStack()), networkID);
 					}

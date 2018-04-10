@@ -30,10 +30,9 @@ import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.wrappers.CablingWrapper;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
 
-public class CableHelper extends CablingWrapper {
+public class CableHelper {
 
 	public static ICableConnectable getNetworkTile(ICable source, TileEntity tile, EnumFacing dir, boolean internal, boolean cableOnly) {
 		IMultipartContainer container = null;

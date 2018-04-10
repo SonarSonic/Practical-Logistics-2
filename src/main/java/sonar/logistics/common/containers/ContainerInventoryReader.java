@@ -16,6 +16,7 @@ import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
+import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
@@ -63,9 +64,9 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 					ILogisticsNetwork network = part.getNetwork();
 					StoredItemStack stack = new StoredItemStack(itemstack1);
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						PL2API.getItemHelper().addItemsFromPlayer(stack, player, network, ActionType.PERFORM);
+						ItemHelper.addItemsFromPlayer(stack, player, network, ActionType.PERFORM, null);
 					} else {
-						StoredItemStack perform = PL2API.getItemHelper().transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
+						StoredItemStack perform = ItemHelper.transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
 						lastStack = itemstack1;
 						itemstack1.setCount((int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize())));
 						player.inventory.markDirty();

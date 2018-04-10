@@ -21,25 +21,24 @@ import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.api.wrappers.FluidWrapper;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.networking.items.ItemHelper.ConnectionFilters;
 
-public class FluidHelper extends FluidWrapper {
+public class FluidHelper {
 
-	public StoredFluidStack transferFluids(ILogisticsNetwork network, StoredFluidStack add, NodeTransferMode mode, ActionType action, ITankFilter filter) {
+	public static StoredFluidStack transferFluids(ILogisticsNetwork network, StoredFluidStack add, NodeTransferMode mode, ActionType action, ITankFilter filter) {
 		if (!validStack(add)) {
 			return add;
 		}
 		return NetworkHelper.forEachTileEntity(network, CacheType.ALL, c -> c.canTransferFluid(c, add, mode), getTileAction(add, mode, action, filter)) ? add : null;
 	}
 
-	private BiPredicate<BlockConnection, TileEntity> getTileAction(StoredFluidStack stack, NodeTransferMode mode, ActionType action, ITankFilter filter) {
+	private static BiPredicate<BlockConnection, TileEntity> getTileAction(StoredFluidStack stack, NodeTransferMode mode, ActionType action, ITankFilter filter) {
 		return (c, t) -> stack.setStackSize(transfer(mode, t, stack, c.face, action)).getStackSize() != 0;
 	}
 
-	private StoredFluidStack transfer(NodeTransferMode mode, TileEntity tile, StoredFluidStack stack, EnumFacing dir, ActionType action) {
+	private static StoredFluidStack transfer(NodeTransferMode mode, TileEntity tile, StoredFluidStack stack, EnumFacing dir, ActionType action) {
 		List<ISonarFluidHandler> handlers = SonarCore.fluidHandlers;
 		for (ISonarFluidHandler handler : handlers) {
 			if (handler.canHandleFluids(tile, dir)) {

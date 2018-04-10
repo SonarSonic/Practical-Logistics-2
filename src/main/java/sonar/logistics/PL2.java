@@ -61,8 +61,8 @@ public class PL2 {
 			logger.info("Successfully loaded with Sonar Core");
 		}
 
-		PL2API.init();
-		logger.info("Initilised API");
+		//PL2API.init();
+		//logger.info("Initilised API");
 
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(PL2Constants.MODID);
 		logger.info("Registered Network");

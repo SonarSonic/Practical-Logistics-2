@@ -29,7 +29,7 @@ public class DummyFluidHandler implements IFluidHandler, IFluidTankProperties {
 	@Override
 	public int fill(FluidStack resource, boolean doFill) {
 		StoredFluidStack toFill = new StoredFluidStack(resource);
-		StoredFluidStack stack = PL2API.getFluidHelper().transferFluids(network, toFill.copy(), NodeTransferMode.ADD, ActionType.getTypeForAction(!doFill), null);
+		StoredFluidStack stack = FluidHelper.transferFluids(network, toFill.copy(), NodeTransferMode.ADD, ActionType.getTypeForAction(!doFill), null);
 		StoredFluidStack returned = SonarAPI.getFluidHelper().getStackToAdd(resource.amount, toFill, stack);
 		return returned == null ? 0 : returned.getFullStack().amount;
 	}
@@ -37,7 +37,7 @@ public class DummyFluidHandler implements IFluidHandler, IFluidTankProperties {
 	@Override
 	public FluidStack drain(FluidStack resource, boolean doDrain) {
 		StoredFluidStack toDrain = new StoredFluidStack(resource);
-		StoredFluidStack stack = PL2API.getFluidHelper().transferFluids(network, toDrain.copy(), NodeTransferMode.REMOVE, ActionType.getTypeForAction(!doDrain), null);
+		StoredFluidStack stack = FluidHelper.transferFluids(network, toDrain.copy(), NodeTransferMode.REMOVE, ActionType.getTypeForAction(!doDrain), null);
 		StoredFluidStack returned = SonarAPI.getFluidHelper().getStackToAdd(resource.amount, toDrain, stack);
 		return returned == null ? null : returned.getFullStack();
 	}
@@ -45,7 +45,7 @@ public class DummyFluidHandler implements IFluidHandler, IFluidTankProperties {
 	@Override
 	public FluidStack drain(int maxDrain, boolean doDrain) {
 		StoredFluidStack toDrain = new StoredFluidStack(fluid.getFullStack(), maxDrain, maxDrain);
-		StoredFluidStack stack = PL2API.getFluidHelper().transferFluids(network, toDrain.copy(), NodeTransferMode.REMOVE, ActionType.getTypeForAction(!doDrain), null);
+		StoredFluidStack stack = FluidHelper.transferFluids(network, toDrain.copy(), NodeTransferMode.REMOVE, ActionType.getTypeForAction(!doDrain), null);
 		StoredFluidStack returned = SonarAPI.getFluidHelper().getStackToAdd(maxDrain, toDrain, stack);
 		return returned == null ? null : returned.getFullStack();
 	}
