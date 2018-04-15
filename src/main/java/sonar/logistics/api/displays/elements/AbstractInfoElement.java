@@ -21,7 +21,7 @@ public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDispl
 		this.uuid = uuid;
 	}
 
-	public final void render() {
+	public void render() {
 		info = getGSI().getCachedInfo(uuid);
 		if (info != null && isType(info)) {
 			render((T) info);

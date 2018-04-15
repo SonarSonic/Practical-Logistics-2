@@ -4,7 +4,7 @@
         "model":"practicallogistics2:EntityNode_Base",
         "textures": {
             "node":"practicallogistics2:model/entity_node",
-            "0":"practicallogistics2:model/data_cable",
+            "0":"practicallogistics2:blocks/data_cable",
             "particle":"practicallogistics2:blocks/data_cable"
         }
      },

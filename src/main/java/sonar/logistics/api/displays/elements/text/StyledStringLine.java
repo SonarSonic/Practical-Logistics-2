@@ -54,13 +54,18 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 	public DisplayGSI getGSI() {
 		return getText().getGSI();
 	}
-
-	public void render() {
-		int offset = 0;
-		for (IStyledString s : strings) {
-			FontHelper.text(s.getFormattedString(), offset, 0, s.getStyle().getFontColour());
-			offset += RenderHelper.fontRenderer.getStringWidth(s.getFormattedString());
+	
+	/**returns the amount of */
+	public double render(StyledTextRenderStyle style) {
+		
+		int offsetX = 0;
+		int offsetY = 0;
+		for (IStyledString s : strings) {					
+			FontHelper.text(s.getFormattedString(), offsetX, 0, s.getStyle().getFontColour());			
+			offsetX += RenderHelper.fontRenderer.getStringWidth(s.getFormattedString());
 		}
+		
+		return 0;
 	}
 
 	public List<IStyledString> getStrings() {

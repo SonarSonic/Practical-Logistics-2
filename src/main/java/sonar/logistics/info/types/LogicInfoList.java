@@ -4,14 +4,18 @@ import java.util.List;
 
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
+import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.types.NetworkItemListElement;
+import sonar.logistics.api.displays.elements.types.NetworkFluidGridElement;
+import sonar.logistics.api.displays.elements.types.NetworkGridElement;
+import sonar.logistics.api.displays.elements.types.NetworkItemGridElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 
 @LogicInfoType(id = LogicInfoList.id, modid = PL2Constants.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList> {
@@ -80,6 +84,13 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 	@Override
 	public void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
-		toAdd.add(new NetworkItemListElement(uuid));
+		switch (this.infoID.getObject()) {
+		case MonitoredItemStack.id:
+			toAdd.add(new NetworkItemGridElement(uuid));
+			break;
+		case MonitoredFluidStack.id:
+			toAdd.add(new NetworkFluidGridElement(uuid));
+			break;
+		}
 	}
 }

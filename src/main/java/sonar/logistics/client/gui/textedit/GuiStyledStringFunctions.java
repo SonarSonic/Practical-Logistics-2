@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
+import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.WidthAlignment;
@@ -31,23 +32,25 @@ import sonar.logistics.api.displays.elements.text.IStyledString;
 import sonar.logistics.api.displays.elements.text.SonarStyling;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
 import sonar.logistics.api.displays.elements.text.StyledString;
+import sonar.logistics.api.displays.elements.text.StyledStringEditor;
+import sonar.logistics.api.displays.elements.text.StyledStringFormatter;
 import sonar.logistics.api.displays.elements.text.StyledStringHelper;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.TextSelection;
+import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.client.gui.display.GuiAbstractEditElements;
 import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
-public class GuiStyledStringFunctions extends GuiAbstractEditElements implements ILineCounter {
+public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 
 	public final StyledTextElement text;
 	public final CursorPosition cursorPosition = CursorPosition.newInvalid();
 	public final CursorPosition selectPosition = CursorPosition.newInvalid();
 	public List<TextSelection> savedSelections = new ArrayList<>();
 	public List<TextFormatting> specials = new ArrayList<>();
-	public int currentColour = -1;
 
 	public GuiStyledStringFunctions(StyledTextElement text, TileAbstractDisplay display) {
 		super(text, text.getHolder().getContainer(), display);
@@ -64,31 +67,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 		return getDragPositionFromContainerXY(canClick.getSecond()[0], canClick.getSecond()[1]);
 	}
 
-	public int[] getDragPositionFromContainerXY(double clickX, double clickY) {
-		int[] index = getIndexClicked(clickX, clickY);
-		if (index != null) {
-			return index;
-		}
-		double[] align = text.getHolder().getAlignmentTranslation(text);
-		if (clickX < align[0] || clickY < align[1]) {
-			return new int[] { 0, 0 };
-		}
-		if (text.getLines().isEmpty()) {
-			StyledStringLine l = new StyledStringLine(text);
-			text.addNewLine(0, l);
-			l.addWithCombine(new StyledString("", createStylingFromEnabled()));
-			return new int[] { 0, 0 };
-		}
-
-		Tuple<StyledStringLine, Integer> line = getLineClicked(clickX, clickY);
-		Tuple<IStyledString, Integer> string = getStringClicked(clickX, clickY);
-		int yPosition = Math.min(getLineCount() - 1, line.getSecond() == -1 ? getLineCount() - 1 : line.getSecond());
-		int xPosition = string.getSecond() == StyledTextElement.AFTER || string.getSecond() == -1 ? getLineLength(yPosition) : 0;
-		if (yPosition < 0) {
-			return new int[] { 0, 0 };
-		}
-		return new int[] { xPosition, yPosition };
-	}
+	public abstract int[] getDragPositionFromContainerXY(double clickX, double clickY);
 
 	/// special key actions
 
@@ -98,7 +77,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 
 			TextSelection afterCursor = new TextSelection(cursorPosition.x, Integer.MAX_VALUE, cursorPosition.y, cursorPosition.y);
 			StyledStringLine line = new StyledStringLine(text);
-			formatSelections(Lists.newArrayList(afterCursor), (l, ss) -> {
+			StyledStringFormatter.formatTextSelections(text, Lists.newArrayList(afterCursor), (l, ss) -> {
 				line.addWithCombine(ss);
 				return null;
 			});
@@ -109,14 +88,14 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 
 	public void addText(String toAppend) {
 		if (!cursorPosition.validPosition()) {
-			cursorPosition.setYToLast(this);
-			cursorPosition.setXToLast(this);
+			cursorPosition.setYToLast(text);
+			cursorPosition.setXToLast(text);
 		}
 		/// SHOULD WE JUST USE ADD STYLED STRING FOR TYPING?
 		if (hasSelections()) {
 			GuiActions.DELETE_SELECTED.action.trigger(this);
 		}
-		StyledStringLine line = cursorPosition.getTypingLine(this);
+		StyledStringLine line = cursorPosition.getTypingLine(text);
 		if (line != null) {
 			if (cursorPosition.x == 0) {
 				if (line.getStrings().isEmpty()) {
@@ -127,14 +106,14 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 						addTo.setUnformattedString(toAppend + addTo.getUnformattedString());
 					} else {
 						IStyledString toAdd = new StyledString(toAppend, addTo.getStyle().copy());
-						addStyledStrings(Lists.newArrayList(toAdd));
+						StyledStringEditor.addStyledStrings(text, cursorPosition, Lists.newArrayList(toAdd));
 					}
 				}
-				cursorPosition.moveX(this, toAppend.length());
+				cursorPosition.moveX(text, toAppend.length());
 			} else {
 				Holder<Boolean> hold = new Holder(false);
 				Holder<IStyledString> string = new Holder();
-				formatSelections(Lists.newArrayList(getTypeBox()), (l, ss) -> {
+				StyledStringFormatter.formatTextSelections(text, Lists.newArrayList(getTypeBox()), (l, ss) -> {
 					if (ss instanceof StyledString) {
 						ss.setUnformattedString(ss.getUnformattedString() + toAppend);
 						hold.value = true;
@@ -145,20 +124,16 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 					return ss;
 				});
 				if (string.value != null) {
-					addStyledStrings(Lists.newArrayList(new StyledString(toAppend, string.value.getStyle().copy())));
+					StyledStringEditor.addStyledStrings(text, cursorPosition, Lists.newArrayList(new StyledString(toAppend, string.value.getStyle().copy())));
 					/* List<IStyledString> newStrings = new ArrayList<>(); for(IStyledString ss : string.value.getLine()){ newStrings.add(ss); if(ss==string.value){ newStrings.add(new StyledString(toAppend, ss.getStyle().copy())); } } string.value.getLine().setStrings(newStrings); */
 					hold.value = true;
 				}
 
 				if (hold.value) {
-					cursorPosition.moveX(this, toAppend.length());
+					cursorPosition.moveX(text, toAppend.length());
 				}
 			}
-		} else {
-
-			// FIXME should we add another line instead?
 		}
-
 	}
 
 	public void removeText(int key) {
@@ -166,60 +141,60 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 			if (hasSelections()) {
 				GuiActions.DELETE_SELECTED.action.trigger(this);
 			} else {
-				StyledStringLine line = cursorPosition.getTypingLine(this);
+				StyledStringLine line = cursorPosition.getTypingLine(text);
 				if (line == null) {
 					return;
 				}
 				if (line.getStrings().isEmpty()) {
 					if (text.getLines().size() != 1) {
 						text.deleteLine(cursorPosition.y);
-						cursorPosition.moveY(this, -1);
-						cursorPosition.setXToLast(this);
+						cursorPosition.moveY(text, -1);
+						cursorPosition.setXToLast(text);
 					}
 					return;
 				}
 				Holder<Boolean> hold = new Holder(false);
 				if (key == Keyboard.KEY_DELETE) {
-					formatSelections(Lists.newArrayList(getDeleteBox()), (l, ss) -> {
+					StyledStringFormatter.formatTextSelections(text, Lists.newArrayList(getDeleteBox()), (l, ss) -> {
 						hold.value = true;
 						return null;
 					});
 				} else {
 					if (cursorPosition.x == 0) {
 						if (cursorPosition.y != 0) {
-							int newPosition = getLineLength(cursorPosition.y - 1);
-							StyledStringLine upLine = getLine(cursorPosition.y - 1);
+							int newPosition = text.getLineLength(cursorPosition.y - 1);
+							StyledStringLine upLine = text.getLine(cursorPosition.y - 1);
 							line.forEach(string -> upLine.addWithCombine(string));
 							text.deleteLine(cursorPosition.y);
 							cursorPosition.setY(cursorPosition.y - 1);
 							cursorPosition.setX(newPosition);
 						}
 					} else {
-						formatSelections(Lists.newArrayList(getBackspaceBox()), (l, ss) -> {
+						StyledStringFormatter.formatTextSelections(text, Lists.newArrayList(getBackspaceBox()), (l, ss) -> {
 							hold.value = true;
 							return null;
 						});
 					}
 				}
 				if (hold.value) {
-					cursorPosition.moveX(this, key == Keyboard.KEY_DELETE ? 0 : -1);
+					cursorPosition.moveX(text, key == Keyboard.KEY_DELETE ? 0 : -1);
 				}
 			}
 		}
 	}
 
 	public TextSelection getTypeBox() {
-		int typeIndex = cursorPosition.getTypingIndex(this);
+		int typeIndex = cursorPosition.getTypingIndex(text);
 		return new TextSelection(typeIndex - 1, typeIndex, cursorPosition.y, cursorPosition.y);
 	}
 
 	public TextSelection getBackspaceBox() {
-		int typeIndex = cursorPosition.getTypingIndex(this);
+		int typeIndex = cursorPosition.getTypingIndex(text);
 		return new TextSelection(typeIndex - 1, typeIndex, cursorPosition.y, cursorPosition.y);
 	}
 
 	public TextSelection getDeleteBox() {
-		int typeIndex = cursorPosition.getTypingIndex(this);
+		int typeIndex = cursorPosition.getTypingIndex(text);
 		return new TextSelection(typeIndex, typeIndex + 1, cursorPosition.y, cursorPosition.y);
 	}
 
@@ -255,7 +230,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 		if (!paste.isEmpty()) {
 			List<StyledStringLine> lines = getStyledLinesFromString(paste);
 			if (!lines.isEmpty()) {
-				addStyledLines(lines, true);
+				StyledStringEditor.addStyledLines(text, cursorPosition, lines, true);
 			}
 		}
 	}
@@ -273,7 +248,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 
 	public SonarStyling createStylingFromEnabled() {
 		SonarStyling styling = new SonarStyling();
-		styling.rgb = currentColour;
+		styling.rgb = GuiLogistics.getCurrentColour();
 		styling.toggleSpecialFormatting(specials, true);
 		return styling;
 	}
@@ -303,10 +278,10 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 				translate(max_width - element, 0, 0);
 			GlStateManager.scale(scaling[2], scaling[2], 1);
 
-			//GlStateManager.disableBlend();
+			// GlStateManager.disableBlend();
 			GlStateManager.disableLighting();
 			GlStateManager.color(1F, 1F, 1F, 1F);
-			s.render();
+			s.render(text.render_style);
 			if (i == cursorPosition.y) {
 				renderCursor(s);
 			}
@@ -322,6 +297,20 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 
 	}
 
+	public void renderCursorAtPosition() {
+		GlStateManager.translate(0, 0, 0.1);
+		GlStateManager.disableTexture2D();
+		GlStateManager.enableBlend();
+		GlStateManager.disableTexture2D();
+		GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
+		// GlStateManager.color(1F, 1F, 1F, 1F);
+		RenderHelper.drawRect(0, 0, 1, 9);
+		GlStateManager.disableBlend();
+		GlStateManager.enableTexture2D();
+		GlStateManager.translate(0, 0, -0.1);
+
+	}
+
 	public void renderCursor(StyledStringLine text) {
 		if (cursorPosition.validPosition()) {
 			int cursorPos = getCursorRenderPos(text);
@@ -330,7 +319,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 			GlStateManager.enableBlend();
 			GlStateManager.disableTexture2D();
 			GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
-			//GlStateManager.color(1F, 1F, 1F, 1F);
+			// GlStateManager.color(1F, 1F, 1F, 1F);
 			RenderHelper.drawRect((cursorPos), 0, (cursorPos + 1), 9);
 			GlStateManager.disableBlend();
 			GlStateManager.enableTexture2D();
@@ -339,7 +328,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 	}
 
 	public int getCursorRenderPos(StyledStringLine c) {
-		return getCursorRenderPos(c, cursorPosition.getTypingIndex(this));
+		return getCursorRenderPos(c, cursorPosition.getTypingIndex(text));
 	}
 
 	public int getCursorRenderPos(StyledStringLine c, int index) {
@@ -419,8 +408,8 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 	//// STYLING \\\\
 
 	public final void changeSelectedColour(TextFormatting colour) {
-		setTextColourOnSelected(currentColour = FontHelper.getColourFromFormatting(colour));
-		onColourChanged(currentColour);
+		GuiLogistics.setCurrentColour(FontHelper.getColourFromFormatting(colour));
+		// setTextColourOnSelected(getCurrentColour());
 	}
 
 	public final void toggleSpecialFormatting(TextFormatting format) {
@@ -431,10 +420,6 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 			specials.add(format);
 			onSpecialFormatChanged(format, true);
 		}
-	}
-
-	public void onColourChanged(int newColour) {
-		
 	}
 
 	public void onSpecialFormatChanged(TextFormatting format, boolean enabled) {
@@ -473,7 +458,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 	public void selectAll() {
 		savedSelections.clear();
 		selectPosition.setCursor(0, 0);
-		cursorPosition.setCursor(getLineLength(getLineCount() - 1), getLineCount() - 1);
+		cursorPosition.setCursor(text.getLineLength(text.getLineCount() - 1), text.getLineCount() - 1);
 	}
 
 	/** removes all saved positions and removes the select position */
@@ -486,69 +471,6 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 	/** if all selections would return any selections */
 	public boolean hasSelections() {
 		return selectPosition.validPosition() || !savedSelections.isEmpty();
-	}
-
-	public void addStyledStrings(List<IStyledString> strings) {
-		if (cursorPosition.validPosition()) {
-			StyledStringLine newLine = new StyledStringLine(text);
-			if (cursorPosition.x != 0) {
-				TextSelection before = new TextSelection(0, cursorPosition.x, cursorPosition.y, cursorPosition.y);
-				formatSelections(Lists.newArrayList(before), (line, ss) -> {
-					newLine.addWithCombine(ss);
-					return ss;
-				});
-			}
-			strings.forEach(ss -> newLine.addWithCombine(ss));
-			if (cursorPosition.x != getLineLength(cursorPosition.y)) {
-				TextSelection after = new TextSelection(cursorPosition.x, Integer.MAX_VALUE, cursorPosition.y, cursorPosition.y);
-				formatSelections(Lists.newArrayList(after), (line, ss) -> {
-					newLine.addWithCombine(ss);
-					return ss;
-				});
-			}
-			text.setLine(cursorPosition.y, newLine);
-		}
-	}
-
-	public void addStyledLines(List<StyledStringLine> lines, boolean combineFirst) {
-		if (cursorPosition.validPosition()) {
-			int yPos = cursorPosition.y;
-			final StyledStringLine beforeLine = new StyledStringLine(text);
-			boolean combinedFirst = cursorPosition.x == 0 || !combineFirst;
-			if (cursorPosition.x != 0) {
-				TextSelection before = new TextSelection(0, cursorPosition.x, cursorPosition.y, cursorPosition.y);
-				formatSelections(Lists.newArrayList(before), (line, ss) -> {
-					beforeLine.addWithCombine(ss);
-					return ss;
-				});
-				text.addNewLine(yPos, beforeLine);
-				yPos++;
-			}
-			StyledStringLine afterLines = new StyledStringLine(text);
-			if (cursorPosition.x != getLineLength(cursorPosition.y)) {
-				TextSelection after = new TextSelection(cursorPosition.x, Integer.MAX_VALUE, cursorPosition.y, cursorPosition.y);
-				formatSelections(Lists.newArrayList(after), (line, ss) -> {
-					afterLines.addWithCombine(ss);
-					return ss;
-				});
-			}
-
-			for (StyledStringLine line : lines) {
-				if (!combinedFirst) {
-					line.getStrings().forEach(ss -> beforeLine.addWithCombine(ss));
-					combinedFirst = true;
-				} else {
-					text.addNewLine(yPos, line);
-					yPos++;
-				}
-			}
-			if (!afterLines.getStrings().isEmpty()) {
-				text.addNewLine(yPos, afterLines);
-				yPos++;
-			}
-
-		}
-
 	}
 
 	/** for every StyledStringCompound */
@@ -597,51 +519,7 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 	//// COMPLEX FORMATTING METHODS \\\\
 
 	public void formatSelections(BiFunction<Integer, IStyledString, IStyledString> action) {
-		formatSelections(getAllSelections(), action);
-	}
-
-	public void formatSelections(List<TextSelection> selects, BiFunction<Integer, IStyledString, IStyledString> action) {
-		for (TextSelection select : selects) {
-			for (int y = select.startY; y <= select.endY; y++) {
-				StyledStringLine c = getLine(y);
-				if (c == null) {
-					continue;
-				}
-				int[] subSelect = select.getSubStringSize(c.getCachedUnformattedString(), y);
-				int start = subSelect[0], end = subSelect[1];
-				if (start != -1 && end != -1) {
-					List<IStyledString> formatted_strings = new ArrayList<>();
-
-					int index_count = 0;
-					for (IStyledString ss : c.getStrings()) {
-						int subStart = Math.max(index_count, start) - index_count;
-						int subEnd = Math.min(index_count + ss.getStringLength(), end) - index_count;
-
-						if (subStart >= 0 && subStart < subEnd) {
-							if (ss instanceof StyledInfo) {
-								StyledStringHelper.addWithCombine(formatted_strings, action.apply(y, ss.copy()));
-							} else {
-								String[] subStrings = StyledStringHelper.getSubStrings(subStart, subEnd, ss.getUnformattedString());
-								StyledStringHelper.addWithCombine(formatted_strings, new StyledString(subStrings[0], ss.getStyle().copy()));
-								StyledStringHelper.addWithCombine(formatted_strings, action.apply(y, new StyledString(subStrings[1], ss.getStyle().copy())));
-								StyledStringHelper.addWithCombine(formatted_strings, new StyledString(subStrings[2], ss.getStyle().copy()));
-							}
-						} else {
-							StyledStringHelper.addWithCombine(formatted_strings, ss);
-						}
-						index_count += ss.getStringLength();
-					}
-
-					c.setStrings(formatted_strings);
-				}
-			}
-		}
-		// formatSelectedLines(selects, line -> line.getStrings().isEmpty() ? null : line);
-		if (text.getLines().isEmpty()) {
-			text.addNewLine(0, new StyledStringLine(text, ""));
-		}
-		GuiActions.UPDATE_TEXT_SCALING.trigger(this);
-		text.getHolder().getContainer().updateActualScaling();
+		StyledStringFormatter.formatTextSelections(text, getAllSelections(), action);
 	}
 
 	public void formatSelectedLines(Function<StyledStringLine, StyledStringLine> action) {
@@ -649,103 +527,16 @@ public class GuiStyledStringFunctions extends GuiAbstractEditElements implements
 	}
 
 	public void formatSelectedLines(List<TextSelection> selects, Function<StyledStringLine, StyledStringLine> action) {
-		Map<Integer, StyledStringLine> lines = new HashMap<>();
-		for (TextSelection select : selects) {
-			for (int y = select.startY; y <= select.endY; y++) {
-				StyledStringLine c = getLine(y);
-				if (c != null) {
-					lines.put(y, c);
-				}
-			}
-		}
-		List<StyledStringLine> toRemove = new ArrayList<>();
-		for (Entry<Integer, StyledStringLine> line : lines.entrySet()) {
-			StyledStringLine newLine = action.apply(line.getValue());
-			if (newLine == null) {
-				toRemove.add(text.getLines().get(line.getKey()));
-			} else {
-				text.setLine(line.getKey(), newLine);
-			}
-		}
-		for (StyledStringLine line : toRemove) {
-			if (line != null) {
-				text.getLines().remove(line);
-			}
-		}
+		StyledStringFormatter.formatSelectedLines(text, selects, action);
+		GuiActions.UPDATE_TEXT_SCALING.trigger(this);
+		text.getHolder().getContainer().updateActualScaling();
 	}
-
-	//// CLICK HELPERS \\\\
-
-	public final int[] getIndexClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
-			int[] clicked = ((StyledTextElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
-			return clicked;
-		}
-		return null;
-	}
-
-	public final Tuple<StyledStringLine, Integer> getLineClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
-			return ((StyledTextElement) element.getFirst()).getLineClicked(element.getSecond()[0], element.getSecond()[1]);
-		}
-		return new Tuple(null, -1);
-	}
-
-	public final Tuple<IStyledString, Integer> getStringClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
-			return ((StyledTextElement) element.getFirst()).getStringClicked(element.getSecond()[0], element.getSecond()[1]);
-		}
-		return new Tuple(null, -1);
-	}
-
-	public final Tuple<Character, Integer> getCharClicked(double clickX, double clickY) {
-		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTextElement) {
-			return ((StyledTextElement) element.getFirst()).getCharClicked(element.getSecond()[0], element.getSecond()[1]);
-		}
-		return new Tuple(null, -1);
-	}
-
 	//// LINE COUNTING \\\\
 
 	@Override
-	public int getLineCount() {
-		return text.getLines().size();
-	}
-
-	@Override
-	public int getLineLength(int line) {
-		if (line >= getLineCount() || line < 0) {
-			return 0;
-		}
-		return getUnformattedLine(line).length();
-	}
-
-	@Override
-	public int getLineWidth(int line) {
-		return RenderHelper.fontRenderer.getStringWidth(getFormattedLine(line));
-	}
-
-	@Override
-	public String getUnformattedLine(int line) {
-		StyledStringLine ss = getLine(line);
-		return ss == null ? "" : ss.getCachedUnformattedString();
-	}
-
-	@Override
-	public String getFormattedLine(int line) {
-		StyledStringLine ss = getLine(line);
-		return ss == null ? "" : ss.getCachedFormattedString();
-	}
-
-	@Override
-	public StyledStringLine getLine(int line) {
-		if (line >= getLineCount()) {
-			return null;
-		}
-		return text.getLines().get(line);
+	public void onTextFieldFocused(SonarTextField field) {
+		super.onTextFieldFocused(field);
+		this.cursorPosition.removeCursor();
+		this.selectPosition.removeCursor();
 	}
 }

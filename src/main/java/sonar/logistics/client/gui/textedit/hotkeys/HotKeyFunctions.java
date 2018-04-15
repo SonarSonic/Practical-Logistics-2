@@ -12,19 +12,19 @@ public enum HotKeyFunctions {
 
 	//cursor move
 	HOME((c, i) -> i==Keyboard.KEY_HOME && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.setXToFirst()),//
-	END((c, i) -> i==Keyboard.KEY_END && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.setXToLast(gui)),//
-	UP((c, i) -> i==Keyboard.KEY_UP && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveY(gui, -1)),//
-	DOWN((c, i) -> i==Keyboard.KEY_DOWN && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveY(gui, -1)),//
-	LEFT((c, i) -> i==Keyboard.KEY_LEFT && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveX(gui, -1)),//
-	RIGHT((c, i) -> i==Keyboard.KEY_RIGHT && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveX(gui, 1)),//
+	END((c, i) -> i==Keyboard.KEY_END && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.setXToLast(gui.text)),//
+	UP((c, i) -> i==Keyboard.KEY_UP && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveY(gui.text, -1)),//
+	DOWN((c, i) -> i==Keyboard.KEY_DOWN && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveY(gui.text, -1)),//
+	LEFT((c, i) -> i==Keyboard.KEY_LEFT && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveX(gui.text, -1)),//
+	RIGHT((c, i) -> i==Keyboard.KEY_RIGHT && !GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> gui.cursorPosition.moveX(gui.text, 1)),//
 
 	//selection move
 	HOME_SHIFT((c, i) -> i==Keyboard.KEY_HOME && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.setXToFirst();}}),//
-	END_SHIFT((c, i) -> i==Keyboard.KEY_END && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.setXToLast(gui);}}),//	
-	UP_SHIFT((c, i) -> i==Keyboard.KEY_UP && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveY(gui, -1);}}),//
-	DOWN_SHIFT((c, i) -> i==Keyboard.KEY_DOWN && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveY(gui, -1);}}),//
-	LEFT_SHIFT((c, i) -> i==Keyboard.KEY_LEFT && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveX(gui, -1);}}),//
-	RIGHT_SHIFT((c, i) -> i==Keyboard.KEY_RIGHT && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveX(gui, 1);}}),//
+	END_SHIFT((c, i) -> i==Keyboard.KEY_END && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.setXToLast(gui.text);}}),//	
+	UP_SHIFT((c, i) -> i==Keyboard.KEY_UP && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveY(gui.text, -1);}}),//
+	DOWN_SHIFT((c, i) -> i==Keyboard.KEY_DOWN && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveY(gui.text, -1);}}),//
+	LEFT_SHIFT((c, i) -> i==Keyboard.KEY_LEFT && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveX(gui.text, -1);}}),//
+	RIGHT_SHIFT((c, i) -> i==Keyboard.KEY_RIGHT && GuiScreen.isShiftKeyDown(), (gui, string, chr, key) -> {if(gui.checkAndCreateSelection()){gui.selectPosition.moveX(gui.text, 1);}}),//
 	
 	//format changes
 	BOLD((c, i) -> i == Keyboard.KEY_N && GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown(), (gui, string, chr, key) -> gui.toggleSpecialFormatting(TextFormatting.BOLD)),//

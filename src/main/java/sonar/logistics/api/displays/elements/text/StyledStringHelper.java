@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fml.client.config.GuiUtils;
+import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.CustomColour;
+import sonar.core.utils.Pair;
 
 public class StyledStringHelper {
 
@@ -89,6 +94,31 @@ public class StyledStringHelper {
 		if (build.length() != 0)
 			lines.add(new StyledString(build.toString(), style.copy()));
 		return lines;
+	}
+
+	public static Pair<IStyledString, Integer> indexStyledLine(StyledStringLine c, int index) {
+		if (!c.getStrings().isEmpty()) {
+			int start = 0, end = index;
+			int index_count = 0;
+			for (IStyledString ss : c.getStrings()) {
+				if(index==index_count){
+					return new Pair(ss, index_count);
+				}
+				int subEnd = Math.min(index_count + ss.getStringLength(), end) - index_count;
+				if (subEnd > 0) {
+					if (ss instanceof StyledInfo) {
+						index_count += 1;
+					} else {
+						if(index >= index_count && index <= index_count + subEnd){
+							return new Pair(ss, index - index_count);
+						}
+						index_count += ss.getStringLength();
+					}
+				}
+
+			}
+		}
+		return null;
 	}
 
 }

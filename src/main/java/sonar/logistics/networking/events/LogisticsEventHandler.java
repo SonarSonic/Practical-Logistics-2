@@ -18,14 +18,20 @@ public class LogisticsEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onPartAdded(NetworkPartEvent.AddedPart event) {
-		if (event.tile instanceof ILogicListenable)
-			ServerInfoHandler.instance().addIdentityTile((ILogicListenable) event.tile);
+		if (!event.world.isRemote) {
+			if (event.tile instanceof ILogicListenable){
+				ServerInfoHandler.instance().addIdentityTile((ILogicListenable) event.tile);
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onPartRemoved(NetworkPartEvent.RemovedPart event) {
-		if (event.tile instanceof ILogicListenable)
-			ServerInfoHandler.instance().removeIdentityTile((ILogicListenable) event.tile);
+		if (!event.world.isRemote) {
+			if (event.tile instanceof ILogicListenable){
+				ServerInfoHandler.instance().removeIdentityTile((ILogicListenable) event.tile);
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

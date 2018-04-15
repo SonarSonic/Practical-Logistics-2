@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import sonar.logistics.api.displays.buttons.EmptyInfoElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.StyledTitleElement;
+import sonar.logistics.api.displays.elements.text.StyledWrappedTextElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 
 public enum CreateInfoType {
@@ -35,7 +37,7 @@ public enum CreateInfoType {
 	}
 
 	public static IDisplayElement createText(DisplayElementContainer c) {
-		StyledTextElement e = new StyledTextElement("CLICK TO EDIT TEXT");
+		StyledTitleElement e = new StyledTitleElement("CLICK TO EDIT TEXT");
 		c.getElements().addElement(e);
 		return e;
 	}

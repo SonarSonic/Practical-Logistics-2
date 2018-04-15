@@ -17,6 +17,11 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.PL2Properties;
 import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.elements.types.NetworkItemElement;
+import sonar.logistics.api.displays.elements.types.NetworkItemGridElement;
+import sonar.logistics.api.displays.elements.types.NetworkGridElement;
+import sonar.logistics.api.displays.elements.types.ProgressBarElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.ItemChangeableList;
@@ -51,8 +56,18 @@ public class ExampleConfigurations {
 			TileDisplayScreen screen = new TileDisplayScreen();
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
-			DisplayElementContainer c = screen.getGSI().addElementContainer(new double[] { 0, 0, 0 }, screen.getGSI().getDisplayScaling(), 1);
-			c.getElements().addElement(new ProgressInfo(info1, info2));
+			double[] displayScaling = new double[] { screen.getDisplayType().width, screen.getDisplayType().height, 1 };
+			screen.getGSI().currentScaling = displayScaling;
+			
+			DisplayElementContainer container = new DisplayElementContainer(screen.getGSI(), new double[] { 0, 0, 0 }, displayScaling, 1, 1);
+			ProgressInfo progressInfo = new ProgressInfo(info1, info2);
+			container.getElements().addElement(new ProgressBarElement(){
+				public void render() {
+					info = progressInfo;
+					render((ProgressInfo) info);
+				}
+			});
+			addDisplayContainer(new BlockPos(0, 0, 0), container);			
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(SonarProperties.ROTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.LIT_FURNACE.getDefaultState());
 		}
@@ -69,7 +84,17 @@ public class ExampleConfigurations {
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL), new TileDataCable());
 
 			TileDisplayScreen screen = new TileDisplayScreen();
-			screen.getGSI().storedInfo.get(0).cachedInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
+			double[] displayScaling = new double[] { screen.getDisplayType().width, screen.getDisplayType().height, 1 };
+			screen.getGSI().currentScaling = displayScaling;
+			DisplayElementContainer container = new DisplayElementContainer(screen.getGSI(), new double[] { 0, 0, 0 }, displayScaling, 1, 1);	
+			MonitoredItemStack itemInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
+			container.getElements().addElement(new NetworkItemElement(){
+				public void render() {
+					info = itemInfo;
+					render((MonitoredItemStack) info);
+				}
+			});
+			addDisplayContainer(new BlockPos(0, 0, 0), container);	
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH), new TileEntityChest());
 		}
@@ -103,16 +128,16 @@ public class ExampleConfigurations {
 
 		public MultipleInventory() {
 			super(16);
-			ConnectedDisplay fullDisplay = new ConnectedDisplay(-1);
-			fullDisplay.width.setObject(2);
-			fullDisplay.height.setObject(0);
 			TileLargeDisplayScreen screen1 = new TileLargeDisplayScreen();
-
-			screen1.overrideDisplay = fullDisplay;
-			screen1.shouldRender.setObject(true);
-			fullDisplay.topLeftScreen = screen1;
-			fullDisplay.getGSI().resetRenderProperties();
-
+			
+			double connected_width = 2;
+			double connected_height = 1;
+			double max = Math.min(connected_height + 1.3, connected_width + 1);
+			double[] screenScale = new double[] { screen1.getDisplayType().width + connected_width, screen1.getDisplayType().height + connected_height, max / 100 };
+			DisplayGSI fakeGSI = new DisplayGSI(screen1, null, 1);
+			fakeGSI.currentScaling = screenScale;
+			DisplayElementContainer container = new DisplayElementContainer(fakeGSI, new double[] { 0, 0, 0 }, screenScale, 1, 1);			
+			
 			ItemChangeableList list = new ItemChangeableList();
 			list.add(new StoredItemStack(new ItemStack(PL2Items.sapphire), 512));
 			list.add(new StoredItemStack(new ItemStack(PL2Items.stone_plate), 256));
@@ -133,7 +158,7 @@ public class ExampleConfigurations {
 			list.add(new StoredItemStack(new ItemStack(PL2Blocks.info_reader), 4));
 			list.add(new StoredItemStack(new ItemStack(PL2Items.operator), 1));
 
-			fullDisplay.getGSI().storedInfo.get(0).cachedInfo = new LogicInfoList() {
+			LogicInfoList itemList = new LogicInfoList() {
 				{
 					infoID.setObject(MonitoredItemStack.id);
 					listChanged = false;
@@ -143,7 +168,16 @@ public class ExampleConfigurations {
 					return list.createSaveableList();
 				}
 			};
+			container.getElements().addElement(new NetworkItemGridElement(){
+				public void render() {
+					info = itemList;
+					render((LogicInfoList) info);
+				}
+			});
+			
 
+			addDisplayContainer(new BlockPos(1, 0, 0), container);	
+			
 			addBlock(new BlockPos(1, 0, 0), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.DOWN), new TileNode());
 			addBlock(new BlockPos(1, 0, 0), PL2Blocks.large_display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(BlockLargeDisplay.TYPE, DisplayConnections.ONE_E), screen1);
 			addBlock(new BlockPos(1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL).withProperty(PL2Properties.WEST, CableRenderType.CABLE).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());

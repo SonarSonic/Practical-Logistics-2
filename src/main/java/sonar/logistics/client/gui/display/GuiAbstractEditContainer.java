@@ -2,7 +2,9 @@ package sonar.logistics.client.gui.display;
 
 import java.io.IOException;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
+import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
@@ -19,6 +21,8 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 	public DisplayElementContainer c;
 	public SonarScroller scaling_scroller;
 	public SonarScroller spacing_scroller;
+	public SonarTextField scaling_field;
+	public SonarTextField spacing_field;
 
 	public GuiAbstractEditContainer(DisplayElementContainer c, TileAbstractDisplay display) {
 		super(c.getGSI(), display);
@@ -48,43 +52,49 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 	}
 
 	public void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
-		//if (e instanceof IClickableElement) {
-		//	((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
-		//}
+		// if (e instanceof IClickableElement) {
+		// ((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
+		// }
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		scaling_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151, 16, 80);
-		scaling_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
-
-		spacing_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151 + 20, 16, 80);
-		spacing_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
-		setScalingScroller((float) c.percentageScale);
+		this.buttonList.clear();
+		this.fieldList.clear();
+		/* scaling_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151, 16, 80); scaling_scroller.setOrientation(ScrollerOrientation.HORIZONTAL); setScalingScroller((float) c.percentageScale); spacing_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151 + 20, 16, 80); spacing_scroller.setOrientation(ScrollerOrientation.HORIZONTAL); scaling_field = new SonarTextField(0, fontRenderer, 20, 153, 40, 11); scaling_field.setDigitsOnly(true); scaling_field.setMaxStringLength(3); scaling_field.setText(String.valueOf((int) (scaling_scroller.currentScroll * 100))); fieldList.add(scaling_field); spacing_field = new SonarTextField(1, fontRenderer, 20, 153 + 20, 40, 11); spacing_field.setDigitsOnly(true); spacing_field.setMaxStringLength(3); spacing_field.setText(String.valueOf((int) (spacing_scroller.currentScroll * 100))); fieldList.add(spacing_field); */
 		// setSpacingScroller(text.spacing);
 	}
 
+	@Override
 	public void drawScreen(int x, int y, float var) {
 		super.drawScreen(x, y, var);
-		scaling_scroller.drawScreen(x, y, true);
-		spacing_scroller.drawScreen(x, y, true);
-		setScalingScroller(scaling_scroller.currentScroll);
-		setSpacingScroller(spacing_scroller.currentScroll);
+		if (scaling_scroller != null) {
+			scaling_scroller.drawScreen(x, y, true);
+			setScalingScroller(scaling_scroller.currentScroll);
+		}
+
+		if (spacing_scroller != null) {
+			spacing_scroller.drawScreen(x, y, true);
+			setSpacingScroller(spacing_scroller.currentScroll);
+		}
 	}
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.text("TEXT SCALING", 10, 154, -1);
-		FontHelper.text("TEXT SPACING", 10, 154 + 20, -1);
+		// FontHelper.text("TEXT SCALING", 10, 154, -1);
+		// FontHelper.text("TEXT SPACING", 10, 154 + 20, -1);
 	}
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
 		super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
-		renderScroller(scaling_scroller);
-		renderScroller(spacing_scroller);
+		GlStateManager.disableLighting();
+		if (scaling_scroller != null)
+			renderScroller(scaling_scroller);
+		if (spacing_scroller != null)
+			renderScroller(spacing_scroller);
 	}
 
 	public void setScalingScroller(float scaling) {
@@ -95,11 +105,39 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 			c.percentageScale = scaling;
 			scaling_scroller.currentScroll = scaling;
 			setContainerScaling();
+			if (scaling_field != null) {
+				scaling_field.setText(String.valueOf((int) (scaling_scroller.currentScroll * 100)));
+			}
 		}
 	}
 
 	public void setSpacingScroller(float scaling) {}
-	
+
+	@Override
+	public void onTextFieldChanged(SonarTextField field) {
+		super.onTextFieldChanged(field);
+		if (scaling_field != null && field == scaling_field) {
+			int value = field.getIntegerFromText();
+			if (value > 100) {
+				value = 100;
+			}
+			setScalingScroller(value / 100F);
+			scaling_field.setText(String.valueOf(value));
+		} else if (spacing_field != null && field == spacing_field) {
+			int value = field.getIntegerFromText();
+			if (value > 100) {
+				value = 100;
+			}
+			setSpacingScroller(value / 100F);
+			spacing_field.setText(String.valueOf(value));
+		}
+	}
+
+	@Override
+	public void onTextFieldFocused(SonarTextField field) {
+		super.onTextFieldFocused(field);
+	}
+
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
 		if (isCloseKey(i)) {

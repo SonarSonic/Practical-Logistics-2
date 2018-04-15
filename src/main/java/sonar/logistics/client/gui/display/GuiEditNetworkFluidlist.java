@@ -18,12 +18,12 @@ import sonar.logistics.client.gui.GuiColourSelection;
 import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
-public class GuiEditNetworkItemlist extends GuiAbstractEditElements {
+public class GuiEditNetworkFluidlist extends GuiAbstractEditElements {
 
 	public NetworkGridElement itemList;
 	public int currentColour = -1;
 
-	public GuiEditNetworkItemlist(NetworkGridElement itemList, TileAbstractDisplay display) {
+	public GuiEditNetworkFluidlist(NetworkGridElement itemList, TileAbstractDisplay display) {
 		super(itemList, itemList.getHolder().getContainer(), display);
 		this.itemList = itemList;
 	}
@@ -71,7 +71,7 @@ public class GuiEditNetworkItemlist extends GuiAbstractEditElements {
 				return false;
 			}
 		});
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 198 + 32, guiTop + 150 + 40, 11 * 16, 112, "Font Colour", "Change the colour of the item text"));
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 198 + 32, guiTop + 150 + 40, 11 * 16, 112, "Font Colour", "Change the colour of the fluid text"));
 		setSpacingScroller(Math.min(1, (float) (itemList.element_size / Math.min(c.getActualScaling()[0], c.getActualScaling()[1]))));
 	}
 

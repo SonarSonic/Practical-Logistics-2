@@ -17,6 +17,8 @@ import sonar.core.network.SonarClient;
 import sonar.core.translate.ILocalisationHandler;
 import sonar.core.translate.Localisation;
 import sonar.logistics.api.IInfoManager;
+import sonar.logistics.api.displays.elements.text.StyledStringHelper;
+import sonar.logistics.api.displays.elements.text.StyledStringRenderer;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.client.ClockRenderer;
 import sonar.logistics.client.DisplayRenderer;
@@ -83,6 +85,7 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 		SonarClient.translator.add(this);
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+			manager.registerReloadListener(StyledStringRenderer.instance());
 		}
 	}
 

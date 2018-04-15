@@ -14,16 +14,25 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.SonarTextField;
+import sonar.core.client.gui.widgets.ScrollerOrientation;
+import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.actions.ClickHyperlink;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
+import sonar.logistics.api.displays.elements.text.StyledStringEditor;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.TextSelection;
 import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.client.LogisticsButton;
+import sonar.logistics.client.gui.GuiColourSelection;
 import sonar.logistics.client.gui.GuiHyperlinkAdd;
 import sonar.logistics.client.gui.GuiInfoReferenceSource;
+import sonar.logistics.client.gui.GuiLogistics;
+import sonar.logistics.client.gui.display.CustomColourButton;
 import sonar.logistics.client.gui.display.SpecialFormatButton;
 import sonar.logistics.client.gui.display.TextColourButton;
 import sonar.logistics.client.gui.generic.info.HyperlinkRequest;
@@ -34,7 +43,7 @@ import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
 import sonar.logistics.client.gui.textedit.hotkeys.HotKeyFunctions;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
-public class GuiEditStyledStrings extends GuiStyledStringFunctions implements ILineCounter, IInfoReferenceRequirementGui, IHyperlinkRequirementGui {
+public abstract class GuiEditStyledStrings extends GuiStyledStringFunctions implements IInfoReferenceRequirementGui, IHyperlinkRequirementGui {
 	public long lastCursorClick = -1;
 	public boolean isDragging = false;
 
@@ -61,15 +70,40 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 
 		for (int i = 0; i < 16; i++) {
 			TextFormatting format = TextFormatting.values()[i];
-			this.buttonList.add(new TextColourButton(this, 16 + i, guiLeft + 2 + i * 16, guiTop + 210, format) {
+			this.buttonList.add(new TextColourButton(this, 16 + i, guiLeft + 2 + i * 14, guiTop + 210, format) {
 				public boolean isSelected() {
-					return currentColour == colourRGB;
+					return GuiLogistics.getCurrentColour() == colourRGB;
 				}
 			});
 		}
+		this.buttonList.add(new CustomColourButton(this, 15, guiLeft + 8 + 16 * 14, guiTop + 210, "Configure Custom Colour") {
+			public boolean isSelected() {
+				return false;
+			}
+		});
+		
+		scaling_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151, 16, 80);
+		scaling_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
+		setScalingScroller((float) c.percentageScale);
+
+		spacing_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151 + 20, 16, 80);
+		spacing_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
+
+		scaling_field = new SonarTextField(0, fontRenderer, 20, 153, 40, 11);
+		scaling_field.setDigitsOnly(true);
+		scaling_field.setMaxStringLength(3);
+		scaling_field.setText(String.valueOf((int) (scaling_scroller.currentScroll * 100)));
+		fieldList.add(scaling_field);
+
+		spacing_field = new SonarTextField(1, fontRenderer, 20, 153 + 20, 40, 11);
+		spacing_field.setDigitsOnly(true);
+		spacing_field.setMaxStringLength(3);
+		spacing_field.setText(String.valueOf((int) (spacing_scroller.currentScroll * 100)));
+		fieldList.add(spacing_field);
+		
 		this.setSpacingScroller(text.spacing / 50);
-		this.cursorPosition.setYToLast(this);
-		this.cursorPosition.setXToLast(this);
+		this.cursorPosition.setYToLast(text);
+		this.cursorPosition.setXToLast(text);
 	}
 
 	@Override
@@ -77,9 +111,15 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 		super.actionPerformed(button);
 		if (button instanceof TextColourButton) {
 			changeSelectedColour(((TextColourButton) button).colour);
+			return;
+		}
+		if (button instanceof CustomColourButton) {
+			FMLCommonHandler.instance().showGuiScreen(GuiSonar.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
+			return;
 		}
 		if (button instanceof SpecialFormatButton) {
 			toggleSpecialFormatting(((SpecialFormatButton) button).specialFormat);
+			return;
 		}
 		if (button instanceof LogisticsButton) {
 			List<TextSelection> select = getAllSelections();
@@ -105,7 +145,7 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 				});
 				break;
 			case 8:
-				setTextColourOnSelected(currentColour);
+				setTextColourOnSelected(GuiLogistics.getCurrentColour());
 				break;
 			case 9:
 				if (cursorPosition.validPosition()) {
@@ -138,7 +178,7 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 		}
 		List newStrings = new ArrayList<>();
 		selected.forEach(ref -> newStrings.add(new StyledInfo(ref.uuid, ref.refType, createStylingFromEnabled())));
-		addStyledStrings(newStrings);
+		StyledStringEditor.addStyledStrings(text, cursorPosition, newStrings);
 	}
 
 	@Override
@@ -196,7 +236,7 @@ public class GuiEditStyledStrings extends GuiStyledStringFunctions implements IL
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		StyledStringLine ss = cursorPosition.validPosition() ? cursorPosition.getTypingLine(this) : null;
+		StyledStringLine ss = cursorPosition.validPosition() ? cursorPosition.getTypingLine(text) : null;
 		boolean triggered = HotKeyFunctions.checkFunction(this, ss, c, i);
 		GuiActions.UPDATE_TEXT_SCALING.trigger(this);
 		if (triggered) {

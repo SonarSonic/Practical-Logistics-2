@@ -100,7 +100,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public SyncTagType.INT container_identity = (INT) new SyncTagType.INT(0).setDefault(-1);
 	public SyncTagType.BOOLEAN edit_mode = (BOOLEAN) new SyncTagType.BOOLEAN(2).setDefault(true);
 
-	private double[] currentScaling;
+	public double[] currentScaling;
 
 	/// grid selection mode
 	public CreateInfoType createInfo;
@@ -124,7 +124,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		this.display = display;
 		this.world = world;
 		container_identity.setObject(id);
-		if (world.isRemote)
+		if (world != null && world.isRemote)
 			EditContainer.addEditContainer(this);
 	}
 
@@ -608,7 +608,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void sendInfoContainerPacket() {
-		if (display.getCoords() != null && !world.isRemote) {
+		if (world != null && display != null && !world.isRemote) {
 			if (!isValid()) {
 				return;
 			}

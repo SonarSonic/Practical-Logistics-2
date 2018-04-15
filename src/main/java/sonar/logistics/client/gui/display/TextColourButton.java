@@ -37,7 +37,6 @@ public abstract class TextColourButton extends GuiButton {
 
 	@Override
 	public void drawButton(Minecraft mc, int x, int y, float partialTicks) {
-		// super.drawButton(mc, x, y, partialTicks);
 		if (this.visible) {
 			this.hovered = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

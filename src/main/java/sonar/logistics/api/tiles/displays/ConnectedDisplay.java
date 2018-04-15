@@ -57,7 +57,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 		syncParts.addParts(face, layout, width, height, canBeRendered, topLeftCoords, isLocked);
 	}
 
-	private ConnectedDisplay() {}
+	ConnectedDisplay() {}
 
 	public static ConnectedDisplay loadDisplay(World world, int registryID) {
 		NBTTagCompound tag = world.isRemote ? null : ConnectedDisplayData.unloadedDisplays.get(registryID);

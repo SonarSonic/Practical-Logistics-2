@@ -12,6 +12,7 @@ import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
+import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.references.ReferenceType;
 import sonar.logistics.api.register.LogicPath;
 
@@ -45,7 +46,7 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 	}
 
 	public static void doCreateDefaultElements(IInfo info, List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
-		StyledTextElement element = new StyledTextElement();
+		StyledTitleElement element = new StyledTitleElement();
 		StyledStringLine line1 = new StyledStringLine(element), line2 = new StyledStringLine(element);
 		line1.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.IDENTIFIER)));
 		line2.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.PREFIX), new StyledInfo(uuid, ReferenceType.RAW_INFO), new StyledInfo(uuid, ReferenceType.SUFFIX)));

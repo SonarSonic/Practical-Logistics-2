@@ -1,5 +1,8 @@
 package sonar.logistics.client.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
@@ -12,11 +15,30 @@ import sonar.logistics.client.LogisticsColours;
 
 public class GuiLogistics extends GuiSonarTile {
 
+	private static int currentColour = -1;
+	private static List<Integer> lastColours = new ArrayList<>();
 	public static final ResourceLocation playerInv = new ResourceLocation(PL2Constants.MODID + ":textures/gui/player_inventory.png");
 	public SonarScroller scroller;
 
 	public GuiLogistics(Container container, IWorldPosition entity) {
 		super(container, entity);
+	}
+
+	public static int getCurrentColour() {
+		return currentColour;
+	}
+	
+	public static void setCurrentColour(int colour){
+		currentColour = colour;
+	}
+	
+	public static void setCurrentColourAndSaveLast(int colour){
+		lastColours.add(0, currentColour);
+		currentColour = colour;
+	}
+
+	public static List<Integer> getLastColours() {
+		return lastColours;
 	}
 
 	@Override
@@ -35,16 +57,19 @@ public class GuiLogistics extends GuiSonarTile {
 
 	public void renderScroller(SonarScroller scroller) {
 		if (scroller != null && scroller.renderScroller) {
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			if (scroller.orientation.isVertical()) {
 				int scrollYPos = scroller.top + (int) ((float) (scroller.length - 17) * scroller.getCurrentScroll());
 				drawTransparentRect(scroller.left, scroller.top, scroller.left + 8, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
+				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
 				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
 				drawTransparentRect(scroller.left, scrollYPos, scroller.left + 8, scrollYPos + 15, LogisticsColours.layers[2].getRGB());
 			} else {
 				int scrollXPos = scroller.left + (int) ((float) (scroller.width - 15) * scroller.getCurrentScroll());
 				drawTransparentRect(scroller.left, scroller.top, scroller.left + scroller.width, scroller.top + scroller.length - 2, LogisticsColours.layers[1].getRGB());
 
-				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15, scroller.top + scroller.length -2, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15, scroller.top + scroller.length - 2, LogisticsColours.layers[2].getRGB());
+				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15, scroller.top + scroller.length - 2, LogisticsColours.layers[2].getRGB());
 				drawTransparentRect(scrollXPos, scroller.top, scrollXPos + 15, scroller.top + scroller.length - 2, LogisticsColours.layers[2].getRGB());
 			}
 		}

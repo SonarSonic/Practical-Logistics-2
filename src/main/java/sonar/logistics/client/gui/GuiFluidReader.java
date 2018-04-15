@@ -216,7 +216,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(fluidStack.fluid.getFluid().getStill().toString());
 			Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			drawTexturedModalRect(xPos + (x * eWidth), yPos + (y * eHeight), sprite, eWidth-2, eHeight-2);
+			drawTexturedModalRect((x * eWidth), (y * eHeight), sprite, eWidth-2, eHeight-2);
 			GL11.glPopMatrix();
 		}
 	}

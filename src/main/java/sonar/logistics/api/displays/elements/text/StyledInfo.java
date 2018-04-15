@@ -24,6 +24,7 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	public InfoUUID uuid;
 	public ReferenceType refType;
 	public SonarStyling style;
+	private static final char REPRESENTIVE = '^';
 	
 	private String formattingString;
 	private StyledStringLine line;
@@ -72,7 +73,7 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	}
 
 	public String getUnformattedString() {
-		return "£";
+		return String.valueOf(REPRESENTIVE);
 	}
 
 	public String getTextFormattingStyle() {
@@ -148,7 +149,7 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 
 	@Override
 	public Tuple<Character, Integer> getCharClicked(int yPos, Holder<Double> subClickX, Holder<Double> subClickY) {
-		return new Tuple('£', 0);
+		return new Tuple(REPRESENTIVE, 0);
 	}
 
 	@Override

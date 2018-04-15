@@ -56,6 +56,17 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		resize(translate, scale, pScale);
 		containerIdentity = identity;
 	}
+	
+	/**for use for guide example configurations*/
+	public DisplayElementContainer(double[] translate, double[] scale, double pScale, int identity, double[] display_scaling){
+		createdTranslation = DisplayElementHelper.percentageFromScale(translate, display_scaling);
+		createdScaling = DisplayElementHelper.percentageFromScale(scale, display_scaling);
+		percentageScale = pScale;
+		translation = null;
+		maxElementScaling = null;
+		maxElementScaling = null;
+		containerIdentity = identity;
+	}
 
 	public void resize(double[] translate, double[] scale, double pScale) {
 		createdTranslation = DisplayElementHelper.percentageFromScale(translate, gsi.getDisplayScaling());

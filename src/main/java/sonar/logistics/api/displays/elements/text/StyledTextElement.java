@@ -35,15 +35,17 @@ import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.ISpecialAlignment;
+import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
+import sonar.logistics.api.displays.elements.text.StyledStringRenderer.StyledStringRenderHandler;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
+import sonar.logistics.client.gui.textedit.GuiEditWrappedStyledString;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
-@DisplayElementType(id = StyledTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine>, ISpecialAlignment {
+public abstract class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine> {
 
 	private Map<Integer, IDisplayAction> actions = Maps.newHashMap();
 	private List<StyledStringLine> textLines = new ArrayList<>();
@@ -51,6 +53,8 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 	public int spacing = 0;
 	public int action_id_count = 0;
 	public boolean updateTextScaling = true, updateTextContents = true;
+	public double textScale = 1;
+	public StyledTextRenderStyle render_style = StyledTextRenderStyle.WRAPPED;
 
 	public StyledTextElement() {}
 
@@ -70,9 +74,6 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 				// this.getGSI().removeInfoReferences(uuids);
 			}
 			this.uuids = null;
-			this.cachedWidth = -1;
-			this.cachedHeight = -1;
-			/// getGSI().addInfoReferences(getInfoReferences());
 			unscaledWidthHeight = null;
 			maxScaling = null;
 			actualScaling = null;
@@ -96,35 +97,6 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 
 	public @Nullable IDisplayAction getAction(int action_id) {
 		return actions.get(action_id);
-	}
-
-	@Override
-	public void render() {
-		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
-		double max_width = getMaxScaling()[WIDTH];
-
-		GlStateManager.disableLighting();
-		for (StyledStringLine s : this) {
-			preRender(s);
-			GlStateManager.pushMatrix();
-			double element = s.getStringWidth() * scaling[2];
-			if (s.getAlign() == WidthAlignment.CENTERED)
-				translate((max_width / 2) - (element / 2), 0, 0);
-			if (s.getAlign() == WidthAlignment.RIGHT)
-				translate(max_width - element, 0, 0);
-			GlStateManager.scale(scaling[2], scaling[2], 1);
-			s.render();
-			GlStateManager.scale(1 / scaling[2], 1 / scaling[2], 1);
-			GlStateManager.popMatrix();
-			GL11.glTranslated(0, (s.getStringHeight() + spacing) * scaling[2], 0);
-			postRender(s);
-		}
-		GlStateManager.disableLighting();
-	}
-
-	@Override
-	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return GuiSonar.withOrigin(new GuiEditStyledStrings(this, obj), origin);
 	}
 
 	public List<StyledStringLine> getLines() {
@@ -205,133 +177,13 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
-		Tuple<IStyledString, Integer> string = getStringClicked(subClickX, subClickY);
-		if (string.getFirst() != null) {
-			IDisplayAction action = getAction(string.getFirst().getStyle().action_id);
-			if (action != null) {
-				return action.doAction(click, player, subClickX, subClickY);
-			}
-		}
-
-		int[] index = getIndexClicked(new Holder(subClickX), new Holder(subClickY));
-		if (index != null) {
-			player.sendMessage(new TextComponentTranslation("Index: " + "x: " + index[0] + " y: " + index[1]));
-		} else {
-			player.sendMessage(new TextComponentTranslation("Index: " + "null"));
-		}
 		return -1;
-	}
-
-	@Nullable
-	public int[] getIndexClicked(double subClickX, double subClickY) {
-		return getIndexClicked(new Holder(subClickX), new Holder(subClickY));
 	}
 
 	public static final int INVALID = -1, AFTER = -2, BEFORE = -3;
 
 	public static final boolean isValidReturn(int i_return) {
 		return i_return != INVALID && i_return != AFTER && i_return != BEFORE;
-	}
-
-	@Nullable
-	private int[] getIndexClicked(Holder<Double> subClickX, Holder<Double> subClickY) {
-		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
-		Tuple<StyledStringLine, Integer> line = getLineClicked(subClickX.value, subClickY.value);
-		Tuple<IStyledString, Integer> string = getStringClicked(subClickX.value, subClickY.value);
-		if (string != null && isValidReturn(string.getSecond())) {
-			double rough_click = subClickX.value;
-			Tuple<Character, Integer> character = getCharClicked(subClickX.value, subClickY.value);
-			if (isValidReturn(character.getSecond())) {
-				int i = 0;
-				int index = 0;
-				for (IStyledString s : line.getFirst()) {
-					if (i == string.getSecond()) {
-						break;
-					}
-					index += s.getStringLength();
-					i++;
-				}
-				double actual_click = subClickX.value / scaling[SCALE];
-				int charWidth = RenderHelper.fontRenderer.getStringWidth(string.getFirst().getTextFormattingStyle() + character.getFirst());
-				// if (rough_click - charWidth / 2 > actual_click) {
-				// index++;
-				// }
-				return new int[] { Math.min(index + character.getSecond(), line.getFirst().getCachedUnformattedString().length()), line.getSecond() };
-			}
-		}
-		return null;
-	}
-
-	public Tuple<StyledStringLine, Integer> getLineClicked(double subClickX, double subClickY) {
-		return getLineClicked(new Holder(subClickX), new Holder(subClickY));
-	}
-
-	private Tuple<StyledStringLine, Integer> getLineClicked(Holder<Double> subClickX, Holder<Double> subClickY) {
-		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
-		double max_width = getMaxScaling()[WIDTH];
-		double y = 0;
-		int i = 0;
-
-		for (StyledStringLine c : this) {
-			double height = c.getStringHeight() * scaling[SCALE];
-			if (y <= subClickY.value && y + height >= subClickY.value) {
-				subClickY.value = y;
-				double element = c.getStringWidth() * scaling[2];
-
-				if (c.getAlign() == WidthAlignment.CENTERED) {
-					subClickX.value -= (max_width / 2) - (element / 2);
-				} else if (c.getAlign() == WidthAlignment.RIGHT)
-					subClickX.value -= max_width - element;
-
-				return new Tuple(c, i);
-			}
-			y += height + (spacing * scaling[SCALE]);
-			i++;
-		}
-		return new Tuple(null, -1);
-	}
-
-	public Tuple<IStyledString, Integer> getStringClicked(double subClickX, double subClickY) {
-		return getStringClicked(new Holder(subClickX), new Holder(subClickY));
-	}
-
-	private Tuple<IStyledString, Integer> getStringClicked(Holder<Double> subClickX, Holder<Double> subClickY) {
-		Tuple<StyledStringLine, Integer> line = getLineClicked(subClickX, subClickY);
-		if (isValidReturn(line.getSecond())) {
-			return getStringClicked(line, subClickX, subClickY);
-		}
-		return new Tuple(null, line.getSecond());
-	}
-
-	private Tuple<IStyledString, Integer> getStringClicked(Tuple<StyledStringLine, Integer> line, Holder<Double> subClickX, Holder<Double> subClickY) {
-		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
-		double x = 0;
-		int i = 0;
-		for (IStyledString string : line.getFirst()) {
-			double width = string.getStringWidth() * scaling[SCALE];
-			if (x <= subClickX.value && x + width >= subClickX.value) {
-				subClickX.value -= x;
-				return new Tuple(string, i);
-			} else if (i == 0 && subClickX.value < x) {
-				return new Tuple(null, BEFORE);
-			}
-
-			x += width;
-			i++;
-		}
-		return new Tuple(null, AFTER);
-	}
-
-	public Tuple<Character, Integer> getCharClicked(double subClickX, double subClickY) {
-		return getCharClicked(new Holder(subClickX), new Holder(subClickY));
-	}
-
-	private Tuple<Character, Integer> getCharClicked(Holder<Double> subClickX, Holder<Double> subClickY) {
-		Tuple<IStyledString, Integer> line = getStringClicked(subClickX, subClickY);
-		if (isValidReturn(line.getSecond())) {
-			return line.getFirst().getCharClicked(line.getSecond(), subClickX, subClickY);
-		}
-		return new Tuple(null, -1);
 	}
 
 	@Override
@@ -395,38 +247,8 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		return nbt;
 	}
 
-	private int cachedWidth = -1;
-
-	public int getWidth() {
-		if (cachedWidth == -1) {
-			int width = 0;
-			for (StyledStringLine ss : this) {
-				int w = ss.getStringWidth();
-				if (w > width) {
-					width = w;
-				}
-			}
-			cachedWidth = width;
-		}
-		return cachedWidth;
-	}
-
-	private int cachedHeight = -1;
-
-	public int getHeight() {
-		if (cachedHeight == -1) {
-			int height = 0;
-			for (StyledStringLine ss : this) {
-				int h = ss.getStringHeight() + spacing;
-				height += h;
-			}
-			cachedHeight = height;
-		}
-		return cachedHeight;
-	}
-
 	public int[] createUnscaledWidthHeight() {
-		return new int[] { getWidth(), getHeight() };
+		return new int[] { 1, 1 };
 	}
 
 	@Override
@@ -434,32 +256,47 @@ public class StyledTextElement extends AbstractDisplayElement implements IClicka
 		return ElementFillType.FILL_SCALED_CONTAINER;
 	}
 
-	@Override
-	public double[] getAlignmentTranslation() {
-		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
-		double[] align_array = DisplayElementHelper.alignArray(this.getHolder().getContainer().getContainerMaxScaling(), this.getActualScaling(), this.getWidthAlignment(), this.getHeightAlignment());
-
-		double maxHeight = getMaxScaling()[HEIGHT];
-		double height = this.getHeight() * scaling[2];
-		switch (this.height_align) {
-		case CENTERED:
-			align_array[1] += (maxHeight / 2) - (height / 2);
-			break;
-		case TOP:
-			break;
-		case BOTTOM:
-			align_array[1] += maxHeight - height;
-			break;
-		}
-
-		return align_array;
+	public int getLineCount() {
+		return getLines().size();
 	}
 
-	public static final String REGISTRY_NAME = "styled_text";
+	public int getLineIndex(StyledStringLine toFind) {
+		int i = 0;
+		for (StyledStringLine line : this) {
+			if(line==toFind){
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
 
-	@Override
-	public String getRegisteredName() {
-		return REGISTRY_NAME;
+	public int getLineLength(int line) {
+		if (line >= getLineCount() || line < 0) {
+			return 0;
+		}
+		return getUnformattedLine(line).length();
+	}
+
+	public int getLineWidth(int line) {
+		return RenderHelper.fontRenderer.getStringWidth(getFormattedLine(line));
+	}
+
+	public String getUnformattedLine(int line) {
+		StyledStringLine ss = getLine(line);
+		return ss == null ? "" : ss.getCachedUnformattedString();
+	}
+
+	public String getFormattedLine(int line) {
+		StyledStringLine ss = getLine(line);
+		return ss == null ? "" : ss.getCachedFormattedString();
+	}
+
+	public StyledStringLine getLine(int line) {
+		if (line == -1 || line >= getLineCount()) {
+			return null;
+		}
+		return getLines().get(line);
 	}
 
 }
