@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import sonar.logistics.api.lists.IMonitoredValue;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 
 public abstract class AbstractChangeableList<T> {
 
@@ -70,6 +71,16 @@ public abstract class AbstractChangeableList<T> {
 	public List<T> createSaveableList() {
 		List<T> saveable = new ArrayList<>();
 		values.forEach(value -> saveable.add(value.getSaveableInfo()));
+		return saveable;
+	}
+
+	public List<T> createSaveableList(@Nullable ILogicListSorter sorter) {
+		if(sorter!=null && !values.isEmpty()){
+			if(sorter.canSort(values.get(0))){
+				sorter.sortSaveableList(this);
+			}
+		}
+		List<T> saveable = createSaveableList();
 		return saveable;
 	}
 

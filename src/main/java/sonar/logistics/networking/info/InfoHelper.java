@@ -105,31 +105,7 @@ public class InfoHelper {
 		return stacks;
 	}
 
-	public static AbstractChangeableList<IProvidableInfo> sortInfoList(AbstractChangeableList<IProvidableInfo> updateInfo) {
-		Collections.sort(updateInfo.getList(), new Comparator<IMonitoredValue<IProvidableInfo>>() {
-			public int compare(IMonitoredValue<IProvidableInfo> str1, IMonitoredValue<IProvidableInfo> str2) {
-				return Integer.compare(str1.getSaveableInfo().getRegistryType().sortOrder, str2.getSaveableInfo().getRegistryType().sortOrder);
-			}
-		});
-		List<IProvidableInfo> info = new ArrayList<>();
-		IProvidableInfo lastInfo = null;
-		for (IMonitoredValue<IProvidableInfo> value : updateInfo.getList()) {
-			IProvidableInfo blockInfo = value.getSaveableInfo();
-			if (blockInfo != null && !blockInfo.isHeader()) {
-				if (lastInfo == null || (!lastInfo.isHeader() && !lastInfo.getRegistryType().equals(blockInfo.getRegistryType()))) {
-					info.add(LogicInfo.buildCategoryInfo(blockInfo.getRegistryType()));
-				}
-				info.add(value.getSaveableInfo());
-				lastInfo = blockInfo;
-			}
-		}
-		updateInfo.getList().clear();
-		info.forEach(value -> updateInfo.add(value));
-
-		return updateInfo;
-	}
-
-	public static boolean hasInfoChanged(IInfo info, IInfo newInfo) {
+		public static boolean hasInfoChanged(IInfo info, IInfo newInfo) {
 		if (info == null && newInfo == null) {
 			return false;
 		} else if (info == null && newInfo != null || info != null && newInfo == null) {

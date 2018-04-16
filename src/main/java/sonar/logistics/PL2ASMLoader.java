@@ -15,6 +15,7 @@ import sonar.logistics.api.asm.EntityInfoProvider;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.asm.LogicComparator;
 import sonar.logistics.api.asm.LogicInfoType;
+import sonar.logistics.api.asm.LogicListSorter;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.asm.StyledStringType;
 import sonar.logistics.api.asm.TileInfoProvider;
@@ -26,6 +27,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.comparators.ILogicComparator;
 
@@ -54,6 +56,11 @@ public class PL2ASMLoader {
 	public static LinkedHashMap<Integer, Class<? extends IDisplayAction>> displayActionIClasses = new LinkedHashMap<>();
 	public static LinkedHashMap<String, Class<? extends IDisplayAction>> displayActionSClasses = new LinkedHashMap<>();
 	
+	public static LinkedHashMap<Integer, String> changeableListSorterNames = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Integer> changeableListSorterIDs = new LinkedHashMap<>();
+	public static LinkedHashMap<Integer, Class<? extends ILogicListSorter>> changeableListSorterIClasses = new LinkedHashMap<>();
+	public static LinkedHashMap<String, Class<? extends ILogicListSorter>> changeableListSorterSClasses = new LinkedHashMap<>();
+	
 	public static LinkedHashMap<String, Class<? extends INodeFilter>> filterClasses = new LinkedHashMap<>();
 
 	private PL2ASMLoader() {}
@@ -64,6 +71,7 @@ public class PL2ASMLoader {
 		PL2ASMLoader.loadDisplayElementTypes(asmDataTable);
 		PL2ASMLoader.loadDisplayActionTypes(asmDataTable);
 		PL2ASMLoader.loadStyledStringTypes(asmDataTable);
+		PL2ASMLoader.loadLogicListSorters(asmDataTable);
 		PL2ASMLoader.loadComparatorTypes(asmDataTable);
 		PL2ASMLoader.loadNodeFilters(asmDataTable);
 		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
@@ -150,7 +158,20 @@ public class PL2ASMLoader {
 			displayActionSClasses.put(name, info.b);
 			displayActionIClasses.put(hashCode, info.b);
 		}
-		PL2.logger.info("Loaded: " + elementIDs.size() + " DisplayActions");
+		PL2.logger.info("Loaded: " + displayActionIDs.size() + " Display Actions");
+	}
+
+	public static void loadLogicListSorters(@Nonnull ASMDataTable asmDataTable) {
+		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicListSorter>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, LogicListSorter.class, ILogicListSorter.class, true);
+		for (Pair<ASMDataTable.ASMData, Class<? extends ILogicListSorter>> info : infoTypes) {
+			String name = (String) info.a.getAnnotationInfo().get("id");
+			int hashCode = name.hashCode();
+			changeableListSorterNames.put(hashCode, name);
+			changeableListSorterIDs.put(name, hashCode);
+			changeableListSorterSClasses.put(name, info.b);
+			changeableListSorterIClasses.put(hashCode, info.b);
+		}
+		PL2.logger.info("Loaded: " + changeableListSorterIDs.size() + " Logic List Sorter");
 	}
 
 	public static void loadNodeFilters(@Nonnull ASMDataTable asmDataTable) {
@@ -162,4 +183,6 @@ public class PL2ASMLoader {
 		PL2.logger.info("Loaded: " + filterClasses.size() + " Filters");
 	}
 
+	
+	
 }

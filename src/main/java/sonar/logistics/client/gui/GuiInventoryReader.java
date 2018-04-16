@@ -209,8 +209,8 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 			return;
 		}
 		ItemStack stack = storedStack.item;
-		GlStateManager.depthMask(false);
-		RenderHelper.renderItem(this, 0, 0, stack);
+		stack.setCount(1);
+		drawNormalItemStack(stack, 0, 0);
 		RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 0, 0, null, true);
 	}
 

@@ -137,34 +137,4 @@ public class FluidHelper {
 		}
 	}
 
-	public static AbstractChangeableList<MonitoredFluidStack> sortFluidList(AbstractChangeableList<MonitoredFluidStack> updateInfo, final SortingDirection dir, SortingType type) {
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredFluidStack>>() {
-			public int compare(IMonitoredValue<MonitoredFluidStack> str1, IMonitoredValue<MonitoredFluidStack> str2) {
-				StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
-				int res = String.CASE_INSENSITIVE_ORDER.compare(flu1.getFullStack().getLocalizedName(), flu2.getFullStack().getLocalizedName());
-				if (res == 0) {
-					res = flu1.getFullStack().getLocalizedName().compareTo(flu2.getFullStack().getLocalizedName());
-				}
-				return dir == SortingDirection.DOWN ? res : -res;
-			}
-		});
-
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredFluidStack>>() {
-			public int compare(IMonitoredValue<MonitoredFluidStack> str1, IMonitoredValue<MonitoredFluidStack> str2) {
-				StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
-				switch (type) {
-				case MODID:
-					return SonarHelper.compareStringsWithDirection(flu1.getFullStack().getFluid().getBlock().getRegistryName().getResourceDomain(), flu2.getFullStack().getFluid().getBlock().getRegistryName().getResourceDomain(), dir);
-				case NAME:
-					break;
-				case STORED:
-					return SonarHelper.compareWithDirection(flu1.stored, flu2.stored, dir);
-				case TEMPERATURE:
-					return SonarHelper.compareWithDirection(flu1.getFullStack().getFluid().getTemperature(), flu2.getFullStack().getFluid().getTemperature(), dir);
-				}
-				return 0;
-			}
-		});
-		return updateInfo;
-	}
 }

@@ -11,9 +11,11 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.readers.IListReader;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.networking.sorters.SortingHelper;
 
 public class PacketMonitoredList implements IMessage {
 
@@ -23,16 +25,18 @@ public class PacketMonitoredList implements IMessage {
 	public AbstractChangeableList list;
 	public NBTTagCompound listTag;
 	public SyncType type;
+	public ILogicListSorter sorter;
 
 	public PacketMonitoredList() {}
 
-	public PacketMonitoredList(int identity, InfoUUID id, int networkID, NBTTagCompound listTag, SyncType type) {
+	public PacketMonitoredList(int identity, InfoUUID id, int networkID, NBTTagCompound listTag, SyncType type, ILogicListSorter sorter) {
 		super();
 		this.identity = identity;
 		this.id = id;
 		this.networkID = networkID;
 		this.listTag = listTag;
 		this.type = type;
+		this.sorter = sorter;
 	}
 
 	@Override
@@ -58,10 +62,10 @@ public class PacketMonitoredList implements IMessage {
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
 			if (message.listTag != null) {
-				ILogicListenable viewable = ClientInfoHandler.instance().identityTiles.get(message.identity);
+				// ILogicListenable viewable = ClientInfoHandler.instance().identityTiles.get(message.identity);
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 					AbstractChangeableList list = InfoHelper.readMonitoredList(message.listTag, ClientInfoHandler.instance().getMonitoredList(message.id), message.type);
-					list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(list, message.id.channelID) : list;
+					// list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(list, message.id.channelID) : list;
 					ClientInfoHandler.instance().changeableLists.put(message.id, list);
 					ClientInfoHandler.instance().onMonitoredListChanged(message.id, list);
 				});

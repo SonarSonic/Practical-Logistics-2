@@ -9,6 +9,7 @@ import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -16,9 +17,12 @@ import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.networking.info.InfoNetworkHandler;
+import sonar.logistics.networking.sorters.InfoSorter;
 
 public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 
+	public InfoSorter info_sorter = new InfoSorter();
+	
 	@Override
 	public int getMaxInfo() {
 		return 4;
@@ -32,7 +36,7 @@ public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 
 	@Override
 	public AbstractChangeableList<IProvidableInfo> sortMonitoredList(AbstractChangeableList<IProvidableInfo> updateInfo, int channelID) {
-		return InfoHelper.sortInfoList(updateInfo);
+		return info_sorter.sortSaveableList(updateInfo);
 	}
 
 	@Override
@@ -59,6 +63,11 @@ public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 	@Override
 	public PL2Multiparts getMultipart() {
 		return PL2Multiparts.INFO_READER;
+	}
+
+	@Override
+	public ILogicListSorter getSorter() {
+		return info_sorter;
 	}
 
 }

@@ -20,7 +20,11 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 
 @DisplayElementType(id = NetworkFluidElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkFluidElement extends AbstractInfoElement<MonitoredFluidStack> {
-
+	
+	public NetworkFluidElement() {
+		super();
+	}
+	
 	public NetworkFluidElement(InfoUUID uuid) {
 		super(uuid);
 	}

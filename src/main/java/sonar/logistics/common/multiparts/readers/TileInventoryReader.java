@@ -31,8 +31,10 @@ import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;
+import sonar.logistics.api.tiles.readers.InventoryReader.SortingType;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiInventoryReader;
@@ -49,6 +51,7 @@ import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
 import sonar.logistics.networking.items.ItemNetworkHandler;
+import sonar.logistics.networking.sorters.InventorySorter;
 import sonar.logistics.packets.sync.SyncFilterList;
 
 public class TileInventoryReader extends TileAbstractListReader<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
@@ -62,6 +65,17 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 5).addSyncType(SyncType.SPECIAL);
 	public SyncEnum<InventoryReader.SortingType> sortingType = (SyncEnum) new SyncEnum(InventoryReader.SortingType.values(), 6).addSyncType(SyncType.SPECIAL);
 	public SyncFilterList filters = new SyncFilterList(9);
+	public InventorySorter inventory_sorter = new InventorySorter(){
+		
+		public SortingDirection getDirection(){
+			return sortingOrder.getObject();
+		}
+		
+		public SortingType getType(){
+			return sortingType.getObject();
+		}
+	};
+	public boolean sorting_changed = true;
 
 	{
 		syncList.addParts(inventory, setting, targetSlot, posSlot, sortingOrder, sortingType, filters);
@@ -94,7 +108,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 
 	@Override
 	public AbstractChangeableList<MonitoredItemStack> sortMonitoredList(AbstractChangeableList<MonitoredItemStack> updateInfo, int channelID) {
-		return ItemHelper.sortItemList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
+		return inventory_sorter.sortSaveableList(updateInfo);
 	}
 
 	public boolean canMonitorInfo(IMonitoredValue<MonitoredItemStack> info, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredItemStack>> channels, List<NodeConnection> usedChannels) {
@@ -110,7 +124,9 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 		switch (setting.getObject()) {
 		case INVENTORIES:
 		case FILTERED:
-			info = new LogicInfoList(getIdentity(), MonitoredItemStack.id, this.getNetworkID());
+			LogicInfoList list = new LogicInfoList(getIdentity(), MonitoredItemStack.id, this.getNetworkID());
+			list.listSorter = inventory_sorter;
+			info = list;
 			break;
 		case POS:
 			int pos = posSlot.getObject();
@@ -157,6 +173,11 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 			break;
 		}
 		ServerInfoHandler.instance().changeInfo(this, uuid, info);
+
+		if (sorting_changed) {
+			ServerInfoHandler.instance().markChanged(this, uuid);
+			sorting_changed = false;
+		}
 	}
 
 	//// IChannelledTile \\\\
@@ -174,6 +195,9 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
+		if (id == sortingOrder.id || id == sortingType.id) {
+			sorting_changed = true;
+		}
 		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
 			ItemNetworkChannels list = network.getNetworkChannels(ItemNetworkChannels.class);
@@ -227,6 +251,11 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
+	}
+
+	@Override
+	public ILogicListSorter getSorter() {
+		return inventory_sorter;
 	}
 
 }

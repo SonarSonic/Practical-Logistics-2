@@ -44,18 +44,6 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 		return false;
 	}
 	
-	/*
-	@Override
-	public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {
-		if (!setInfoRenderSize) {
-			renderSizeChanged(container, displayInfo, width, height, scale, infoPos);
-			setInfoRenderSize = true;
-		}
-	}
-
-	@Override
-	public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos) {}
-	*/
 	@Override
 	public void identifyChanges(T newInfo) {
 		List<ISyncPart> parts = syncList.getStandardSyncParts();

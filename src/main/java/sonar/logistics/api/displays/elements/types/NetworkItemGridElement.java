@@ -17,6 +17,7 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
@@ -27,7 +28,9 @@ import sonar.logistics.info.types.MonitoredItemStack;
 @DisplayElementType(id = NetworkItemGridElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStack> {
 
-	public NetworkItemGridElement() {}
+	public NetworkItemGridElement() {
+		super();
+	}
 
 	public NetworkItemGridElement(InfoUUID uuid) {
 		super(uuid);
@@ -39,8 +42,8 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 
 	public double getRenderHeight() {
 		return Math.min(element_size, Math.min(getActualScaling()[0], getActualScaling()[1]));
-	}	
-	
+	}
+
 	public void renderGridElement(MonitoredItemStack stack, int index) {
 		scale((width / 16) * grid_fill_percentage, (height / 16) * grid_fill_percentage, 0.001);
 		disableLighting();
@@ -49,6 +52,12 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 		depthMask(false);
 		RenderHelper.renderStoredItemStackOverlay(stack.getItemStack(), 0, 0, 0, text_colour, "" + stack.getStored(), false);
 		depthMask(true);
+	}
+
+	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
+		if (info != null && info instanceof LogicInfoList) {
+			((LogicInfoList)info).listChanged = true;
+		}
 	}
 
 	public void onGridElementClicked(DisplayScreenClick click, LogicInfoList list, @Nullable MonitoredItemStack stack) {

@@ -11,6 +11,7 @@ import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
@@ -34,6 +35,8 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	List<InfoUUID> getInfoReferences();
 
 	default void onInfoReferenceChanged(InfoUUID uuid, IInfo info) {}
+
+	default void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {}
 
 	default void render() {
 		FontHelper.text(getRepresentiveString(), 0, 0, getHolder().getContainer().getDefaultColour());

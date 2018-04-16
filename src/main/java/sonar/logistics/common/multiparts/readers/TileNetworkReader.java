@@ -3,6 +3,7 @@ package sonar.logistics.common.multiparts.readers;
 import java.util.List;
 import java.util.Map;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -14,6 +15,7 @@ import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
@@ -23,10 +25,13 @@ import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.networking.sorters.InfoSorter;
 import sonar.logistics.networking.subnetworks.NetworkWatcherHandler;
 
 public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> {
 
+	public InfoSorter info_sorter = new InfoSorter();
+	
 	@Override
 	public int getMaxInfo() {
 		return 4;
@@ -65,7 +70,7 @@ public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> 
 
 	@Override
 	public AbstractChangeableList<IProvidableInfo> sortMonitoredList(AbstractChangeableList<IProvidableInfo> updateInfo, int channelID) {
-		return InfoHelper.sortInfoList(updateInfo);
+		return info_sorter.sortSaveableList(updateInfo);
 	}
 
 	@Override
@@ -92,6 +97,11 @@ public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> 
 	@Override
 	public PL2Multiparts getMultipart() {
 		return PL2Multiparts.NETWORK_READER;
+	}
+
+	@Override
+	public ILogicListSorter getSorter() {
+		return info_sorter;
 	}
 
 }

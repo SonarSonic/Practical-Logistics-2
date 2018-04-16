@@ -38,7 +38,7 @@ import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.info.types.LogicInfoList;
 
-public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement {
+public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement {
 
 	public int pageCount = 0;
 	public int xSlots, ySlots, perPage = 0;
@@ -47,11 +47,11 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 	public int text_colour = 16777215;
 	public double grid_fill_percentage = 0.75;
 
-	public NetworkGridElement() {
+	public NetworkListElement() {
 		super();
 	}
 
-	public NetworkGridElement(InfoUUID uuid) {
+	public NetworkListElement(InfoUUID uuid) {
 		super(uuid);
 	}
 
@@ -59,10 +59,10 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 
 	public abstract double getRenderHeight();
 
-	public abstract void renderGridElement(L stack, int index);	
+	public abstract void renderGridElement(L stack, int index);
 
 	public abstract void onGridElementClicked(DisplayScreenClick click, LogicInfoList list, @Nullable L stack);
-	
+
 	double width, height, X_SPACING, Y_SPACING, centreX, centreY;
 	int start, stop;
 
@@ -81,7 +81,7 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 		perPage = xSlots * ySlots;
 		start = perPage * pageCount;
 		stop = Math.min(perPage + perPage * pageCount, cachedList.size());
-		
+
 		preListRender();
 		for (int i = start; i < stop; i++) {
 			pushMatrix();
@@ -109,19 +109,18 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 		popMatrix();
 	}
-	
 
 	public List<L> getCachedList(LogicInfoList info, InfoUUID id) {
 		if (cachedList == null || info.listChanged) {
 			info.listChanged = false;
 			AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
-			cachedList = list != null ? (ArrayList<L>) list.createSaveableList(info.listSorter) : new ArrayList<>();
+			cachedList = list != null ? (ArrayList<L>) list.createSaveableList() : new ArrayList<>();
 			if (cachedList.size() < perPage * pageCount - 1) {
 				pageCount = 0;
 			}
 		}
 		AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
-		cachedList = list != null ? (ArrayList<L>) list.createSaveableList(info.listSorter) : new ArrayList<>();
+		cachedList = list != null ? (ArrayList<L>) list.createSaveableList() : new ArrayList<>();
 		return cachedList;
 	}
 
@@ -163,7 +162,7 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			subClick.setDoubleClick(click.doubleClick);
 			subClick.gsi = click.gsi;
 			subClick.type = click.type;
-			subClick.clickPos = click.clickPos;			
+			subClick.clickPos = click.clickPos;
 			L stack = slot < cachedList.size() ? cachedList.get(slot) : null;
 			onGridElementClicked(subClick, list, stack);
 		}

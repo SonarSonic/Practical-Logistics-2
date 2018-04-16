@@ -51,6 +51,7 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.items.ItemHelper;
+import sonar.logistics.networking.sorters.SortingHelper;
 import sonar.logistics.packets.PacketWirelessStorage;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
@@ -175,7 +176,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			if (currentList == null) {
 				return new ArrayList<>();
 			}
-			ItemHelper.sortItemList(currentList, sortingOrder.getObject(), sortItems.getObject());
+			SortingHelper.sortItems(currentList, sortingOrder.getObject(), sortItems.getObject());
 			if (search == null || search.isEmpty() || search.equals(" ")) {
 				List<IInfo> infolist = Lists.newArrayList(currentList.createSaveableList());
 				return infolist;

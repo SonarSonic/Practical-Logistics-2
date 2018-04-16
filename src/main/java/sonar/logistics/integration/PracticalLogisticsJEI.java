@@ -36,7 +36,7 @@ public class PracticalLogisticsJEI extends BlankModPlugin {
 			registry.addRecipeCategories(cat);
 			registry.addRecipeHandlers(cat);
 			if (handler.getCrafterItemStack() != null)
-				registry.addRecipeCategoryCraftingItem(handler.getCrafterItemStack(), handler.getUUID());
+				registry.addRecipeCatalyst(handler.getCrafterItemStack(), handler.getUUID());
 
 			PL2.logger.info("Registering Recipe Handler: " + handler.getUUID());
 		}

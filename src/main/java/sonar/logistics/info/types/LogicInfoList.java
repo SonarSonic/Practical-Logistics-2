@@ -2,6 +2,10 @@ package sonar.logistics.info.types;
 
 import java.util.List;
 
+import net.minecraft.nbt.NBTTagCompound;
+import sonar.core.helpers.NBTHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
@@ -16,6 +20,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
+import sonar.logistics.networking.sorters.SortingHelper;
 
 @LogicInfoType(id = LogicInfoList.id, modid = PL2Constants.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList> {
@@ -24,6 +30,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(2).setDefault(-1);
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
 	public SyncTagType.STRING infoID = new SyncTagType.STRING(1);
+	public ILogicListSorter listSorter = null;
 	public boolean listChanged = true, wasRefreshed = false;
 	{
 		syncList.addParts(identity, infoID, networkID);
@@ -81,7 +88,22 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 	public String getClientType() {
 		return "list";
 	}
+	@Override
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		super.readData(nbt, type);
+		if (nbt.hasKey("sorter")) {
+			listSorter = SortingHelper.loadListSorter(nbt.getCompoundTag("sorter"));
+		}
+	}
 
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		super.writeData(nbt, type);
+		if (listSorter != null) {
+			nbt.setTag("sorter", SortingHelper.saveListSorter(new NBTTagCompound(), listSorter, SyncType.SAVE));
+		}
+		return nbt;
+	}
 	@Override
 	public void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
 		switch (this.infoID.getObject()) {

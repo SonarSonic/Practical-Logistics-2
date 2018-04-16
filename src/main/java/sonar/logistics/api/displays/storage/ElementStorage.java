@@ -62,9 +62,9 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				return e;
 			}
 		}
-		for(IElementStorageHolder holder : this.getSubHolders()){
+		for (IElementStorageHolder holder : this.getSubHolders()) {
 			IDisplayElement e = holder.getElements().getElementFromIdentity(identity);
-			if(e!=null){
+			if (e != null) {
 				return e;
 			}
 		}
@@ -125,14 +125,10 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		//Map<Integer, List<IDisplayElement>> newElements = new HashMap<>();// make sure you get old ones if there are any.
-		//clickables.clear();
-		////lookables.clear();
-		//holders.clear();
-		if(type.isType(SyncType.SAVE)){
+		if (type.isType(SyncType.SAVE)) {
 			elements.clear();
 		}
-		
+
 		NBTTagList tagList = nbt.getTagList(TAG_NAME, NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound elementsTag = tagList.getCompoundTagAt(i);
@@ -141,23 +137,21 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				Class<? extends IDisplayElement> currentClass = DisplayElementHelper.getElementClass(registryID);
 
 				NBTTagList subList = elementsTag.getTagList("list", NBT.TAG_COMPOUND);
-				//newElements.putIfAbsent(registryID, new ArrayList<>());
-				//List<IDisplayElement> elements = newElements.get(registryID);
 				for (int s = 0; s < subList.tagCount(); s++) {
 					NBTTagCompound eTag = subList.getCompoundTagAt(s);
 					int iden = eTag.getInteger("identity");
 					IDisplayElement ide = this.getElementFromIdentity(iden);
-					if(ide!=null){
+					if (ide != null) {
 						ide.readData(eTag, type);
-					}else{
+					} else {
 						IDisplayElement e = DisplayElementHelper.loadElement(eTag, holder);
-						addElement(e);						
+						if (e != null){
+							addElement(e);
+						}
 					}
 				}
 			}
 		}
-		//elements = newElements;
-		// find the elements in one list and not the other and mark them as removed?? - doesn't matter as client doesn't need to know
 	}
 
 	@Override

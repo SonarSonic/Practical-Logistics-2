@@ -24,6 +24,7 @@ import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
+import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.networking.events.NetworkPartEvent;
 
 public class ClientInfoHandler implements IInfoManager {
@@ -46,24 +47,24 @@ public class ClientInfoHandler implements IInfoManager {
 	public List<ClientWirelessEmitter> clientDataEmitters = new ArrayList<ClientWirelessEmitter>();
 	public List<ClientWirelessEmitter> clientRedstoneEmitters = new ArrayList<ClientWirelessEmitter>();
 
-	public static ClientInfoHandler instance(){
+	public static ClientInfoHandler instance() {
 		return (ClientInfoHandler) PL2.proxy.getClientManager();
-	}	
-	
+	}
+
 	@SubscribeEvent
-	public void onPartAdded(NetworkPartEvent.AddedPart event){
-		if(event.tile instanceof IDisplay && event.world.isRemote){
+	public void onPartAdded(NetworkPartEvent.AddedPart event) {
+		if (event.tile instanceof IDisplay && event.world.isRemote) {
 			addDisplay((IDisplay) event.tile);
 		}
 	}
 
 	@SubscribeEvent
-	public void onPartRemoved(NetworkPartEvent.RemovedPart event){
-		if(event.tile instanceof IDisplay && event.world.isRemote){
+	public void onPartRemoved(NetworkPartEvent.RemovedPart event) {
+		if (event.tile instanceof IDisplay && event.world.isRemote) {
 			removeDisplay((IDisplay) event.tile);
 		}
-	}	
-	
+	}
+
 	@Override
 	public void removeAll() {
 		connectedDisplays.clear();
@@ -138,6 +139,7 @@ public class ClientInfoHandler implements IInfoManager {
 	}
 
 	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
+		IInfo info = getInfoFromUUID(uuid);
 		for (DisplayGSI display : displays_gsi.values()) {
 			if (display.isDisplayingUUID(uuid)) {
 				display.onMonitoredListChanged(uuid, list);

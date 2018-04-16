@@ -24,6 +24,8 @@ import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.EnergyReader;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
+import sonar.logistics.api.tiles.readers.EnergyReader.SortingType;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiEnergyReader;
 import sonar.logistics.common.containers.ContainerEnergyReader;
@@ -33,6 +35,8 @@ import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.energy.EnergyHelper;
 import sonar.logistics.networking.energy.EnergyNetworkHandler;
+import sonar.logistics.networking.sorters.EnergySorter;
+import sonar.logistics.networking.sorters.FluidSorter;
 
 public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStack> implements IByteBufTile {
 
@@ -42,6 +46,19 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 2).addSyncType(SyncType.SPECIAL);
 	public SyncEnum<EnergyReader.Modes> setting = (SyncEnum) new SyncEnum(EnergyReader.Modes.values(), 3).addSyncType(SyncType.SPECIAL);
 	public SyncEnergyType energyType = new SyncEnergyType(4);
+	public EnergySorter energy_sorter = new EnergySorter() {
+
+		public SortingDirection getDirection() {
+			return sortingOrder.getObject();
+		}
+
+		public SortingType getType() {
+			return EnergyReader.SortingType.NAME;
+		}
+
+	};
+	public boolean sorting_changed = true;
+
 	{
 		syncList.addParts(selected, sortingOrder, setting, energyType);
 	}
@@ -58,10 +75,10 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	public int getMaxInfo() {
 		return 1;
 	}
-	
+
 	@Override
 	public AbstractChangeableList<MonitoredEnergyStack> sortMonitoredList(AbstractChangeableList<MonitoredEnergyStack> updateInfo, int channelID) {
-		return EnergyHelper.sortEnergyList(updateInfo, sortingOrder.getObject(), EnergyReader.SortingType.NAME);
+		return energy_sorter.sortSaveableList(updateInfo);
 	}
 
 	@Override
@@ -82,7 +99,9 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 			}
 			break;
 		case STORAGES:
-			info = new LogicInfoList(getIdentity(), MonitoredEnergyStack.id, this.getNetworkID());
+			LogicInfoList list = new LogicInfoList(getIdentity(), MonitoredEnergyStack.id, this.getNetworkID());
+			list.listSorter = energy_sorter;
+			info = list;
 			break;
 		case TOTAL:
 			MonitoredEnergyStack energy = new MonitoredEnergyStack(new StoredEnergyStack(energyType.getEnergyType()), new MonitoredBlockCoords(getCoords(), new ItemStack(PL2Blocks.energy_reader)), new StoredItemStack(new ItemStack(PL2Blocks.energy_reader)));
@@ -99,6 +118,11 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 
 		}
 		ServerInfoHandler.instance().changeInfo(this, uuid, info);
+
+		if (sorting_changed) {
+			ServerInfoHandler.instance().markChanged(this, uuid);
+			sorting_changed = false;
+		}
 	}
 
 	//// IChannelledTile \\\\
@@ -123,6 +147,9 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 
 	@Override
 	public void readPacket(ByteBuf buf, int id) {
+		if (id == sortingOrder.id) {
+			sorting_changed = true;
+		}
 		switch (id) {
 		case ADD:
 			selected.readFromBuf(buf);
@@ -137,20 +164,31 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	@Override
 	public Object getServerElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:	return new ContainerEnergyReader(player, this);
-		default: return null;}
+		case 0:
+			return new ContainerEnergyReader(player, this);
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
-		case 0:	return new GuiEnergyReader(player, this);
-		default: return null;}
+		case 0:
+			return new GuiEnergyReader(player, this);
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
+	}
+
+	@Override
+	public ILogicListSorter getSorter() {
+		return energy_sorter;
 	}
 
 }

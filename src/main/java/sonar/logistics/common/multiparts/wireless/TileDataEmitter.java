@@ -19,6 +19,7 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;

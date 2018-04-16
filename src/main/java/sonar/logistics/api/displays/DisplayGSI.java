@@ -407,6 +407,13 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		/// FIXME DON'T DO THIS FOR EVERYTHING
 		updateCachedInfo();
 		updateScaling();
+		for (DisplayElementContainer c : containers.values()) {
+			for (IDisplayElement e : c.getElements()) {
+				if (e.getInfoReferences().contains(uuid)) {
+					e.onMonitoredListChanged(uuid, list);
+				}
+			}
+		}
 	}
 
 	public void onInfoChanged(InfoUUID uuid, IInfo info) {
@@ -443,12 +450,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			removed.forEach(r -> LocalProviderHandler.doInfoReferenceDisconnect(this, r));
 		}
 	}
-	/** takes the given uuids and adds them as Info References it will also add the host display to the listeners of the Reader which provides the info uuid */
 
-	/* public void addInfoReferences(List<InfoUUID> uuid) { uuid.forEach(this::addInfoReference); updateCachedInfo(); } private void addInfoReference(InfoUUID uuid) { if (ListHelper.addWithCheck(references, uuid)) { LocalProviderHandler.doInfoReferenceConnect(this, uuid); } } */
-
-	/** takes the given uuids and removes them as Info References it will also remove the host display from the listeners of the Reader which provides the info uuid */
-	/* public void removeInfoReferences(List<InfoUUID> uuid) { uuid.forEach(this::removeInfoReference); updateCachedInfo(); } private void removeInfoReference(InfoUUID uuid) { if (references.remove(uuid)) { LocalProviderHandler.doInfoReferenceDisconnect(this, uuid); } } */
 	//// CACHED INFO \\\\
 
 	public void updateCachedInfo() {
@@ -475,7 +477,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				return e;
 			}
 		}
-
 		return null;
 	}
 

@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fluids.FluidStack;
+import sonar.core.helpers.ItemStackHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ListenerTally;
@@ -52,10 +53,11 @@ public class PacketHelper {
 	public static void sendLocalProvidersFromScreen(TileAbstractDisplay part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		List<ILogicListenable> providers = DisplayHelper.getLocalProviders(part, world, pos);
 		int identity = part.getInfoContainerID();
-		List<ClientLocalProvider> clientMonitors = new ArrayList<>();
+		List<ClientLocalProvider> clientMonitors = new ArrayList<>();		
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
-			clientMonitors.add(new ClientLocalProvider(provider));
+			ItemStack stack = ItemStackHelper.getBlockItem(provider.getCoords().getWorld(), provider.getCoords().getBlockPos());
+			clientMonitors.add(new ClientLocalProvider(provider, provider.getSorter(), stack));
 		});
 		PL2.network.sendTo(new PacketLocalProviders(clientMonitors, identity), (EntityPlayerMP) player);
 	}
@@ -65,7 +67,8 @@ public class PacketHelper {
 		List<ClientLocalProvider> clientProviders = new ArrayList<>();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
-			clientProviders.add(new ClientLocalProvider(provider));
+			ItemStack stack = ItemStackHelper.getBlockItem(provider.getCoords().getWorld(), provider.getCoords().getBlockPos());
+			clientProviders.add(new ClientLocalProvider(provider, provider.getSorter(), stack));
 		});
 		PL2.network.sendTo(new PacketLocalProviders(clientProviders, identity), (EntityPlayerMP) player);
 	}
@@ -133,7 +136,7 @@ public class PacketHelper {
 		NBTTagCompound saveTag = b != null ? InfoHelper.writeMonitoredList(new NBTTagCompound(), b, SyncType.SAVE) : null;
 		if (saveTag.hasNoTags())
 			return;
-		listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), uuid, monitor.getNetworkID(), saveTag, SyncType.SAVE), listener.player));
+		listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), uuid, monitor.getNetworkID(), saveTag, SyncType.SAVE, monitor.getSorter()), listener.player));
 	}
 
 	public static void createRapidFluidUpdate(List<FluidStack> toUpdate, int networkID) {
@@ -172,7 +175,7 @@ public class PacketHelper {
 		NBTTagCompound tag = InfoHelper.writeMonitoredList(new NBTTagCompound(), updateList, SyncType.DEFAULT_SYNC);
 		if (!tag.hasNoTags()) {
 			List<PlayerListener> listeners = reader.getListenerList().getAllListeners(ListenerType.OLD_GUI_LISTENER, ListenerType.OLD_DISPLAY_LISTENER); // gets display viewers also
-			listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), listUUID, reader.getNetworkID(), tag, SyncType.DEFAULT_SYNC), listener.player));
+			listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), listUUID, reader.getNetworkID(), tag, SyncType.DEFAULT_SYNC, reader.getSorter()), listener.player));
 			return true;
 		}
 		return false;
@@ -199,7 +202,7 @@ public class PacketHelper {
 				if (saveTag == null || saveTag.hasNoTags())
 					continue types;
 				tallies.forEach(tally -> {
-					PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), listUUID, reader.getNetworkID(), saveTag, SyncType.SAVE), tally.listener.player);
+					PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), listUUID, reader.getNetworkID(), saveTag, SyncType.SAVE, reader.getSorter()), tally.listener.player);
 					tally.removeTallies(1, ListenerType.NEW_GUI_LISTENER);
 					tally.addTallies(1, ListenerType.OLD_GUI_LISTENER);
 					tally.source.updateState();
@@ -222,7 +225,7 @@ public class PacketHelper {
 					}
 				}
 				tallies.forEach(tally -> {
-					PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), listUUID, reader.getNetworkID(), saveTag, SyncType.SAVE), tally.listener.player);
+					PL2.network.sendTo(new PacketMonitoredList(reader.getIdentity(), listUUID, reader.getNetworkID(), saveTag, SyncType.SAVE, reader.getSorter()), tally.listener.player);
 					tally.removeTallies(1, ListenerType.TEMPORARY_LISTENER);
 					sendInfoUpdatePacket(tally.listener.player, tagList, SyncType.SAVE);
 				});

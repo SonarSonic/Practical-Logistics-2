@@ -25,6 +25,8 @@ import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.states.TileMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.FluidReader;
+import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiFluidReader;
@@ -39,6 +41,7 @@ import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.fluids.FluidHelper;
 import sonar.logistics.networking.fluids.FluidNetworkChannels;
 import sonar.logistics.networking.fluids.FluidNetworkHandler;
+import sonar.logistics.networking.sorters.FluidSorter;
 import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack> implements IByteBufTile {
@@ -51,7 +54,19 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	public SyncTagType.INT posSlot = (INT) new SyncTagType.INT(4).addSyncType(SyncType.SPECIAL);
 	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 5).addSyncType(SyncType.SPECIAL);
 	public SyncEnum<FluidReader.SortingType> sortingType = (SyncEnum) new SyncEnum(FluidReader.SortingType.values(), 6).addSyncType(SyncType.SPECIAL);
-	
+	public FluidSorter fluid_sorter = new FluidSorter() {
+		
+		public SortingDirection getDirection() {
+			return sortingOrder.getObject();
+		}
+
+		public SortingType getType() {
+			return sortingType.getObject();
+		}
+
+	};
+	public boolean sorting_changed = true;
+
 	{
 		syncList.addParts(setting, targetSlot, posSlot, sortingOrder, sortingType, selected);
 	}
@@ -68,7 +83,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	public int getMaxInfo() {
 		return 1;
 	}
-	
+
 	@Override
 	public AbstractChangeableList<MonitoredFluidStack> getViewableList(AbstractChangeableList<MonitoredFluidStack> updateList, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredFluidStack>> channels, List<NodeConnection> usedChannels) {
 		if (updateList instanceof FluidChangeableList) {
@@ -80,9 +95,10 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 		}
 		return super.getViewableList(updateList, uuid, channels, usedChannels);
 	}
+
 	@Override
 	public AbstractChangeableList<MonitoredFluidStack> sortMonitoredList(AbstractChangeableList<MonitoredFluidStack> updateInfo, int channelID) {
-		return FluidHelper.sortFluidList(updateInfo, sortingOrder.getObject(), sortingType.getObject());
+		return fluid_sorter.sortSaveableList(updateInfo);
 	}
 
 	@Override
@@ -95,23 +111,30 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 				stack.getStoredStack().setStackSize(0);
 				MonitoredFluidStack dummyInfo = new MonitoredFluidStack(stack.getStoredStack().copy(), network.getNetworkID());
 				IMonitoredValue<MonitoredFluidStack> value = updateInfo.find(dummyInfo);
-				info = value==null? dummyInfo: new MonitoredFluidStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); //FIXME Make it check the EnumListChange
+				info = value == null ? dummyInfo : new MonitoredFluidStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); // FIXME Make it check the EnumListChange
 			}
 			break;
 		case POS:
-			//FIXME
+			// FIXME
 			break;
 		case STORAGE:
-			StorageSize size = updateInfo instanceof FluidChangeableList? ((FluidChangeableList)updateInfo).sizing :new StorageSize(0,0);
+			StorageSize size = updateInfo instanceof FluidChangeableList ? ((FluidChangeableList) updateInfo).sizing : new StorageSize(0, 0);
 			info = new ProgressInfo(LogicInfo.buildDirectInfo("fluid.storage", RegistryType.TILE, size.getStored()), LogicInfo.buildDirectInfo("max", RegistryType.TILE, size.getMaxStored()));
 			break;
 		case TANKS:
-			info = new LogicInfoList(getIdentity(), MonitoredFluidStack.id, this.getNetworkID());
+			LogicInfoList list = new LogicInfoList(getIdentity(), MonitoredFluidStack.id, this.getNetworkID());
+			list.listSorter = fluid_sorter;
+			info = list;
 			break;
 		default:
 			break;
 		}
-		ServerInfoHandler.instance().changeInfo(this,uuid, info);
+		ServerInfoHandler.instance().changeInfo(this, uuid, info);
+
+		if (sorting_changed) {
+			ServerInfoHandler.instance().markChanged(this, uuid);
+			sorting_changed = false;
+		}
 	}
 
 	//// IChannelledTile \\\\
@@ -125,6 +148,9 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 
 	public void readPacket(ByteBuf buf, int id) {
 		super.readPacket(buf, id);
+		if (id == sortingOrder.id || id == sortingType.id) {
+			sorting_changed = true;
+		}
 		// when the order of the list is changed the viewers need to recieve a full update
 		if (id == 5 || id == 6) {
 			FluidNetworkChannels list = network.getNetworkChannels(FluidNetworkChannels.class);
@@ -164,6 +190,11 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	@Override
 	public TileMessage[] getValidMessages() {
 		return validStates;
+	}
+
+	@Override
+	public ILogicListSorter getSorter() {
+		return fluid_sorter;
 	}
 
 }

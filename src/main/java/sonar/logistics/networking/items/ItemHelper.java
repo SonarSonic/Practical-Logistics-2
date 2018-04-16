@@ -505,36 +505,4 @@ public class ItemHelper {
 
 		}
 	}
-
-	public static AbstractChangeableList<MonitoredItemStack> sortItemList(AbstractChangeableList<MonitoredItemStack> updateInfo, final SortingDirection dir, final SortingType type) {
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-			public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
-				StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
-				return SonarHelper.compareStringsWithDirection(item1.getItemStack().getDisplayName(), item2.getItemStack().getDisplayName(), dir);
-			}
-		});
-
-		switch (type) {
-		case STORED:
-			updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-				public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
-					StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
-					return SonarHelper.compareWithDirection(item1.stored, item2.stored, dir);
-				}
-			});
-			break;
-		case MODID:
-			updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-				public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
-					StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
-					String modid1 = item1.getItemStack().getItem().getRegistryName().getResourceDomain();
-					String modid2 = item2.getItemStack().getItem().getRegistryName().getResourceDomain();
-					return SonarHelper.compareStringsWithDirection(modid1, modid2, dir);
-				}
-			});
-		default:
-			break;
-		}
-		return updateInfo;
-	}
 }

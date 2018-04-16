@@ -127,7 +127,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	public List<MonitoredFluidStack> getGridList() {
 		String search = searchField.getText();
 		if (search == null || search.isEmpty() || search.equals(" ") || search.equals(""))
-			return part.getMonitoredList().createSaveableList();
+			return part.getMonitoredList().createSaveableList(part.getSorter());
 		else {
 			List<MonitoredFluidStack> searchlist = new ArrayList<>();
 			List<MonitoredFluidStack> cached = part.getMonitoredList().createSaveableList();

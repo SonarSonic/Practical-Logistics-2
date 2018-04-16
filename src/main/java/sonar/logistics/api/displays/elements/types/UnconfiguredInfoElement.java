@@ -40,6 +40,7 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 	public InfoUUID uuid;
 
 	public UnconfiguredInfoElement() {
+		super();
 		this.width_align = WidthAlignment.LEFT;
 		this.height_align = HeightAlignment.TOP;
 	}

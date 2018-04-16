@@ -32,7 +32,9 @@ import sonar.logistics.info.types.MonitoredFluidStack;
 @DisplayElementType(id = NetworkFluidGridElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkFluidGridElement extends NetworkGridElement<MonitoredFluidStack> {
 
-	public NetworkFluidGridElement() {}
+	public NetworkFluidGridElement() {
+		super();
+	}
 
 	public NetworkFluidGridElement(InfoUUID uuid) {
 		super(uuid);

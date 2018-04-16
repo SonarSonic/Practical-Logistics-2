@@ -30,7 +30,11 @@ import sonar.logistics.api.displays.elements.text.StyledStringLine;
 public class DisplayElementHelper {
 
 	public static int getRegisteredID(IDisplayElement info) {
-		return PL2ASMLoader.elementIDs.get(info.getRegisteredName());
+		if (info == null || info.getRegisteredName() == null) {
+			return -1;
+		}
+		Integer id = PL2ASMLoader.elementIDs.get(info.getRegisteredName());
+		return id == null ? -1 : id;
 	}
 
 	public static Class<? extends IDisplayElement> getElementClass(int id) {
@@ -51,7 +55,9 @@ public class DisplayElementHelper {
 	public static <T extends IDisplayElement> T instanceDisplayElement(Class<T> classType, IElementStorageHolder holder, NBTTagCompound tag) {
 		T obj = null;
 		try {
-			obj = classType.getConstructor().newInstance();
+			if (classType != null) {
+				obj = classType.getConstructor().newInstance();
+			}
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
 		}
