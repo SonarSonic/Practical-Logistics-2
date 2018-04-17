@@ -173,10 +173,10 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	public List<MonitoredItemStack> getGridList() {
 		String search = searchField.getText();
 		if (search == null || search.isEmpty() || search.equals(" ")) {
-			return part.getMonitoredList().createSaveableList();
+			return part.getMonitoredList().createSaveableList(part.getSorter());
 		} else {
 			List<MonitoredItemStack> searchlist = new ArrayList<>();
-			List<MonitoredItemStack> cached = part.getMonitoredList().createSaveableList();
+			List<MonitoredItemStack> cached = part.getMonitoredList().createSaveableList(part.getSorter());
 			for (MonitoredItemStack stack : cached) {
 				StoredItemStack item = stack.getStoredStack();
 				if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {

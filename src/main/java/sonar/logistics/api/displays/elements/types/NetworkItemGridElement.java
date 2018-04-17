@@ -54,7 +54,7 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 		depthMask(true);
 	}
 
-	public void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {
+	public void onChangeableListChanged(InfoUUID uuid, AbstractChangeableList list) {
 		if (info != null && info instanceof LogicInfoList) {
 			((LogicInfoList)info).listChanged = true;
 		}

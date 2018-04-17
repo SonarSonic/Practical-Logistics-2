@@ -16,19 +16,24 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.client.gui.GuiSonar;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.displays.buttons.ButtonElement;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -36,9 +41,10 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.info.types.LogicInfoList;
 
-public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement {
+public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement, ILookableElement {
 
 	public int pageCount = 0;
 	public int xSlots, ySlots, perPage = 0;
@@ -59,10 +65,10 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 
 	public abstract double getRenderHeight();
 
-	public abstract void renderGridElement(L stack, int index);	
+	public abstract void renderGridElement(L stack, int index);
 
 	public abstract void onGridElementClicked(DisplayScreenClick click, LogicInfoList list, @Nullable L stack);
-	
+
 	double width, height, X_SPACING, Y_SPACING, centreX, centreY;
 	int start, stop;
 
@@ -71,17 +77,31 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 		cachedList = getCachedList(list, uuid);
 		width = getRenderWidth();
 		height = getRenderHeight();
+		centreX = (width / 2) - ((width * grid_fill_percentage) / 2);
+		centreY = (height / 2) - ((height * grid_fill_percentage) / 2);
+
 		xSlots = (int) Math.floor(getActualScaling()[WIDTH] / width);
 		ySlots = (int) Math.floor(getActualScaling()[HEIGHT] / height);
 		X_SPACING = (getActualScaling()[WIDTH] - (xSlots * width)) / xSlots;
 		Y_SPACING = (getActualScaling()[HEIGHT] - (ySlots * height)) / ySlots;
-		centreX = (width / 2) - ((width * grid_fill_percentage) / 2);
-		centreY = (height / 2) - ((height * grid_fill_percentage) / 2);
 
 		perPage = xSlots * ySlots;
+		boolean needsPages = perPage < cachedList.size();
+
+		if (needsPages && perPage != 0) {
+			double adjusted_height = getActualScaling()[HEIGHT] - (getActualScaling()[HEIGHT] / 8);
+			ySlots = (int) Math.floor(adjusted_height / height);
+			Y_SPACING = (adjusted_height - (ySlots * height)) / ySlots;
+		}
+		perPage = xSlots * ySlots;
+
+		int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
+		if (pageCount >= totalPages) {
+			pageCount = totalPages - 1;
+		}
+
 		start = perPage * pageCount;
 		stop = Math.min(perPage + perPage * pageCount, cachedList.size());
-		
 		preListRender();
 		for (int i = start; i < stop; i++) {
 			pushMatrix();
@@ -93,6 +113,11 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			popMatrix();
 		}
 		postListRender();
+
+		if (needsPages && perPage != 0) {
+			DisplayElementHelper.renderPageButons(getActualScaling(), this.pageCount + 1, totalPages);
+		}
+
 	}
 
 	public void preListRender() {
@@ -109,7 +134,6 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 		popMatrix();
 	}
-	
 
 	public List<L> getCachedList(LogicInfoList info, InfoUUID id) {
 		if (cachedList == null || info.listChanged) {
@@ -163,11 +187,16 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			subClick.setDoubleClick(click.doubleClick);
 			subClick.gsi = click.gsi;
 			subClick.type = click.type;
-			subClick.clickPos = click.clickPos;			
+			subClick.clickPos = click.clickPos;
 			L stack = slot < cachedList.size() ? cachedList.get(slot) : null;
 			onGridElementClicked(subClick, list, stack);
 		}
 
+		boolean needsPages = perPage < cachedList.size();
+		if (needsPages) {
+			int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
+			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);
+		}
 		return 0;
 	}
 

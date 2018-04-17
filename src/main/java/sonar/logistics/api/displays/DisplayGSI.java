@@ -410,7 +410,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		for (DisplayElementContainer c : containers.values()) {
 			for (IDisplayElement e : c.getElements()) {
 				if (e.getInfoReferences().contains(uuid)) {
-					e.onMonitoredListChanged(uuid, list);
+					e.onChangeableListChanged(uuid, list);
 				}
 			}
 		}

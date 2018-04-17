@@ -13,31 +13,42 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 
 public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 
+	/**the id this {@link IDisplayElement} is registered to*/
+	String getRegisteredName();	
+
+	/**a string to represent what this {@link IDisplayElement} is in a GUI*/
+	String getRepresentiveString();
+	
+	/**sets the {@link IElementStorageHolder} of this {@link IDisplayElement}*/
 	IElementStorageHolder setHolder(IElementStorageHolder c);
 
+	/**gets the {@link IElementStorageHolder} of this {@link IDisplayElement}*/
 	IElementStorageHolder getHolder();
 
-	default Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return null;
-	}
+	/**all the {@link InfoUUID} which are required to render this DisplayElement,
+	 * this information is used to know which {@link IInfo} should be synced with the client*/
+	List<InfoUUID> getInfoReferences();
 
+	/**the unique  identity of this element, used to identify the element between server and client*/
 	int getElementIdentity();
 
+	/**gets the {@link DisplayGSI} [Guided Screen Interface] which features this Display Element*/
 	default DisplayGSI getGSI() {
 		return getHolder().getContainer().getGSI();
 	}
-
-	String getRegisteredName();
-
-	List<InfoUUID> getInfoReferences();
-
+	
+	/**called when info included in {@link #getInfoReferences} is changed*/
 	default void onInfoReferenceChanged(InfoUUID uuid, IInfo info) {}
 
-	default void onMonitoredListChanged(InfoUUID uuid, AbstractChangeableList list) {}
+	/**called when an {@link AbstractChangeableList} whose {@link InfoUUID} included in {@link #getInfoReferences} is changed*/
+	default void onChangeableListChanged(InfoUUID uuid, AbstractChangeableList list) {}
 
+	//// IDisplayRenderable \\\\
+	
 	default void render() {
 		FontHelper.text(getRepresentiveString(), 0, 0, getHolder().getContainer().getDefaultColour());
 	}
@@ -52,7 +63,6 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 
 	double setPercentageFill(double fill);
 
-	String getRepresentiveString();
 
 	/** the width/height in pixels, returns 0,0 if this element fills the entire container */
 	default ElementFillType getFillType() {
@@ -61,6 +71,10 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 
 	int[] getUnscaledWidthHeight();
 
+	public default double[] getAlignmentTranslation(double[] maxScaling, double[] actualScaling) {
+		return DisplayElementHelper.alignArray(maxScaling, actualScaling, getWidthAlignment(), getHeightAlignment());
+	}		
+	
 	WidthAlignment getWidthAlignment();
 
 	WidthAlignment setWidthAlignment(WidthAlignment align);
@@ -68,7 +82,8 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	HeightAlignment getHeightAlignment();
 
 	HeightAlignment setHeightAlignment(HeightAlignment align);
-
+	
+	
 	double[] setMaxScaling(double[] scaling);
 
 	double[] getMaxScaling();
@@ -76,5 +91,9 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	double[] setActualScaling(double[] scaling);
 
 	double[] getActualScaling();
+
+	default Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		return null;
+	}
 
 }

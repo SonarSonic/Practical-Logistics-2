@@ -56,8 +56,7 @@ public class PacketHelper {
 		List<ClientLocalProvider> clientMonitors = new ArrayList<>();		
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
-			ItemStack stack = ItemStackHelper.getBlockItem(provider.getCoords().getWorld(), provider.getCoords().getBlockPos());
-			clientMonitors.add(new ClientLocalProvider(provider, provider.getSorter(), stack));
+			clientMonitors.add(new ClientLocalProvider(provider, provider.getSorter(), provider.getDisplayStack()));
 		});
 		PL2.network.sendTo(new PacketLocalProviders(clientMonitors, identity), (EntityPlayerMP) player);
 	}
@@ -67,8 +66,7 @@ public class PacketHelper {
 		List<ClientLocalProvider> clientProviders = new ArrayList<>();
 		providers.forEach(provider -> {
 			provider.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
-			ItemStack stack = ItemStackHelper.getBlockItem(provider.getCoords().getWorld(), provider.getCoords().getBlockPos());
-			clientProviders.add(new ClientLocalProvider(provider, provider.getSorter(), stack));
+			clientProviders.add(new ClientLocalProvider(provider, provider.getSorter(), provider.getDisplayStack()));
 		});
 		PL2.network.sendTo(new PacketLocalProviders(clientProviders, identity), (EntityPlayerMP) player);
 	}

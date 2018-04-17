@@ -2,8 +2,11 @@ package sonar.logistics.common.multiparts;
 
 import java.util.List;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -12,6 +15,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import sonar.core.api.utils.TileAdditionType;
 import sonar.core.api.utils.TileRemovalType;
+import sonar.core.helpers.ItemStackHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.listener.ISonarListenable;
@@ -81,6 +85,10 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			identity.setObject(ServerInfoHandler.instance().getNextIdentity());
 		}
 		return identity.getObject();
+	}
+	
+	public ItemStack getDisplayStack(){
+		return ItemStackHelper.getBlockItem(getWorld(), getPos());
 	}
 
 	@Override

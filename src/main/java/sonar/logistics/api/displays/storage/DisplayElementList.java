@@ -257,6 +257,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	@Override
 	public double[] getAlignmentTranslation(IDisplayElement e) {
-		return DisplayElementHelper.alignArray(new double[] { getActualScaling()[0], e.getMaxScaling()[1], e.getMaxScaling()[2] }, e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
+		double[] maxScaling = new double[] { getActualScaling()[0], e.getMaxScaling()[1], e.getMaxScaling()[2] };
+		return e.getAlignmentTranslation(maxScaling, e.getActualScaling());
 	}
 }

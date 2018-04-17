@@ -18,6 +18,7 @@ import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.api.displays.references.ReferenceType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.RenderBlockSelection;
@@ -94,7 +95,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 
 	@Override
 	public boolean isCategoryHeader(Object info) {
-		return info instanceof IInfoProvider;
+		return info instanceof ClientLocalProvider;
 	}
 
 	private IInfo last;
@@ -108,11 +109,10 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 			} else {
 				FontHelper.text("-", InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
 			}
-		} else if (info instanceof IInfoProvider) {
-			IInfoProvider monitor = (IInfoProvider) info;
-			FontHelper.text(monitor.getMultipart().getDisplayName(), InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
-			FontHelper.text(monitor.getCoords().toString(), InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
-			FontHelper.text("position", InfoRenderer.right_offset, yPos, LogisticsColours.white_text.getRGB());
+		}  else if (info instanceof ClientLocalProvider) {
+			ClientLocalProvider monitor = (ClientLocalProvider) info;
+			FontHelper.text(monitor.stack.getDisplayName(), InfoRenderer.left_offset, yPos, LogisticsColours.white_text.getRGB());
+			FontHelper.text(monitor.coords.getCoords().toString(), InfoRenderer.middle_offset, yPos, LogisticsColours.white_text.getRGB());
 		} else if (info instanceof InfoReference){
 			InfoReference ref = (InfoReference) info;
 			InfoRenderer.renderTripleStringIntoGUI("  -" + ref.refType.name(), ref.refType.getRefString(last), "string",  yPos, LogisticsColours.white_text.getRGB());

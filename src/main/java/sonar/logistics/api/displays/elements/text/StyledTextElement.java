@@ -34,7 +34,6 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
-import sonar.logistics.api.displays.elements.ISpecialAlignment;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer.StyledStringRenderHandler;
 import sonar.logistics.api.info.IInfo;
@@ -86,7 +85,7 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 
 	@Override
 	public void onElementChanged() {
-		updateTextContents();
+		markTextContentsChanged();
 	}
 
 	public int addAction(IDisplayAction action) {
@@ -105,7 +104,7 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 
 	public List<StyledStringLine> setLines(List<StyledStringLine> textLines) {
 		textLines.forEach(ss -> ss.setText(this));
-		updateTextContents();
+		markTextContentsChanged();
 		return this.textLines = textLines;
 	}
 
@@ -116,20 +115,20 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 	public void addLine(StyledStringLine line) {
 		line.setText(this);
 		textLines.add(line);
-		updateTextContents();
+		markTextContentsChanged();
 	}
 
 	public void setLine(int i, StyledStringLine line) {
 		line.setText(this);
 		textLines.set(i, line);
-		updateTextContents();
+		markTextContentsChanged();
 	}
 
 	public void preRender(StyledStringLine c) {}
 
 	public void deleteLine(int lineY) {
 		textLines.remove(lineY);
-		updateTextContents();
+		markTextContentsChanged();
 	}
 
 	public void addNewLine(int lineY, StyledStringLine line) {
@@ -139,7 +138,7 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 		} else {
 			textLines.add(lineY, line);
 		}
-		updateTextContents();
+		markTextContentsChanged();
 	}
 
 	public void postRender(StyledStringLine c) {}
@@ -162,11 +161,11 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 		}));
 	}
 
-	public void updateTextContents() {
+	public void markTextContentsChanged() {
 		this.updateTextContents = true;
 	}
 
-	public void updateTextScaling() {
+	public void markTextScalingChanged() {
 		this.updateTextScaling = true;
 	}
 

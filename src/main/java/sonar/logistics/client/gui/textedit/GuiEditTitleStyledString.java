@@ -9,7 +9,7 @@ import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
-public class GuiEditTitleStyledString extends GuiStyledStringFunctions {
+public class GuiEditTitleStyledString extends GuiEditStyledStrings {
 	
 	
 	public GuiEditTitleStyledString(StyledTextElement text, TileAbstractDisplay display) {

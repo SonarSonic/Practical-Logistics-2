@@ -26,9 +26,10 @@ public class EditContainer extends DisplayElementContainer {
 		editList.setHeightAlignment(HeightAlignment.TOP);
 		editContainer.getElements().addElement(editList);
 		editList.getElements().addElement(new CreateElementButton(CreateInfoType.INFO, 0, 11, 10, "CREATE INFO"));
-		editList.getElements().addElement(new CreateElementButton(CreateInfoType.TEXT, 1, 11, 11, "CREATE TEXT"));
+		editList.getElements().addElement(new CreateElementButton(CreateInfoType.TITLE, 1, 11, 11, "CREATE TITLE"));
+		editList.getElements().addElement(new CreateElementButton(CreateInfoType.WRAPPED_TEXT, 2, 11, 14, "CREATE WRAPPED TEXT"));
 		///editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.DELETE, 2, 2, 2, "DELETE ELEMENTS"));
-		editList.getElements().addElement(new ButtonElement(2, 12, 0, "EDIT ELEMENTS"){
+		editList.getElements().addElement(new ButtonElement(3, 12, 0, "EDIT ELEMENTS"){
 
 			@Override			
 			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
@@ -38,7 +39,7 @@ public class EditContainer extends DisplayElementContainer {
 			}
 		});
 		//editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.RESIZE, 3, 12, 1, "RESIZE ELEMENT"));
-		editList.getElements().addElement(new ButtonElement(3, 2, 11, "CLOSE EDIT MODE"){
+		editList.getElements().addElement(new ButtonElement(4, 2, 11, "CLOSE EDIT MODE"){
 
 			@Override			
 			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {

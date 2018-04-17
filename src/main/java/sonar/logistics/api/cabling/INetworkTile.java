@@ -1,5 +1,6 @@
 package sonar.logistics.api.cabling;
 
+import net.minecraft.item.ItemStack;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.networks.ILogisticsNetwork;
@@ -22,4 +23,8 @@ public interface INetworkTile extends IWorldPosition, INetworkListener, ICableCo
 	public TileMessage[] getValidMessages();
 	
 	public PL2Multiparts getMultipart();
+	
+	default ItemStack getDisplayStack(){
+		return ItemStack.EMPTY;
+	}
 }

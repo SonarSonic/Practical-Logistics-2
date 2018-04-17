@@ -1,5 +1,6 @@
 package sonar.logistics.helpers;
 
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
 import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.scale;
@@ -9,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -16,11 +18,13 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.WidthAlignment;
+import sonar.logistics.api.displays.buttons.ButtonElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.text.IStyledString;
@@ -345,5 +349,41 @@ public class DisplayElementHelper {
 		GlStateManager.disableBlend();
 
 		GlStateManager.enableLighting();
+	}
+
+	/** renders page buttons in the button 8th of the element */
+	public static void renderPageButons(double[] scaling, int page, int pageCount) {
+
+		double[] scale = DisplayElementHelper.getScaling(new int[] { 1, 1 }, DisplayElementHelper.scaleArray(scaling, 0.1), 1);
+		translate(0, scaling[HEIGHT] - (scaling[HEIGHT] / 8), 0);
+		scale(scale[SCALE], scale[SCALE], 1);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(ButtonElement.BUTTON_TEX);
+		RenderHelper.drawModalRectWithCustomSizedTexture(((scaling[WIDTH] / 8) * 2) / scale[SCALE] - 8 * 0.0625, 0, 232 * 0.0625, 22 * 0.0625, 1, 0.6, 16, 16);
+		RenderHelper.drawModalRectWithCustomSizedTexture((scaling[WIDTH] - ((scaling[WIDTH] / 8) * 2)) / scale[SCALE] - 8 * 0.0625, 0, 232 * 0.0625, 44 * 0.0625, 1, 0.6, 16, 16);
+
+		translate((scaling[WIDTH] / 2) / scale[SCALE], 0, 0);
+		scale(0.0625, 0.0625, 1);
+		disableLighting();
+		String pageText = page + " / " + pageCount;
+		int width = FontHelper.width(pageText);
+		translate(-width / 2, 2, 0);
+		FontHelper.text(pageText, 0, 0, -1);
+	}
+
+	public static int doPageClick(double subClickX, double subClickY, double[] scaling, int page, int pageCount) {
+		if (subClickY > scaling[HEIGHT] - (scaling[HEIGHT] / 8)) {
+			int maxPage = pageCount;
+			if (subClickX < scaling[WIDTH] / 2) {
+				if (page != 0) {
+					return page - 1;
+				}
+			} else {
+				if (page != maxPage) {
+					return page + 1;
+				}
+			}
+
+		}
+		return page;
 	}
 }

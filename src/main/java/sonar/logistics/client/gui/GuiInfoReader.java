@@ -71,7 +71,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 		if (!part.getChannels().hasChannels()) {
 			infoList = new ArrayList<>();
 		} else {
-			infoList = part.getMonitoredList().createSaveableList();
+			infoList = part.getMonitoredList().createSaveableList(part.getSorter());
 		}
 	}
 

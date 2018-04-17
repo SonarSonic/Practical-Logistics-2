@@ -20,7 +20,6 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.ISpecialAlignment;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 import sonar.logistics.client.gui.textedit.GuiEditTitleStyledString;
@@ -28,7 +27,7 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 @DisplayElementType(id = StyledTitleElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class StyledTitleElement extends StyledTextElement implements ISpecialAlignment {
+public class StyledTitleElement extends StyledTextElement{
 
 	public StyledTitleElement() {}
 
@@ -80,9 +79,9 @@ public class StyledTitleElement extends StyledTextElement implements ISpecialAli
 	}
 
 	@Override
-	public double[] getAlignmentTranslation() {
-		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), this.getMaxScaling(), 100);
-		double[] align_array = DisplayElementHelper.alignArray(this.getHolder().getContainer().getContainerMaxScaling(), this.getActualScaling(), this.getWidthAlignment(), this.getHeightAlignment());
+	public double[] getAlignmentTranslation(double[] maxScaling, double[] actualScaling) {
+		double[] scaling = DisplayElementHelper.getScaling(this.getUnscaledWidthHeight(), getMaxScaling(), 100);
+		double[] align_array = DisplayElementHelper.alignArray(maxScaling, this.getActualScaling(), this.getWidthAlignment(), this.getHeightAlignment());
 
 		double maxHeight = getMaxScaling()[HEIGHT];
 		double height = this.getHeight() * scaling[2];

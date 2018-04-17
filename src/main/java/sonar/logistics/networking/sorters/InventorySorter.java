@@ -61,8 +61,7 @@ public class InventorySorter implements ILogicListSorter<MonitoredItemStack> {
 	
 	public SortingType getType(){
 		return sorting_type;
-	}
-	
+	}	
 
 	public static final String REGISTRY_NAME = "inv_sorter";
 

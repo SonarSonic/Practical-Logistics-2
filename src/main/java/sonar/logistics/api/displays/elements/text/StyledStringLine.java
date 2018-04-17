@@ -96,13 +96,13 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 
 	public void updateTextScaling() {
 		if (getText() != null) {
-			getText().updateTextScaling();
+			getText().markTextScalingChanged();
 		}
 	}
 
 	public void updateTextContents() {
 		if (getText() != null) {
-			getText().updateTextContents();
+			getText().markTextContentsChanged();
 			cachedUnformattedString = null;
 			cachedFormattedString = null;
 			cachedWidth = -1;

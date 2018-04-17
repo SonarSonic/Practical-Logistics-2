@@ -20,7 +20,6 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IDisplayRenderable;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.ISpecialAlignment;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
@@ -361,10 +360,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 
 	@Override
 	public double[] getAlignmentTranslation(IDisplayElement e) {
-		if(e instanceof ISpecialAlignment){
-			return ((ISpecialAlignment) e).getAlignmentTranslation();
-		}
-		return DisplayElementHelper.alignArray(getContainerMaxScaling(), e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
+		return e.getAlignmentTranslation(getContainerMaxScaling(), e.getActualScaling());
 	}
 
 }

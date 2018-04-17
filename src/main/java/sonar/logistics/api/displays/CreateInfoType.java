@@ -10,7 +10,7 @@ import sonar.logistics.api.displays.elements.text.StyledWrappedTextElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 
 public enum CreateInfoType {
-	INFO(CreateInfoType::createInfo), TEXT(CreateInfoType::createText), IMAGE(CreateInfoType::createInfo), BUTTON(CreateInfoType::createButton);
+	INFO(CreateInfoType::createInfo), TITLE(CreateInfoType::createTitle), WRAPPED_TEXT(CreateInfoType::createWrappedText), IMAGE(CreateInfoType::createInfo), BUTTON(CreateInfoType::createButton);
 	public ICreationLogic logic;
 
 	CreateInfoType(ICreationLogic logic) {
@@ -36,8 +36,14 @@ public enum CreateInfoType {
 		return null;
 	}
 
-	public static IDisplayElement createText(DisplayElementContainer c) {
+	public static IDisplayElement createTitle(DisplayElementContainer c) {
 		StyledTitleElement e = new StyledTitleElement("CLICK TO EDIT TEXT");
+		c.getElements().addElement(e);
+		return e;
+	}
+
+	public static IDisplayElement createWrappedText(DisplayElementContainer c) {
+		StyledWrappedTextElement e = new StyledWrappedTextElement("CLICK TO EDIT TEXT");
 		c.getElements().addElement(e);
 		return e;
 	}

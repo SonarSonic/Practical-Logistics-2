@@ -25,8 +25,9 @@ import sonar.logistics.helpers.DisplayElementHelper;
 @DisplayElementType(id = StyledWrappedTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledWrappedTextElement extends StyledTextElement {
 
+	public int pageCount = 0;	
 	public StyledStringRenderHandler handler = new StyledStringRenderHandler(this);
-	
+
 	public StyledWrappedTextElement() {}
 
 	public StyledWrappedTextElement(String string) {
@@ -40,9 +41,22 @@ public class StyledWrappedTextElement extends StyledTextElement {
 	@Override
 	public void render() {
 		handler.wrapLines(getActualScaling()[0] * (textScale * 100), getActualScaling()[1] * (textScale * 100));
+		
+		boolean needsPages = handler.linesPerPage < handler.lines.size();
+		if (needsPages && handler.linesPerPage != 0) {
+			handler.linesPerPage = (int) Math.floor((((getActualScaling()[1] - getActualScaling()[1] / 8) * (textScale * 100)) / handler.totalLineSize()));
+		}
+		int totalPages = (int) (Math.ceil((double) handler.lines.size() / (double) handler.linesPerPage));
+		if (pageCount >= totalPages) {
+			pageCount = totalPages - 1;
+		}
+
 		GlStateManager.scale(textScale / 100D, textScale / 100D, 1D);
-		StyledStringRenderer.instance().renderWrappedText(handler, getActualScaling()[0] * (textScale * 100), getActualScaling()[1] * (textScale * 100), 0, handler.linesPerPage);
+		StyledStringRenderer.instance().renderWrappedText(handler, getActualScaling()[0] * (textScale * 100), (needsPages ? (getActualScaling()[1] - getActualScaling()[1] / 8) : getActualScaling()[1]) * (textScale * 100), pageCount*handler.linesPerPage, (pageCount*handler.linesPerPage) +handler.linesPerPage);
 		GlStateManager.scale(1D / (textScale / 100D), 1D / (textScale / 100D), 1D / 1D);
+		if(needsPages && handler.linesPerPage != 0){			
+			DisplayElementHelper.renderPageButons(getActualScaling(), this.pageCount + 1, totalPages);
+		}
 	}
 
 	@Override
@@ -58,6 +72,12 @@ public class StyledWrappedTextElement extends StyledTextElement {
 			if (action != null) {
 				return action.doAction(click, player, subClickX, subClickY);
 			}
+		}
+
+		boolean needsPages = handler.linesPerPage < handler.lines.size();
+		if (needsPages) {
+			int totalPages = (int) (Math.ceil((double) handler.lines.size() / (double) handler.linesPerPage));
+			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);
 		}
 		return -1;
 	}
@@ -81,16 +101,16 @@ public class StyledWrappedTextElement extends StyledTextElement {
 					if (i == string.getSecond()) {
 						break;
 					}
-					index += s.end-s.start;
+					index += s.end - s.start;
 					i++;
 				}
-				int charWidth= StyledStringRenderer.instance().getCharRenderWidthFromStyledString(string.getFirst().string, character.getFirst());
-				
+				int charWidth = StyledStringRenderer.instance().getCharRenderWidthFromStyledString(string.getFirst().string, character.getFirst());
+
 				int total = 0;
 				for (SimpleIndex s : line.getFirst()) {
-					total+=s.end-s.start;
+					total += s.end - s.start;
 				}
-				
+
 				return new int[] { Math.min(index + character.getSecond(), total), line.getSecond() };
 			}
 		}
@@ -111,13 +131,8 @@ public class StyledWrappedTextElement extends StyledTextElement {
 			if (y <= subClickY.value && y + height >= subClickY.value) {
 				subClickY.value = y;
 				double element = StyledStringRenderer.instance().FONT_HEIGHT * scale;
-				
-				/*
-				if (c.getAlign() == WidthAlignment.CENTERED) {
-					subClickX.value -= (max_width / 2) - (element / 2);
-				} else if (c.getAlign() == WidthAlignment.RIGHT)
-					subClickX.value -= max_width - element;
-				*/
+
+				/* if (c.getAlign() == WidthAlignment.CENTERED) { subClickX.value -= (max_width / 2) - (element / 2); } else if (c.getAlign() == WidthAlignment.RIGHT) subClickX.value -= max_width - element; */
 				return new Tuple(list, i);
 			}
 			y += height + (spacing * scale);
@@ -144,7 +159,7 @@ public class StyledWrappedTextElement extends StyledTextElement {
 		double scale = textScale / 100D;
 		for (SimpleIndex index : line.getFirst()) {
 			int stringWidth = StyledStringRenderer.instance().getRenderStringWidthWithStyledString(index.string, index.string.getUnformattedString().substring(index.start, index.end));
-			
+
 			double width = stringWidth * scale;
 			if (x <= subClickX.value && x + width >= subClickX.value) {
 				subClickX.value -= x;
@@ -182,10 +197,9 @@ public class StyledWrappedTextElement extends StyledTextElement {
 				}
 				x += width;
 			}
-			
+
 		}
-		
-		
+
 		return new Tuple(null, -1);
 	}
 

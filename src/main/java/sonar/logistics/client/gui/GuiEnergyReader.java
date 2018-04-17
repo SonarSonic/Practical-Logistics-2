@@ -87,7 +87,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	}
 
 	public void setInfo() {
-		infoList = part.getMonitoredList().createSaveableList();
+		infoList = part.getMonitoredList().createSaveableList(part.getSorter());
 	}
 
 	@Override
