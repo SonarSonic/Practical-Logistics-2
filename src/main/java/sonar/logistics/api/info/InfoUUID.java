@@ -29,14 +29,14 @@ public class InfoUUID implements INBTSyncable {
 		this.channelID = channelID;
 	}
 
-	public static InfoUUID newEmpty(){
+	public static InfoUUID newEmpty() {
 		return new InfoUUID(-1, -1);
 	}
 
-	public static InfoUUID newInvalid(){
+	public static InfoUUID newInvalid() {
 		return new InfoUUID(-2, -2);
 	}
-	
+
 	public int getIdentity() {
 		return identity;
 	}
@@ -62,10 +62,10 @@ public class InfoUUID implements INBTSyncable {
 		}
 		return true;
 	}
-	
-	/**if this uuid has been received from the server yet*/
-	public static boolean shouldRender(InfoUUID uuid){
-		return uuid.identity!=-2;
+
+	/** if this uuid has been received from the server yet */
+	public static boolean shouldRender(InfoUUID uuid) {
+		return uuid.identity != -2;
 	}
 
 	public static InfoUUID getUUID(ByteBuf buf) {

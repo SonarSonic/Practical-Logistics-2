@@ -3,6 +3,7 @@ package sonar.logistics.api.displays.storage;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import sonar.logistics.api.displays.CreateInfoType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.HeightAlignment;
@@ -33,7 +34,7 @@ public class EditContainer extends DisplayElementContainer {
 
 			@Override			
 			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
-				click.gsi.requestGui((TileAbstractDisplay) click.gsi.display.getActualDisplay(), player.world, player.getPosition(), player, -1, 0);
+				click.gsi.requestGui((TileAbstractDisplay) click.gsi.display.getActualDisplay(), player.world, player.getPosition(), player, -1, 0, new NBTTagCompound());
 				return -1;
 				
 			}

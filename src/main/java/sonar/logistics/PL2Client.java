@@ -75,9 +75,9 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
 		MinecraftForge.EVENT_BUS.register(this);
-		PL2.logger.info("Registered Client Event Handler");
+		PL2.logger.info("Initialised Client Event Handler");
 		registerRenderThings();
-		PL2.logger.info("Registered Renderers");
+		PL2.logger.info("Initialised Renderers");
 	}
 
 	public void load(FMLInitializationEvent event) {

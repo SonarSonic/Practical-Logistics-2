@@ -42,6 +42,8 @@ public interface IRedstoneCable extends ICableRenderer, ICable {
 	 * @param network the network to remove the connections from */
 	//public void removeConnections(ILogisticsNetwork network);
 	
+	void updateCableRenders();
+	
 	CableRenderType getRenderType(EnumFacing face);
 	
 	int getMaxPower();

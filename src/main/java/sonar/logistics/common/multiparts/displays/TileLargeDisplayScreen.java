@@ -41,11 +41,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	@Override
-	public void handleUpdateTag(NBTTagCompound tag) {
-		super.handleUpdateTag(tag);
-	}
-
-	@Override
 	public DisplayGSI getGSI() {
 		ConnectedDisplay display = getConnectedDisplay();
 		return display == null ? null : getConnectedDisplay().getGSI();
@@ -120,7 +115,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
 		boolean cableFace = (dir == getCableFace() || dir == getCableFace().getOpposite());
 		boolean cableConnection = (internal && cableFace && type == ConnectableType.CONNECTABLE);
-
 		if (cableConnection || (!cableFace && type == this.getConnectableType() && (getRegistryID() == registryID || !(isLocked())))) {
 			return CableConnectionType.NETWORK;
 		}
@@ -156,9 +150,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		}
 	}
 
-	/* @Override public Object getServerElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) { // TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen(); // return new ContainerMultipartSync(part); return null; }
-	 * @Override public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) { // TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen(); // return new GuiDisplayScreen(part, part.getGSI(), GuiState.values()[id], tag.getInteger("infopos")); return null; }
-	 * @Override public void onGuiOpened(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) { if (!world.isRemote) { DisplayElementContainer cont = getGSI().addElementContainer(new double[] { 0, 0, 0 }, getGSI().getDisplayScaling(), 0.5); //cont.getElements().addElement(new TextDisplayElement(cont, "HELLO SAVE ME!")); List<String> strings = SonarHelper.convertArray(FontHelper.translate(TextFormatting.BOLD + ""+ TextFormatting.UNDERLINE + "Videotape by Radiohead"+ "-" + "When I'm at the pearly gates-This will be on my videotape, my videotape-Mephistopheles is just beneath-And he's reaching up to grab me- + -This is one for the good days-And I have it all here-In red, blue, green-Red, blue, green- + -You are my center-When I spin away-Out of control on videotape-On videotape-On videotape-On videotape-On videotape-On videotape- + -This is my way of saying goodbye-Because I can't do it face to face-I'm talking to you after it's too late-No matter what happens now-You shouldn't be afraid-Because I know today has been-the most perfect day I've ever seen").split("-")); DisplayElementList list = new DisplayElementList(); for(String t : strings){ list.getElements().addElement(new TextDisplayElement(t)); } cont.getElements().addElement(list); } GuiState state = GuiState.values()[id]; TileAbstractDisplay part = (TileAbstractDisplay) getConnectedDisplay().getTopLeftScreen(); SonarMultipartHelper.sendMultipartSyncToPlayer(part, (EntityPlayerMP) player); PL2.network.sendTo(new PacketConnectedDisplayUpdate(getConnectedDisplay(), getRegistryID()), (EntityPlayerMP) player); if (state.needsSources()) PacketHelper.sendLocalProvidersFromScreen(part, world, pos, player); } */
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
 		return CableRenderType.INTERNAL;

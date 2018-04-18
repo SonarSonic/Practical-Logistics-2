@@ -97,7 +97,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 			if (!selected.isEmpty()) {
 				Optional<IDisplayElement> element = selected.stream().filter(e -> e != null).findFirst();
 				if (element.isPresent()) {
-					gsi.startResizeSelectionMode(element.get().getHolder().getContainer().getContainerIdentity());
+					gsi.grid_mode.startResizeSelectionMode(element.get().getHolder().getContainer().getContainerIdentity());
 					this.mc.player.closeScreen();
 				}
 			}

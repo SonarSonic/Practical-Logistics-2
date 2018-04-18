@@ -4,6 +4,8 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.opengl.GL11;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
@@ -50,6 +52,7 @@ public class NetworkFluidGridElement extends NetworkGridElement<MonitoredFluidSt
 
 	public void renderGridElement(MonitoredFluidStack stack, int index) {
 		// disableLighting();
+		
 		grid_fill_percentage = 0.9;
 		double elementWidth = width * grid_fill_percentage;
 		double elementHeight = height * grid_fill_percentage;
@@ -61,6 +64,8 @@ public class NetworkFluidGridElement extends NetworkGridElement<MonitoredFluidSt
 		GlStateManager.disableTexture2D();
 		GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
 		DisplayElementHelper.drawRect(0, 0, elementWidth, elementHeight, LogisticsColours.backgroundColour.getRGB());
+
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 0, 1);
 		GlStateManager.disableBlend();
 		GlStateManager.color(1, 1, 1, 1);
 		disableLighting();
@@ -70,6 +75,7 @@ public class NetworkFluidGridElement extends NetworkGridElement<MonitoredFluidSt
 		InfoRenderer.renderProgressBarWithSprite(sprite, elementWidth, elementHeight, stack.getStored(), stack.getStoredStack().capacity);
 		translate(0, 0, 0.001);
 		InfoRenderer.renderCenteredStringsWithUniformScaling(Lists.newArrayList(stack.getClientIdentifier(), stack.getClientObject()), elementWidth, elementHeight, 10, 0.75, text_colour);
+		
 	}
 
 	public void onGridElementClicked(DisplayScreenClick click, LogicInfoList list, @Nullable MonitoredFluidStack stack) {

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import sonar.core.api.utils.TileAdditionType;
+import sonar.core.api.utils.TileRemovalType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -29,9 +31,9 @@ public interface IInfoManager {
 
 	public ConnectedDisplay getConnectedDisplay(int iden);
 
-	public void addIdentityTile(ILogicListenable infoProvider);
+	public void addIdentityTile(ILogicListenable infoProvider, TileAdditionType type);
 
-	public void removeIdentityTile(ILogicListenable monitor);
+	public void removeIdentityTile(ILogicListenable monitor, TileRemovalType type);
 
 	public void removeAll();
 	

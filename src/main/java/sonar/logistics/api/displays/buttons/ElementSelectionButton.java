@@ -18,7 +18,7 @@ public class ElementSelectionButton extends ButtonElement {
 		//if (click.gsi.isElementSelectionMode && click.gsi.selectionType == type && type.shouldCollect()) {
 			//click.gsi.finishElementSelectionMode();
 		//} else {
-			click.gsi.startElementSelectionMode(type);
+			click.gsi.selection_mode.startElementSelectionMode(type);
 		//}
 		return -1;
 	}

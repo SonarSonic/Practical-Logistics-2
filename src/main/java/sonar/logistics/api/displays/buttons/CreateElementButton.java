@@ -15,7 +15,7 @@ public class CreateElementButton extends ButtonElement {
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {	
-		click.gsi.startGridSelectionMode(type);
+		click.gsi.grid_mode.startGridSelectionMode(type);
 		return -1;		
 	}
 

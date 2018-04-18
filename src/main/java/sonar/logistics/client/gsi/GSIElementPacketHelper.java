@@ -77,16 +77,17 @@ public class GSIElementPacketHelper {
 
 	//// REQUEST GUI \\\\
 
-	public static NBTTagCompound createGuiRequestPacket(int guiID) {
+	public static NBTTagCompound createGuiRequestPacket(int guiID, NBTTagCompound packetTag) {
 		NBTTagCompound tag = new NBTTagCompound();
 		writePacketID(tag, GSIElementPackets.GUI_REQUEST);
 		tag.setInteger("GUI_ID", guiID);
+		tag.setTag("gui_tag", packetTag);
 		return tag;
 	}
 
 	public static void doGuiRequestPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		if (gsi.getDisplay().getActualDisplay() instanceof TileAbstractDisplay) {
-			NBTTagCompound tag = new NBTTagCompound();
+			NBTTagCompound tag = packetTag.getCompoundTag("gui_tag");
 			int slotID = ((TileAbstractDisplay) gsi.getDisplay().getActualDisplay()).getSlotID();
 			if (slotID == -1) {
 				tag.setBoolean(FlexibleGuiHandler.TILEENTITY, true);
@@ -94,8 +95,10 @@ public class GSIElementPacketHelper {
 				tag.setBoolean(FlexibleGuiHandler.MULTIPART, true);
 				tag.setInteger(FlexibleGuiHandler.SLOT_ID, slotID);
 			}
-			tag.setInteger("ELE_ID", element == null ? -1 : element.getElementIdentity());
-			tag.setInteger("CONT_ID", element == null ? -1 : element.getHolder().getContainer().getContainerIdentity());
+			if (!tag.hasKey("ELE_ID"))
+				tag.setInteger("ELE_ID", element == null ? -1 : element.getElementIdentity());
+			if (!tag.hasKey("CONT_ID"))
+				tag.setInteger("CONT_ID", element == null ? -1 : element.getHolder().getContainer().getContainerIdentity());
 			SonarCore.instance.guiHandler.openGui(false, player, player.getEntityWorld(), gsi.getDisplay().getCoords().getBlockPos(), packetTag.getInteger("GUI_ID"), tag);
 		}
 	}
@@ -256,6 +259,5 @@ public class GSIElementPacketHelper {
 		gsi.edit_mode.setObject(packetTag.getBoolean("edit_mode"));
 		gsi.sendInfoContainerPacket();
 	}
-
 
 }

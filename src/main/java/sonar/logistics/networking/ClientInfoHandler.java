@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import sonar.core.api.utils.TileAdditionType;
+import sonar.core.api.utils.TileRemovalType;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
@@ -90,14 +92,14 @@ public class ClientInfoHandler implements IInfoManager {
 		onInfoChanged(uuid, newInfo);
 	}
 
-	public void addIdentityTile(ILogicListenable infoProvider) {
+	public void addIdentityTile(ILogicListenable infoProvider, TileAdditionType type) {
 		if (identityTiles.containsValue(infoProvider) || infoProvider.getIdentity() == -1) {
 			return;
 		}
 		identityTiles.put(infoProvider.getIdentity(), infoProvider);
 	}
 
-	public void removeIdentityTile(ILogicListenable monitor) {
+	public void removeIdentityTile(ILogicListenable monitor, TileRemovalType type) {
 		identityTiles.remove(monitor.getIdentity());
 	}
 

@@ -33,36 +33,13 @@ public class ItemStackElement extends AbstractDisplayElement {
 
 	public void render() {
 		scale(1, 1 , 0.1); //compresses the item on the z axis
-		//enablePolygonOffset();
 		GL11.glRotated(180, 0, 1, 0); // flips the item
 		GL11.glScaled(-1, 1, 1);
-		//doPolygonOffset(-1, -1);
 		RenderHelper.renderItemIntoGUI(getItem(), 0, 0);
-		//disablePolygonOffset();
 		GlStateManager.translate(0, 0, 2);
 		GlStateManager.depthMask(false);
 		RenderHelper.renderStoredItemStackOverlay(getItem(), 0, 0, 0, "" + stack.stored, false);
 		GlStateManager.depthMask(true);
-		
-		/*
-		ItemStack item = stack.item;
-		GL11.glPushMatrix();
-		GlStateManager.enableDepth();
-		GL11.glTranslated(-(1 - width / 2 - 0.0625), -0.68 + height / 2, 0.00);
-		GL11.glRotated(180, 0, 1, 0);
-		GL11.glScaled(-1, 1, 1);
-		GlStateManager.disableLighting();
-		GlStateManager.enablePolygonOffset();
-		GlStateManager.doPolygonOffset(-1, -1);
-		GlStateManager.enableCull();
-		RenderHelper.renderItemIntoGUI(item, 0, 0);
-		GlStateManager.disablePolygonOffset();
-		GlStateManager.translate(0, 0, 2);
-		GlStateManager.depthMask(false);
-		GlStateManager.depthMask(true);
-		GlStateManager.disableDepth();
-		GL11.glPopMatrix();
-		*/
 	}
 
 	@Override

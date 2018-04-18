@@ -132,10 +132,11 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	public void renderInfo(MonitoredEnergyStack info, int yPos) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (info.getEnergyStack().capacity > 0) {
-			int l = (int) (info.getEnergyStack().stored * 231 / info.getEnergyStack().capacity);
+			int l = (int) (info.getEnergyStack().stored * 206 / info.getEnergyStack().capacity);
 			this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
-			if (l != 0)
-				this.drawTransparentRect(25, (yPos) + 6, l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
+			if (l != 0) {
+				this.drawTransparentRect(25, (yPos) + 6, 25+l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
+			}
 		}
 		StoredItemStack storedStack = info.getDropStack();
 		if (storedStack != null) {

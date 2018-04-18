@@ -9,4 +9,5 @@ public interface IDataCable extends ICableRenderer, IWorldPosition, ICable, ICab
 	
 	ILogisticsNetwork getNetwork();
 	
+	void updateCableRenders();
 }

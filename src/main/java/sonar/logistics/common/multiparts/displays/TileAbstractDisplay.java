@@ -16,23 +16,7 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	public IDisplay getActualDisplay() {
 		return this;
 	}	
-	/*
-	public boolean DISPLAY_ADDED = false;
-
-	public void connectDisplay() {
-		if (!DISPLAY_ADDED) {
-			PL2.proxy.getInfoManager(isClient()).addDisplay(this);
-			DISPLAY_ADDED = true;
-		}
-	}
-
-	public void disconnectDisplay() {
-		if (DISPLAY_ADDED) {
-			PL2.proxy.getInfoManager(isClient()).removeDisplay(this);
-			DISPLAY_ADDED = false;
-		}
-	}	
-	*/
+	
 	@Override
 	public boolean maxRender() {
 		return true;

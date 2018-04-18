@@ -55,6 +55,13 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 		super.invalidate();
 		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(this, getWorld(), TileRemovalType.REMOVE));
 	}
+	
+	@Override
+	public void updateCableRenders() {
+		if (isServer()) {
+			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
+		}
+	}
 
 	public CableRenderType getRenderType(EnumFacing face) {
 		return CableRenderType.values()[isConnected[face.ordinal()]];

@@ -13,6 +13,7 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.types.NetworkEnergyListElement;
 import sonar.logistics.api.displays.elements.types.NetworkFluidGridElement;
 import sonar.logistics.api.displays.elements.types.NetworkGridElement;
 import sonar.logistics.api.displays.elements.types.NetworkItemGridElement;
@@ -112,6 +113,9 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 			break;
 		case MonitoredFluidStack.id:
 			toAdd.add(new NetworkFluidGridElement(uuid));
+			break;
+		case MonitoredEnergyStack.id:
+			toAdd.add(new NetworkEnergyListElement(uuid));
 			break;
 		}
 	}

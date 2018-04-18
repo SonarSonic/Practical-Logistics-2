@@ -50,7 +50,7 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	public void tick() {
 		addedCables.forEach(cable -> {
 			addConnection(cable);
-			//cable.updateCableRenders();
+			cable.updateCableRenders();
 
 		});
 		removedCables.forEach(cable -> {
@@ -106,22 +106,22 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	public void onNeighbourBlockStateChanged(IRedstoneCable cable, BlockPos pos, BlockPos neighbor) {
 		// getNetwork(cable.getRegistryID()).markCablesChanged();
 		markPowerForUpdate(cable.getRegistryID());
-		//cable.updateCableRenders();
+		cable.updateCableRenders();
 	}
 
 	public void onNeighbourTileEntityChanged(IRedstoneCable cable, BlockPos pos, BlockPos neighbor) {
 		// markPowerForUpdate(cable.getRegistryID());
-		// cable.updateCableRenders();
+		cable.updateCableRenders();
 	}
 
 	public void onNeighbourMultipartAdded(IRedstoneCable cable, IRedstoneConnectable connect) {
 		getNetwork(cable.getRegistryID()).markCablesChanged();
-		//cable.updateCableRenders();
+		cable.updateCableRenders();
 	}
 
 	public void onNeighbourMultipartRemoved(IRedstoneCable cable, IRedstoneConnectable connect) {
 		getNetwork(cable.getRegistryID()).markCablesChanged();
-		//cable.updateCableRenders();
+		cable.updateCableRenders();
 	}
 
 	public void addAllConnectionsToNetwork(IRedstoneCable cable, IRedstoneNetwork network) {

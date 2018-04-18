@@ -55,17 +55,14 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 		super.invalidate();
 		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(this, getWorld(), TileRemovalType.REMOVE));
 	}
-	/*
+	
 	@Override
 	public void updateCableRenders() {
 		if (isServer()) {
-			for (EnumFacing face : EnumFacing.values()) {
-				isConnected[face.ordinal()] = CableHelper.getConnectionRenderType(this, face).ordinal();
-			}
 			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 		}
 	}
-	*/
+	
 
 	public CableRenderType getRenderType(EnumFacing face) {
 		return CableRenderType.values()[isConnected[face.ordinal()]];

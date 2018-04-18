@@ -63,8 +63,7 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 	/** it is essential that you copy the LogicPath also */
 	public T copy();
 
-	/* @Deprecated public void renderInfo(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos);
-	 * @Deprecated public void renderSizeChanged(InfoContainer container, IDisplayInfo displayInfo, double width, double height, double scale, int infoPos); */
+	
 	public void identifyChanges(T newInfo);
 
 	public void onInfoStored();

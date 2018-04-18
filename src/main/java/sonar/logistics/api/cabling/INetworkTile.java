@@ -12,17 +12,21 @@ import sonar.logistics.api.states.TileMessage;
 public interface INetworkTile extends IWorldPosition, INetworkListener, ICableConnectable {
 
 	/** gets the network cache's ID */
-	public int getNetworkID();
+	int getNetworkID();
 	
 	/**the currently connected network*/
-	public ILogisticsNetwork getNetwork();
+	ILogisticsNetwork getNetwork();
 	
 	/**this tiles identity on the network*/
-	public int getIdentity();		
+	int getIdentity();		
 	
-	public TileMessage[] getValidMessages();
+	TileMessage[] getValidMessages();
 	
-	public PL2Multiparts getMultipart();
+	PL2Multiparts getMultipart();
+	
+	default void onTileAddition(){}
+	
+	default void onTileRemoval(){}
 	
 	default ItemStack getDisplayStack(){
 		return ItemStack.EMPTY;

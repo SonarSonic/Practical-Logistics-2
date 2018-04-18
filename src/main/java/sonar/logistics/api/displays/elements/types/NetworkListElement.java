@@ -16,19 +16,24 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.client.gui.GuiSonar;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.displays.buttons.ButtonElement;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -36,12 +41,13 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.info.types.LogicInfoList;
 
-public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement {
+public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement, ILookableElement {
 
 	public int pageCount = 0;
-	public int xSlots, ySlots, perPage = 0;
+	public int ySlots, perPage = 0;
 	public List<L> cachedList = null;
 	public double element_size = 7 * 0.0625;
 	public int text_colour = 16777215;
@@ -55,44 +61,55 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 		super(uuid);
 	}
 
-	public abstract double getRenderWidth();
-
 	public abstract double getRenderHeight();
 
 	public abstract void renderGridElement(L stack, int index);
 
 	public abstract void onGridElementClicked(DisplayScreenClick click, LogicInfoList list, @Nullable L stack);
 
-	double width, height, X_SPACING, Y_SPACING, centreX, centreY;
+	double height, Y_SPACING, centreY;
 	int start, stop;
 
 	public void render(LogicInfoList list) {
 		info = getGSI().getCachedInfo(uuid);
 		cachedList = getCachedList(list, uuid);
-		width = getRenderWidth();
 		height = getRenderHeight();
-		xSlots = (int) Math.floor(getActualScaling()[WIDTH] / width);
-		ySlots = (int) Math.floor(getActualScaling()[HEIGHT] / height);
-		X_SPACING = (getActualScaling()[WIDTH] - (xSlots * width)) / xSlots;
-		Y_SPACING = (getActualScaling()[HEIGHT] - (ySlots * height)) / ySlots;
-		centreX = (width / 2) - ((width * grid_fill_percentage) / 2);
 		centreY = (height / 2) - ((height * grid_fill_percentage) / 2);
 
-		perPage = xSlots * ySlots;
+		ySlots = (int) Math.floor(getActualScaling()[HEIGHT] / height);
+		Y_SPACING = (getActualScaling()[HEIGHT] - (ySlots * height)) / ySlots;
+
+		perPage = ySlots;
+		boolean needsPages = perPage < cachedList.size();
+
+		if (needsPages && perPage != 0) {
+			double adjusted_height = getActualScaling()[HEIGHT] - (getActualScaling()[HEIGHT] / 8);
+			ySlots = (int) Math.floor(adjusted_height / height);
+			Y_SPACING = (adjusted_height - (ySlots * height)) / ySlots;
+		}
+		perPage = ySlots;
+
+		int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
+		if (pageCount >= totalPages) {
+			pageCount = totalPages - 1;
+		}
+
 		start = perPage * pageCount;
 		stop = Math.min(perPage + perPage * pageCount, cachedList.size());
-
 		preListRender();
 		for (int i = start; i < stop; i++) {
 			pushMatrix();
 			int index = i - start;
-			int xLevel = (int) (index - ((Math.floor((index / xSlots))) * xSlots));
-			int yLevel = (int) (Math.floor((index / xSlots)));
-			translate((xLevel * width) + centreX + (X_SPACING * (xLevel + 0.5D)), (yLevel * height) + centreY + (Y_SPACING * (yLevel + 0.5D)), 0);
+			translate(0, (index * height) + centreY + (Y_SPACING * (index + 0.5D)), 0);
 			renderGridElement(cachedList.get(i), index);
 			popMatrix();
 		}
 		postListRender();
+
+		if (needsPages && perPage != 0) {
+			DisplayElementHelper.renderPageButons(getActualScaling(), this.pageCount + 1, totalPages);
+		}
+
 	}
 
 	public void preListRender() {
@@ -114,13 +131,13 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 		if (cachedList == null || info.listChanged) {
 			info.listChanged = false;
 			AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
-			cachedList = list != null ? (ArrayList<L>) list.createSaveableList() : new ArrayList<>();
+			cachedList = list != null ? (ArrayList<L>) list.createSaveableList(info.listSorter) : new ArrayList<>();
 			if (cachedList.size() < perPage * pageCount - 1) {
 				pageCount = 0;
 			}
 		}
 		AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
-		cachedList = list != null ? (ArrayList<L>) list.createSaveableList() : new ArrayList<>();
+		cachedList = list != null ? (ArrayList<L>) list.createSaveableList(info.listSorter) : new ArrayList<>();
 		return cachedList;
 	}
 
@@ -136,15 +153,7 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
-		int xSlot = 0, ySlot = 0;
-		for (int x = 0; x < xSlots; x++) {
-			double xStart = (x * width) + centreX + (X_SPACING * (x + 0.5D));
-			double xStop = xStart + width;
-			if (subClickX >= xStart && subClickX < xStop) {
-				xSlot = x;
-				break;
-			}
-		}
+		int ySlot = 0;
 		for (int y = 0; y < ySlots; y++) {
 			double yStart = (y * height) + centreY + (Y_SPACING * (y + 0.5D));
 			double yStop = yStart + height;
@@ -153,7 +162,7 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 				break;
 			}
 		}
-		int slot = ((ySlot * xSlots) + xSlot) + start;
+		int slot = ySlot + start;
 		if (info != null && info instanceof LogicInfoList) {
 			LogicInfoList list = (LogicInfoList) info;
 			double[] align = this.getHolder().getAlignmentTranslation(this);
@@ -167,6 +176,11 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 			onGridElementClicked(subClick, list, stack);
 		}
 
+		boolean needsPages = perPage < cachedList.size();
+		if (needsPages) {
+			int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
+			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);
+		}
 		return 0;
 	}
 

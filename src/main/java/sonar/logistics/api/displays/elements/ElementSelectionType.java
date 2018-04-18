@@ -36,7 +36,7 @@ public enum ElementSelectionType {
 			// send edit packet
 			break;
 		case RESIZE:
-			gsi.startResizeSelectionMode(containers.get(0));			
+			gsi.grid_mode.startResizeSelectionMode(containers.get(0));			
 			break;
 		default:
 			break;

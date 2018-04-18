@@ -44,7 +44,7 @@ public class NetworkItemElement extends AbstractInfoElement<MonitoredItemStack> 
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		// FIXME
+		//FIXME
 		return null;
 	}
 
