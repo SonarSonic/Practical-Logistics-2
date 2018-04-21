@@ -10,7 +10,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 
-public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDisplayElement {
+public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDisplayElement implements IInfoReferenceElement {
 
 	public InfoUUID uuid;
 	public IInfo info;
@@ -21,8 +21,8 @@ public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDispl
 		this.uuid = uuid;
 	}
 
-	public void render() {
-		info = getGSI().getCachedInfo(uuid);
+	public void render() {		
+		this.info = getGSI().getCachedInfo(uuid);		
 		if (info != null && isType(info)) {
 			render((T) info);
 		}else{

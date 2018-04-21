@@ -22,7 +22,7 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.FluidChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
@@ -46,7 +46,7 @@ import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack> implements IByteBufTile {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_FLUID_SELECTED };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_FLUID_SELECTED };
 
 	public SyncMonitoredType<MonitoredFluidStack> selected = new SyncMonitoredType<MonitoredFluidStack>(1);
 	public SyncEnum<FluidReader.Modes> setting = (SyncEnum) new SyncEnum(FluidReader.Modes.values(), 2).addSyncType(SyncType.SPECIAL);
@@ -188,7 +188,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

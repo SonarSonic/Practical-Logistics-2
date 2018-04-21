@@ -1,6 +1,6 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.scale;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 @DisplayElementType(id = ItemStackElement.REGISTRY_NAME, modid = PL2Constants.MODID)
@@ -70,11 +69,6 @@ public class ItemStackElement extends AbstractDisplayElement {
 
 	public long setCount(long stored) {
 		return stack.stored = stored;
-	}
-
-	@Override
-	public List<InfoUUID> getInfoReferences() {
-		return new ArrayList<>();
 	}
 
 	@Override

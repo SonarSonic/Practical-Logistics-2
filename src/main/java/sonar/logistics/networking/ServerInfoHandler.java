@@ -1,30 +1,44 @@
 package sonar.logistics.networking;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import sonar.core.helpers.FunctionHelper;
+import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.PlayerListener;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.errors.IInfoError;
+import sonar.logistics.api.errors.UUIDError;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.PacketHelper;
@@ -46,7 +60,7 @@ public class ServerInfoHandler implements IInfoManager {
 	public Map<Integer, ConnectedDisplay> connectedDisplays = new HashMap<>();
 	public Map<Integer, List<ChunkPos>> chunksToUpdate = new HashMap<>();
 
-	public static ServerInfoHandler instance(){
+	public static ServerInfoHandler instance() {
 		return (ServerInfoHandler) PL2.proxy.getServerManager();
 	}
 
@@ -87,25 +101,20 @@ public class ServerInfoHandler implements IInfoManager {
 	public IInfo getInfoFromUUID(InfoUUID uuid) {
 		return info.get(uuid);
 	}
-	
+
 	public ConnectedDisplay getConnectedDisplay(int iden) {
 		return connectedDisplays.get(iden);
 	}
 
-	public void addIdentityTile(ILogicListenable logicTile) {
+	public void addIdentityTile(ILogicListenable logicTile, PL2AdditionType type) {
 		if (identityTiles.containsValue(logicTile)) {
 			return;
 		}
 		identityTiles.put(logicTile.getIdentity(), logicTile);
-		LocalProviderHandler.onLocalProviderAdded(logicTile);
 	}
 
-	public void removeIdentityTile(ILogicListenable logicTile) {
-		for (int i = 0; i < (logicTile instanceof IInfoProvider ? ((IInfoProvider) logicTile).getMaxInfo() : 1); i++) {
-			info.put(new InfoUUID(logicTile.getIdentity(), i), InfoError.noData);
-		}
+	public void removeIdentityTile(ILogicListenable logicTile, PL2RemovalType type) {
 		identityTiles.remove(logicTile.getIdentity());
-		LocalProviderHandler.onLocalProviderRemoved(logicTile);
 	}
 
 	public ILogicListenable getIdentityTile(int iden) {
@@ -145,6 +154,7 @@ public class ServerInfoHandler implements IInfoManager {
 	public DisplayGSI getGSI(int iden) {
 		return displays.get(iden);
 	}
+
 	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
 		List<ChunkPos> chunks = chunksToUpdate.computeIfAbsent(dimension, FunctionHelper.ARRAY);
 		if (!chunks.contains(chunkPos)) {
@@ -190,6 +200,7 @@ public class ServerInfoHandler implements IInfoManager {
 				changedInfo.clear();
 			}
 		}
+		sendErrors();
 		return;
 
 	}
@@ -237,5 +248,99 @@ public class ServerInfoHandler implements IInfoManager {
 	@Override
 	public void setInfo(InfoUUID uuid, IInfo newInfo) {
 		info.put(uuid, newInfo);
+	}
+
+	public List<EntityPlayerMP> getPlayersWatchingUUID(InfoUUID uuid) {
+		List<EntityPlayerMP> players = new ArrayList<>();
+
+		this.displays.values().forEach(gsi -> {
+			if (gsi.isDisplayingUUID(uuid)) {
+				ListHelper.addWithCheck(players, ChunkViewerHandler.instance().getWatchingPlayers(gsi));
+			}
+		});
+		return players;
+	}
+
+	public void forEachGSIDisplayingUUID(InfoUUID uuid, Consumer<DisplayGSI> action) {
+		this.displays.values().forEach(gsi -> {
+			if (gsi.isDisplayingUUID(uuid)) {
+				action.accept(gsi);
+			}
+		});
+	}
+
+	//// ERROR HANDLING \\\\
+
+	private List<IInfoError> added_errors = new ArrayList<>();
+
+	public void addError(IInfoError error) {
+		added_errors.add(error);
+	}
+
+	public void addErrors(List<IInfoError> errors) {
+		added_errors.addAll(errors);
+	}
+
+	public void sendErrors() {
+		if (added_errors.isEmpty()) {
+			return;
+		}
+		Map<DisplayGSI, List<IInfoError>> affectedGSIs = new HashMap<>();
+		for (IInfoError error : added_errors) {
+			for (DisplayGSI gsi : displays.values()) {
+				UUID: for (InfoUUID uuid : error.getAffectedUUIDs()) {
+					if (gsi.isDisplayingUUID(uuid)) {
+						affectedGSIs.computeIfAbsent(gsi, FunctionHelper.ARRAY);
+						affectedGSIs.get(gsi).add(error);
+						break UUID;
+					}
+				}
+			}
+		}
+		for (Entry<DisplayGSI, List<IInfoError>> entry : affectedGSIs.entrySet()) {
+			entry.getKey().addInfoErrors(entry.getValue());
+			entry.getKey().sendInfoContainerPacket();
+		}
+
+	}
+
+	//// EVENT HANDLING \\\\
+
+	public Map<Event, Integer> scheduled_events = new HashMap<>();
+	public Map<Runnable, Integer> scheduled_runnables = new HashMap<>();
+
+	public void scheduleEvent(Event event, int ticksToWait) {
+		scheduled_events.put(event, ticksToWait);
+	}
+
+	public void scheduleRunnable(Runnable action, int ticksToWait) {
+		scheduled_runnables.put(action, ticksToWait);
+	}
+
+	public void flushEvents() {
+		if (!scheduled_events.isEmpty()) {
+			Iterator<Entry<Event, Integer>> it = scheduled_events.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<Event, Integer> entry = it.next();
+				if (entry.getValue() <= 0) {
+					MinecraftForge.EVENT_BUS.post(entry.getKey());
+					it.remove();
+				} else {
+					entry.setValue(entry.getValue() - 1);
+				}
+			}
+		}
+		if (!scheduled_runnables.isEmpty()) {
+			Iterator<Entry<Runnable, Integer>> it = scheduled_runnables.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<Runnable, Integer> entry = it.next();
+				if (entry.getValue() <= 0) {
+					entry.getKey().run();
+					it.remove();
+				} else {
+					entry.setValue(entry.getValue() - 1);
+				}
+			}
+		}
 	}
 }

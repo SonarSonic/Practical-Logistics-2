@@ -24,7 +24,7 @@ import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.signaller.EmitterStatement;
 import sonar.logistics.api.tiles.signaller.ILogisticsTile;
 import sonar.logistics.api.tiles.signaller.SignallerModes;
@@ -36,7 +36,7 @@ import sonar.logistics.networking.ServerInfoHandler;
 
 public class TileRedstoneSignaller extends TileSidedLogistics implements ILogisticsTile, IByteBufTile, IFlexibleGui {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_STATEMENTS };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_STATEMENTS };
 
 	public SyncTagType.BOOLEAN isActive = new SyncTagType.BOOLEAN(1);
 	public SyncNBTAbstractList<EmitterStatement> statements = new SyncNBTAbstractList(EmitterStatement.class, 2);
@@ -182,7 +182,7 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

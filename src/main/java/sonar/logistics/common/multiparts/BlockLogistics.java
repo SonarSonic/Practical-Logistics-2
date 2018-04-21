@@ -1,20 +1,30 @@
 package sonar.logistics.common.multiparts;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import sonar.core.api.utils.TileAdditionType;
+import sonar.core.api.utils.TileRemovalType;
 import sonar.core.common.block.SonarMaterials;
 import sonar.core.integration.multipart.BlockSonarMultipart;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.logistics.PL2Multiparts;
+import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
+import sonar.logistics.common.multiparts.readers.TileAbstractReader;
 import sonar.logistics.helpers.LogisticsHelper;
+import sonar.logistics.networking.events.NetworkPartEvent;
 
-public abstract class BlockLogistics extends BlockSonarMultipart{
+public abstract class BlockLogistics extends BlockSonarMultipart {
 
 	public PL2Multiparts multipart;
 
@@ -56,21 +66,24 @@ public abstract class BlockLogistics extends BlockSonarMultipart{
 		if (LogisticsHelper.isPlayerUsingOperator(player)) {
 			return false;
 		}
-		/* TileMessage message = states.canOpenGui(); if (message != null) {
-		 * FontHelper.sendMessage(message.message.o(), player.getEntityWorld(),
-		 * player); return false; } */
 		return true;
 	}
 
-	// change it to get the next valid rotation whatever it is;
-	/* public Pair<Boolean, EnumFacing> rotatePart(EnumFacing face, EnumFacing
-	 * axis) { EnumFacing[] valid = getValidRotations(); if (valid != null) {
-	 * int pos = -1; for (int i = 0; i < valid.length; i++) { if (valid[i] ==
-	 * face) { pos = i; break; } } if (pos != -1) { int current = pos; boolean
-	 * fullCycle = false; while (!fullCycle &&
-	 * getContainer().getPartInSlot(PartSlot.getFaceSlot(valid[current])) !=
-	 * null) { current++; if (current >= valid.length) { current = 0; } if
-	 * (current == pos) { return new Pair(false, face); } } if (current != -1 &&
-	 * isServer()) { face = valid[current]; return new Pair(true, face); } } }
-	 * return new Pair(false, face); } */
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		TileEntity tile = world.getTileEntity(pos);
+		if (tile instanceof TileLogistics && !world.isRemote) {
+			((TileLogistics)tile).doAdditionEvent(PL2AdditionType.PLAYER_ADDED);
+		}
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
+	}
+
+	@Override
+	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+		TileEntity tile = world.getTileEntity(pos);
+		if (tile instanceof TileAbstractReader && !world.isRemote) {
+			((TileLogistics)tile).doRemovalEvent(PL2RemovalType.PLAYER_REMOVED);		
+		}
+		super.breakBlock(world, pos, state);
+	}
 }

@@ -73,6 +73,9 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 	public void render(LogicInfoList list) {
 		info = getGSI().getCachedInfo(uuid);
 		cachedList = getCachedList(list, uuid);
+		if(cachedList.isEmpty()){
+			return;
+		}
 		height = getRenderHeight();
 		centreY = (height / 2) - ((height * grid_fill_percentage) / 2);
 
@@ -94,8 +97,9 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 			pageCount = totalPages - 1;
 		}
 
-		start = perPage * pageCount;
-		stop = Math.min(perPage + perPage * pageCount, cachedList.size());
+		start = Math.max(perPage * pageCount, 0);
+		stop = Math.max(Math.min(perPage + perPage * pageCount, cachedList.size()), 0);
+		
 		preListRender();
 		for (int i = start; i < stop; i++) {
 			pushMatrix();

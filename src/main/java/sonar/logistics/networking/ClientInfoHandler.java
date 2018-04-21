@@ -2,6 +2,7 @@ package sonar.logistics.networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
+import sonar.core.helpers.FunctionHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
@@ -21,9 +23,12 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.info.types.LogicInfoList;
@@ -92,14 +97,14 @@ public class ClientInfoHandler implements IInfoManager {
 		onInfoChanged(uuid, newInfo);
 	}
 
-	public void addIdentityTile(ILogicListenable infoProvider, TileAdditionType type) {
+	public void addIdentityTile(ILogicListenable infoProvider, PL2AdditionType type) {
 		if (identityTiles.containsValue(infoProvider) || infoProvider.getIdentity() == -1) {
 			return;
 		}
 		identityTiles.put(infoProvider.getIdentity(), infoProvider);
 	}
 
-	public void removeIdentityTile(ILogicListenable monitor, TileRemovalType type) {
+	public void removeIdentityTile(ILogicListenable monitor, PL2RemovalType type) {
 		identityTiles.remove(monitor.getIdentity());
 	}
 

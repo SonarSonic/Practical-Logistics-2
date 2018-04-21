@@ -20,6 +20,7 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IDisplayRenderable;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.IInfoReferenceElement;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
@@ -55,9 +56,9 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		resize(translate, scale, pScale);
 		containerIdentity = identity;
 	}
-	
-	/**for use for guide example configurations*/
-	public DisplayElementContainer(double[] translate, double[] scale, double pScale, int identity, double[] display_scaling){
+
+	/** for use for guide example configurations */
+	public DisplayElementContainer(double[] translate, double[] scale, double pScale, int identity, double[] display_scaling) {
 		createdTranslation = DisplayElementHelper.percentageFromScale(translate, display_scaling);
 		createdScaling = DisplayElementHelper.percentageFromScale(scale, display_scaling);
 		percentageScale = pScale;
@@ -112,12 +113,15 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public void endElementRender(IDisplayElement e) {}
 
 	public List<InfoUUID> getInfoReferences() {
-		List<InfoUUID> uuid = new ArrayList<>();
+		List<InfoUUID> holders = new ArrayList<>();
 		for (IDisplayElement s : elements) {
-			ListHelper.addWithCheck(uuid, s.getInfoReferences());
+			if (s instanceof IInfoReferenceElement) {
+				ListHelper.addWithCheck(holders, ((IInfoReferenceElement) s).getInfoReferences());
+			}
 		}
-		return uuid;
+		return holders;
 	}
+
 	public Tuple<IDisplayElement, double[]> getClickBoxes(double x, double y) {
 		return getClickBoxes(getAlignmentTranslation(), x, y);
 	}
@@ -146,7 +150,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 		}
 		return null;
 	}
-	
+
 	public void updateActualScaling() {
 		translation = null;
 		maxContainerScaling = null;

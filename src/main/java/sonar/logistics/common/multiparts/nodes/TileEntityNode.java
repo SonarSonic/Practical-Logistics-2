@@ -23,7 +23,7 @@ import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.EntityTarget;
 import sonar.logistics.api.tiles.nodes.INode;
@@ -34,7 +34,7 @@ import sonar.logistics.networking.CacheHandler;
 
 public class TileEntityNode extends TileSidedLogistics implements INode, IByteBufTile, IFlexibleGui {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 
 	public SyncEnum<EntityTarget> entityTarget = new SyncEnum<EntityTarget>(EntityTarget.values(), 1);
 	public SyncTagType.INT entityRange = (INT) new SyncTagType.INT(2).setDefault(10);
@@ -150,7 +150,7 @@ public class TileEntityNode extends TileSidedLogistics implements INode, IByteBu
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

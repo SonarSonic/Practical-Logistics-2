@@ -29,10 +29,6 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	/**gets the {@link IElementStorageHolder} of this {@link IDisplayElement}*/
 	IElementStorageHolder getHolder();
 
-	/**all the {@link InfoUUID} which are required to render this DisplayElement,
-	 * this information is used to know which {@link IInfo} should be synced with the client*/
-	List<InfoUUID> getInfoReferences();
-
 	/**the unique  identity of this element, used to identify the element between server and client*/
 	int getElementIdentity();
 
@@ -40,12 +36,6 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	default DisplayGSI getGSI() {
 		return getHolder().getContainer().getGSI();
 	}
-	
-	/**called when info included in {@link #getInfoReferences} is changed*/
-	default void onInfoReferenceChanged(InfoUUID uuid, IInfo info) {}
-
-	/**called when an {@link AbstractChangeableList} whose {@link InfoUUID} included in {@link #getInfoReferences} is changed*/
-	default void onChangeableListChanged(InfoUUID uuid, AbstractChangeableList list) {}
 
 	//// IDisplayRenderable \\\\
 	
@@ -95,5 +85,9 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 	default Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
 		return null;
 	}
+	
+	default void validate(DisplayGSI gsi){}
+	
+	default void invalidate(DisplayGSI gsi){}
 
 }

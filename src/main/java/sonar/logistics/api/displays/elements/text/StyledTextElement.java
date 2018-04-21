@@ -34,6 +34,7 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.elements.IInfoReferenceElement;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer.StyledStringRenderHandler;
 import sonar.logistics.api.info.IInfo;
@@ -44,7 +45,7 @@ import sonar.logistics.client.gui.textedit.GuiEditWrappedStyledString;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
-public abstract class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine> {
+public abstract class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine>, IInfoReferenceElement {
 
 	private Map<Integer, IDisplayAction> actions = Maps.newHashMap();
 	private List<StyledStringLine> textLines = new ArrayList<>();

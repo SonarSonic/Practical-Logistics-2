@@ -1,17 +1,6 @@
 package sonar.logistics.api.displays.buttons;
 
-import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
-import static net.minecraft.client.renderer.GlStateManager.disableBlend;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.disableTexture2D;
-import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
-import static net.minecraft.client.renderer.GlStateManager.enableBlend;
-import static net.minecraft.client.renderer.GlStateManager.enableLighting;
-import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +21,6 @@ import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.ILookableElement;
-import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsColours;
 
@@ -99,11 +87,6 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 			popMatrix();
 
 		}
-	}
-
-	@Override
-	public List<InfoUUID> getInfoReferences() {
-		return new ArrayList<>();
 	}
 
 	@Override

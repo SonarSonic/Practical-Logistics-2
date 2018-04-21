@@ -23,6 +23,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2Properties;
@@ -101,6 +102,12 @@ public class BlockDataCable extends BlockLogistics {
 	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if(!world.isRemote){
+			TileEntity tile = world.getTileEntity(pos);
+			if(tile instanceof TileDataCable){
+				FontHelper.sendMessage("ID: " + ((TileDataCable)tile).registryID, world, player);
+			}
+		}
 		return false;
 	}
 
@@ -113,8 +120,6 @@ public class BlockDataCable extends BlockLogistics {
 		for (PropertyCableFace p : PL2Properties.CABLE_FACES) {
 			state = state.withProperty(p, CableHelper.getConnectionRenderType(cable, p.face));
 		}	
-		//BlockModelShapes shapes = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
-		//Map<IBlockState, ModelResourceLocation> variants = shapes.getBlockStateMapper().getVariants(this);
 		return state;
 	}
 

@@ -14,13 +14,13 @@ import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 /**used on Readers for caching the displays connected to their info*/
 public class PL2ListenerList extends ListenableList<PlayerListener> {
-
+	
 	private ListenerList<DisplayGSI> displayListeners = new ListenerList<DisplayGSI>(1);
 
 	public PL2ListenerList(ISonarListenable<PlayerListener> listen, int maxTypes) {
 		super(listen, maxTypes);
 	}
-
+	
 	public List<PlayerListener> getAllListeners(ListenerType... enums) {
 		List<PlayerListener> listeners = super.getListeners(enums);
 		for (ListenerType type : enums) {
@@ -65,9 +65,8 @@ public class PL2ListenerList extends ListenableList<PlayerListener> {
 		}
 		return hasListeners;
 	}
-
+	
 	public ListenerList<DisplayGSI> getDisplayListeners() {
 		return displayListeners;
 	}
-
 }

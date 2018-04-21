@@ -19,7 +19,7 @@ import sonar.core.translate.Localisation;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.elements.text.StyledStringHelper;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.client.ClockRenderer;
 import sonar.logistics.client.DisplayRenderer;
 import sonar.logistics.client.RenderArray;
@@ -123,7 +123,7 @@ public class PL2Client extends PL2Common implements ILocalisationHandler {
 	@Override
 	public List<Localisation> getLocalisations(List<Localisation> current) {
 		current.addAll(PL2Translate.locals);
-		current = TileMessage.getLocalisations(current);
+		current = ErrorMessage.getLocalisations(current);
 		return current;
 	}
 }

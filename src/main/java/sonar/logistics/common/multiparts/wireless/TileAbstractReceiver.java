@@ -14,7 +14,7 @@ import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncNBTAbstract;
 import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.api.wireless.EnumConnected;
 import sonar.logistics.api.wireless.IWirelessEmitter;
@@ -25,7 +25,7 @@ import sonar.logistics.common.containers.ContainerDataReceiver;
 
 public abstract class TileAbstractReceiver<E extends IWirelessEmitter, R extends IWirelessReceiver> extends TileAbstractWireless implements IWirelessReceiver<E>, IByteBufTile, IFlexibleGui {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_EMITTERS_CONNECTED, TileMessage.EMITTERS_OFFLINE };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_EMITTERS_CONNECTED, ErrorMessage.EMITTERS_OFFLINE };
 
 	public SyncNBTAbstractList<ClientWirelessEmitter> clientEmitters = new SyncNBTAbstractList<ClientWirelessEmitter>(ClientWirelessEmitter.class, 2);
 	public SyncNBTAbstract<ClientWirelessEmitter> selectedEmitter = new SyncNBTAbstract<ClientWirelessEmitter>(ClientWirelessEmitter.class, 4);

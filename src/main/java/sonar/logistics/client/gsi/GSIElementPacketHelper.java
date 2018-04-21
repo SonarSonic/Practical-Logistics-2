@@ -260,4 +260,19 @@ public class GSIElementPacketHelper {
 		gsi.sendInfoContainerPacket();
 	}
 
+	//// EDITMODE \\\\
+
+	public static NBTTagCompound createUpdateElementPacket(IDisplayElement element, SyncType type) {
+		NBTTagCompound tag = new NBTTagCompound();
+		writePacketID(tag, GSIElementPackets.UPDATE_ELEMENT);
+		tag.setTag("update_tag", element.writeData(new NBTTagCompound(), type));
+		tag.setInteger("type", type.ordinal());
+		return tag;
+	}
+
+	public static void doUpdateElementPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		NBTTagCompound tag = packetTag.getCompoundTag("update_tag");
+		element.readData(tag, SyncType.values()[packetTag.getInteger("type")]);
+	}
+
 }

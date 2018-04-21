@@ -8,7 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IWirelessEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
@@ -24,8 +25,8 @@ public class TileDataReceiver extends TileAbstractReceiver implements IDataRecei
 	public List<Integer> networks = new ArrayList<>();
 
 	public void updateStates() {
-		states.markTileMessage(TileMessage.NO_EMITTERS_CONNECTED, clientEmitters.getObjects().isEmpty());
-		states.markTileMessage(TileMessage.EMITTERS_OFFLINE, !clientEmitters.getObjects().isEmpty() && networks.isEmpty());
+		states.markTileMessage(ErrorMessage.NO_EMITTERS_CONNECTED, clientEmitters.getObjects().isEmpty());
+		states.markTileMessage(ErrorMessage.EMITTERS_OFFLINE, !clientEmitters.getObjects().isEmpty() && networks.isEmpty());
 	}
 
 	//// NETWORK \\\\
@@ -59,7 +60,7 @@ public class TileDataReceiver extends TileAbstractReceiver implements IDataRecei
 	}
 	
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

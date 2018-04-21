@@ -2,6 +2,8 @@ package sonar.logistics.api.wireless;
 
 import java.util.List;
 
+import sonar.logistics.api.networks.ILogisticsNetwork;
+
 /** implemented on the Data Receiver */
 public interface IDataReceiver extends IWirelessReceiver {
 

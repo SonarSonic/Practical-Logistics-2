@@ -61,8 +61,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 		if (isServer()) {
 			SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 		}
-	}
-	
+	}	
 
 	public CableRenderType getRenderType(EnumFacing face) {
 		return CableRenderType.values()[isConnected[face.ordinal()]];

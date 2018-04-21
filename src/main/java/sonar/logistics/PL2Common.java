@@ -21,6 +21,7 @@ import sonar.logistics.packets.PacketClientEmitters;
 import sonar.logistics.packets.PacketConnectedDisplayRemove;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 import sonar.logistics.packets.PacketDisplayGSIContentsPacket;
+import sonar.logistics.packets.PacketDisplayGSIInvalidate;
 import sonar.logistics.packets.PacketDisplayGSIValidate;
 import sonar.logistics.packets.PacketDisplayTextEdit;
 import sonar.logistics.packets.PacketEmitterStatement;
@@ -68,6 +69,7 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketDisplayTextEdit.Handler.class, PacketDisplayTextEdit.class, 16, Side.SERVER);
 		PL2.network.registerMessage(PacketDisplayGSIContentsPacket.Handler.class, PacketDisplayGSIContentsPacket.class, 17, Side.CLIENT);
 		PL2.network.registerMessage(PacketDisplayGSIValidate.Handler.class, PacketDisplayGSIValidate.class, 18, Side.CLIENT);
+		PL2.network.registerMessage(PacketDisplayGSIInvalidate.Handler.class, PacketDisplayGSIInvalidate.class, 19, Side.CLIENT);
 	}
 
 	public ClientInfoHandler getClientManager() {

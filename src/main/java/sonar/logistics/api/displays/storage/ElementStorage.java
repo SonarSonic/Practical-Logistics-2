@@ -125,10 +125,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		if (type.isType(SyncType.SAVE)) {
-			elements.clear();
-		}
-
+		List<Integer> loaded = new ArrayList<>();
 		NBTTagList tagList = nbt.getTagList(TAG_NAME, NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound elementsTag = tagList.getCompoundTagAt(i);
@@ -140,18 +137,26 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 				for (int s = 0; s < subList.tagCount(); s++) {
 					NBTTagCompound eTag = subList.getCompoundTagAt(s);
 					int iden = eTag.getInteger("identity");
-					IDisplayElement ide = this.getElementFromIdentity(iden);
+					IDisplayElement ide = getElementFromIdentity(iden);
 					if (ide != null) {
 						ide.readData(eTag, type);
 					} else {
 						IDisplayElement e = DisplayElementHelper.loadElement(eTag, holder);
-						if (e != null){
+						if (e != null) {
 							addElement(e);
 						}
 					}
+					loaded.add(iden);
 				}
 			}
 		}
+		List<IDisplayElement> toRemove = new ArrayList<>();
+		forEach(element -> {
+			if (!loaded.contains(element.getElementIdentity())) {
+				toRemove.add(element);
+			}
+		});
+		toRemove.forEach(this::removeElement);
 	}
 
 	@Override

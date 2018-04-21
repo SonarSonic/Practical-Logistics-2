@@ -39,8 +39,8 @@ public abstract class CacheHandler<T> {
 
 		@Override
 		public void onConnectionRemoved(LogisticsNetwork network, IDataReceiver connection) {
-			connection.onNetworkDisconnect(network);
 			WirelessDataManager.instance().disconnectReceiver(network, connection);
+			connection.onNetworkDisconnect(network); // this has to happen after, so the receiver has a network to disconnect
 		}
 
 		@Override
@@ -57,8 +57,8 @@ public abstract class CacheHandler<T> {
 		}
 
 		public void onConnectionRemoved(LogisticsNetwork network, IDataEmitter emitter) {
-			emitter.onNetworkDisconnect(network);
 			WirelessDataManager.instance().disconnectEmitter(network, emitter);
+			emitter.onNetworkDisconnect(network); // this has to happen after, so the emitter has a network to disconnect from
 		}
 
 		@Override

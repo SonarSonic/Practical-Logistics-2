@@ -25,6 +25,7 @@ import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
+import sonar.logistics.api.displays.elements.IInfoReferenceElement;
 import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -34,7 +35,7 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 @DisplayElementType(id = UnconfiguredInfoElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class UnconfiguredInfoElement extends AbstractDisplayElement implements ILookableElement, IClickableElement, IFlexibleGui {
+public class UnconfiguredInfoElement extends AbstractDisplayElement implements ILookableElement, IClickableElement, IInfoReferenceElement, IFlexibleGui {
 
 	public List<IDisplayElement> elements;
 	public InfoUUID uuid;
@@ -82,19 +83,18 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 
 	@Override
 	public void onInfoReferenceChanged(InfoUUID uuid, IInfo info) {
-		if (uuid.equals(this.uuid)) {
+		if (uuid.equals(uuid)) {
 			updateInfoElements();
-			getInfoElements().stream().filter(e -> e != null).forEach(e -> e.onInfoReferenceChanged(uuid, info));
+			getInfoElements().stream().filter(e -> e != null && e instanceof IInfoReferenceElement)
+			.forEach(e -> ((IInfoReferenceElement)e).onInfoReferenceChanged(uuid, info));
 		}
 	}
 
 	public void updateInfoElements() {
-
 		IInfo info = getGSI().getCachedInfo(uuid);
 		if (info == null) {
 			elements = new ArrayList<>();
 			return;
-
 		}
 		List<IDisplayElement> nElements = new ArrayList<>();
 		info.createDefaultElements(nElements, getHolder(), uuid);
@@ -138,7 +138,7 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		super.readData(nbt, type);
-		uuid = NBTHelper.instanceNBTSyncable(InfoUUID.class, nbt);
+		(uuid = new InfoUUID()).readData(nbt, type);
 	}
 
 	@Override

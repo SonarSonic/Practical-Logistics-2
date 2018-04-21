@@ -17,6 +17,7 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.readers.TileAbstractLogicReader;
+import sonar.logistics.common.multiparts.readers.TileNetworkReader;
 import sonar.logistics.helpers.InfoRenderer;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
@@ -62,7 +63,11 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 	@Override
 	public void drawGuiContainerForegroundLayer(int x, int y) {
 		super.drawGuiContainerForegroundLayer(x, y);
-		FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
+		if (part instanceof TileNetworkReader) {
+			FontHelper.textCentre(PL2Translate.NETWORK_READER.t(), xSize, 6, LogisticsColours.white_text);
+		} else {
+			FontHelper.textCentre(PL2Translate.INFO_READER.t(), xSize, 6, LogisticsColours.white_text);
+		}
 		FontHelper.textCentre(PL2Translate.INFO_READER_HELP.t(), xSize, 18, LogisticsColours.grey_text);
 		overlay.drawOverlay(this, x, y);
 	}

@@ -26,7 +26,7 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -56,7 +56,7 @@ import sonar.logistics.packets.sync.SyncFilterList;
 
 public class TileInventoryReader extends TileAbstractListReader<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_STACK_SELECTED };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_STACK_SELECTED };
 
 	public SonarInventory inventory = new SonarInventory(this, 1);
 	public SyncEnum<InventoryReader.Modes> setting = (SyncEnum) new SyncEnum(InventoryReader.Modes.values(), 2).addSyncType(SyncType.SPECIAL);
@@ -249,7 +249,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

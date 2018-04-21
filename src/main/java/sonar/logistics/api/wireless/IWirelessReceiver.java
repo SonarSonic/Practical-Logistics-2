@@ -3,6 +3,7 @@ package sonar.logistics.api.wireless;
 import java.util.UUID;
 
 import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.networks.ILogisticsNetwork;
 
 public interface IWirelessReceiver<E extends IWirelessEmitter> extends INetworkTile {
 	
@@ -10,7 +11,8 @@ public interface IWirelessReceiver<E extends IWirelessEmitter> extends INetworkT
 	
 	public void onEmitterSecurityChanged(E emitter, WirelessSecurity oldSetting);
 	
-	/**only called if isConnectedToEmitter returns true*/
+	/**only called if isConnectedToEmitter returns true
+	 * @param network TODO*/
 	public void onEmitterDisconnected(E emitter);
 
 	/**only called if isConnectedToEmitter returns true*/

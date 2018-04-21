@@ -10,7 +10,7 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.types.InfoError;
@@ -21,7 +21,7 @@ import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends TileAbstractListReader<T> {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK, TileMessage.NO_DATA_SELECTED };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_DATA_SELECTED };
 
 	private List<SyncMonitoredType<T>> selected = Lists.newArrayListWithCapacity(getMaxInfo()), paired = Lists.newArrayListWithCapacity(getMaxInfo());
 	{
@@ -97,7 +97,7 @@ public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

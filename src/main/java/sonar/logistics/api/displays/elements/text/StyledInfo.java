@@ -51,7 +51,7 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	}
 
 	public InfoUUID getInfoUUID() {
-		return this.uuid;
+		return uuid;
 	}
 
 	public InfoUUID setInfoUUID(InfoUUID uuid) {
@@ -156,9 +156,10 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	public List<InfoUUID> getInfoReferences(){
 		return Lists.newArrayList(uuid);
 	}
+	
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		uuid = NBTHelper.instanceNBTSyncable(InfoUUID.class, nbt);
+		(uuid = new InfoUUID()).readData(nbt, type);
 		(style = new SonarStyling()).readData(nbt, type);
 		refType = ReferenceType.values()[nbt.getInteger("rt")];
 	}

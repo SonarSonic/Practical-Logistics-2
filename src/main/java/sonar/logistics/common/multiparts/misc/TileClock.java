@@ -20,7 +20,7 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiClock;
@@ -31,7 +31,7 @@ import sonar.logistics.networking.ServerInfoHandler;
 
 public class TileClock extends TileSidedLogistics implements IInfoProvider, IByteBufTile, IFlexibleGui {
 
-	public static final TileMessage[] validStates = new TileMessage[] {};
+	public static final ErrorMessage[] validStates = new ErrorMessage[] {};
 
 	public static final long[] tickAdjustments = new long[] { 100, -100, 1000, -1000, 60000, -60000, 60000 * 60, -(60000 * 60) };
 	public final PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
@@ -216,7 +216,7 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

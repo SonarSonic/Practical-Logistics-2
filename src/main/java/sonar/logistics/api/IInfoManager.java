@@ -4,14 +4,15 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 
 public interface IInfoManager {
@@ -31,9 +32,9 @@ public interface IInfoManager {
 
 	public ConnectedDisplay getConnectedDisplay(int iden);
 
-	public void addIdentityTile(ILogicListenable infoProvider, TileAdditionType type);
+	public void addIdentityTile(ILogicListenable infoProvider, PL2AdditionType type);
 
-	public void removeIdentityTile(ILogicListenable monitor, TileRemovalType type);
+	public void removeIdentityTile(ILogicListenable monitor, PL2RemovalType type);
 
 	public void removeAll();
 	
@@ -42,6 +43,5 @@ public interface IInfoManager {
 	public void addDisplay(IDisplay display);
 
 	public void removeDisplay(IDisplay display);
-	
 	
 }

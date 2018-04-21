@@ -31,8 +31,10 @@ import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.operator.IOperatorProvider;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.ServerInfoHandler;
@@ -43,7 +45,7 @@ import sonar.logistics.packets.sync.SyncTileMessages;
 
 public abstract class TileLogistics extends TileSonarMultipart implements INetworkTile, INetworkListener, IOperatorProvider {
 
-	public static final TileMessage[] defaultValidStates = new TileMessage[] { TileMessage.NO_NETWORK };
+	public static final ErrorMessage[] defaultValidStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 	public ILogisticsNetwork network = EmptyLogisticsNetwork.INSTANCE;
 	public SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
 	public SyncTagType.INT networkID = (INT) new SyncTagType.INT(0).setDefault(-1);
@@ -86,8 +88,8 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		}
 		return identity.getObject();
 	}
-	
-	public ItemStack getDisplayStack(){
+
+	public ItemStack getDisplayStack() {
 		return ItemStackHelper.getBlockItem(getWorld(), getPos());
 	}
 
@@ -96,18 +98,26 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		return !tileEntityInvalid;
 	}
 
+	public void doAdditionEvent(PL2AdditionType type) {
+		MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, world, type));
+	}
+
+	public void doRemovalEvent(PL2RemovalType type) {
+		MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, world, type));
+	}
+
 	public boolean PART_ADDED = false;
 
-	public void doAdditionEvent() {
+	public void doChunkLoadEvent() {
 		if (!PART_ADDED) {
-			MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, getWorld(), TileAdditionType.ADD));
+			doAdditionEvent(PL2AdditionType.CHUNK_LOADED);
 			PART_ADDED = true;
 		}
 	}
 
-	public void doRemovalEvent() {
+	public void doChunkUnloadEvent() {
 		if (PART_ADDED) {
-			MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, getWorld(), TileRemovalType.REMOVE));
+			doRemovalEvent(PL2RemovalType.CHUNK_UNLOADED);
 			PART_ADDED = false;
 		}
 	}
@@ -115,8 +125,8 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	@Override
 	public void onFirstTick() {
 		super.onFirstTick();
-		if (isServer()) { //only on server, the client is only added when identity is known
-			doAdditionEvent();
+		if (isServer()) { // only on server, the client is only added when identity is known
+			doChunkLoadEvent();
 		}
 	}
 
@@ -124,7 +134,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	public final void invalidate() {
 		super.invalidate();
 		if (getIdentity() != -1) {
-			doRemovalEvent();
+			doChunkUnloadEvent();
 		}
 	}
 
@@ -132,7 +142,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	public void handlePartUpdateTag(NBTTagCompound tag) {
 		super.handlePartUpdateTag(tag);
 		if (isClient()) {
-			doAdditionEvent();
+			doChunkLoadEvent();
 		}
 	}
 
@@ -140,26 +150,27 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		super.onDataPacket(net, packet);
 		if (isClient()) {
-			doAdditionEvent();
+			doChunkLoadEvent();
 		}
 	}
 
-
 	@Override
-	public void onNetworkConnect(ILogisticsNetwork network) {
+	public final void onNetworkConnect(ILogisticsNetwork network) {
 		if (!this.network.isValid() || networkID.getObject() != network.getNetworkID()) {
 			this.network = network;
 			this.networkID.setObject(network.getNetworkID());
-			states.markTileMessage(TileMessage.NO_NETWORK, false);
+			states.markTileMessage(ErrorMessage.NO_NETWORK, false);			
+			doAdditionEvent(PL2AdditionType.NETWORK_CONNECTED);
 		}
 	}
 
 	@Override
-	public void onNetworkDisconnect(ILogisticsNetwork network) {
+	public final void onNetworkDisconnect(ILogisticsNetwork network) {
 		if (networkID.getObject() == network.getNetworkID()) {
 			this.network = EmptyLogisticsNetwork.INSTANCE;
 			this.networkID.setObject(-1);
-			states.markTileMessage(TileMessage.NO_NETWORK, true);
+			states.markTileMessage(ErrorMessage.NO_NETWORK, true);
+			doRemovalEvent(PL2RemovalType.NETWORK_DISCONNECTED);		
 		} else if (networkID.getObject() != -1) {
 			PL2.logger.info("%s : attempted to disconnect from the wrong network with ID: %s expected %s", this, network.getNetworkID(), networkID.getObject());
 		}
@@ -199,7 +210,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return defaultValidStates;
 	}
 }

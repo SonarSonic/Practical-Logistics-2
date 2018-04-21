@@ -5,7 +5,7 @@ import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 
 
 /** used to be LogicTile. implemented by Tile Entities which can connect to Data Cables */
@@ -20,7 +20,7 @@ public interface INetworkTile extends IWorldPosition, INetworkListener, ICableCo
 	/**this tiles identity on the network*/
 	int getIdentity();		
 	
-	TileMessage[] getValidMessages();
+	ErrorMessage[] getValidMessages();
 	
 	PL2Multiparts getMultipart();
 	

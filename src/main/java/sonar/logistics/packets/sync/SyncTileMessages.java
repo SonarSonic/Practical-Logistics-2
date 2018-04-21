@@ -7,23 +7,23 @@ import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
 import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 
 public class SyncTileMessages extends SyncPart {
 
 	public final INetworkTile tile;
-	public byte[] states = new byte[TileMessage.values().length];
+	public byte[] states = new byte[ErrorMessage.values().length];
 	public int types;
 
 	public SyncTileMessages(INetworkTile tile, int id) {
 		super(id);
 		this.tile = tile;
-		this.types = TileMessage.values().length;
+		this.types = ErrorMessage.values().length;
 		this.states = new byte[types];
 	}
 
-	public boolean isValid(TileMessage message) {
-		for (TileMessage m : tile.getValidMessages()) {
+	public boolean isValid(ErrorMessage message) {
+		for (ErrorMessage m : tile.getValidMessages()) {
 			if (m == message) {
 				return true;
 			}
@@ -31,11 +31,11 @@ public class SyncTileMessages extends SyncPart {
 		return false;
 	}
 
-	public boolean getMessageState(TileMessage message) {
+	public boolean getMessageState(ErrorMessage message) {
 		return states[message.ordinal()] != 0;
 	}
 
-	public byte getMessageBit(TileMessage message) {
+	public byte getMessageBit(ErrorMessage message) {
 		return states[message.ordinal()];
 	}
 
@@ -44,26 +44,26 @@ public class SyncTileMessages extends SyncPart {
 	}
 
 	public void markAllMessages(byte bit) {
-		for (TileMessage message : TileMessage.values())
+		for (ErrorMessage message : ErrorMessage.values())
 			if (isValid(message)) {
 				states[message.ordinal()] = bit;
 			}
 	}
 
-	public void markTileMessage(TileMessage message, boolean bool) {
+	public void markTileMessage(ErrorMessage message, boolean bool) {
 		markTileMessage(message, (byte) (bool ? 1 : 0));
 	}
 
-	public void markTileMessage(TileMessage message, byte bit) {
+	public void markTileMessage(ErrorMessage message, byte bit) {
 		if (isValid(message)) {
 			states[message.ordinal()] = bit;
 		}
 	}
 
-	public @Nullable TileMessage canOpenGui() {
+	public @Nullable ErrorMessage canOpenGui() {
 		for (int i = 0; i < types; i++) {
-			if (states[i] > 0 && !TileMessage.values()[i].canOpenTile()) {
-				return TileMessage.values()[i];
+			if (states[i] > 0 && !ErrorMessage.values()[i].canOpenTile()) {
+				return ErrorMessage.values()[i];
 			}
 		}
 		return null;

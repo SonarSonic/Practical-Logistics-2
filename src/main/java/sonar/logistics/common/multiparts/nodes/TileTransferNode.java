@@ -30,7 +30,7 @@ import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.IChannelledTile;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.INode;
@@ -52,7 +52,7 @@ import sonar.logistics.packets.sync.SyncFilterList;
 
 public class TileTransferNode extends TileSidedLogistics implements INode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 
 	public PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
@@ -311,7 +311,7 @@ public class TileTransferNode extends TileSidedLogistics implements INode, IOper
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

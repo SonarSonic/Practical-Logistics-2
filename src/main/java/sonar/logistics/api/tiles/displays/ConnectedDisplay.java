@@ -27,7 +27,7 @@ import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.networking.cabling.CableHelper;
@@ -371,8 +371,8 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
-		return new TileMessage[0];
+	public ErrorMessage[] getValidMessages() {
+		return new ErrorMessage[0];
 	}
 
 	@Override

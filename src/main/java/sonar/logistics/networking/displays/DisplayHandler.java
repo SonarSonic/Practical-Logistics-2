@@ -34,6 +34,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 		return PL2.instance.proxy.server_display_manager;
 	}
 
+	private List<Integer> rebuild = Lists.newArrayList();
 	public final List<IDisplay> addedScreens = new ArrayList<>();
 	public final List<IDisplay> removedScreens = new ArrayList<>();
 	public final Map<Integer, List<ConnectedDisplayChange>> display_updates = new HashMap<>();
@@ -71,6 +72,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	}
 
 	public void tick() {
+		rebuild.clear();
 		addedScreens.forEach(this::onDisplayAddition);
 		removedScreens.forEach(this::onDisplayRemoval);
 		createConnectedDisplays();
@@ -87,37 +89,31 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 
 	private void onDisplayAddition(IDisplay display) {
 		if (display instanceof ILargeDisplay) {
+			ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
 			addConnectionToNetwork((ILargeDisplay) display);
 		}
 	}
 
 	private void onDisplayRemoval(IDisplay display) {
 		if (display instanceof ILargeDisplay) {
+			ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
 			removeConnectionToNetwork((ILargeDisplay) display);
 		}
 	}
 
 	public void createConnectedDisplays() {
-		List<Integer> rebuild = Lists.newArrayList();
-		addedScreens.forEach(display -> {
-			if (display instanceof ILargeDisplay) {
-				ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
-			}
-		});
-		removedScreens.forEach(display -> {
-			if (display instanceof ILargeDisplay) {
-				ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
-			}
-		});
 		for (Integer i : rebuild) {
 			ConnectedDisplay display = ServerInfoHandler.instance().getConnectedDisplays().get(i);
 			List<ILargeDisplay> displays = getConnections(i);
 			if (displays.isEmpty()) {
+				if (display != null) {
+					ServerInfoHandler.instance().invalidateGSI(display, display.getGSI());
+				}
 				ServerInfoHandler.instance().getConnectedDisplays().remove(i);
 			} else if (display == null) {
 				ILargeDisplay first_display = displays.get(0);
 				World world = first_display.getCoords().getWorld();
-				ConnectedDisplay connectedDisplay = ConnectedDisplay.loadDisplay(world, i);		
+				ConnectedDisplay connectedDisplay = ConnectedDisplay.loadDisplay(world, i);
 				ServerInfoHandler.instance().getConnectedDisplays().put(i, connectedDisplay);
 				connectedDisplay.face.setObject(first_display.getCableFace());
 				connectedDisplay.setDisplayScaling();
@@ -165,7 +161,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	}
 
 	public static boolean updateConnectedNetworks(List<ConnectedDisplayChange> changes, ConnectedDisplay display) {
-		// FIXME check infocontainer can still connect to all the info.
+		display.getGSI().validateAllInfoReferences();
 		return true;
 	}
 

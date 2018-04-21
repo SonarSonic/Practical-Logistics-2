@@ -25,7 +25,7 @@ public class InfoNetworkChannels extends ListNetworkChannels<IProvidableInfo, In
 	}
 
 	public void runUpdates() {
-		if (UPDATES.canSyncUpdate(UpdateType.GUI) || ChunkViewerHandler.instance().hasViewersChanged()) {
+		if (UPDATES.canSyncUpdate(UpdateType.GUI)){/// FIXME || ChunkViewerHandler.instance().hasViewersChanged()) {
 			updateChannels();
 			updateReaders(true);
 		}

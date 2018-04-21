@@ -9,7 +9,8 @@ public enum GSIElementPackets {
 	RESIZE_CONTAINER(GSIElementPacketHelper::doResizeContainerPacket),
 	CONFIGURE_INFO_ELEMENT(GSIElementPacketHelper::doConfigureInfoPacket),
 	EDIT_MODE(GSIElementPacketHelper::doEditModePacket),
-	EDIT_ELEMENT(GSIElementPacketHelper::doEditElementPacket);
+	EDIT_ELEMENT(GSIElementPacketHelper::doEditElementPacket),
+	UPDATE_ELEMENT(GSIElementPacketHelper::doUpdateElementPacket);
 
 	IGSIElementPacketHandler logic;
 

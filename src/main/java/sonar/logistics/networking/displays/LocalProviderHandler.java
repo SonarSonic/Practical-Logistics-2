@@ -1,77 +1,151 @@
 package sonar.logistics.networking.displays;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.sun.jna.platform.unix.X11.Display;
 
 import sonar.core.api.utils.BlockCoords;
+import sonar.core.helpers.FunctionHelper;
+import sonar.core.helpers.ListHelper;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.errors.DestroyedError;
+import sonar.logistics.api.errors.DisconnectedError;
+import sonar.logistics.api.errors.ErrorHelper;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.networking.ServerInfoHandler;
 
 public class LocalProviderHandler {
 
-	public static boolean updateListenerDisplays;
+	public static Map<ILogicListenable, UpdateCause> updates = new HashMap<>();
 
-	/** when a ILogicListenable is added to the world */
-	public static void onLocalProviderAdded(ILogicListenable logicTile) {
-		updateListenerDisplays = true;
+	public static void queueUpdate(ILogicListenable logicTile, PL2AdditionType addition) {
+
 	}
 
-	/** when a ILogicListenable is removed from the world */
-	public static void onLocalProviderRemoved(ILogicListenable logicTile) {
-		updateListenerDisplays = true;
-	}
-
-	public static void doInfoReferenceConnect(DisplayGSI gsi, InfoUUID uuid) {
-		BlockCoords coords = gsi.getDisplay().getActualDisplay().getCoords();
-		List<ILogicListenable> logicTiles = DisplayHelper.getLocalProviders(gsi.getDisplay(), gsi.getWorld(), coords.getBlockPos());
-		boolean connected = logicTiles.stream().anyMatch(tile -> {
-			boolean match = tile.getIdentity() == uuid.identity;
-			if (match) {				
-				doLocalProviderConnect(gsi, tile, uuid);
-			}
-			return match;
-		});
-	}
-
-	public static void doInfoReferenceDisconnect(DisplayGSI gsi, InfoUUID uuid) {
-		ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
-		if (listen != null) {			
-			doLocalProviderDisconnect(gsi, listen, uuid);
+	public static void queueUpdate(ILogicListenable logicTile, UpdateCause cause) {
+		UpdateCause current = updates.get(logicTile);
+		if (current == null || current.ordinal() > cause.ordinal()) {
+			updates.put(logicTile, cause);
 		}
 	}
 
-	public static void doLocalProviderConnect(DisplayGSI display, ILogicListenable logicTile, InfoUUID uuid) {
-		 logicTile.getListenerList().getDisplayListeners().addListener(display, 0); 
-		 ServerInfoHandler.instance().markChanged(logicTile, uuid); // triggers the info packet to be sent to watchers */
+	public static Map<DisplayGSI, List<InfoUUID>> getConnectionsForTile(Map<DisplayGSI, List<InfoUUID>> connected, ILogicListenable logicTile) {
+		if (logicTile instanceof IInfoProvider) {
+			IInfoProvider provider = (IInfoProvider) logicTile;
+			for (int i = 0; i < provider.getMaxInfo(); i++) {
+				InfoUUID uuid = new InfoUUID(provider.getIdentity(), i);
+				ServerInfoHandler.instance().forEachGSIDisplayingUUID(uuid, gsi -> {
+					connected.computeIfAbsent(gsi, FunctionHelper.ARRAY);
+					ListHelper.addWithCheck(connected.get(gsi), uuid);
+				});
+			}
+		}
+		return connected;
 	}
 
-	public static void doLocalProviderDisconnect(DisplayGSI display, ILogicListenable logicTile, InfoUUID uuid) {
-		 logicTile.getListenerList().getDisplayListeners().removeListener(display, true, 0); // FIXME does it tally with multiple info watching the same one? 
-		 ServerInfoHandler.instance().markChanged(logicTile, uuid); // triggers the info packet to be sent to watchers */
+	public static void doInfoReferenceConnect(DisplayGSI gsi, List<InfoUUID> uuids) {
+		if (uuids.isEmpty()) {
+			return;
+		}
+		BlockCoords coords = gsi.getDisplay().getActualDisplay().getCoords();
+		List<ILogicListenable> logicTiles = DisplayHelper.getLocalProviders(gsi.getDisplay(), gsi.getWorld(), coords.getBlockPos());
+
+		UUIDS: for (InfoUUID uuid : uuids) {
+			for (ILogicListenable tile : logicTiles) {
+				if (tile.getIdentity() == uuid.getIdentity()) {
+					ErrorHelper.removeError(gsi, new DisconnectedError(uuid, tile));
+					doLocalProviderConnect(gsi, tile, uuid);
+					continue UUIDS;
+				}
+			}
+			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
+			if (listen != null) {
+				doLocalProviderDisconnect(gsi, listen, uuid);
+				ErrorHelper.addError(gsi, new DisconnectedError(uuid, listen));
+			}
+		}
 	}
 
-	/** when a display is connected to a ILogicListenable */
-	public static void onLocalProviderConnected(IDisplay display, ILogicListenable logicTile) {
-		updateListenerDisplays = true;
+	public static void doInfoReferenceDisconnect(DisplayGSI gsi, List<InfoUUID> uuids) {
+		if (uuids.isEmpty()) {
+			return;
+		}
+		for (InfoUUID uuid : uuids) {
+			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
+			if (listen != null) {
+				doLocalProviderDisconnect(gsi, listen, uuid);
+				ErrorHelper.removeError(gsi, new DisconnectedError(uuid, listen));
+			}
+		}
 	}
 
-	/** when a display is disconnected from a ILogicListenable */
-	public static void onLocalProviderDisconnected(IDisplay display, ILogicListenable logicTile) {
-		updateListenerDisplays = true;
+	private static void doLocalProviderConnect(DisplayGSI display, ILogicListenable logicTile, InfoUUID uuid) {
+		logicTile.getListenerList().getDisplayListeners().addListener(display, 0);
+		// triggers the info packet to be sent to watchers
+		ServerInfoHandler.instance().markChanged(logicTile, uuid);
+	}
+
+	private static void doLocalProviderDisconnect(DisplayGSI display, ILogicListenable logicTile, InfoUUID uuid) {
+		logicTile.getListenerList().getDisplayListeners().removeListener(display, true, 0);
+		// triggers the info packet to be sent to watchers
+		ServerInfoHandler.instance().markChanged(logicTile, uuid);
 	}
 
 	public static void updateLists() {
-		if (updateListenerDisplays) {
-			updateListenerDisplays = false;
-			ServerInfoHandler.instance().identityTiles.values().forEach(tile -> tile.getListenerList().getDisplayListeners().clear());
-			ServerInfoHandler.instance().displays.values().forEach(gsi -> gsi.forEachValidUUID(uuid -> {
-				ILogicListenable monitor = ServerInfoHandler.instance().getIdentityTile(uuid.getIdentity());
-				if (monitor != null && monitor instanceof ILogicListenable) {
-					monitor.getListenerList().getDisplayListeners().addListener(gsi, 0);
+		if (!updates.isEmpty()) {
+			for (Entry<ILogicListenable, UpdateCause> update : updates.entrySet()) {
+				Map<DisplayGSI, List<InfoUUID>> affected = getConnectionsForTile(new HashMap(), update.getKey());
+				switch (update.getValue()) {
+				case NETWORK_CHANGE:
+					affected.forEach((GSI, UUIDS) -> doInfoReferenceConnect(GSI, UUIDS));
+					break;
+				case TILE_DESTROYED:
+					affected.forEach((GSI, UUIDS) -> {
+						ErrorHelper.removeError(GSI, new DisconnectedError(UUIDS, update.getKey()));
+						ErrorHelper.addError(GSI, new DestroyedError(UUIDS, update.getKey()));
+					});
+					break;
+				case TILE_UNLOADED:
+					affected.forEach((GSI, UUIDS) -> {
+						DisconnectedError error = new DisconnectedError(UUIDS, update.getKey());
+						error.chunkUnload = true;
+						ErrorHelper.addError(GSI, error);
+					});
+					break;
+				default:
+					break;
 				}
-			}));
+			}
+			updates.clear();
 		}
+	}
+
+	public static enum UpdateCause {
+		TILE_DESTROYED, TILE_UNLOADED, NETWORK_CHANGE;
+
+		public static UpdateCause getCause(PL2AdditionType type) {
+			return NETWORK_CHANGE;
+		}
+
+		public static UpdateCause getCause(PL2RemovalType type) {
+			switch (type) {
+			case CHUNK_UNLOADED:
+				return TILE_UNLOADED;
+			case PLAYER_REMOVED:
+				return TILE_DESTROYED;
+			default:
+				return NETWORK_CHANGE;
+			}
+		}
+
 	}
 }

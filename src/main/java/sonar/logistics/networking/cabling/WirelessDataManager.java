@@ -9,6 +9,8 @@ import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.WirelessConnectionType;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.NetworkUpdate;
+import sonar.logistics.networking.ServerInfoHandler;
+import sonar.logistics.networking.events.NetworkEvent;
 
 public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwork, IDataEmitter, IDataReceiver> {
 
@@ -28,6 +30,7 @@ public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwo
 		watcher.getListenerList().addListener(connected, ILogisticsNetwork.CONNECTED_NETWORK);
 		connected.getListenerList().addListener(watcher, ILogisticsNetwork.WATCHING_NETWORK);
 		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);
+		ServerInfoHandler.instance().scheduleEvent(new NetworkEvent.ConnectedNetwork(watcher, connected), 1);
 	}
 
 	/** disconnects two {@link ILogisticsNetwork}'s so the {@link IDataReceiver}'s network can no longer read the {@link IDataEmitter}'s network, however if multiple receivers/emitters between the two networks exist the networks will remain connected
@@ -36,7 +39,8 @@ public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwo
 	public void disconnectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
 		watcher.getListenerList().removeListener(connected, true, ILogisticsNetwork.CONNECTED_NETWORK);
 		connected.getListenerList().removeListener(watcher, true, ILogisticsNetwork.WATCHING_NETWORK);
-		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);
+		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);		
+		ServerInfoHandler.instance().scheduleEvent(new NetworkEvent.DisconnectedNetwork(watcher, connected), 1);
 	}
 
 	/** connects a {@link IDataReceiver} to a {@link ILogisticsNetwork}'s

@@ -100,17 +100,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 
 	//// ILogicViewable \\\\
 
-	//// NETWORK \\\\
-	public void onNetworkConnect(ILogisticsNetwork network) {
-		super.onNetworkConnect(network);
-		DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
-	}
-
-	public void onNetworkDisconnect(ILogisticsNetwork network) {
-		super.onNetworkDisconnect(network);
-		DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
-	}
-
 	@Override
 	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal) {
 		boolean cableFace = (dir == getCableFace() || dir == getCableFace().getOpposite());

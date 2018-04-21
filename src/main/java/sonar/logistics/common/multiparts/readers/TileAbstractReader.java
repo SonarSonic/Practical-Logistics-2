@@ -80,13 +80,6 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 
 	public abstract List<INetworkHandler> addValidHandlers(List<INetworkHandler> handlers);
 
-	@Override
-	public void onNetworkDisconnect(ILogisticsNetwork network) {
-		super.onNetworkDisconnect(network);
-		for (int i = 0; i < getMaxInfo(); i++) {
-			ServerInfoHandler.instance().changeInfo(this, new InfoUUID(this, i), InfoError.noData);
-		}
-	}
 	//// ILogicMonitor \\\\
 
 	@Override

@@ -21,7 +21,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.states.TileMessage;
+import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.EnergyReader;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
@@ -40,7 +40,7 @@ import sonar.logistics.networking.sorters.FluidSorter;
 
 public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStack> implements IByteBufTile {
 
-	public static final TileMessage[] validStates = new TileMessage[] { TileMessage.NO_NETWORK };
+	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 
 	public SyncCoords selected = new SyncCoords(1);
 	public SyncEnum<SortingDirection> sortingOrder = (SyncEnum) new SyncEnum(SortingDirection.values(), 2).addSyncType(SyncType.SPECIAL);
@@ -182,7 +182,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 	}
 
 	@Override
-	public TileMessage[] getValidMessages() {
+	public ErrorMessage[] getValidMessages() {
 		return validStates;
 	}
 

@@ -50,7 +50,8 @@ public class PL2Events {
 			WirelessRedstoneManager.instance().tick();
 			DisplayHandler.instance().tick();
 			TileArray.entityChanged = false;
-
+			
+			ServerInfoHandler.instance().flushEvents();
 			updateTick = System.nanoTime() - tickStart;
 		} else {
 			if (coolDownClick != 0) {

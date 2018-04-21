@@ -16,13 +16,14 @@ import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
+import sonar.logistics.api.displays.elements.IInfoReferenceElement;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
 
 @DisplayElementType(id = DisplayElementList.REGISTRY_NAME, modid = PL2Constants.MODID)
 //FIXME make it be able to do grids also.
-public class DisplayElementList extends AbstractDisplayElement implements IElementStorageHolder {
+public class DisplayElementList extends AbstractDisplayElement implements IElementStorageHolder, IInfoReferenceElement {
 
 	public boolean updateScaling = true;
 	public boolean uniformScaling = true;
@@ -52,7 +53,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	public void onElementAdded(IDisplayElement element) {
 		element.setHolder(this);
 		updateScaling = true;
-		getGSI().onElementAdded(this, element);		
+		getGSI().onElementAdded(this, element);
 	}
 
 	public void onElementRemoved(IDisplayElement element) {
@@ -99,7 +100,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 					return clicked;
 				}
 			} else {// if (e instanceof IClickableElement) {
-				//double[] alignArray = InfoRenderer.alignArray(new double[] { getMaxScaling()[0], e.getMaxScaling()[1], e.getMaxScaling()[2] }, e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
+				// double[] alignArray = InfoRenderer.alignArray(new double[] { getMaxScaling()[0], e.getMaxScaling()[1], e.getMaxScaling()[2] }, e.getActualScaling(), e.getWidthAlignment(), e.getHeightAlignment());
 				double[] alignArray = getAlignmentTranslation(e);
 				double startX = align[WIDTH] + alignArray[WIDTH];
 				double startY = align[HEIGHT] + alignArray[HEIGHT] + heightOffset;
@@ -109,7 +110,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 				if (InteractionHelper.checkClick(x, y, eBox)) {
 					double subClickX = x - startX;
 					double subClickY = y - startY;
-					return new Tuple(e, new double[]{subClickX, subClickY});
+					return new Tuple(e, new double[] { subClickX, subClickY });
 				}
 			}
 			heightOffset += e.getActualScaling()[1];
@@ -147,7 +148,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 			}
 		}
 		this.minScale = minScale;
-		
+
 		if (!uniformScaling) {
 			setActualScaling(listScaling);
 		} else {
@@ -200,7 +201,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 		return maxScaling;
 	}
 
-	public double[] createActualScaling(IDisplayElement element) {		
+	public double[] createActualScaling(IDisplayElement element) {
 		if (uniformScaling) {
 			double actualElementScale = minScale;
 			double actualElementWidth = (element.getUnscaledWidthHeight()[0] * actualElementScale) * percentageFill;
@@ -213,11 +214,13 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 
 	@Override
 	public List<InfoUUID> getInfoReferences() {
-		List<InfoUUID> uuid = new ArrayList<>();
-		for(IDisplayElement s : elements){
-			ListHelper.addWithCheck(uuid, s.getInfoReferences());
-		}		
-		return uuid; // FIXME CACHE THIS?
+		List<InfoUUID> uuids = new ArrayList<>();
+		for (IDisplayElement s : elements) {
+			if (s instanceof IInfoReferenceElement) {
+				ListHelper.addWithCheck(uuids, ((IInfoReferenceElement)s).getInfoReferences());
+			}
+		}
+		return uuids; // FIXME CACHE THIS?
 	}
 
 	@Override

@@ -30,6 +30,8 @@ import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
+import sonar.logistics.networking.displays.LocalProviderHandler;
+import sonar.logistics.networking.displays.LocalProviderHandler.UpdateCause;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 
@@ -204,13 +206,16 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	@Override
 	public void addLocalInfoProvider(IInfoProvider monitor) {
-		if (!localProviders.contains(monitor))
-			localProviders.add(monitor);
+		if (ListHelper.addWithCheck(localProviders, monitor)) {
+			LocalProviderHandler.queueUpdate(monitor, UpdateCause.NETWORK_CHANGE);
+		}
 	}
 
 	@Override
 	public void removeLocalInfoProvider(IInfoProvider monitor) {
-		localProviders.remove(monitor);
+		if (localProviders.remove(monitor)) {
+			LocalProviderHandler.queueUpdate(monitor, UpdateCause.NETWORK_CHANGE);
+		}
 	}
 
 	public void onCablesChanged() {
@@ -245,11 +250,27 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public void updateCables() {
 		List<INetworkListener> tiles = caches.get(CacheHandler.TILE);
-		tiles.forEach(tile -> removeConnection(tile)); //we remove them, but the cables then add them again below (as this is only a queue, they are never actually removed, unless necessary)
+		tiles.forEach(tile -> removeConnection(tile)); // we remove them, but the cables then add them again below (as this is only a queue, they are never actually removed, unless necessary)
 		List<IDataCable> cables = CableConnectionHandler.instance().getConnections(networkID);
+		List<IInfoProvider> old_providers = Lists.newArrayList(localProviders);
+		localProviders.clear();
 		cables.forEach(cable -> CableConnectionHandler.instance().addAllConnectionsToNetwork(cable, this));
-		markUpdate(NetworkUpdate.LOCAL, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
 
+		List<IInfoProvider> added = Lists.newArrayList(localProviders);
+		added.removeAll(old_providers);
+
+		List<IInfoProvider> removed = Lists.newArrayList(old_providers);
+		removed.removeAll(localProviders);
+		
+		for(IInfoProvider add : added){
+			LocalProviderHandler.queueUpdate(add, UpdateCause.NETWORK_CHANGE);
+		}
+		
+		for(IInfoProvider remove : removed){
+			LocalProviderHandler.queueUpdate(remove, UpdateCause.NETWORK_CHANGE);
+		}
+
+		markUpdate(NetworkUpdate.LOCAL, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
 	}
 
 	public void updateChannels() {

@@ -6,6 +6,7 @@ import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -61,8 +62,8 @@ public class BlockAbstractReader extends BlockLogisticsSided {
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		boolean hasDisplay = false;
 		TileEntity tile = world.getTileEntity(pos);
-		if(tile!=null && tile instanceof TileAbstractReader){
-			hasDisplay = ((TileAbstractReader)tile).hasMonitor.getObject();
+		if (tile != null && tile instanceof TileAbstractReader) {
+			hasDisplay = ((TileAbstractReader) tile).hasMonitor.getObject();
 		}
 		return state.withProperty(PL2Properties.HASDISPLAY, hasDisplay);
 	}
@@ -73,5 +74,5 @@ public class BlockAbstractReader extends BlockLogisticsSided {
 			SonarMultipartHelper.sendMultipartUpdateSyncAround(reader, 128);
 		}
 	}
-	
+
 }

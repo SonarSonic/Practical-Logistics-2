@@ -7,6 +7,7 @@ import static net.minecraft.client.renderer.GlStateManager.scale;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -30,6 +31,7 @@ import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.text.IStyledString;
 import sonar.logistics.api.displays.elements.text.StyledString;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
+import sonar.logistics.api.errors.IInfoError;
 
 public class DisplayElementHelper {
 
@@ -204,11 +206,17 @@ public class DisplayElementHelper {
 		holder.startElementRender(e);
 		pushMatrix();
 		align(holder.getAlignmentTranslation(e));
-		double scale = e.getActualScaling()[SCALE];
-		scale(scale, scale, scale);
-		// pushMatrix();
-		e.render();
-		// popMatrix();
+
+		if (e.getGSI().isErrored(e)) {
+			List<IInfoError> errors = e.getGSI().getErrors(e);
+			if(errors!=null && !errors.isEmpty()){
+				InfoRenderer.renderCenteredStringsWithUniformScaling(errors.get(0).getDisplayMessage(), e.getActualScaling()[0], e.getActualScaling()[1], 0, 0.75, -1);
+			}			
+		} else {
+			double scale = e.getActualScaling()[SCALE];
+			scale(scale, scale, scale);
+			e.render();
+		}
 		popMatrix();
 		holder.endElementRender(e);
 
