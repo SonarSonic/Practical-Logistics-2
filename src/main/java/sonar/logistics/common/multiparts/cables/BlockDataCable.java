@@ -75,7 +75,7 @@ public class BlockDataCable extends BlockLogistics {
 		super.neighborChanged(state, world, pos, blockIn, fromPos);
 		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable != null && !world.isRemote) {
-			CableConnectionHandler.instance().onNeighbourBlockStateChanged(cable, pos, fromPos);
+			CableConnectionHandler.instance().queueCableUpdate(cable);
 		}
 	}
 
@@ -83,21 +83,13 @@ public class BlockDataCable extends BlockLogistics {
 		super.onNeighborChange(world, pos, neighbor);
 		TileDataCable cable = CableHelper.getCable(world, pos);
 		if (cable != null && !cable.getWorld().isRemote) {
-			CableConnectionHandler.instance().onNeighbourTileEntityChanged(cable, pos, neighbor);
+			CableConnectionHandler.instance().queueCableUpdate(cable);
 		}
 	}
 
-	public void onPartAdded(IPartInfo part, IPartInfo otherPart) {
-		super.onPartAdded(part, otherPart);
+	public void onPartChanged(IPartInfo part, IPartInfo otherPart) {
 		if (!part.getActualWorld().isRemote && part.getTile()!=null && part.getTile() instanceof IDataCable) {
-			CableConnectionHandler.instance().onNeighbourMultipartAdded(((IDataCable) part.getTile()), part, otherPart);
-		}
-	}
-
-	public void onPartRemoved(IPartInfo part, IPartInfo otherPart) {
-		super.onPartRemoved(part, otherPart);
-		if (!part.getActualWorld().isRemote && part.getTile()!=null && part.getTile() instanceof IDataCable) {
-			CableConnectionHandler.instance().onNeighbourMultipartRemoved(((IDataCable) part.getTile()), part, otherPart);
+			CableConnectionHandler.instance().queueCableUpdate(((IDataCable) part.getTile()));
 		}
 	}
 

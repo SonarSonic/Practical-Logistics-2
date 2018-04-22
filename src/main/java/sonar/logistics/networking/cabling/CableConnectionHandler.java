@@ -173,113 +173,8 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 
 	public void queueCableUpdate(IDataCable cable) {
 		ListHelper.addWithCheck(cableUpdates, cable);
-	}
-
-	public void queueNetworkTileAddition(IDataCable cable, INetworkTile tile) {
-		queueCableUpdate(cable);
-	}
-
-	public void queueNetworkTileRemoval(IDataCable cable, INetworkTile tile) {
-		queueCableUpdate(cable);
-	}
-
-	public void queueLocalProviderAddition(IDataCable cable, IInfoProvider tile) {
-		queueCableUpdate(cable);
-	}
-
-	public void queueLocalProviderRemoval(IDataCable cable, IInfoProvider tile) {
-		queueCableUpdate(cable);
-	}
-
-	/* public void queueNetworkTileAddition(IDataCable cable, INetworkTile tile) { List<INetworkTile> added = connected.computeIfAbsent(cable, FunctionHelper.ARRAY); List<INetworkTile> removed = disconnected.computeIfAbsent(cable, FunctionHelper.ARRAY); ListHelper.addWithCheck(added, tile); removed.remove(tile); } public void queueNetworkTileRemoval(IDataCable cable, INetworkTile tile) { List<INetworkTile> added = connected.computeIfAbsent(cable, FunctionHelper.ARRAY); List<INetworkTile> removed = disconnected.computeIfAbsent(cable, FunctionHelper.ARRAY); added.remove(tile); ListHelper.addWithCheck(removed, tile); } public void queueLocalProviderAddition(IDataCable cable, IInfoProvider tile) { List<INetworkTile> added = connected_providers.computeIfAbsent(cable, FunctionHelper.ARRAY); List<INetworkTile> removed = disconnected_providers.computeIfAbsent(cable, FunctionHelper.ARRAY); ListHelper.addWithCheck(added, tile); removed.remove(tile); } public void queueLocalProviderRemoval(IDataCable cable, IInfoProvider tile) { List<INetworkTile> added = connected_providers.computeIfAbsent(cable, FunctionHelper.ARRAY); List<INetworkTile> removed = disconnected_providers.computeIfAbsent(cable, FunctionHelper.ARRAY); added.remove(tile); ListHelper.addWithCheck(removed, tile); } */
-
-	//// MULTIPARTS \\\\
-
-	public void onNeighbourMultipartAdded(IDataCable cable, IPartInfo part, IPartInfo otherPart) {
-		if (otherPart.getTile() != null && otherPart.getTile() instanceof INetworkTile) {
-			if(otherPart.getSlot() instanceof EnumFaceSlot){
-				onNeighbourAdded(cable, ((INetworkTile) otherPart.getTile()), ((EnumFaceSlot) otherPart.getSlot()).getFacing(), true);
-			}else if(otherPart.getSlot() instanceof EnumDisplayFaceSlot){
-				onNeighbourAdded(cable, ((INetworkTile) otherPart.getTile()), ((EnumDisplayFaceSlot) otherPart.getSlot()).getFacing(), true);				
-			}
-		}
-	}
-
-	public void onNeighbourMultipartRemoved(IDataCable cable, IPartInfo part, IPartInfo otherPart) {
-		if (otherPart.getTile() != null && otherPart.getTile() instanceof INetworkTile) {			
-			if(otherPart.getSlot() instanceof EnumFaceSlot){
-				onNeighbourRemoved(cable, ((INetworkTile) otherPart.getTile()), ((EnumFaceSlot) otherPart.getSlot()).getFacing(), true);
-			}else if(otherPart.getSlot() instanceof EnumDisplayFaceSlot){
-				onNeighbourRemoved(cable, ((INetworkTile) otherPart.getTile()), ((EnumDisplayFaceSlot) otherPart.getSlot()).getFacing(), true);				
-			}
-		}
-	}
-
-	//// TILES \\\\
-
-	public void onNeighbourBlockStateChanged(IDataCable cable, BlockPos pos, BlockPos neighbor) {
 		addRenderUpdate(cable);
 	}
-
-	public void onNeighbourTileEntityChanged(IDataCable cable, BlockPos pos, BlockPos neighbor) {
-		CableHelper.getLocalMonitors(cable).forEach(m -> queueLocalProviderAddition(cable, m));
-		addRenderUpdate(cable);
-	}
-
-	//// NETWORK TILES \\\\
-
-	public void onNeighbourAdded(IDataCable cable, INetworkTile networkTile, EnumFacing cableSide, boolean internal) {
-		if (cable.canConnect(networkTile.getNetworkID(), cable.getConnectableType(), cableSide, internal).canConnect()) {
-			addConnectionToNetwork(cable, networkTile);
-		}
-	}
-
-	public void onNeighbourRemoved(IDataCable cable, INetworkTile networkTile, EnumFacing cableSide, boolean internal) {
-		if (networkTile.getNetworkID() == cable.getRegistryID()) {
-			removeConnectionFromNetwork(cable, networkTile);
-		}
-	}
-
-	//// ADD/REMOVE CABLES \\\\
-
-	public void addCableToNetwork(IDataCable cable) {
-		int networkID = addConnection(cable);
-		queueNetworkChange(cable.getRegistryID());
-	}
-
-	public void removeCableFromNetwork(IDataCable cable) {
-		removeConnection(cable);
-		queueNetworkChange(cable.getRegistryID());
-	}
-
-	//// ADD/REMOVE CONNECTIONS \\\\
-
-	public void addConnectionToNetwork(IDataCable cable, INetworkTile tile) {
-		queueNetworkTileAddition(cable, tile);
-		addRenderUpdate(cable);
-	}
-
-	public void removeConnectionFromNetwork(IDataCable cable, INetworkTile tile) {
-		queueNetworkTileRemoval(cable, tile);
-		addRenderUpdate(cable);
-	}
-
-	/** called only by the logistics network to move connections from network to network */
-
-	public void addAllConnectionsToNetwork(IDataCable cable, int networkID) {
-		CableHelper.getConnectedTiles(cable).forEach(t -> queueNetworkTileAddition(cable, t));
-		CableHelper.getLocalMonitors(cable).forEach(m -> queueLocalProviderAddition(cable, m));
-	}
-
-	/** called only by the logistics network to move connections from network to network */
-
-	public void removeAllConnectionsFromNetwork(IDataCable cable, int networkID) {
-		CableHelper.getConnectedTiles(cable).forEach(t -> {
-			queueNetworkTileRemoval(cable, t);
-		});
-	}
-
-	/** abstract connection handler */
 
 	@Override
 	public Pair<ConnectableType, Integer> getConnectionType(IDataCable source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
@@ -293,13 +188,11 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 
 	@Override
 	public void onConnectionAdded(int registryID, IDataCable added) {
-		//addAllConnectionsToNetwork(added, registryID);
 		queueCableUpdate(added);
 	}
 
 	@Override
 	public void onConnectionRemoved(int id, IDataCable removed) {
-		//removeAllConnectionsFromNetwork(removed, id);
 		queueCableUpdate(removed);
 	}
 
@@ -310,12 +203,14 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 
 	@Override
 	public void addConnectionToNetwork(IDataCable add) {
-		addCableToNetwork(add);
+		int networkID = addConnection(add);
+		queueNetworkChange(add.getRegistryID());
 	}
 
 	@Override
 	public void removeConnectionFromNetwork(IDataCable remove) {
-		removeCableFromNetwork(remove);
+		removeConnection(remove);
+		queueNetworkChange(remove.getRegistryID());
 	}
 
 }
