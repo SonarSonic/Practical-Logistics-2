@@ -38,6 +38,7 @@ import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.ServerInfoHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.events.NetworkPartEvent;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
@@ -99,11 +100,13 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	}
 
 	public void doAdditionEvent(PL2AdditionType type) {
-		MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, world, type));
+		//MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, world, type));
+		LogisticsEventHandler.instance().queueNetworkAddition(this, type);
 	}
 
 	public void doRemovalEvent(PL2RemovalType type) {
-		MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, world, type));
+		//MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, world, type));
+		LogisticsEventHandler.instance().queueNetworkRemoval(this, type);		
 	}
 
 	public boolean PART_ADDED = false;
@@ -160,7 +163,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			this.network = network;
 			this.networkID.setObject(network.getNetworkID());
 			states.markTileMessage(ErrorMessage.NO_NETWORK, false);			
-			doAdditionEvent(PL2AdditionType.NETWORK_CONNECTED);
+			//doAdditionEvent(PL2AdditionType.NETWORK_CONNECTED);
 		}
 	}
 
@@ -170,7 +173,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			this.network = EmptyLogisticsNetwork.INSTANCE;
 			this.networkID.setObject(-1);
 			states.markTileMessage(ErrorMessage.NO_NETWORK, true);
-			doRemovalEvent(PL2RemovalType.NETWORK_DISCONNECTED);		
+			//doRemovalEvent(PL2RemovalType.NETWORK_DISCONNECTED);		
 		} else if (networkID.getObject() != -1) {
 			PL2.logger.info("%s : attempted to disconnect from the wrong network with ID: %s expected %s", this, network.getNetworkID(), networkID.getObject());
 		}

@@ -40,7 +40,6 @@ public class ClientInfoHandler implements IInfoManager {
 	public Map<Integer, DisplayGSI> displays_gsi = new HashMap<>();
 	public Map<Integer, IDisplay> displays_tile = new HashMap<>();
 
-	// public LinkedHashMap<InfoUUID, IMonitorInfo> lastInfo = new LinkedHashMap<>();
 	public Map<InfoUUID, IInfo> info = new LinkedHashMap<>();
 
 	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, List<Object>>();

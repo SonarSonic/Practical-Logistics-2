@@ -27,6 +27,7 @@ import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 
 public class PL2Events {
 
@@ -40,18 +41,13 @@ public class PL2Events {
 		if (event.side == Side.SERVER && event.phase == Phase.END) {
 			tickStart = System.nanoTime();
 
-			ChunkViewerHandler.instance().tick();
-			CableConnectionHandler.instance().tick();
-			RedstoneConnectionHandler.instance().tick();
-			LogisticsNetworkHandler.instance().tick();
-			ServerInfoHandler.instance().tick();
-
-			WirelessDataManager.instance().tick();
-			WirelessRedstoneManager.instance().tick();
-			DisplayHandler.instance().tick();
-			TileArray.entityChanged = false;
+			LogisticsEventHandler.instance().triggerConstructingPhase();//
+						
+			LogisticsEventHandler.instance().triggerUpdatingPhase();//
 			
-			ServerInfoHandler.instance().flushEvents();
+			LogisticsEventHandler.instance().triggerNotifyingPhase();//
+
+			TileArray.entityChanged = false;
 			updateTick = System.nanoTime() - tickStart;
 		} else {
 			if (coolDownClick != 0) {

@@ -14,7 +14,6 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.CacheHandler;
-import sonar.logistics.networking.NetworkUpdate;
 
 /**the default implementation of a Logistics Network formed when cables are connected*/
 public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILogisticsNetwork> {
@@ -48,13 +47,7 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	 * avoid calling this excessively
 	 * see {@link #onConnectionChanged(INetworkListener)}*/
 	void onCacheChanged(CacheHandler... cache);
-	
-	/**makes a certain part of the Network to be updated,
-	 * this is typically called by CacheHandlers which will often call multiple values
-	 * however this can be called anytime by anything in the network
-	 * avoid calling this excessively*/
-	void markUpdate(NetworkUpdate... updates);
-	
+		
 	/**checks the given INetworkListener is still valid and removes it if not, 
 	 * this shouldn't typically be called outside of the {@link ILogisticsNetwork}*/
 	boolean validateTile(INetworkListener listener);
@@ -72,18 +65,6 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	 * see {@link #removeConnections()}*/
 	void removeConnection(INetworkListener tile);
 	
-	/**adds all the connections queued via {@link #addConnection(INetworkListener)} to the relevant handlers, 
-	 * this should only be called internally by the {@link ILogisticsNetwork}
-	 * this is called before any other method in {@link #onNetworkTick()} 
-	 * to avoid concurrent errors.*/
-	void addConnections();
-	
-	/**removes all the connections queued via {@link #removeConnection(INetworkListener)} from the relevant handlers, 
-	 * this should only be called internally by the {@link ILogisticsNetwork}
-	 * this is called before any other method in {@link #onNetworkTick()} 
-	 * to avoid concurrent errors.*/	
-	void removeConnections();
-
 	/**called by {@link IDataCable}s when a neighbouring info provider is added
 	 * this adds a local {@link IInfoProvider} from another neighbouring network which can provide info to the displays in this one */
 	void addLocalInfoProvider(IInfoProvider monitor);

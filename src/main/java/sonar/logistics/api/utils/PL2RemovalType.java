@@ -2,9 +2,9 @@ package sonar.logistics.api.utils;
 
 public enum PL2RemovalType {
 
-	NETWORK_DISCONNECTED,
+	PLAYER_REMOVED,
 	CHUNK_UNLOADED,
-	PLAYER_REMOVED;	
+	NETWORK_DISCONNECTED;
 	
 	public boolean isNetworkEvent(){
 		return this == NETWORK_DISCONNECTED;

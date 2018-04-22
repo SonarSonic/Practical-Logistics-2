@@ -401,4 +401,9 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 		return CableRenderType.CABLE;
 	}
 
+	@Override
+	public World getWorld() {
+		return gsi.getWorld();
+	}
+
 }

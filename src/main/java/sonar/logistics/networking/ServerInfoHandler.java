@@ -53,31 +53,22 @@ public class ServerInfoHandler implements IInfoManager {
 	private int IDENTITY_COUNT; // gives unique identity to all PL2 Tiles ( which connect to networks), they can then be retrieved via their identity.
 	public Map<ILogicListenable, List<Integer>> changedInfo = new HashMap<>(); // in the form of READER IDENTITY and then CHANGED INFO
 	public Map<Integer, DisplayGSI> displays = new HashMap<>();
-	public boolean markDisplaysDirty = true;
 	private Map<InfoUUID, IInfo> info = new HashMap<>();
 	public Map<InfoUUID, AbstractChangeableList> monitoredLists = new HashMap<>();
 	public Map<Integer, ILogicListenable> identityTiles = new HashMap<>();
 	public Map<Integer, ConnectedDisplay> connectedDisplays = new HashMap<>();
-	public Map<Integer, List<ChunkPos>> chunksToUpdate = new HashMap<>();
 
 	public static ServerInfoHandler instance() {
 		return (ServerInfoHandler) PL2.proxy.getServerManager();
 	}
 
-	public boolean newChunks = false;
-
-	public int ticks;
-
 	public void removeAll() {
 		changedInfo.clear();
 		displays.clear();
-		markDisplaysDirty = true;
 		info.clear();
 		monitoredLists.clear();
 		identityTiles.clear();
 		connectedDisplays.clear();
-		// clickEvents.clear();
-		chunksToUpdate.clear();
 		IDENTITY_COUNT = 0;
 	}
 
@@ -155,14 +146,6 @@ public class ServerInfoHandler implements IInfoManager {
 		return displays.get(iden);
 	}
 
-	public void addChangedChunk(int dimension, ChunkPos chunkPos) {
-		List<ChunkPos> chunks = chunksToUpdate.computeIfAbsent(dimension, FunctionHelper.ARRAY);
-		if (!chunks.contains(chunkPos)) {
-			chunks.add(chunkPos);
-			newChunks = true;
-		}
-	}
-
 	@Nullable
 	public Pair<InfoUUID, UniversalChangeableList<?>> getMonitorFromServer(InfoUUID uuid) {
 		AbstractChangeableList list = getMonitoredList(uuid);
@@ -174,8 +157,7 @@ public class ServerInfoHandler implements IInfoManager {
 		return monitoredLists.get(uuid);
 	}
 
-	public void tick() {
-		LocalProviderHandler.updateLists();
+	public void sendInfoUpdates() {
 		if (!changedInfo.isEmpty() && !displays.isEmpty()) {
 			Map<EntityPlayerMP, NBTTagList> savePackets = new HashMap<EntityPlayerMP, NBTTagList>();
 			for (Entry<ILogicListenable, List<Integer>> id : changedInfo.entrySet()) {
@@ -200,7 +182,6 @@ public class ServerInfoHandler implements IInfoManager {
 				changedInfo.clear();
 			}
 		}
-		sendErrors();
 		return;
 
 	}
@@ -302,45 +283,5 @@ public class ServerInfoHandler implements IInfoManager {
 			entry.getKey().sendInfoContainerPacket();
 		}
 
-	}
-
-	//// EVENT HANDLING \\\\
-
-	public Map<Event, Integer> scheduled_events = new HashMap<>();
-	public Map<Runnable, Integer> scheduled_runnables = new HashMap<>();
-
-	public void scheduleEvent(Event event, int ticksToWait) {
-		scheduled_events.put(event, ticksToWait);
-	}
-
-	public void scheduleRunnable(Runnable action, int ticksToWait) {
-		scheduled_runnables.put(action, ticksToWait);
-	}
-
-	public void flushEvents() {
-		if (!scheduled_events.isEmpty()) {
-			Iterator<Entry<Event, Integer>> it = scheduled_events.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<Event, Integer> entry = it.next();
-				if (entry.getValue() <= 0) {
-					MinecraftForge.EVENT_BUS.post(entry.getKey());
-					it.remove();
-				} else {
-					entry.setValue(entry.getValue() - 1);
-				}
-			}
-		}
-		if (!scheduled_runnables.isEmpty()) {
-			Iterator<Entry<Runnable, Integer>> it = scheduled_runnables.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<Runnable, Integer> entry = it.next();
-				if (entry.getValue() <= 0) {
-					entry.getKey().run();
-					it.remove();
-				} else {
-					entry.setValue(entry.getValue() - 1);
-				}
-			}
-		}
 	}
 }

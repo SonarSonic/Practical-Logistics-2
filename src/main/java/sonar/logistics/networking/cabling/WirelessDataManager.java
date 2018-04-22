@@ -8,8 +8,9 @@ import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.WirelessConnectionType;
 import sonar.logistics.networking.LogisticsNetworkHandler;
-import sonar.logistics.networking.NetworkUpdate;
 import sonar.logistics.networking.ServerInfoHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
+import sonar.logistics.networking.events.NetworkChanges;
 import sonar.logistics.networking.events.NetworkEvent;
 
 public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwork, IDataEmitter, IDataReceiver> {
@@ -29,8 +30,10 @@ public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwo
 	public void connectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
 		watcher.getListenerList().addListener(connected, ILogisticsNetwork.CONNECTED_NETWORK);
 		connected.getListenerList().addListener(watcher, ILogisticsNetwork.WATCHING_NETWORK);
-		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);
-		ServerInfoHandler.instance().scheduleEvent(new NetworkEvent.ConnectedNetwork(watcher, connected), 1);
+
+		LogisticsEventHandler.instance().queueNetworkChange(watcher, NetworkChanges.LOCAL_CHANNELS, NetworkChanges.LOCAL_PROVIDERS);
+		LogisticsEventHandler.instance().queueNetworkChange(connected, NetworkChanges.LOCAL_CHANNELS, NetworkChanges.LOCAL_PROVIDERS);
+		LogisticsEventHandler.instance().UPDATING.scheduleEvent(new NetworkEvent.ConnectedNetwork(watcher, connected), 0);
 	}
 
 	/** disconnects two {@link ILogisticsNetwork}'s so the {@link IDataReceiver}'s network can no longer read the {@link IDataEmitter}'s network, however if multiple receivers/emitters between the two networks exist the networks will remain connected
@@ -39,8 +42,9 @@ public class WirelessDataManager extends AbstractWirelessManager<ILogisticsNetwo
 	public void disconnectNetworks(ILogisticsNetwork watcher, ILogisticsNetwork connected) {
 		watcher.getListenerList().removeListener(connected, true, ILogisticsNetwork.CONNECTED_NETWORK);
 		connected.getListenerList().removeListener(watcher, true, ILogisticsNetwork.WATCHING_NETWORK);
-		watcher.markUpdate(NetworkUpdate.GLOBAL, NetworkUpdate.NOTIFY_WATCHING_NETWORKS);		
-		ServerInfoHandler.instance().scheduleEvent(new NetworkEvent.DisconnectedNetwork(watcher, connected), 1);
+		LogisticsEventHandler.instance().queueNetworkChange(watcher, NetworkChanges.LOCAL_CHANNELS, NetworkChanges.LOCAL_PROVIDERS);
+		LogisticsEventHandler.instance().queueNetworkChange(connected, NetworkChanges.LOCAL_CHANNELS, NetworkChanges.LOCAL_PROVIDERS);
+		LogisticsEventHandler.instance().UPDATING.scheduleEvent(new NetworkEvent.DisconnectedNetwork(watcher, connected), 1);
 	}
 
 	/** connects a {@link IDataReceiver} to a {@link ILogisticsNetwork}'s

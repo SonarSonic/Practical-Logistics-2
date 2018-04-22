@@ -41,7 +41,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 
 	public abstract void onReceiverConnected(N main, R receiver);	
 
-	public abstract void onReceiverDisconnected(N network, R receiver);
+	public abstract void onReceiverDisconnected(N network, R receiver);	
 	
 	/** called by the {@link CacheHandler} when a {@link IDataReceiver} is connected to a network
 	 * @param network the {@link ILogisticsNetwork} the {@link IDataReceiver} is connected to
@@ -97,7 +97,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	 * @param emitter the {@link IDataEmitter} which has been disconnected */
 	public void onEmitterDisconnected(N network, E emitter) {
 		receivers.forEach(receiver -> {
-			if (receiver.canAccess(emitter).isConnected()) {
+			if (receiver.canAccess(emitter).isConnected()) {		
 				receiver.onEmitterDisconnected(emitter);
 			}
 		});
@@ -148,7 +148,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 
 	//// UPDATE TICK \\\\
 
-	public void tick() {
+	public void sendDataEmittersToListeners() {
 		if (dirty) {
 			player_viewers.forEach(player -> PacketHelper.sendEmittersToPlayer(player.listener.player, this));
 			dirty = false;

@@ -26,13 +26,18 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
+import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.events.NetworkCableEvent;
 
 public class TileDataCable extends TileSonarMultipart implements IDataCable, IOperatorTile, IOperatorProvider {
@@ -48,12 +53,12 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	
 	public final void onFirstTick(){
 		super.onFirstTick();
-		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(this, getWorld(), TileAdditionType.ADD));
+		LogisticsEventHandler.instance().queueNetworkAddition(this, PL2AdditionType.PLAYER_ADDED);
 	}
 
 	public final void invalidate() {
 		super.invalidate();
-		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(this, getWorld(), TileRemovalType.REMOVE));
+		LogisticsEventHandler.instance().queueNetworkRemoval(this, PL2RemovalType.PLAYER_REMOVED);
 	}
 	
 	@Override

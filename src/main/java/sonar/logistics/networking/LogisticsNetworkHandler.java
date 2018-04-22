@@ -7,11 +7,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nonnull;
+
 import sonar.logistics.PL2;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.networking.events.LogisticsEventHandler;
+import sonar.logistics.networking.events.NetworkChanges;
 
 public class LogisticsNetworkHandler {
 
@@ -41,13 +45,16 @@ public class LogisticsNetworkHandler {
 		}
 	}
 
-	/**will never be null*/
+	@Nonnull
 	public ILogisticsNetwork getNetwork(int networkID) {
 		ILogisticsNetwork networkCache = cache.get(networkID);
 		return networkCache != null ? networkCache : EmptyLogisticsNetwork.INSTANCE;
 	}
 
 	public ILogisticsNetwork getOrCreateNetwork(int networkID) {
+		if(networkID==-1){
+			return EmptyLogisticsNetwork.INSTANCE;
+		}
 		ILogisticsNetwork networkCache = cache.get(networkID);
 		if (networkCache == null || !networkCache.isValid()) {
 			LogisticsNetwork network = new LogisticsNetwork(networkID);// TODO int arg
@@ -67,7 +74,8 @@ public class LogisticsNetworkHandler {
 			List<INetworkListener> tiles = oldNet.getCachedTiles(CacheHandler.TILE, CacheType.LOCAL);
 			oldNet.onNetworkRemoved();
 			cache.remove(oldNet);				
-			newNet.markUpdate(NetworkUpdate.CABLES);
+
+			LogisticsEventHandler.instance().queueNetworkChange(newNet, NetworkChanges.LOCAL_CHANNELS, NetworkChanges.LOCAL_PROVIDERS);
 			newNet.onCablesChanged();
 		}
 	}

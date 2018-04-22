@@ -15,6 +15,7 @@ import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.packets.PacketAddListener;
 import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.PacketClientEmitters;
@@ -46,6 +47,7 @@ public class PL2Common {
 	public RedstoneConnectionHandler redstoneManager;
 	public DisplayHandler server_display_manager;
 	public ChunkViewerHandler chunkViewer;
+	public LogisticsEventHandler eventHandler;
 	
 	public static void registerPackets() {
 		PL2.network.registerMessage(PacketMonitoredList.Handler.class, PacketMonitoredList.class, 0, Side.CLIENT);
@@ -119,7 +121,11 @@ public class PL2Common {
 		
 		chunkViewer = new ChunkViewerHandler();
 		MinecraftForge.EVENT_BUS.register(chunkViewer);
-		PL2.logger.info("Initialised Chunk Viewer Handler");		
+		PL2.logger.info("Initialised Chunk Viewer Handler");	
+		
+		eventHandler = new LogisticsEventHandler();
+		MinecraftForge.EVENT_BUS.register(eventHandler);
+		PL2.logger.info("Initialised Event Handler");		
 	}
 	
 	public void removeAll(){

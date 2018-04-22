@@ -27,10 +27,6 @@ public class LocalProviderHandler {
 
 	public static Map<ILogicListenable, UpdateCause> updates = new HashMap<>();
 
-	public static void queueUpdate(ILogicListenable logicTile, PL2AdditionType addition) {
-
-	}
-
 	public static void queueUpdate(ILogicListenable logicTile, UpdateCause cause) {
 		UpdateCause current = updates.get(logicTile);
 		if (current == null || current.ordinal() > cause.ordinal()) {
@@ -100,7 +96,7 @@ public class LocalProviderHandler {
 		ServerInfoHandler.instance().markChanged(logicTile, uuid);
 	}
 
-	public static void updateLists() {
+	public static void updateLocalProviderConnections() {
 		if (!updates.isEmpty()) {
 			for (Entry<ILogicListenable, UpdateCause> update : updates.entrySet()) {
 				Map<DisplayGSI, List<InfoUUID>> affected = getConnectionsForTile(new HashMap(), update.getKey());

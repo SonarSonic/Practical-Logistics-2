@@ -140,7 +140,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 			Pair<ConnectableType, Integer> connection = getConnectionType(cable, coords.getWorld(), coords.getBlockPos(), dir, cable.getConnectableType());
 			boolean canConnect = cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, false).canConnect();
 			if ((!canConnect && connection.a.canConnect(cable.getConnectableType()))) {
-				removeConnectionToNetwork(cable);
+				removeConnectionFromNetwork(cable);
 				addConnectionToNetwork(cable);
 			} else if ((canConnect && connection.a.canConnect(cable.getConnectableType()) && connection.b != cable.getRegistryID())) {
 				connectNetworks(cable.getRegistryID(), connection.b);
@@ -154,11 +154,13 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 		List<T> oldConnections = connections.get(secondaryID);
 		if (oldConnections == null) {
 			return;
-		}
-		addConnections(newID, oldConnections);
+		}		
+		oldConnections.forEach(removed -> onConnectionRemoved(secondaryID, removed));
+		addConnections(newID, oldConnections);		
+		
 		oldConnections.clear();
 		connections.remove(secondaryID);
-		this.onNetworksConnected(newID, secondaryID);
+		onNetworksConnected(newID, secondaryID);
 	}
 
 	public abstract void onNetworksDisconnected(List<Integer> newNetworks);
@@ -167,10 +169,10 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 
 	public abstract void onConnectionAdded(int registryID, T added);
 
-	public abstract void onConnectionRemoved(int registryID, T added);
+	public abstract void onConnectionRemoved(int registryID, T removed);
 
 	public abstract void addConnectionToNetwork(T add);
 
-	public abstract void removeConnectionToNetwork(T remove);
+	public abstract void removeConnectionFromNetwork(T remove);
 
 }

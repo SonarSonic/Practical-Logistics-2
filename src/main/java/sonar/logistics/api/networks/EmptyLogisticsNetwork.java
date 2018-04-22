@@ -13,7 +13,6 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.CacheHandler;
-import sonar.logistics.networking.NetworkUpdate;
 
 /**the default version of ILogisticsNetwork when a tile is yet to be connected*/
 public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
@@ -36,9 +35,6 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 	public void onCacheChanged(CacheHandler ...cache) {}
 
 	@Override
-	public void markUpdate(NetworkUpdate ...updates) {}
-
-	@Override
 	public boolean validateTile(INetworkListener listener) {
 		return false;
 	}
@@ -54,12 +50,6 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork  {
 
 	@Override
 	public void addLocalInfoProvider(IInfoProvider monitor) {}
-
-	@Override
-	public void addConnections(){}
-
-	@Override
-	public void removeConnections(){}
 
 	@Override
 	public void removeLocalInfoProvider(IInfoProvider monitor) {}

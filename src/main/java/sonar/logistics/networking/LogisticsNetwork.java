@@ -32,6 +32,7 @@ import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler.UpdateCause;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 
@@ -41,11 +42,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public final Map<Class, INetworkChannels> handlers = new LinkedHashMap<>();
 	public List<IInfoProvider> localProviders = new ArrayList<>();
 	public List<IInfoProvider> globalProviders = new ArrayList<>();
-	private List<NetworkUpdate> toUpdate = SonarHelper.convertArray(NetworkUpdate.values());
 	private List<CacheHandler> changedCaches = Lists.newArrayList(CacheHandler.handlers);
 	private Map<CacheHandler, List> caches = LogisticsHelper.getCachesMap();
-	public Queue<INetworkListener> toAdd = new ConcurrentLinkedQueue<INetworkListener>();
-	public Queue<INetworkListener> toRemove = new ConcurrentLinkedQueue<INetworkListener>();
 	private List<NodeConnection> localChannels = new ArrayList<>(), globalChannels = new ArrayList<>(), allChannels = new ArrayList<>();
 	private long tickStart = 0;
 	private long updateTick = 0; // in nano seconds
@@ -59,14 +57,13 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	//// NETWORK EVENTS \\\\
 
-	public void onNetworkCreated() {}
+	public void onNetworkCreated() {
+		
+	}
 
 	public void onNetworkTick() {
 		tickStart = System.nanoTime();
-		addConnections();
-		removeConnections();
 		updateCaches();
-		runNetworkUpdates();
 		updateNetworkHandlers();
 		updateTick = System.nanoTime() - tickStart;
 	}
@@ -126,29 +123,10 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public <T> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType) {
 		List<T> tiles = cacheType.isLocal() ? Lists.newArrayList(caches.getOrDefault(handler, new ArrayList<>())) : new ArrayList<>();
 		if (cacheType.isGlobal()) {
-			List<ILogisticsNetwork> connected = getAllNetworks(ILogisticsNetwork.CONNECTED_NETWORK);
+			List<ILogisticsNetwork> connected = NetworkHelper.getAllNetworks(this, ILogisticsNetwork.CONNECTED_NETWORK);
 			connected.forEach(network -> ListHelper.addWithCheck(tiles, network.getCachedTiles(handler, CacheType.LOCAL)));
 		}
 		return tiles;
-	}
-	//// NETWORK UPDATES \\\\
-
-	@Override
-	public void markUpdate(NetworkUpdate... updates) {
-		ListHelper.addWithCheck(toUpdate, updates);
-	}
-
-	private void runNetworkUpdates() {
-		if (toUpdate.isEmpty()) {
-			return;
-		}
-		for (NetworkUpdate update : NetworkUpdate.values()) {
-			if (toUpdate.contains(update)) {
-				update.updateMethod.accept(this);
-			}
-		}
-		toUpdate.clear();
-
 	}
 
 	public boolean validateTile(INetworkListener listener) {
@@ -161,47 +139,22 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	@Override
 	public void addConnection(INetworkListener tile) {
-		toAdd.add(tile);
-		toRemove.remove(tile); // prevents tiles being removed if it's unncessary
+		CacheHandler.getValidCaches(tile).forEach(cache -> {
+			if (!caches.get(cache).contains(tile) && caches.get(cache).add(tile)) {
+				onCacheChanged(cache);
+				cache.onConnectionAdded(this, tile);
+			}
+		});
 	}
 
 	@Override
 	public void removeConnection(INetworkListener tile) {
-		toRemove.add(tile);
-		toAdd.remove(tile); // prevents tiles being added if it's unnecessary
-	}
-
-	public void addConnections() {
-		if (toAdd.isEmpty()) {
-			return;
-		}
-		Iterator<INetworkListener> iterator = toAdd.iterator();
-		while (iterator.hasNext()) {
-			INetworkListener tile = iterator.next();
-			CacheHandler.getValidCaches(tile).forEach(cache -> {
-				if (!caches.get(cache).contains(tile) && caches.get(cache).add(tile)) {
-					onCacheChanged(cache);
-					cache.onConnectionAdded(this, tile);
-				}
-			});
-			iterator.remove();
-		}
-	}
-
-	public void removeConnections() {
-		if (toRemove.isEmpty())
-			return;
-		Iterator<INetworkListener> iterator = toRemove.iterator();
-		while (iterator.hasNext()) {
-			INetworkListener tile = iterator.next();
-			CacheHandler.getValidCaches(tile).forEach(cache -> {
-				if (caches.get(cache).remove(tile)) {
-					onCacheChanged(cache);
-					cache.onConnectionRemoved(this, tile);
-				}
-			});
-			iterator.remove();
-		}
+		CacheHandler.getValidCaches(tile).forEach(cache -> {
+			if (caches.get(cache).remove(tile)) {
+				onCacheChanged(cache);
+				cache.onConnectionRemoved(this, tile);
+			}
+		});
 	}
 
 	@Override
@@ -219,11 +172,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	public void onCablesChanged() {
-		if (CableConnectionHandler.instance().getConnections(getNetworkID()).size() == 0) {
-			onNetworkRemoved();
-		} else {
-			markUpdate(NetworkUpdate.CABLES);
-		}
+		// LogisticsEventHandler.instance().queueNetworkUpdate(this, NetworkUpdate.CABLES);
 	}
 
 	@Override
@@ -248,46 +197,14 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		}
 	}
 
-	public void updateCables() {
-		List<INetworkListener> tiles = caches.get(CacheHandler.TILE);
-		tiles.forEach(tile -> removeConnection(tile)); // we remove them, but the cables then add them again below (as this is only a queue, they are never actually removed, unless necessary)
-		List<IDataCable> cables = CableConnectionHandler.instance().getConnections(networkID);
-		List<IInfoProvider> old_providers = Lists.newArrayList(localProviders);
-		localProviders.clear();
-		cables.forEach(cable -> CableConnectionHandler.instance().addAllConnectionsToNetwork(cable, this));
-
-		List<IInfoProvider> added = Lists.newArrayList(localProviders);
-		added.removeAll(old_providers);
-
-		List<IInfoProvider> removed = Lists.newArrayList(old_providers);
-		removed.removeAll(localProviders);
-		
-		for(IInfoProvider add : added){
-			LocalProviderHandler.queueUpdate(add, UpdateCause.NETWORK_CHANGE);
-		}
-		
-		for(IInfoProvider remove : removed){
-			LocalProviderHandler.queueUpdate(remove, UpdateCause.NETWORK_CHANGE);
-		}
-
-		markUpdate(NetworkUpdate.LOCAL, NetworkUpdate.GLOBAL, NetworkUpdate.HANDLER_CHANNELS);
-	}
-
-	public void updateChannels() {
-		updateLocalChannels();
-		updateGlobalChannels();
-		updateHandlerChannels();
-	}
-
-	public void updateLocalChannels() {
+	// FIXME - make this event driven.
+	public void createLocalChannels() {
 		List<NodeConnection> channels = new ArrayList<>();
 		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.LOCAL));
-		// FIXME check there is a new local channel before using onLocalCacheChanged???
 		this.localChannels = Lists.newArrayList(channels);
-		this.markUpdate(NetworkUpdate.NOTIFY_WATCHING_NETWORKS, NetworkUpdate.HANDLER_CHANNELS);
 	}
 
-	public void updateGlobalChannels() {
+	public void createGlobalChannels() {
 		List<NodeConnection> channels = new ArrayList<>();
 		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.GLOBAL));
 		this.globalChannels = Lists.newArrayList(channels);
@@ -296,12 +213,15 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		ListHelper.addWithCheck(all, globalChannels);
 		ListHelper.addWithCheck(all, localChannels);
 		NodeConnection.sortConnections(all);
+		this.allChannels = all;
+		updateHandlerChannels();
+	}
+
+	public void createGlobalProviders() {
 		this.globalProviders = Lists.newArrayList(localProviders);
-		getAllNetworks(ILogisticsNetwork.CONNECTED_NETWORK).forEach(network -> {
+		NetworkHelper.getAllNetworks(this, ILogisticsNetwork.CONNECTED_NETWORK).forEach(network -> {
 			ListHelper.addWithCheck(globalProviders, network.getLocalInfoProviders());
 		});
-
-		this.allChannels = all;
 	}
 
 	public void updateNetworkHandlers() {
@@ -350,28 +270,12 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	/// SUB NETWORKS \\\
 
 	public void notifyWatchingNetworks() {
-		getAllNetworks(ILogisticsNetwork.WATCHING_NETWORK).forEach(network -> network.onConnectedNetworkCacheChanged(this));
+		///getAllNetworks(ILogisticsNetwork.WATCHING_NETWORK).forEach(network -> network.onConnectedNetworkCacheChanged(this));
 	}
 
 	@Override
 	public void onConnectedNetworkCacheChanged(ILogisticsNetwork network) {
 		onCacheChanged(CacheHandler.RECEIVERS);
-	}
-
-	public List<ILogisticsNetwork> getAllNetworks(int networkType) {
-		List<ILogisticsNetwork> networks = new ArrayList<>();
-		addSubNetworks(networks, this, networkType);
-		return networks;
-	}
-
-	public void addSubNetworks(List<ILogisticsNetwork> building, ILogisticsNetwork network, int networkType) {
-		building.add(network);
-		List<ILogisticsNetwork> subNetworks = network.getListenerList().getListeners(networkType);
-		for (ILogisticsNetwork sub : subNetworks) {
-			if (sub.isValid() && !building.contains(sub)) {
-				addSubNetworks(building, sub, networkType);
-			}
-		}
 	}
 
 	@Override

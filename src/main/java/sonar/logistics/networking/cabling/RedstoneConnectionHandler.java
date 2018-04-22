@@ -23,21 +23,9 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 
 	public final List<Integer> forUpdate = new ArrayList<>();
 	public final Map<Integer, Integer> powerCache = new HashMap<>();
-	public final List<IRedstoneCable> addedCables = new ArrayList<>();
-	public final List<IRedstoneCable> removedCables = new ArrayList<>();
 
 	public final Map<Integer, IRedstoneNetwork> networks = new HashMap<>();
 
-	/* public final Map<Integer, IRedstoneConnectable> connectors = new HashMap<>(); public final List<IRedstoneConnectable> addedConnectors = new ArrayList<>(); public final List<IRedstoneConnectable> removedConnectors = new ArrayList<>(); */
-	public void queueCableAddition(IRedstoneCable cable) {
-		removedCables.remove(cable);
-		addedCables.add(cable);
-	}
-
-	public void queueCableRemoval(IRedstoneCable cable) {
-		addedCables.remove(cable);
-		removedCables.add(cable);
-	}
 
 	/* public void queueConnectorAddition(IRedstoneConnectable connection) { removedConnectors.remove(connection); addedConnectors.add(connection); } public void queueConnectorRemoval(IRedstoneConnectable connection) { addedConnectors.remove(connection); removedConnectors.add(connection); } */
 	public void removeAll() {
@@ -48,18 +36,7 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	}
 
 	public void tick() {
-		addedCables.forEach(cable -> {
-			addConnection(cable);
-			cable.updateCableRenders();
-
-		});
-		removedCables.forEach(cable -> {
-			removeConnection(cable);
-		});
 		networks.forEach((I, N) -> N.tick());
-		/* addedConnectors.forEach(connector -> { connectors.put(connector.getIdentity(), connector); }); removedConnectors.forEach(connector -> { connectors.remove(connector.getIdentity()); }); */
-		addedCables.clear();
-		removedCables.clear();
 
 		if (!forUpdate.isEmpty()) {
 			networks.values().forEach(network -> network.updateLocalPower());
@@ -176,7 +153,7 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	}
 
 	@Override
-	public void removeConnectionToNetwork(IRedstoneCable remove) {
+	public void removeConnectionFromNetwork(IRedstoneCable remove) {
 		removeConnection(remove);
 	}
 

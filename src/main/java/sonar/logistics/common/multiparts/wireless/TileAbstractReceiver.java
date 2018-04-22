@@ -35,8 +35,6 @@ public abstract class TileAbstractReceiver<E extends IWirelessEmitter, R extends
 	}
 		
 	public abstract IWirelessManager<E,R> getWirelessHandler();
-	//	return PL2.getWirelessManager();
-	//}
 
 	public void addEmitterFromClient(ClientWirelessEmitter emitter) {
 		E tile = getWirelessHandler().getEmitter(emitter.getIdentity());

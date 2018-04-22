@@ -87,7 +87,7 @@ public class ChunkViewerHandler {
 		PL2.logger.info("Viewer Removed: " + gsi.getDisplayGSIIdentity() + " " + player);
 	}
 
-	public void tick() {
+	public void updateDisplayViewers() {
 		if (!ADDED_DISPLAYS.isEmpty()) {
 			for (DisplayGSI gsi : ADDED_DISPLAYS) {
 				if (gsi.isValid()) {

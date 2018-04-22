@@ -33,9 +33,12 @@ import sonar.logistics.api.cabling.IRedstonePowerProvider;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.events.NetworkCableEvent;
 
 public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCable, IOperatorTile, IOperatorProvider {
@@ -48,12 +51,12 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 	
 	public final void onFirstTick(){
 		super.onFirstTick();
-		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(this, getWorld(), TileAdditionType.ADD));
+		LogisticsEventHandler.instance().queueNetworkAddition(this, PL2AdditionType.PLAYER_ADDED);
 	}
 
 	public final void invalidate() {
-		super.invalidate();
-		MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(this, getWorld(), TileRemovalType.REMOVE));
+		super.invalidate();;
+		LogisticsEventHandler.instance().queueNetworkRemoval(this, PL2RemovalType.PLAYER_REMOVED);
 	}
 	
 	@Override

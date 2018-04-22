@@ -34,71 +34,29 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 		return PL2.instance.proxy.server_display_manager;
 	}
 
-	private List<Integer> rebuild = Lists.newArrayList();
-	public final List<IDisplay> addedScreens = new ArrayList<>();
-	public final List<IDisplay> removedScreens = new ArrayList<>();
+	public List<Integer> rebuild = Lists.newArrayList();
 	public final Map<Integer, List<ConnectedDisplayChange>> display_updates = new HashMap<>();
 
-	@SubscribeEvent
-	public void onPartAdded(NetworkPartEvent.AddedPart event) {
-		if (event.tile instanceof IDisplay && !event.world.isRemote) {
-			int identity = event.tile.getIdentity();
-			DisplayHandler.instance().queueDisplayAddition((IDisplay) event.tile);
+	public void updateConnectedDisplays() {
+		if (!display_updates.isEmpty()) {
+			Map<Integer, ConnectedDisplay> connected = ServerInfoHandler.instance().getConnectedDisplays();
+			if (!connected.isEmpty()) {
+				connected.values().forEach(this::runChanges);
+			}
+			display_updates.clear();
 		}
 	}
 
-	@SubscribeEvent
-	public void onPartRemoved(NetworkPartEvent.RemovedPart event) {
-		if (event.tile instanceof IDisplay && !event.world.isRemote) {
-			int identity = event.tile.getIdentity();
-			DisplayHandler.instance().queueDisplayRemoval((IDisplay) event.tile);
-		}
+	public void onDisplayAddition(ILargeDisplay display) {
+		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
+		addConnectionToNetwork((ILargeDisplay) display);
+		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
 	}
 
-	public void removeAll() {
-		super.removeAll();
-		addedScreens.clear();
-		removedScreens.clear();
-	}
-
-	public void queueDisplayAddition(IDisplay display) {
-		removedScreens.remove(display);
-		addedScreens.add(display);
-	}
-
-	public void queueDisplayRemoval(IDisplay display) {
-		addedScreens.remove(display);
-		removedScreens.add(display);
-	}
-
-	public void tick() {
-		rebuild.clear();
-		addedScreens.forEach(this::onDisplayAddition);
-		removedScreens.forEach(this::onDisplayRemoval);
-		createConnectedDisplays();
-		Map<Integer, ConnectedDisplay> connected = ServerInfoHandler.instance().getConnectedDisplays();
-		if (!connected.isEmpty()) {
-			connected.values().forEach(this::runChanges);
-		}
-		addedScreens.forEach(display -> ServerInfoHandler.instance().addDisplay(display));
-		removedScreens.forEach(display -> ServerInfoHandler.instance().removeDisplay(display));
-		addedScreens.clear();
-		removedScreens.clear();
-		display_updates.clear();
-	}
-
-	private void onDisplayAddition(IDisplay display) {
-		if (display instanceof ILargeDisplay) {
-			ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
-			addConnectionToNetwork((ILargeDisplay) display);
-		}
-	}
-
-	private void onDisplayRemoval(IDisplay display) {
-		if (display instanceof ILargeDisplay) {
-			ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
-			removeConnectionToNetwork((ILargeDisplay) display);
-		}
+	public void onDisplayRemoval(ILargeDisplay display) {
+		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
+		removeConnectionFromNetwork((ILargeDisplay) display);
+		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
 	}
 
 	public void createConnectedDisplays() {
@@ -230,7 +188,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	}
 
 	@Override
-	public void removeConnectionToNetwork(ILargeDisplay remove) {
+	public void removeConnectionFromNetwork(ILargeDisplay remove) {
 		removeConnection(remove);
 	}
 

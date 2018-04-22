@@ -2,7 +2,9 @@ package sonar.logistics.networking.events;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.tiles.readers.IInfoProvider;
 
 /**server side only*/
 public class NetworkEvent extends Event {
@@ -32,6 +34,50 @@ public class NetworkEvent extends Event {
 		public DisconnectedNetwork(ILogisticsNetwork network, ILogisticsNetwork connected){
 			super(network);
 			disconnected_network = connected;
+		}
+		
+	}
+	
+	public static class ConnectedTile extends NetworkEvent{
+				
+		public final INetworkTile tile;
+		
+		public ConnectedTile(ILogisticsNetwork network, INetworkTile tile){
+			super(network);
+			this.tile = tile;
+		}
+		
+	}
+	
+	public static class DisconnectedTile extends NetworkEvent{
+				
+		public final INetworkTile tile;
+		
+		public DisconnectedTile(ILogisticsNetwork network, INetworkTile tile){
+			super(network);
+			this.tile = tile;
+		}
+		
+	}
+	
+	public static class ConnectedLocalProvider extends NetworkEvent{
+				
+		public final IInfoProvider tile;
+		
+		public ConnectedLocalProvider(ILogisticsNetwork network, IInfoProvider tile){
+			super(network);
+			this.tile = tile;
+		}
+		
+	}
+	
+	public static class DisconnectedLocalProvider extends NetworkEvent{
+				
+		public final IInfoProvider tile;
+		
+		public DisconnectedLocalProvider(ILogisticsNetwork network, IInfoProvider tile){
+			super(network);
+			this.tile = tile;
 		}
 		
 	}

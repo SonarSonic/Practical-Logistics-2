@@ -207,16 +207,4 @@ public class RedstoneNetwork implements IRedstoneNetwork {
 		return subNetworks;
 	}
 
-	@Override
-	public void onListenerAdded(ListenerTally<IRedstoneNetwork> tally) {}
-
-	@Override
-	public void onListenerRemoved(ListenerTally<IRedstoneNetwork> tally) {}
-
-	@Override
-	public void onSubListenableAdded(ISonarListenable<IRedstoneNetwork> listen) {}
-
-	@Override
-	public void onSubListenableRemoved(ISonarListenable<IRedstoneNetwork> listen) {}
-
 }

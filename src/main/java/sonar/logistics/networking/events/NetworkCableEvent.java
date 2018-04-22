@@ -2,9 +2,9 @@ package sonar.logistics.networking.events;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
 import sonar.logistics.api.cabling.ICable;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
 
 public class NetworkCableEvent extends Event {
 
@@ -19,9 +19,9 @@ public class NetworkCableEvent extends Event {
 
 	public static class AddedCable extends NetworkCableEvent {
 		
-		public final TileAdditionType type;
+		public final PL2AdditionType type;
 		
-		public AddedCable(ICable tile, World world, TileAdditionType type) {
+		public AddedCable(ICable tile, World world, PL2AdditionType type) {
 			super(tile, world);
 			this.type=type;
 		}
@@ -29,9 +29,9 @@ public class NetworkCableEvent extends Event {
 
 	public static class RemovedCable extends NetworkCableEvent {
 		
-		public final TileRemovalType type;
+		public final PL2RemovalType type;
 		
-		public RemovedCable(ICable tile, World world, TileRemovalType type) {
+		public RemovedCable(ICable tile, World world, PL2RemovalType type) {
 			super(tile, world);
 			this.type=type;
 		}

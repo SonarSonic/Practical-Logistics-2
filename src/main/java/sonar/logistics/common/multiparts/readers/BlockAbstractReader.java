@@ -69,7 +69,7 @@ public class BlockAbstractReader extends BlockLogisticsSided {
 	}
 
 	public void onScreenChanged(TileAbstractReader reader, IDisplay screen, boolean valid) {
-		if (screen.getGSI().getFacing() == reader.getCableFace()) {
+		if (screen.getCableFace() == reader.getCableFace()) {
 			reader.hasMonitor.setObject(valid);
 			SonarMultipartHelper.sendMultipartUpdateSyncAround(reader, 128);
 		}

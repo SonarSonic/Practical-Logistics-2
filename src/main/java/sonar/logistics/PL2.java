@@ -108,7 +108,6 @@ public class PL2 {
 		logger.info("Registered OreDict");
 
 		MinecraftForge.EVENT_BUS.register(new PL2Events());
-		LogisticsEventHandler.registerHandlers();
 		logger.info("Registered Event Handlers");
 		proxy.load(event);
 	}

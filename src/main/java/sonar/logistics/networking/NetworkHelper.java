@@ -1,5 +1,6 @@
 package sonar.logistics.networking;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -30,6 +31,22 @@ public class NetworkHelper {
 			}
 		}
 		return true;
+	}
+
+	public static List<ILogisticsNetwork> getAllNetworks(ILogisticsNetwork network, int networkType) {
+		List<ILogisticsNetwork> networks = new ArrayList<>();
+		addSubNetworks(networks, network, networkType);
+		return networks;
+	}
+
+	public static void addSubNetworks(List<ILogisticsNetwork> building, ILogisticsNetwork network, int networkType) {
+		building.add(network);
+		List<ILogisticsNetwork> subNetworks = network.getListenerList().getListeners(networkType);
+		for (ILogisticsNetwork sub : subNetworks) {
+			if (sub.isValid() && !building.contains(sub)) {
+				addSubNetworks(building, sub, networkType);
+			}
+		}
 	}
 
 	public static ILogisticsNetwork getNetwork(int networkID){

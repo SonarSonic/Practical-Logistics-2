@@ -2,9 +2,9 @@ package sonar.logistics.api.utils;
 
 public enum PL2AdditionType {
 
-	NETWORK_CONNECTED,
+	PLAYER_ADDED,
 	CHUNK_LOADED,
-	PLAYER_ADDED;
+	NETWORK_CONNECTED;
 	
 	public boolean isNetworkEvent(){
 		return this == NETWORK_CONNECTED;
