@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
@@ -66,7 +66,7 @@ public class GuiEditProgressBar extends GuiAbstractEditElements {
 			return;
 		}
 		if (button instanceof CustomColourButton) {
-			FMLCommonHandler.instance().showGuiScreen(GuiSonar.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
+			FMLCommonHandler.instance().showGuiScreen(IGuiOrigin.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
 			return;
 		}
 		switch (button.id) {

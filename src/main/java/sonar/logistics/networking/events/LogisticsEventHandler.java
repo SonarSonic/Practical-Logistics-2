@@ -128,7 +128,7 @@ public class LogisticsEventHandler {
 	}
 
 	public void queueNetworkAddition(Object tile, PL2AdditionType type) {
-		if (tile instanceof IWorldTile && ((IWorldTile) tile).getWorld().isRemote) {
+		if (tile instanceof IWorldTile && ((IWorldTile) tile).getActualWorld().isRemote) {
 			return;
 		}
 		queue_handlers.keySet().forEach(clazz -> {
@@ -143,7 +143,7 @@ public class LogisticsEventHandler {
 	}
 
 	public void queueNetworkRemoval(Object tile, PL2RemovalType type) {
-		if (tile instanceof IWorldTile && ((IWorldTile) tile).getWorld().isRemote) {
+		if (tile instanceof IWorldTile && ((IWorldTile) tile).getActualWorld().isRemote) {
 			return;
 		}
 		queue_handlers.keySet().forEach(clazz -> {
@@ -158,14 +158,14 @@ public class LogisticsEventHandler {
 	}
 
 	public void flushDataCables(Map<IDataCable, PL2AdditionType> added, Map<IDataCable, PL2RemovalType> removed) {
-		added.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(cable, cable.getWorld(), type)));
-		removed.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(cable, cable.getWorld(), type)));
+		added.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(cable, cable.getActualWorld(), type)));
+		removed.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(cable, cable.getActualWorld(), type)));
 		CableConnectionHandler.instance().doQueuedUpdates();
 	}
 
 	public void flushRedstoneCables(Map<IRedstoneCable, PL2AdditionType> added, Map<IRedstoneCable, PL2RemovalType> removed) {
-		added.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(cable, cable.getWorld(), type)));
-		removed.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(cable, cable.getWorld(), type)));
+		added.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.AddedCable(cable, cable.getActualWorld(), type)));
+		removed.forEach((cable, type) -> MinecraftForge.EVENT_BUS.post(new NetworkCableEvent.RemovedCable(cable, cable.getActualWorld(), type)));
 	}
 
 	public void flushLargeDisplays(Map<ILargeDisplay, PL2AdditionType> added, Map<ILargeDisplay, PL2RemovalType> removed) {
@@ -185,8 +185,8 @@ public class LogisticsEventHandler {
 	}
 
 	public <T extends INetworkTile> void flushDefaultParts(Map<T, PL2AdditionType> added, Map<T, PL2RemovalType> removed) {
-		added.forEach((tile, type) -> MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(tile, tile.getWorld(), type)));
-		removed.forEach((tile, type) -> MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(tile, tile.getWorld(), type)));
+		added.forEach((tile, type) -> MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(tile, tile.getActualWorld(), type)));
+		removed.forEach((tile, type) -> MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(tile, tile.getActualWorld(), type)));
 	}
 
 	//// NETWORK UPDATES \\\\

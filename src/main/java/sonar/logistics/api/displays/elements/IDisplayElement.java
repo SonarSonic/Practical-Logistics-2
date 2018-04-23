@@ -82,7 +82,7 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 
 	double[] getActualScaling();
 
-	default Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+	default Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player){
 		return null;
 	}
 	

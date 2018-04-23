@@ -48,6 +48,9 @@ public class TileEntityNode extends TileSidedLogistics implements INode, IByteBu
 
 	public void update() {
 		super.update();
+		if(world.isRemote){
+			return;
+		}
 		if (update == 20) {
 			Entity entity = getEntity();
 			if ((uuid == null && entity != null || entity == null || !uuid.equals(entity.getPersistentID()))) {

@@ -15,7 +15,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
@@ -114,7 +114,7 @@ public abstract class GuiEditStyledStrings extends GuiStyledStringFunctions impl
 			return;
 		}
 		if (button instanceof CustomColourButton) {
-			FMLCommonHandler.instance().showGuiScreen(GuiSonar.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
+			FMLCommonHandler.instance().showGuiScreen(IGuiOrigin.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
 			return;
 		}
 		if (button instanceof SpecialFormatButton) {

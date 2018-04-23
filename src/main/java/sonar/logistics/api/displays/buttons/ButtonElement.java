@@ -51,16 +51,12 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BUTTON_TEX);
 		GlStateManager.disableLighting();
 		RenderHelper.drawModalRectWithCustomSizedTexture(0, 0, (buttonX * 16) * 0.0625, (buttonY * 16) * 0.0625, 1, 1, 16, 16);
-		/* double x= 0; double y=0; double u=0; double v=0; double width=4; double height=4; double textureWidth=64; double textureHeight=64; double f = 1.0 / textureWidth; double f1 = 1.0 / textureHeight; Tessellator tessellator = Tessellator.getInstance(); BufferBuilder bufferbuilder = tessellator.getBuffer(); bufferbuilder.begin(7, DefaultVertexFormats.TEX_2F); bufferbuilder.pos(x, y + height, 0).tex(u * f, (v + height) * f1).endVertex(); bufferbuilder.pos(x + width, y + height, 0.0D).tex((u + width) * f, (v + height) * f1).endVertex(); bufferbuilder.pos(x + width, y, 0).tex((u + width) * f, v * f1).endVertex(); bufferbuilder.pos(x, y, 0).tex(u * f, v * f1).endVertex(); tessellator.draw(); */
-		// if (shouldRenderClick(buttonID)) {
-		/** renders a blue select box around the button if has been clicked */
-		// RenderHelper.drawModalRectWithCustomSizedTexture(posX, posY, (double) 15 / ((double) texPixelWidth / (button.width / pixel)), (double) 15 / ((double) texPixelWidth / (button.height / pixel)), button.width, button.height, button.width / pixel, button.width / pixel);
-		// }
+		
 		if (isPlayerLooking()) {
 			/** renders a blue select box around the button if has been clicked */
 			RenderHelper.drawModalRectWithCustomSizedTexture(0, 0, (15 * 16) * 0.0625, (15 * 16) * 0.0625, 1, 1, 16, 16);
 
-			double displayScale = 0.02;// FIXME
+			double displayScale = 0.008;// FIXME
 			pushMatrix();
 			translate(getActualScaling()[WIDTH] / getActualScaling()[SCALE], 0, -0.005);
 			scale(1 / getActualScaling()[SCALE], 1 / getActualScaling()[SCALE], 1);
@@ -91,7 +87,7 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 
 	@Override
 	public String getRepresentiveString() {
-		return hoverString;
+		return hoverString.isEmpty() ? "BUTTON" : hoverString;
 	}
 
 	@Override

@@ -29,7 +29,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -68,6 +67,8 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.IScaleableDisplay;
+import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.client.gsi.GSIOverlays;
@@ -82,9 +83,11 @@ import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler;
-import sonar.logistics.packets.PacketDisplayGSIContentsPacket;
-import sonar.logistics.packets.PacketDisplayGSIInvalidate;
-import sonar.logistics.packets.PacketDisplayGSIValidate;
+import sonar.logistics.networking.events.LogisticsEventHandler;
+import sonar.logistics.packets.gsi.PacketGSIConnectedDisplayValidate;
+import sonar.logistics.packets.gsi.PacketGSIContentsPacket;
+import sonar.logistics.packets.gsi.PacketGSIInvalidate;
+import sonar.logistics.packets.gsi.PacketGSIStandardDisplayValidate;
 
 public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListener, IFlexibleGui<IDisplay>, ISonarListener {
 
@@ -135,24 +138,19 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	//// MAIN ACTIONS \\\\
 
 	public boolean onClicked(TileAbstractDisplay part, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (LogisticsHelper.isPlayerUsingOperator(player)) {
-			//// SWITCH TO EDIT MODE \\\\
-			if (!world.isRemote) {
-				edit_mode.invert();
-				player.sendMessage(new TextComponentTranslation("Edit Mode: " + edit_mode.getObject()));
-				sendInfoContainerPacket();
-			}
-			return true;
-		}
-
 		if (display instanceof ConnectedDisplay && !((ConnectedDisplay) display).canBeRendered.getObject()) {
 			if (world.isRemote) { // left click is client only.
 				player.sendMessage(new TextComponentTranslation("THE DISPLAY IS INCOMPLETE"));
 			}
 			return true;
 		}
-
 		if (world.isRemote) { // only clicks on client side, like a GUI, positioning may not be the same on server
+
+			if (!isGridSelectionMode && (type == BlockInteractionType.SHIFT_RIGHT) || LogisticsHelper.isPlayerUsingOperator(player)) {
+				GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditModePacket(!edit_mode.getObject()), -1, this);
+				player.sendMessage(new TextComponentTranslation("Edit Mode: " + !edit_mode.getObject()));
+				return true;
+			}
 
 			DisplayScreenClick click = InteractionHelper.getClickPosition(this, pos, type, facing, hitX, hitY, hitZ);
 			click.setDoubleClick(wasDoubleClick(world, player));
@@ -466,6 +464,15 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		updateInfoReferences();
 		LocalProviderHandler.doInfoReferenceConnect(this, references);
 	}
+	
+	public void sendConnectedInfo(EntityPlayer player){
+		references.forEach(ref -> {
+			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(ref.identity);
+			if(listen!=null){
+				listen.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
+			}
+		});
+	}
 
 	//// CACHED INFO \\\\
 
@@ -640,21 +647,30 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				return;
 			}
 			List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
-			players.forEach(listener -> PL2.network.sendTo(new PacketDisplayGSIContentsPacket(this), listener));
+			players.forEach(listener -> PL2.network.sendTo(new PacketGSIContentsPacket(this), listener));
 			this.display.onInfoContainerPacket();
 		}
 	}
 
 	public void sendInfoContainerPacket(EntityPlayerMP player) {
-		PL2.network.sendTo(new PacketDisplayGSIContentsPacket(this), player);
+		PL2.network.sendTo(new PacketGSIContentsPacket(this), player);
 	}
 
 	public void sendValidatePacket(EntityPlayerMP player) {
-		PL2.network.sendTo(new PacketDisplayGSIValidate(this, display), player);
+		if (display instanceof ConnectedDisplay) {
+			PL2.network.sendTo(new PacketGSIConnectedDisplayValidate(this, display), player);
+		} else if (display instanceof TileAbstractDisplay) {
+			//two tick delay to wait for multiparts to be sent to client
+			LogisticsEventHandler.instance().NOTIFYING.scheduleRunnable(() -> {
+				PL2.network.sendTo(new PacketGSIStandardDisplayValidate((TileAbstractDisplay) display, this), player);
+			}, 2);
+
+			;
+		}
 	}
 
 	public void sendInvalidatePacket(EntityPlayerMP player) {
-		PL2.network.sendTo(new PacketDisplayGSIInvalidate(this, display), player);
+		PL2.network.sendTo(new PacketGSIInvalidate(this), player);
 	}
 
 	private int createDisplayContainerIdentity() {
@@ -847,6 +863,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			} else {
 				PL2.proxy.getClientManager().displays_gsi.remove(getDisplayGSIIdentity());
 			}
+			LocalProviderHandler.doInfoReferenceDisconnect(this, references);
 			forEachElement(e -> invalidateElement(e));
 			PL2.logger.info("Invalidated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
 		}

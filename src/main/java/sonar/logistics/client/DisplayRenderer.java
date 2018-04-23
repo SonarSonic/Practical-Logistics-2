@@ -3,6 +3,8 @@ package sonar.logistics.client;
 import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
@@ -10,6 +12,7 @@ import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
+import sonar.logistics.info.types.InfoError;
 
 //TWEAKED FAST MSR
 public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDisplay> {
@@ -30,7 +33,9 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 				InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
 
 				translate(-1, -1, -0.01);
-				// InfoRenderer.renderNormalInfo(part.getDisplayType().width, part.getDisplayType().height / 2, part.getDisplayType().scale, InfoError.incompleteDisplay.error);
+				translate(part.getDisplayType().xPos, part.getDisplayType().yPos, 0);
+				InfoRenderer.renderCenteredStringsWithAdaptiveScaling(part.getDisplayType().width, part.getDisplayType().height, 0.06, 0, 0.75, -1, Lists.newArrayList(InfoError.incompleteDisplay.error));
+			
 				popMatrix();
 			}
 

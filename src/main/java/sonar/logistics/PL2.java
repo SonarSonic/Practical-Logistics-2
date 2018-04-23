@@ -60,10 +60,7 @@ public class PL2 {
 		} else {
 			logger.info("Successfully loaded with Sonar Core");
 		}
-
-		//PL2API.init();
-		//logger.info("Initilised API");
-
+		
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(PL2Constants.MODID);
 		logger.info("Registered Network");
 
@@ -78,9 +75,6 @@ public class PL2 {
 
 		PL2Items.registerItems();
 		logger.info("Loaded Items");
-
-		PL2Items.registerMultiparts();
-		logger.info("Loaded Multiparts");
 
 		if (PL2Config.sapphireOre) {
 			GameRegistry.registerWorldGenerator(new SapphireOreGen(), 1);

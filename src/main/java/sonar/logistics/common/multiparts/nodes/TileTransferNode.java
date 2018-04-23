@@ -317,7 +317,7 @@ public class TileTransferNode extends TileSidedLogistics implements INode, IOper
 
 	@Override
 	public CableRenderType getCableRenderSize(EnumFacing dir) {
-		return CableRenderType.HALF;
+		return CableRenderType.INTERNAL;
 	}
 
 }

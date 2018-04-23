@@ -208,10 +208,10 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 
 	@Override
 	public void setNetworkPower(int power) {
-		IBlockState oldState = this.getBlockType().getDefaultState();
-		IBlockState newState = this.getBlockType().getDefaultState().withProperty(PL2Properties.ACTIVE, power > 0);
-		world.setBlockState(pos, newState, 2);
-		world.notifyNeighborsOfStateChange(pos, blockType, true);
+		IBlockState oldState = getBlockType().getDefaultState();
+		IBlockState newState = getBlockType().getDefaultState().withProperty(PL2Properties.ACTIVE, power > 0);
+		getWorld().setBlockState(getPos(), newState, 2);
+		//getActualWorld().notifyNeighborsOfStateChange(getPos(), getBlockType(), true);
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -157,6 +156,9 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+		if (cachedList == null || cachedList.isEmpty()) {
+			return -1;
+		}
 		int ySlot = 0;
 		for (int y = 0; y < ySlots; y++) {
 			double yStart = (y * height) + centreY + (Y_SPACING * (y + 0.5D));

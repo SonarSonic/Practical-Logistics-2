@@ -23,6 +23,8 @@ import sonar.logistics.common.containers.ContainerArray;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
+import sonar.logistics.networking.events.NetworkChanges;
 
 public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui {
 
@@ -67,7 +69,7 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 			}
 		}
 		this.channels = channels;
-		network.onCacheChanged(CacheHandler.NODES);
+		LogisticsEventHandler.instance().queueNetworkChange(network, NetworkChanges.LOCAL_CHANNELS);
 	}
 
 	//// IConnectionNode \\\\

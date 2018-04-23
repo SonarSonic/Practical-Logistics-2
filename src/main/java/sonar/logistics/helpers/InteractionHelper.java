@@ -144,7 +144,7 @@ public class InteractionHelper {
 				}
 			}
 		} else {
-			clickPosition[1] = clickPosition[1] - ((container.getDisplayScaling()[1] / 2));
+			clickPosition[1] = clickPosition[1] - ((container.getDisplayScaling()[1] / 2D)) -0.0625;
 		}
 		return clickPosition;
 	}

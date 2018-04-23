@@ -122,9 +122,9 @@ public class LogisticsHelper {
 	}
 
 	public static ItemStack getCoordItem(BlockCoords coords, World world) {
-		TileEntity tile = coords.getTileEntity();
-		IBlockState state = coords.getBlockState();
-		ItemStack stack = coords.getBlock().getItem(world, coords.getBlockPos(), state);
+		TileEntity tile = coords.getTileEntity(world);
+		IBlockState state = coords.getBlockState(world);
+		ItemStack stack = coords.getBlock(world).getItem(world, coords.getBlockPos(), state);
 		if (stack == null || stack.isEmpty()) {
 			stack = new ItemStack(Item.getItemFromBlock(state.getBlock()));
 		}

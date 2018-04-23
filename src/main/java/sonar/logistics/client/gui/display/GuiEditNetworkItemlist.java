@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
@@ -21,11 +21,10 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 public class GuiEditNetworkItemlist extends GuiAbstractEditElements {
 
 	public NetworkGridElement itemList;
-	public int currentColour = -1;
 
-	public GuiEditNetworkItemlist(NetworkGridElement itemList, TileAbstractDisplay display) {
-		super(itemList, itemList.getHolder().getContainer(), display);
-		this.itemList = itemList;
+	public GuiEditNetworkItemlist(NetworkGridElement element, TileAbstractDisplay display) {
+		super(element, element.getHolder().getContainer(), display);
+		this.itemList = element;
 	}
 
 	@Override
@@ -82,7 +81,7 @@ public class GuiEditNetworkItemlist extends GuiAbstractEditElements {
 			GuiLogistics.setCurrentColour(FontHelper.getColourFromFormatting(((TextColourButton) button).colour));
 		}
 		if (button instanceof CustomColourButton) {
-			FMLCommonHandler.instance().showGuiScreen(GuiSonar.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
+			FMLCommonHandler.instance().showGuiScreen(IGuiOrigin.withOrigin(new GuiColourSelection(inventorySlots, entity), this));
 			return;
 		}
 		if(button instanceof LogisticsButton){

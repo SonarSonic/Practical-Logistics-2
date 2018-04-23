@@ -24,7 +24,7 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.networking.ServerInfoHandler;
-import sonar.logistics.packets.PacketGSIElement;
+import sonar.logistics.packets.gsi.PacketGSIElement;
 
 public class GSIElementPacketHelper {
 
@@ -246,7 +246,7 @@ public class GSIElementPacketHelper {
 		gsi.sendInfoContainerPacket();
 	}
 
-	//// EDITMODE \\\\
+	//// EDIT MODE \\\\
 
 	public static NBTTagCompound createEditModePacket(boolean set) {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -260,7 +260,7 @@ public class GSIElementPacketHelper {
 		gsi.sendInfoContainerPacket();
 	}
 
-	//// EDITMODE \\\\
+	//// UPDATE ELEMENT \\\\
 
 	public static NBTTagCompound createUpdateElementPacket(IDisplayElement element, SyncType type) {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -273,6 +273,20 @@ public class GSIElementPacketHelper {
 	public static void doUpdateElementPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		NBTTagCompound tag = packetTag.getCompoundTag("update_tag");
 		element.readData(tag, SyncType.values()[packetTag.getInteger("type")]);
+	}
+
+	//// RESET GSI \\\\
+
+	public static NBTTagCompound createResetGSIPacket() {
+		NBTTagCompound tag = new NBTTagCompound();
+		writePacketID(tag, GSIElementPackets.RESET_GSI);
+		return tag;
+	}
+
+	public static void doResetGSIPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
+		gsi.containers.clear();
+		gsi.edit_mode.setObject(true);
+		gsi.sendInfoContainerPacket();
 	}
 
 }

@@ -29,6 +29,8 @@ import sonar.logistics.api.viewers.ListenerType.UpdateType;
 import sonar.logistics.api.viewers.UpdateListenerList;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.events.LogisticsEventHandler;
 
 public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels implements INetworkListChannels<H> {
 

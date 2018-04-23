@@ -9,9 +9,10 @@ import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -52,6 +53,7 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 		depthMask(false);
 		RenderHelper.renderStoredItemStackOverlay(stack.getItemStack(), 0, 0, 0, text_colour, "" + stack.getStored(), false);
 		depthMask(true);
+		GlStateManager.color(1, 1, 1, 1);
 	}
 
 	public void onChangeableListChanged(InfoUUID uuid, AbstractChangeableList list) {
@@ -67,7 +69,7 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return GuiSonar.withOrigin(new GuiEditNetworkItemlist(this, obj), origin);
+		return IGuiOrigin.withOrigin(new GuiEditNetworkItemlist(this, obj), origin);
 	}
 
 	public static final String REGISTRY_NAME = "n_item_l";

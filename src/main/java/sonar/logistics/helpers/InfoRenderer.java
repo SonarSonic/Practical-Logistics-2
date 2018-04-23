@@ -281,7 +281,8 @@ public class InfoRenderer {
 	}
 	
 	/**TODO adaptive scaling version*/
-	public static void renderTripleStringIntoGUI(String left, String middle, String right, int yPos, int colour){
+	public static void renderTripleStringIntoGUI(String left, String middle, String right, int yPos, int colour){		
+		left = FontHelper.trimToWidthWithParentheses(left, "...", middle_offset - left_offset - 1, 1);
 		FontHelper.text(left, left_offset, yPos, colour);
 		FontHelper.text(middle, middle_offset, yPos, colour);
 		FontHelper.text(right, right_offset, yPos, colour);

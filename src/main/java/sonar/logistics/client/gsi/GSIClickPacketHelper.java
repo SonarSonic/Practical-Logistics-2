@@ -16,7 +16,7 @@ import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InteractionHelper;
-import sonar.logistics.packets.PacketGSIClick;
+import sonar.logistics.packets.gsi.PacketGSIClick;
 
 public class GSIClickPacketHelper {
 

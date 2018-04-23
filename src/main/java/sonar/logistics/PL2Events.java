@@ -42,17 +42,20 @@ public class PL2Events {
 			tickStart = System.nanoTime();
 
 			LogisticsEventHandler.instance().triggerConstructingPhase();//
-						
+
 			LogisticsEventHandler.instance().triggerUpdatingPhase();//
-			
+
 			LogisticsEventHandler.instance().triggerNotifyingPhase();//
 
 			TileArray.entityChanged = false;
 			updateTick = System.nanoTime() - tickStart;
-		} else {
-			if (coolDownClick != 0) {
-				coolDownClick--;
-			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		if (coolDownClick != 0) {
+			coolDownClick--;
 		}
 	}
 
@@ -77,7 +80,7 @@ public class PL2Events {
 						if (display.getGSI() != null) {
 							Vec3d vec = event.getHitVec();
 							float vecX = (float) vec.x - pos.getX();
-							float vecY = (float) vec.y - pos.getY(); 
+							float vecY = (float) vec.y - pos.getY();
 							float vecZ = (float) vec.z - pos.getZ();
 							coolDownClick = 3;
 							BlockInteractionType interactionType = player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT;

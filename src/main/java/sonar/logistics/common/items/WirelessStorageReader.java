@@ -56,7 +56,7 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 			Integer identity = getEmitterIdentity(stack);
 			IDataEmitter emitter = WirelessDataManager.instance().getEmitter(identity);
 			if (emitter != null && !player.isSneaking()) {
-				if (!emitter.getCoords().isChunkLoaded()) {
+				if (!emitter.getCoords().isChunkLoaded(world)) {
 					FontHelper.sendMessage("The Emitter isn't chunk loaded", world, player);
 					return new ActionResult(EnumActionResult.SUCCESS, stack);
 				}

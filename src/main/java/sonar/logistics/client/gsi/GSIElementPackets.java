@@ -6,6 +6,7 @@ public enum GSIElementPackets {
 	INFO_ADDITION(GSIElementPacketHelper::doInfoAdditionPacket),
 	DELETE_CONTAINERS(GSIElementPacketHelper::doDeleteContainersPacket),
 	DELETE_ELEMENTS(GSIElementPacketHelper::doDeleteElementsPacket),
+	RESET_GSI(GSIElementPacketHelper::doResetGSIPacket),
 	RESIZE_CONTAINER(GSIElementPacketHelper::doResizeContainerPacket),
 	CONFIGURE_INFO_ELEMENT(GSIElementPacketHelper::doConfigureInfoPacket),
 	EDIT_MODE(GSIElementPacketHelper::doEditModePacket),

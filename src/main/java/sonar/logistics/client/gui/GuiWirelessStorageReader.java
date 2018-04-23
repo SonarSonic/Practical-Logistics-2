@@ -240,8 +240,9 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				return;
 			}
 			ItemStack stack = storedStack.item;
-			RenderHelper.renderItem(this, 13 + (x * 18), 32 + (y * 18), stack);
-			RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 13 + (x * 18), 32 + (y * 18), null, true);
+			stack.setCount(1);
+			drawNormalItemStack(stack, 0, 0);
+			RenderHelper.renderStoredItemStackOverlay(stack, storedStack.stored, 0, 0, null, true);
 		} else if (info instanceof MonitoredFluidStack) {
 			MonitoredFluidStack selection = (MonitoredFluidStack) info;
 			StoredFluidStack fluidStack = selection.getStoredStack();
@@ -250,7 +251,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(fluidStack.fluid.getFluid().getStill().toString());
 				Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-				drawTexturedModalRect(xPos + (x * eWidth), yPos + (y * eHeight), sprite, eWidth - 2, eHeight - 2);
+				drawTexturedModalRect(0, 0, sprite, eWidth - 2, eHeight - 2);
 				GL11.glPopMatrix();
 			}
 		}

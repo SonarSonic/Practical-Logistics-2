@@ -22,15 +22,19 @@ import sonar.core.helpers.ListHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.api.viewers.ListenerType;
+import sonar.logistics.helpers.PacketHelper;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
-import sonar.logistics.packets.PacketDisplayGSIContentsPacket;
+import sonar.logistics.packets.gsi.PacketGSIContentsPacket;
 
 /** caches display viewers, via accessing chunk PlayerMap */
 public class ChunkViewerHandler {
 
 	public Map<DisplayGSI, List<ChunkPos>> displayChunks = new HashMap<>();
 	public Map<Integer, List<EntityPlayerMP>> cachedPlayers = new HashMap<>(); // with the identity of the DisplayGSI, and current players attached to it
-	public static int CHECK_RADIUS = 32;
+	public static int CHECK_RADIUS = 8;
 	public Map<EntityPlayerMP, Map<Integer, List<ChunkPos>>> UNWATCHED_CHUNKS = new HashMap<>();
 	public Map<EntityPlayerMP, Map<Integer, List<ChunkPos>>> WATCHED_CHUNKS = new HashMap<>();
 	public List<DisplayGSI> ADDED_DISPLAYS = new ArrayList<>();
@@ -78,6 +82,7 @@ public class ChunkViewerHandler {
 				PL2.network.sendTo(new PacketConnectedDisplayUpdate(display, display.getRegistryID()), player);
 			}
 			gsi.sendValidatePacket(player);
+			gsi.sendConnectedInfo(player);
 			PL2.logger.info("Viewer Added: " + gsi.getDisplayGSIIdentity() + " " + player);
 		}
 	}

@@ -1,4 +1,4 @@
-package sonar.logistics.packets;
+package sonar.logistics.packets.gsi;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;

@@ -36,7 +36,6 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 		return PL2.proxy.cableManager;
 	}
 
-	/* public Map<IDataCable, List<INetworkTile>> connected = new HashMap<>(); public Map<IDataCable, List<INetworkTile>> disconnected = new HashMap<>(); public Map<IDataCable, List<IInfoProvider>> connected_providers = new HashMap<>(); public Map<IDataCable, List<IInfoProvider>> disconnected_providers = new HashMap<>(); */
 	public List<IDataCable> updateRenders = new ArrayList<>();
 	public List<Integer> changedNetworks = new ArrayList<>();
 	public List<IDataCable> cableUpdates = new ArrayList<>();
@@ -78,75 +77,88 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 		return LogisticsNetworkHandler.instance().getNetwork(connected_network);
 	}
 
+	public void onDataCableRemove(IDataCable cable){
+		List<INetworkTile> cached = cable_tiles.getOrDefault(cable, new ArrayList<>());
+		for (INetworkTile tile : cached) {
+			if (tile.getNetwork().isValid()) {
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedTile(tile.getNetwork(), tile));
+			}
+		}
+		List<IInfoProvider> cached_providers = cable_providers.getOrDefault(cable, new ArrayList<>());
+		for (IInfoProvider tile : cached_providers) {
+			ILogisticsNetwork subNetwork = getSubNetwork(tile);
+			if (subNetwork.isValid()) {
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedLocalProvider(subNetwork, tile));
+				info_providers.remove(tile);
+			}
+		}
+		cable_tiles.remove(cable);
+		cable_providers.remove(cable);
+	}
+	
+	public void updateConnectedTiles(IDataCable cable, ILogisticsNetwork network){
+		List<INetworkTile> cached = cable_tiles.getOrDefault(cable, new ArrayList<>());
+		List<INetworkTile> updated = CableHelper.getConnectedTiles(cable);
+
+		// disconnect old connections
+		for (INetworkTile tile : cached) {
+			if (!updated.contains(tile) && tile.getNetwork().isValid()) {
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedTile(tile.getNetwork(), tile));
+			}
+		}
+
+		// connect new connections
+		for (INetworkTile tile : updated) {
+			if (tile.getNetwork() != network) {
+				if (tile.getNetwork().isValid()) {
+					MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedTile(tile.getNetwork(), tile));
+				}
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.ConnectedTile(network, tile));
+			}
+		}
+
+		// cache cables adjacent tiles
+		cable_tiles.put(cable, updated);
+	}
+	
+	public void updateInfoProviders(IDataCable cable, ILogisticsNetwork network){
+		List<IInfoProvider> cached_providers = cable_providers.getOrDefault(cable, new ArrayList<>());
+		List<IInfoProvider> updated_providers = CableHelper.getLocalMonitors(cable);
+
+		// disconnect old local providers
+		for (IInfoProvider tile : cached_providers) {
+			ILogisticsNetwork subNetwork = getSubNetwork(tile);
+			if (!updated_providers.contains(tile) && subNetwork.isValid()) {
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedLocalProvider(subNetwork, tile));
+				info_providers.remove(tile);
+			}
+		}
+
+		// connect new local providers
+		for (IInfoProvider tile : updated_providers) {
+			ILogisticsNetwork subNetwork = getSubNetwork(tile);
+			if (subNetwork.isValid() && subNetwork != network) {
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedLocalProvider(subNetwork, tile));
+			}
+			if (!subNetwork.isValid() || subNetwork != network) {
+				MinecraftForge.EVENT_BUS.post(new NetworkEvent.ConnectedLocalProvider(network, tile));
+				info_providers.put(tile, network.getNetworkID());
+			}
+		}
+
+		// cache cables's local providers
+		cable_providers.put(cable, updated_providers);
+	}
+	
 	public void doQueuedUpdates() {
 		for (IDataCable cable : cableUpdates) {
 			if (cable.getRegistryID() == -1) {
-				List<INetworkTile> cached = cable_tiles.getOrDefault(cable, new ArrayList<>());
-				for (INetworkTile tile : cached) {
-					if (tile.getNetwork().isValid()) {
-						MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedTile(tile.getNetwork(), tile));
-					}
-				}
-				List<IInfoProvider> cached_providers = cable_providers.getOrDefault(cable, new ArrayList<>());
-				for (IInfoProvider tile : cached_providers) {
-					ILogisticsNetwork subNetwork = getSubNetwork(tile);
-					if (subNetwork.isValid()) {
-						MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedLocalProvider(subNetwork, tile));
-						info_providers.remove(tile);
-					}
-				}
+				onDataCableRemove(cable);
 				continue;
 			}
 			ILogisticsNetwork network = getOrCreateNetwork(cable.getRegistryID());
-			List<INetworkTile> cached = cable_tiles.getOrDefault(cable, new ArrayList<>());
-			List<INetworkTile> updated = CableHelper.getConnectedTiles(cable);
-
-			// disconnect old connections
-			for (INetworkTile tile : cached) {
-				if (!updated.contains(tile) && tile.getNetwork().isValid()) {
-					MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedTile(tile.getNetwork(), tile));
-				}
-			}
-
-			// connect new connections
-			for (INetworkTile tile : updated) {
-				if (tile.getNetwork() != network) {
-					if (tile.getNetwork().isValid()) {
-						MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedTile(tile.getNetwork(), tile));
-					}
-					MinecraftForge.EVENT_BUS.post(new NetworkEvent.ConnectedTile(network, tile));
-				}
-			}
-
-			// cache cables adjacent tiles
-			cable_tiles.put(cable, updated);
-
-			List<IInfoProvider> cached_providers = cable_providers.getOrDefault(cable, new ArrayList<>());
-			List<IInfoProvider> updated_providers = CableHelper.getLocalMonitors(cable);
-
-			// disconnect old local providers
-			for (IInfoProvider tile : cached_providers) {
-				ILogisticsNetwork subNetwork = getSubNetwork(tile);
-				if (!updated_providers.contains(tile) && subNetwork.isValid()) {
-					MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedLocalProvider(subNetwork, tile));
-					info_providers.remove(tile);
-				}
-			}
-
-			// connect new local providers
-			for (IInfoProvider tile : updated_providers) {
-				ILogisticsNetwork subNetwork = getSubNetwork(tile);
-				if (subNetwork.isValid() && subNetwork != network) {
-					MinecraftForge.EVENT_BUS.post(new NetworkEvent.DisconnectedLocalProvider(subNetwork, tile));
-				}
-				if (!subNetwork.isValid() || subNetwork != network) {
-					MinecraftForge.EVENT_BUS.post(new NetworkEvent.ConnectedLocalProvider(network, tile));
-					info_providers.put(tile, network.getNetworkID());
-				}
-			}
-
-			// cache cables's local providers
-			cable_providers.put(cable, updated_providers);
+			updateConnectedTiles(cable, network);
+			updateInfoProviders(cable, network);
 		}
 		cableUpdates.clear();
 
@@ -157,11 +169,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 				if (network != null) {
 					network.onNetworkRemoved();
 				}
-			} else {
-				ILogisticsNetwork network = getOrCreateNetwork(id);
-				network.onCablesChanged();
 			}
-			// update
 
 		}
 		changedNetworks.clear();

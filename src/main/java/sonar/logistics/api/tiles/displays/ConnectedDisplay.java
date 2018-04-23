@@ -402,8 +402,13 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 	}
 
 	@Override
-	public World getWorld() {
+	public World getActualWorld() {
 		return gsi.getWorld();
+	}
+
+	@Override
+	public World getPartWorld() {
+		return getTopLeftScreen().getPartWorld();
 	}
 
 }

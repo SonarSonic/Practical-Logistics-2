@@ -58,7 +58,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 		int cableID = cable.getRegistryID();
 		int lastSize = -1;
 		BlockCoords coords = cable.getCoords();
-		World world = coords.getWorld();
+		World world = cable.getActualWorld();
 		BlockPos pos = coords.getBlockPos();
 
 		for (EnumFacing dir : EnumFacing.values()) {
@@ -137,7 +137,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 	public void refreshConnections(T cable) {
 		BlockCoords coords = cable.getCoords();
 		for (EnumFacing dir : EnumFacing.values()) {
-			Pair<ConnectableType, Integer> connection = getConnectionType(cable, coords.getWorld(), coords.getBlockPos(), dir, cable.getConnectableType());
+			Pair<ConnectableType, Integer> connection = getConnectionType(cable, cable.getActualWorld(), coords.getBlockPos(), dir, cable.getConnectableType());
 			boolean canConnect = cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, false).canConnect();
 			if ((!canConnect && connection.a.canConnect(cable.getConnectableType()))) {
 				removeConnectionFromNetwork(cable);

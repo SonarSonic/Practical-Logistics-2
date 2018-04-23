@@ -70,7 +70,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 				ServerInfoHandler.instance().getConnectedDisplays().remove(i);
 			} else if (display == null) {
 				ILargeDisplay first_display = displays.get(0);
-				World world = first_display.getCoords().getWorld();
+				World world = first_display.getActualWorld();
 				ConnectedDisplay connectedDisplay = ConnectedDisplay.loadDisplay(world, i);
 				ServerInfoHandler.instance().getConnectedDisplays().put(i, connectedDisplay);
 				connectedDisplay.face.setObject(first_display.getCableFace());

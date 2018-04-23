@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -47,6 +48,11 @@ public class EmptyInfoElement extends ButtonElement implements IFlexibleGui<Tile
 	@Override
 	public Object getClientElement(TileAbstractDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		return new GuiInfoSource(this, getGSI(), new ContainerMultipartSync(obj));
+	}
+
+	@Override
+	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		return IGuiOrigin.withOrigin(new GuiInfoSource(this, getGSI(), new ContainerMultipartSync(obj)), origin);
 	}
 	
 	//// REQUIRED INFO \\\\

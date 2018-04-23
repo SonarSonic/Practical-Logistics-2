@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -85,7 +85,7 @@ public class NetworkFluidGridElement extends NetworkGridElement<MonitoredFluidSt
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return GuiSonar.withOrigin(new GuiEditNetworkFluidlist(this, obj), origin);
+		return IGuiOrigin.withOrigin(new GuiEditNetworkFluidlist(this, obj), origin);
 	}
 
 	public static final String REGISTRY_NAME = "n_fluid_l";

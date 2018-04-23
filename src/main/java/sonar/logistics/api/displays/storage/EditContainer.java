@@ -4,6 +4,7 @@ import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentTranslation;
 import sonar.logistics.api.displays.CreateInfoType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.HeightAlignment;
@@ -39,18 +40,17 @@ public class EditContainer extends DisplayElementContainer {
 				
 			}
 		});
-		//editList.getElements().addElement(new ElementSelectionButton(ElementSelectionType.RESIZE, 3, 12, 1, "RESIZE ELEMENT"));
 		editList.getElements().addElement(new ButtonElement(4, 2, 11, "CLOSE EDIT MODE"){
 
 			@Override			
 			public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+				player.sendMessage(new TextComponentTranslation("SHIFT-R click the display to reopen edit mode"));
 				GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditModePacket(false), -1, gsi);
 				return -1;
 				
 			}
 		});
-		/* editList.getElements().addElement(new ButtonElement(2, 4D, 4D, 1, 5, "CLICK")); editList.getElements().addElement(new ButtonElement(3, 4D, 4D, 1, 7, "CRACK")); editList.getElements().addElement(new ButtonElement(4, 4D, 4D, 1, 4, "CRACK")); editList.getElements().addElement(new ButtonElement(5, 4D, 4D, 2, 7, "CRACK")); editList.getElements().addElement(new ButtonElement(6, 4D, 4D, 2, 2, "CRACK")); editList.getElements().addElement(new ButtonElement(7, 4D, 4D, 1, 3, "CRACK")); */
-
+	
 		return editContainer;
 	}
 

@@ -49,7 +49,11 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 		StyledTitleElement element = new StyledTitleElement();
 		StyledStringLine line1 = new StyledStringLine(element), line2 = new StyledStringLine(element);
 		line1.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.IDENTIFIER)));
-		line2.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.PREFIX), new StyledInfo(uuid, ReferenceType.RAW_INFO), new StyledInfo(uuid, ReferenceType.SUFFIX)));
+		if (info instanceof ISuffixable) {
+			line2.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.PREFIX), new StyledInfo(uuid, ReferenceType.RAW_INFO), new StyledInfo(uuid, ReferenceType.SUFFIX)));
+		} else {
+			line2.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.CLIENT_INFO)));
+		}
 		element.setLines(Lists.newArrayList(line1, line2));
 		toAdd.add(element);
 	}
@@ -63,7 +67,6 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 	/** it is essential that you copy the LogicPath also */
 	public T copy();
 
-	
 	public void identifyChanges(T newInfo);
 
 	public void onInfoStored();

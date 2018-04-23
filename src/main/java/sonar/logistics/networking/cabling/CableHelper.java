@@ -71,7 +71,7 @@ public class CableHelper {
 
 	public static ICableConnectable getConnection(ICable cable, EnumFacing dir, CableConnectionType type, boolean isInternal, boolean cableOnly) {
 		if (type.matches(cable.canConnect(cable.getRegistryID(), cable.getConnectableType(), dir, isInternal))) {
-			World world = cable.getCoords().getWorld();
+			World world = cable.getActualWorld();
 			TileEntity tile = world.getTileEntity(isInternal ? cable.getCoords().getBlockPos() : cable.getCoords().getBlockPos().offset(dir));
 			if (tile != null) {
 				EnumFacing actualDir = isInternal ? dir : dir.getOpposite();

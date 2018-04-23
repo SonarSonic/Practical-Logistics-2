@@ -34,10 +34,10 @@ public class NetworkEnergyListElement extends NetworkListElement<MonitoredEnergy
 	public void renderGridElement(MonitoredEnergyStack stack, int index) {
 		enableLighting();
 
-		double offset = 0.02;
 		double actualHeight = height * grid_fill_percentage;
 		double scaling = (height / 16) * grid_fill_percentage;
-		double barScale = (getActualScaling()[0] - (16 * scaling) - offset);
+		double offset = Math.min(0.02, actualHeight/10);
+		double barScale = (getActualScaling()[WIDTH] - (16 * scaling) - offset);
 		double barWidth = stack.getEnergyStack().stored * barScale / stack.getEnergyStack().capacity;
 		double left = 16 * scaling + offset;
 		double top = (actualHeight / 2) + offset;
@@ -57,20 +57,16 @@ public class NetworkEnergyListElement extends NetworkListElement<MonitoredEnergy
 		disableLighting();
 
 		//// DRAW NAME \\\\
-		String string = stack.getMonitoredCoords().getClientIdentifier() + " - " + stack.getMonitoredCoords().getCoords().toString();
-		String parentheses = "...";
 
-		int specialWidth = RenderHelper.fontRenderer.getStringWidth(parentheses);
-		int fullWidth = (((int) Math.floor(barScale / scaling)) - specialWidth) * 2;
-		String trimmed = RenderHelper.fontRenderer.trimStringToWidth(string, fullWidth);
-		if (string.length() != trimmed.length()) {
-			trimmed = trimmed + parentheses;
-		}
-		FontHelper.textCentre(trimmed, fullWidth, 4, this.text_colour);
+		String string = stack.getMonitoredCoords().getClientIdentifier() + " - " + stack.getMonitoredCoords().getCoords().toString();
+		string = FontHelper.trimToWidthWithParentheses(string, "...", (int) Math.floor(barScale / scaling), 0.5);
+		int finalWidth = (int) Math.floor(barScale / scaling)*2;
+		
+		FontHelper.textCentre(string, finalWidth, 4, this.text_colour);
 		translate(0, 0, 0.05);
 		
 		//// DRAW ENERGY LEVEL \\\\
-		FontHelper.textCentre(stack.getClientIdentifier() + " - " + stack.getClientObject(), fullWidth, 20, this.text_colour);
+		FontHelper.textCentre(stack.getClientIdentifier() + " - " + stack.getClientObject(), finalWidth, 20, this.text_colour);
 		translate(0, 0, -0.05);
 
 		scale(1 / 0.5, 1 / 0.5, 1 / 0.5);

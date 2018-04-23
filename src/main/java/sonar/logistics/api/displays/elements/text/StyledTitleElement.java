@@ -14,7 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -75,7 +75,7 @@ public class StyledTitleElement extends StyledTextElement{
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return GuiSonar.withOrigin(new GuiEditTitleStyledString(this, obj), origin);
+		return IGuiOrigin.withOrigin(new GuiEditTitleStyledString(this, obj), origin);
 	}
 
 	@Override

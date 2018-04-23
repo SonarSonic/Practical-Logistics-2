@@ -33,7 +33,6 @@ public class BlockRedstoneNode extends BlockLogisticsSided {
 				return 0;
 			}
 		}
-
 		if (side == state.getValue(SonarProperties.ORIENTATION).getOpposite()) {
 			return RedstoneCableHelper.getCableState(world, pos).getValue(PL2Properties.ACTIVE) ? 15 : 0;
 		}

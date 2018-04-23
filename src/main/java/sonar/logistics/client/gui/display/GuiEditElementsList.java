@@ -103,7 +103,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 			}
 			break;
 		case 3:
-			// reset packet
+			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createResetGSIPacket(), -1, gsi);
 			break;
 		}
 	}

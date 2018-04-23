@@ -16,13 +16,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -42,6 +43,7 @@ import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
 
 public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement, ILookableElement {
@@ -75,7 +77,8 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 	public void render(LogicInfoList list) {
 		info = getGSI().getCachedInfo(uuid);
 		cachedList = getCachedList(list, uuid);
-		if(cachedList.isEmpty()){
+		if (cachedList.isEmpty()) {
+			InfoRenderer.renderCenteredStringsWithAdaptiveScaling(getActualScaling()[WIDTH], getActualScaling()[HEIGHT], getActualScaling()[SCALE], 0, 0.5, -1, Lists.newArrayList("EMPTY LIST"));
 			return;
 		}
 		width = getRenderWidth();
@@ -97,7 +100,9 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			Y_SPACING = (adjusted_height - (ySlots * height)) / ySlots;
 		}
 		perPage = xSlots * ySlots;
-
+		if(perPage==0){
+			InfoRenderer.renderCenteredStringsWithAdaptiveScaling(getActualScaling()[WIDTH], getActualScaling()[HEIGHT], getActualScaling()[SCALE], 0, 0.5, -1, Lists.newArrayList("ADJUST SCALING"));
+		}
 		int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
 		if (pageCount >= totalPages) {
 			pageCount = totalPages - 1;
@@ -164,6 +169,9 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+		if (cachedList == null || cachedList.isEmpty()) {
+			return -1;
+		}
 		int xSlot = 0, ySlot = 0;
 		for (int x = 0; x < xSlots; x++) {
 			double xStart = (x * width) + centreX + (X_SPACING * (x + 0.5D));

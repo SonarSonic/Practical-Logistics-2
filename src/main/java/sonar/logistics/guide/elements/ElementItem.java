@@ -35,20 +35,24 @@ public class ElementItem implements IGuidePageElement {
 
 	@Override
 	public void drawForegroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
+		
+		sonar.core.helpers.RenderHelper.saveBlendState();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 		GlStateManager.pushMatrix();
-		GlStateManager.pushAttrib();
 		GlStateManager.enableDepth();
 		double scale = (double) SIZE / 16;
 		GlStateManager.translate(x, y, 640);
 		GlStateManager.scale(scale, scale, scale);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GlStateManager.depthMask(true);
 		RenderHelper.renderItemIntoGUI(stack, 0, 0);
 		RenderHelper.renderStoredItemStackOverlay(stack, 0, 0, 0, null, false);
-		GlStateManager.popAttrib();
+		net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 		GlStateManager.popMatrix();
-
+		sonar.core.helpers.RenderHelper.restoreBlendState();
+		GlStateManager.enableAlpha();
+		
+		
 	}
 
 	@Override

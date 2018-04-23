@@ -81,12 +81,13 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirele
 		if (info.getIdentity() == clickedIdentity) {
 			return true;
 		}
-
-		ItemStack current = player.getHeldItemMainhand();
-		if (current != null && current.hasTagCompound()) {
-			int uuid = current.getTagCompound().getInteger(WirelessStorageReader.EMITTER_UUID);
-			if (uuid == info.getIdentity()) {
-				return true;
+		if (clickedIdentity == -1) {
+			ItemStack current = player.getHeldItemMainhand();
+			if (current != null && current.hasTagCompound()) {
+				int uuid = current.getTagCompound().getInteger(WirelessStorageReader.EMITTER_UUID);
+				if (uuid == info.getIdentity()) {
+					return true;
+				}
 			}
 		}
 		return false;

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayAction;
@@ -61,7 +61,7 @@ public class StyledWrappedTextElement extends StyledTextElement {
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return GuiSonar.withOrigin(new GuiEditWrappedStyledString(this, obj), origin);
+		return IGuiOrigin.withOrigin(new GuiEditWrappedStyledString(this, obj), origin);
 	}
 
 	@Override

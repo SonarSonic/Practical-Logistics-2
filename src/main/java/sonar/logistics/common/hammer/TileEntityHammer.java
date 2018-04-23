@@ -36,14 +36,8 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	
 	public void update() {
 		super.update();
-		//if (getWorld().isBlockIndirectlyGettingPowered(pos) == 15) {
-		//	return;
-		//}
 		if (coolDown.getObject() != 0) {
 			coolDown.increaseBy(-1);
-			// if (!this.worldObj.isRemote && coolDown.getObject() == 1)
-			// SonarCore.sendPacketAround(this, 64, 1);
-			// SonarCore.sendFullSyncAround(this, 64);
 		} else if (canProcess()) {
 			if (progress.getObject() < speed) {
 				if(progress.getObject()==0){
@@ -58,12 +52,10 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 					SonarCore.sendFullSyncAround(this, 64);
 				}
 			}
-			// SonarCore.sendPacketAround(this, 64, 0);
 		} else {
 			if (progress.getObject() != 0) {
 				this.progress.setObject(0);
 			}
-
 		}
 	}
 

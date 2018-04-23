@@ -100,13 +100,15 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	}
 
 	public void doAdditionEvent(PL2AdditionType type) {
-		//MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, world, type));
-		LogisticsEventHandler.instance().queueNetworkAddition(this, type);
+		if (!getWorld().isRemote){
+			LogisticsEventHandler.instance().queueNetworkAddition(this, type);
+		}
 	}
 
 	public void doRemovalEvent(PL2RemovalType type) {
-		//MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, world, type));
-		LogisticsEventHandler.instance().queueNetworkRemoval(this, type);		
+		if (!getWorld().isRemote){
+			LogisticsEventHandler.instance().queueNetworkRemoval(this, type);
+		}
 	}
 
 	public boolean PART_ADDED = false;
@@ -162,8 +164,8 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		if (!this.network.isValid() || networkID.getObject() != network.getNetworkID()) {
 			this.network = network;
 			this.networkID.setObject(network.getNetworkID());
-			states.markTileMessage(ErrorMessage.NO_NETWORK, false);			
-			//doAdditionEvent(PL2AdditionType.NETWORK_CONNECTED);
+			states.markTileMessage(ErrorMessage.NO_NETWORK, false);
+			// doAdditionEvent(PL2AdditionType.NETWORK_CONNECTED);
 		}
 	}
 
@@ -173,7 +175,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			this.network = EmptyLogisticsNetwork.INSTANCE;
 			this.networkID.setObject(-1);
 			states.markTileMessage(ErrorMessage.NO_NETWORK, true);
-			//doRemovalEvent(PL2RemovalType.NETWORK_DISCONNECTED);		
+			// doRemovalEvent(PL2RemovalType.NETWORK_DISCONNECTED);
 		} else if (networkID.getObject() != -1) {
 			PL2.logger.info("%s : attempted to disconnect from the wrong network with ID: %s expected %s", this, network.getNetworkID(), networkID.getObject());
 		}

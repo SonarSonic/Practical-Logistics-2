@@ -12,20 +12,21 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
+import sonar.logistics.api.displays.elements.types.NetworkFluidElement;
 import sonar.logistics.api.displays.elements.types.NetworkGridElement;
+import sonar.logistics.api.displays.elements.types.NetworkItemElement;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.GuiColourSelection;
 import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
-public class GuiEditNetworkFluidlist extends GuiAbstractEditElements {
+public class GuiEditNetworkFluid extends GuiAbstractEditElements {
 
-	public NetworkGridElement itemList;
-	public int currentColour = -1;
+	public NetworkFluidElement fluid_element;
 
-	public GuiEditNetworkFluidlist(NetworkGridElement itemList, TileAbstractDisplay display) {
-		super(itemList, itemList.getHolder().getContainer(), display);
-		this.itemList = itemList;
+	public GuiEditNetworkFluid(NetworkFluidElement element, TileAbstractDisplay display) {
+		super(element, element.getHolder().getContainer(), display);
+		this.fluid_element = element;
 	}
 
 	@Override
@@ -39,22 +40,12 @@ public class GuiEditNetworkFluidlist extends GuiAbstractEditElements {
 		scaling_scroller = new SonarScroller(this.guiLeft + 90, this.guiTop + 151, 16, 80);
 		scaling_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
 		setScalingScroller((float) c.percentageScale);
+
 		scaling_field = new SonarTextField(0, fontRenderer, 20, 153, 40, 11);
 		scaling_field.setDigitsOnly(true);
 		scaling_field.setMaxStringLength(3);
 		scaling_field.setText(String.valueOf((int) (scaling_scroller.currentScroll * 100)));
-		fieldList.add(scaling_field);
-		*/
-
-		spacing_scroller = new SonarScroller(this.guiLeft + 14, this.guiTop + 157, 16, 180);
-		spacing_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
-
-		spacing_field = new SonarTextField(1, fontRenderer, 206, 158, 40, 12);
-		spacing_field.setDigitsOnly(true);
-		spacing_field.setMaxStringLength(3);
-		spacing_field.setText(String.valueOf((int) (spacing_scroller.currentScroll * 100)));
-		fieldList.add(spacing_field);
-		
+		fieldList.add(scaling_field);		
 		
 		
 		
@@ -71,8 +62,8 @@ public class GuiEditNetworkFluidlist extends GuiAbstractEditElements {
 				return false;
 			}
 		});
-		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 198 + 32, guiTop + 150 + 40, 11 * 16, 112, "Font Colour", "Change the colour of the fluid text"));
-		setSpacingScroller(Math.min(1, (float) (itemList.element_size / Math.min(c.getActualScaling()[0], c.getActualScaling()[1]))));
+		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 198 + 32, guiTop + 150 + 40, 11 * 16, 112, "Font Colour", "Change the colour of the item text"));
+		*/
 	}
 
 	@Override
@@ -88,17 +79,9 @@ public class GuiEditNetworkFluidlist extends GuiAbstractEditElements {
 		if(button instanceof LogisticsButton){
 			switch(button.id){
 			case 0: 
-				itemList.text_colour = GuiLogistics.getCurrentColour();
+				fluid_element.text_colour = GuiLogistics.getCurrentColour();
 				break;
 			}
 		}
 	}
-
-	public void setSpacingScroller(float scaling) {
-		scaling = ((int)(scaling*100F))/100F;
-		itemList.element_size = scaling * Math.min(c.getActualScaling()[0], c.getActualScaling()[1]);
-		spacing_scroller.currentScroll = scaling;
-		this.spacing_field.setText(String.valueOf((int)(scaling*100F)));
-	}
-
 }

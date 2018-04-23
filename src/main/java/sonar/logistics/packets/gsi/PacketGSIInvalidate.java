@@ -1,4 +1,4 @@
-package sonar.logistics.packets;
+package sonar.logistics.packets.gsi;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,47 +11,45 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.networking.ClientInfoHandler;
 
-public class PacketDisplayGSIContentsPacket implements IMessage {
+public class PacketGSIInvalidate implements IMessage {
 
-	public NBTTagCompound SAVE_TAG;
 	public int GSI_IDENTITY = -1;
+	
+	public PacketGSIInvalidate() {}
 
-	public PacketDisplayGSIContentsPacket() {}
-
-	public PacketDisplayGSIContentsPacket(DisplayGSI gsi) {
+	public PacketGSIInvalidate(DisplayGSI gsi) {
 		GSI_IDENTITY = gsi.getDisplayGSIIdentity();
-		SAVE_TAG = gsi.writeData(new NBTTagCompound(), SyncType.SAVE);
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		GSI_IDENTITY = buf.readInt();
-		SAVE_TAG = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		buf.writeInt(GSI_IDENTITY);
-		ByteBufUtils.writeTag(buf, SAVE_TAG);
 	}
 
-	public static class Handler implements IMessageHandler<PacketDisplayGSIContentsPacket, IMessage> {
+	public static class Handler implements IMessageHandler<PacketGSIInvalidate, IMessage> {
 
 		@Override
-		public IMessage onMessage(PacketDisplayGSIContentsPacket message, MessageContext ctx) {
+		public IMessage onMessage(PacketGSIInvalidate message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null) {
-					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (player != null) {
 						DisplayGSI gsi = ClientInfoHandler.instance().getGSI(message.GSI_IDENTITY);
-						if (gsi != null) {							
-							gsi.readData(message.SAVE_TAG, SyncType.SAVE);
-							gsi.validate();
+						if (gsi != null) {
+							gsi.invalidate();
 						}
-					});
-				}
+					}
+				});
+
 			}
 			return null;
 		}

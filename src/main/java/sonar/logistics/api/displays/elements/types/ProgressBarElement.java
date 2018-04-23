@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.core.client.gui.GuiSonar;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
@@ -153,7 +153,7 @@ public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
-		return GuiSonar.withOrigin(new GuiEditProgressBar(this, obj), origin);
+		return IGuiOrigin.withOrigin(new GuiEditProgressBar(this, obj), origin);
 	}
 
 	@Override
