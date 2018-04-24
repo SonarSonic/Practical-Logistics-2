@@ -1,6 +1,5 @@
 package sonar.logistics.api.viewers;
 
-import net.minecraft.item.ItemStack;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.PlayerListener;
 import sonar.logistics.api.cabling.INetworkTile;

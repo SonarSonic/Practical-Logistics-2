@@ -15,7 +15,7 @@ import sonar.logistics.guide.pages.TransferNodePage;
 
 public class GuidePageRegistry {
 
-	public static List<IGuidePage> pages = new ArrayList<IGuidePage>();
+	public static List<IGuidePage> pages = new ArrayList<>();
 
 	public static void init() {
 		// addGuidePage(new Welcome(0));

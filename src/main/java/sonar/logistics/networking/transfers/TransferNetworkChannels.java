@@ -95,7 +95,7 @@ public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler>
 					if (!override.canTransfer()) {
 						break;
 					}
-					if (connect != null && connect instanceof BlockConnection && connect.source != connected.source && transfer.getChannels().isMonitored(connect)) {
+					if (connect instanceof BlockConnection && connect.source != connected.source && transfer.getChannels().isMonitored(connect)) {
 						if (items)
 							ItemHelper.transferItems(mode, connected, (BlockConnection) connect, override);
 						if (fluids)

@@ -15,7 +15,7 @@ import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = "FluxNetworks")
-public class FluxNetworksRegistry extends IInfoRegistry {
+public class FluxNetworksRegistry implements IInfoRegistry {
 
 	public void registerBaseReturns(IMasterInfoRegistry registry) {
 		registry.registerValidReturn(IFluxCommon.class);

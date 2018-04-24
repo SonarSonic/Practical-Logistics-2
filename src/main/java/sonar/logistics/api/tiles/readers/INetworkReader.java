@@ -11,5 +11,5 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 /** a reader which is controlled by the network */
 public interface INetworkReader<T extends IInfo> extends IChannelledTile, IInfoProvider, IListReader<T> {
 
-	public void setMonitoredInfo(AbstractChangeableList<T> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid);
+	void setMonitoredInfo(AbstractChangeableList<T> updateInfo, List<NodeConnection> usedChannels, InfoUUID uuid);
 }

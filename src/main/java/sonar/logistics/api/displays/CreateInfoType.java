@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import sonar.logistics.api.displays.buttons.EmptyInfoElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.elements.text.StyledWrappedTextElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
@@ -19,7 +18,7 @@ public enum CreateInfoType {
 
 	public interface ICreationLogic {
 		@Nullable
-		public IDisplayElement create(DisplayElementContainer c);
+        IDisplayElement create(DisplayElementContainer c);
 	}
 
 	public static IDisplayElement createInfo(DisplayElementContainer c) {

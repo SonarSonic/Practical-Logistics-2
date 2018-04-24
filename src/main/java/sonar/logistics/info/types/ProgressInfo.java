@@ -37,7 +37,7 @@ public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameabl
 	}
 
 	public static boolean isStorableInfo(IInfo info) {
-		return info != null && info instanceof LogicInfo;
+		return info instanceof LogicInfo;
 	}
 
 	public void checkInfo() {

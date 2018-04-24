@@ -13,9 +13,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -39,7 +36,6 @@ import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.networking.events.NetworkCableEvent;
 
 public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCable, IOperatorTile, IOperatorProvider {
 
@@ -55,8 +51,8 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 	}
 
 	public final void invalidate() {
-		super.invalidate();;
-		LogisticsEventHandler.instance().queueNetworkRemoval(this, PL2RemovalType.PLAYER_REMOVED);
+		super.invalidate();
+        LogisticsEventHandler.instance().queueNetworkRemoval(this, PL2RemovalType.PLAYER_REMOVED);
 	}
 	
 	@Override
@@ -84,7 +80,7 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 	}
 
 	public boolean isInternallyBlocked(EnumFacing dir) {
-		return info == null || dir == null ? false : info.getContainer().getPart(EnumFaceSlot.fromFace(dir)).isPresent();
+		return info != null && dir != null && info.getContainer().getPart(EnumFaceSlot.fromFace(dir)).isPresent();
 	}
 
 	@Override
@@ -196,7 +192,7 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 		int maxPower = 0;
 		for (EnumFacing face : EnumFacing.VALUES) {
 			ICableConnectable connection = CableHelper.getConnection(this, face, CableConnectionType.NETWORK, false);
-			if (connection != null && connection instanceof IRedstonePowerProvider) {
+			if (connection instanceof IRedstonePowerProvider) {
 				IRedstonePowerProvider provider = (IRedstonePowerProvider) connection;
 				if (provider.getCurrentPower() > 0) {
 					return 15;

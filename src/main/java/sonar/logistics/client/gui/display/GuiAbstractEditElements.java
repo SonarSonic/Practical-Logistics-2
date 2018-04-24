@@ -29,7 +29,7 @@ public class GuiAbstractEditElements extends GuiAbstractEditContainer {
 
 	public void save() {
 		super.save();
-		if (!(this.origin!=null && this.origin instanceof GuiUnconfiguredInfoElement))
+		if (!(this.origin instanceof GuiUnconfiguredInfoElement))
 			editing.forEach(e -> GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditElementPacket(e), e.getElementIdentity(), e.getGSI()));
 	}
 }

@@ -1,5 +1,6 @@
 package sonar.logistics.common.multiparts.nodes;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mcmultipart.api.slot.EnumFaceSlot;
@@ -58,12 +59,13 @@ public class BlockRedstoneNode extends BlockLogisticsSided {
 		return EnumFaceSlot.fromFace(facing.getOpposite());
 	}
 
+	@Nonnull
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		int power = getWeakPower(state, world, pos, state.getValue(SonarProperties.ORIENTATION).getOpposite());
 		if (power == 0) {
 			TileEntity tile = world.getTileEntity(pos);
-			if (tile != null && tile instanceof TileRedstoneNode) {
+			if (tile instanceof TileRedstoneNode) {
 				power = ((TileRedstoneNode) tile).getCurrentPower();
 			}
 		}

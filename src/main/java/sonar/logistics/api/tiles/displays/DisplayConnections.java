@@ -47,7 +47,7 @@ public enum DisplayConnections implements IStringSerializable {
 	List<EnumFacing> faces;
 
 	DisplayConnections(EnumFacing... faces) {
-		this.faces = SonarHelper.<EnumFacing>convertArray(faces);
+		this.faces = SonarHelper.convertArray(faces);
 	}
 
 	public List<EnumFacing> getFaces() {

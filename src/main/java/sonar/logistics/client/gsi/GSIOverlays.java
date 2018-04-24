@@ -40,7 +40,7 @@ public class GSIOverlays {
 			Optional<IMultipartTile> tile = MultipartHelper.getPartTile(evt.getPlayer().getEntityWorld(), clickPos, slot);
 			if (tile.isPresent() && tile.get() instanceof IDisplay) {
 				IDisplay display = (IDisplay) tile.get();
-				if (display != null && display instanceof TileLargeDisplayScreen) {
+				if (display instanceof TileLargeDisplayScreen) {
 					ConnectedDisplay connectedDisplay = ((TileLargeDisplayScreen) display).getConnectedDisplay();
 					if (connectedDisplay != null) {
 						display = connectedDisplay.getTopLeftScreen();

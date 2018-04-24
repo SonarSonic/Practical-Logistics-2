@@ -69,7 +69,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 
 	@Override
 	public boolean isIdenticalInfo(LogicInfo info) {
-		return markDirty? false : obj.get().equals(info.obj.get());
+		return !markDirty && obj.get().equals(info.obj.get());
 	}
 
 	@Override

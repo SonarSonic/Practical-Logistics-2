@@ -1,7 +1,5 @@
 package sonar.logistics.api.tiles.nodes;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import sonar.core.api.energy.StoredEnergyStack;
@@ -32,9 +30,7 @@ public abstract class NodeConnection<T extends IInfo> {
 	public boolean canTransferFluid(NodeConnection connection, StoredFluidStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
 			ITransferFilteredTile node = (ITransferFilteredTile) source;
-			if (!node.getChannels().isMonitored(connection) && (!node.getTransferMode().matches(mode) || !node.getFilters().matches(stack, mode))) {
-				return false;
-			}
+            return node.getChannels().isMonitored(connection) || (node.getTransferMode().matches(mode) && node.getFilters().matches(stack, mode));
 		}
 		return true;
 	}
@@ -42,9 +38,7 @@ public abstract class NodeConnection<T extends IInfo> {
 	public boolean canTransferItem(NodeConnection connection, StoredItemStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
 			ITransferFilteredTile node = (ITransferFilteredTile) source;
-			if (!node.getChannels().isMonitored(connection) && (!node.getTransferMode().matches(mode) || !node.getFilters().matches(stack, mode))) {
-				return false;
-			}
+            return node.getChannels().isMonitored(connection) || (node.getTransferMode().matches(mode) && node.getFilters().matches(stack, mode));
 		}
 		return true;
 	}
@@ -52,20 +46,13 @@ public abstract class NodeConnection<T extends IInfo> {
 	public boolean canTransferEnergy(NodeConnection connection, StoredEnergyStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
 			ITransferFilteredTile node = (ITransferFilteredTile) source;
-			if (!node.getChannels().isMonitored(connection) && !(node.isTransferEnabled(TransferType.ENERGY))) {
-				// if (!node.getSetting(TransferType.ENERGY).canTransfer(mode) || !node.canTransferEnergy(stack, mode)) {
-				return false;
-			}
+            return node.getChannels().isMonitored(connection) || node.isTransferEnabled(TransferType.ENERGY);
 		}
 		return true;
 	}
 	
 	public static List<NodeConnection> sortConnections(List<NodeConnection> connections){
-		Collections.sort(connections, new Comparator<NodeConnection>() {
-			public int compare(NodeConnection str1, NodeConnection str2) {
-				return Integer.compare(str2.priority, str1.priority);
-			}
-		});
+		connections.sort((str1, str2) -> Integer.compare(str2.priority, str1.priority));
 		return connections;
 	}
 

@@ -6,7 +6,7 @@ import sonar.core.utils.IWorldPosition;
 
 public interface ILogisticsTile extends IWorldPosition {
 
-	public SyncNBTAbstractList<EmitterStatement> getStatements();
+	SyncNBTAbstractList<EmitterStatement> getStatements();
 	
-	public SyncEnum<SignallerModes> emitterMode();
+	SyncEnum<SignallerModes> emitterMode();
 }

@@ -3,12 +3,8 @@ package sonar.logistics.api.displays.elements.text;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
-
-import javax.xml.ws.Holder;
 
 import com.google.common.collect.Lists;
 import com.ibm.icu.text.ArabicShaping;
@@ -20,11 +16,8 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
-import sonar.core.utils.CustomColour;
 
 /** lots of copying from FontRenderer, with changes to enable StyledString renders ... Justify, Line wrapping, multiple page text renders. */
 public class StyledStringRenderer extends FontRenderer {
@@ -56,7 +49,7 @@ public class StyledStringRenderer extends FontRenderer {
 		}
 
 		public boolean equals(Object obj) {
-			if (obj != null && obj instanceof SimpleIndex) {
+			if (obj instanceof SimpleIndex) {
 				return ((SimpleIndex) obj).string == string && ((SimpleIndex) obj).start == start && ((SimpleIndex) obj).end == end;
 			}
 			return false;
@@ -305,48 +298,24 @@ public class StyledStringRenderer extends FontRenderer {
 				/** cycles randomly through the allowed chars until it finds one of the same width to replace the current char. */
 				int target_width = this.getCharWidthFromStyledString(ss, current_char);
 				char obfuscated_char;
-				while (true) {
+				do {
 					char_index = this.fontRandom.nextInt(ALLOWED_CHARS.length());
 					obfuscated_char = ALLOWED_CHARS.charAt(char_index);
-
-					if (target_width == getCharWidthFromStyledString(ss, obfuscated_char)) {
-						break;
-					}
-				}
+				} while (target_width != getCharWidthFromStyledString(ss, obfuscated_char));
 
 				current_char = obfuscated_char;
 			}
 
 			float f1 = char_index == -1 || getUnicodeFlag() ? 0.5f : 1f;
-			boolean flag = (current_char == 0 || char_index == -1 || getUnicodeFlag()) && shadow;
-
-			if (flag) {
-				this.posX -= f1;
-				this.posY -= f1;
-			}
+			boolean flag = false;
 
 			float char_width = this.renderCharFromStyledString(ss, current_char);
-
-			if (flag) {
-				this.posX += f1;
-				this.posY += f1;
-			}
 
 			if (ss.getStyle().bold) {
 				this.posX += f1;
 
-				if (flag) {
-					this.posX -= f1;
-					this.posY -= f1;
-				}
-
 				this.renderCharFromStyledString(ss, current_char);
 				this.posX -= f1;
-
-				if (flag) {
-					this.posX += f1;
-					this.posY += f1;
-				}
 
 				++char_width;
 			}

@@ -26,7 +26,7 @@ public interface IDisplay extends INetworkTile, ISyncableListener, ISonarListene
 
 	default void onGSIInvalidate(){}
 	
-	public IDisplay getActualDisplay();
+	IDisplay getActualDisplay();
 
 	default void onGuiOpened(IDisplay obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		getGSI().onGuiOpened(obj, id, world, player, tag);

@@ -4,11 +4,11 @@ package sonar.logistics.api.info;
 public interface INameableInfo<T extends IInfo> extends IInfo<T> {
 	
 	/**the objects identifier (translated)*/
-	public String getClientIdentifier();
+    String getClientIdentifier();
 	
 	/**the object itself*/
-	public String getClientObject();
+    String getClientObject();
 
 	/**the object type*/
-	public String getClientType();
+    String getClientType();
 }

@@ -22,7 +22,7 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 
 	public static final String id = "item";
 
-	public SyncNBTAbstractList<StoredItemStack> list = new SyncNBTAbstractList<StoredItemStack>(StoredItemStack.class, 1);
+	public SyncNBTAbstractList<StoredItemStack> list = new SyncNBTAbstractList<>(StoredItemStack.class, 1);
 	public SyncTagType.BOOLEAN matchNBT = new SyncTagType.BOOLEAN(2), ignoreDamage = new SyncTagType.BOOLEAN(3), matchOreDict = new SyncTagType.BOOLEAN(4), matchModid = new SyncTagType.BOOLEAN(5);
 	{
 		syncList.addParts(list, matchNBT, ignoreDamage, matchOreDict, matchModid);
@@ -79,9 +79,9 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 	@Override
 	public void renderInfoInList(GuiSonar screen, int yPos) {
 		GlStateManager.scale(0.75, 0.75, 0.75);
-		FontHelper.text("Item Filter", 16, (int)((yPos + 2)*1/0.75), Color.white.getRGB());		
-		FontHelper.text("Type: " + this.getTransferMode().name(), 88, (int)((yPos + 2)*1/0.75), Color.white.getRGB());
-		FontHelper.text("List Type: " + this.getListType().name(), 200, (int)((yPos + 2)*1/0.75), Color.white.getRGB());
+		FontHelper.text("Item Filter", 16, (int)((yPos + 2) /0.75), Color.white.getRGB());
+		FontHelper.text("Type: " + this.getTransferMode().name(), 88, (int)((yPos + 2) /0.75), Color.white.getRGB());
+		FontHelper.text("List Type: " + this.getListType().name(), 200, (int)((yPos + 2) /0.75), Color.white.getRGB());
 		GlStateManager.scale(1/0.75, 1/0.75, 1/0.75);
 		
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
@@ -89,10 +89,7 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 		GlStateManager.translate(0, 12, 0);
 		int yOffset = 0;
 		for (int i = 0; i < Math.min(12, list.objs.size()); i++) {
-			if (i == 12) {
-				yOffset++;
-			}
-			StoredItemStack item = list.objs.get(i);
+            StoredItemStack item = list.objs.get(i);
 			RenderHelper.renderItem(screen, 13 + i * 18,  -2 + yPos, item.item);
 			RenderHelper.renderStoredItemStackOverlay(item.item, 0, 13 + i * 18,  -2 + yPos + yOffset * 18, null, true);
 			RenderHelper.restoreBlendState();

@@ -2,19 +2,14 @@ package sonar.logistics.common.multiparts;
 
 import java.util.List;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
 import sonar.core.helpers.ItemStackHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
@@ -39,7 +34,6 @@ import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.networking.events.NetworkPartEvent;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.sync.SyncTileMessages;
@@ -48,7 +42,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 
 	public static final ErrorMessage[] defaultValidStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 	public ILogisticsNetwork network = EmptyLogisticsNetwork.INSTANCE;
-	public SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
+	public SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault(-1);
 	public SyncTagType.INT networkID = (INT) new SyncTagType.INT(0).setDefault(-1);
 	public SyncTileMessages states = new SyncTileMessages(this, 101);
 

@@ -194,13 +194,13 @@ public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {
 		return nbt;
 	}
 
-	public static enum ProgressBarType {
-		FILL, BARS, SCROLLER;
-	}
+	public enum ProgressBarType {
+		FILL, BARS, SCROLLER
+    }
 
-	public static enum ProgressBarDirection {
-		RIGHT, LEFT, UP, DOWN;
-	}
+	public enum ProgressBarDirection {
+		RIGHT, LEFT, UP, DOWN
+    }
 
 	public static final String REGISTRY_NAME = "p_bar";
 

@@ -4,5 +4,5 @@ import sonar.logistics.client.gui.textedit.GuiStyledStringFunctions;
 
 public interface IGuiAction {
 
-	public void trigger(GuiStyledStringFunctions trigger);
+	void trigger(GuiStyledStringFunctions trigger);
 }

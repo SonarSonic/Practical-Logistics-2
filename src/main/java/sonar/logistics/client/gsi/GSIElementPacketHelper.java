@@ -150,7 +150,7 @@ public class GSIElementPacketHelper {
 		for (int i = 0; i < tag.tagCount(); i++) {
 			toDelete.add(tag.getIntAt(i));
 		}
-		toDelete.forEach(del -> gsi.removeElementContainer(del));
+		toDelete.forEach(gsi::removeElementContainer);
 		gsi.sendInfoContainerPacket();
 	}
 
@@ -171,7 +171,7 @@ public class GSIElementPacketHelper {
 		for (int i = 0; i < tag.tagCount(); i++) {
 			toDelete.add(tag.getIntAt(i));
 		}
-		toDelete.forEach(del -> gsi.removeElement(del));
+		toDelete.forEach(gsi::removeElement);
 		gsi.sendInfoContainerPacket();
 	}
 

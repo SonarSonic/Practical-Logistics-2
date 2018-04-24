@@ -46,7 +46,7 @@ public class InfoReference implements INBTSyncable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof InfoReference) {
+		if (obj instanceof InfoReference) {
 			return ((InfoReference)obj).uuid.equals(uuid) && ((InfoReference)obj).refType.equals(refType);
 		}
 		return false;

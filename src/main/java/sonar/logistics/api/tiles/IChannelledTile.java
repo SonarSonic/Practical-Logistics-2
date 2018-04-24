@@ -9,12 +9,12 @@ import sonar.logistics.api.viewers.ILogicListenable;
 public interface IChannelledTile extends ILogicListenable {
 
 	/**the currently selected channels*/
-	public ChannelList getChannels();
+    ChannelList getChannels();
 	
 	/**this tiles channel type*/
-	public ChannelType channelType();
+    ChannelType channelType();
 	
 	/**call this client side only, sends the selected coords to the server
 	 * @param channelID the id to modify the coords on*/
-	public void sendCoordsToServer(IInfo coords, int channelID);
+    void sendCoordsToServer(IInfo coords, int channelID);
 }

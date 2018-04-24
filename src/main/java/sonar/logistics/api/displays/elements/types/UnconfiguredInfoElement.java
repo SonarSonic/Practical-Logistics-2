@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -83,10 +82,10 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 
 	@Override
 	public void onInfoReferenceChanged(InfoUUID uuid, IInfo info) {
-		if (uuid.equals(uuid)) {
+		if (this.uuid.equals(uuid)) {
 			updateInfoElements();
-			getInfoElements().stream().filter(e -> e != null && e instanceof IInfoReferenceElement)
-			.forEach(e -> ((IInfoReferenceElement)e).onInfoReferenceChanged(uuid, info));
+			getInfoElements().stream().filter(e -> e instanceof IInfoReferenceElement)
+			.forEach(e -> ((IInfoReferenceElement)e).onInfoReferenceChanged(this.uuid, info));
 		}
 	}
 

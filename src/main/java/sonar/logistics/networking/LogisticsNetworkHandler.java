@@ -20,10 +20,10 @@ import sonar.logistics.networking.events.NetworkChanges;
 public class LogisticsNetworkHandler {
 
 	public static LogisticsNetworkHandler instance() {
-		return PL2.instance.proxy.networkManager;
+		return PL2.proxy.networkManager;
 	}	
 	
-	public Map<Integer, ILogisticsNetwork> cache = new ConcurrentHashMap<Integer, ILogisticsNetwork>();
+	public Map<Integer, ILogisticsNetwork> cache = new ConcurrentHashMap<>();
 
 	public void removeAll() {
 		cache.clear();
@@ -73,7 +73,7 @@ public class LogisticsNetworkHandler {
 			ILogisticsNetwork newNet = getOrCreateNetwork(newID);
 			List<INetworkListener> tiles = oldNet.getCachedTiles(CacheHandler.TILE, CacheType.LOCAL);
 			oldNet.onNetworkRemoved();
-			cache.remove(oldNet);				
+			cache.remove(oldID);
 
 			LogisticsEventHandler.instance().queueNetworkChange(newNet, NetworkChanges.LOCAL_CHANNELS, NetworkChanges.LOCAL_PROVIDERS);
 			newNet.onCablesChanged();

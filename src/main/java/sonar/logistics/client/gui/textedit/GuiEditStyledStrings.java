@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -205,7 +206,7 @@ public abstract class GuiEditStyledStrings extends GuiStyledStringFunctions impl
 				selectPosition.removeCursor();
 			}
 			cursorPosition.setCursor(getDragPositionFromContainerXY(clickX, clickY));
-			lastCursorClick = mc.getSystemTime();
+			lastCursorClick = Minecraft.getSystemTime();
 		}
 		return true;
 	}
@@ -223,9 +224,9 @@ public abstract class GuiEditStyledStrings extends GuiStyledStringFunctions impl
 				} else {
 					cursorPosition.setCursor(getDragPositionFromMouseXY(x, y));
 				}
-			} else if (lastCursorClick + 100 < mc.getSystemTime()) {
+			} else if (lastCursorClick + 100 < Minecraft.getSystemTime()) {
 				isDragging = Mouse.isButtonDown(0);
-				lastCursorClick = mc.getSystemTime();
+				lastCursorClick = Minecraft.getSystemTime();
 				if (isDragging) {
 					selectPosition.setCursor(cursorPosition.x, cursorPosition.y);
 				}

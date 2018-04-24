@@ -4,8 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import sonar.logistics.api.displays.elements.IDisplayElement;
+import sonar.logistics.api.errors.IInfoError;
 
 /**use this with {@link IInfoError}, these must have an empty constructor!!*/
 @Retention(RetentionPolicy.RUNTIME)

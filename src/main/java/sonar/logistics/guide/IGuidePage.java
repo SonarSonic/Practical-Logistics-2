@@ -7,28 +7,28 @@ import sonar.logistics.guide.elements.ElementInfo;
 
 public interface IGuidePage {
 	
-	public void initGui(GuiGuide gui, int subPage);
+	void initGui(GuiGuide gui, int subPage);
 
-	public void mouseClicked(GuiGuide gui, int x, int y, int button);
+	void mouseClicked(GuiGuide gui, int x, int y, int button);
 	
-	public void drawPageInGui(GuiGuide gui, int y);
+	void drawPageInGui(GuiGuide gui, int y);
 	
-	public void drawPage(GuiGuide gui, int x, int y, int page);
+	void drawPage(GuiGuide gui, int x, int y, int page);
 	
-	public void drawForegroundPage(GuiGuide gui, int x, int y, int page, float partialTicks);
+	void drawForegroundPage(GuiGuide gui, int x, int y, int page, float partialTicks);
 	
-	public void drawBackgroundPage(GuiGuide gui, int x, int y, int page);
+	void drawBackgroundPage(GuiGuide gui, int x, int y, int page);
 
-	public int getLineWidth(int linePos, int page);
+	int getLineWidth(int linePos, int page);
 
-	public int getPageCount();
+	int getPageCount();
 	
-	public int pageID();
+	int pageID();
 	
-	public String getDisplayName();
+	String getDisplayName();
 	
-	public List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo);
+	List<ElementInfo> getPageInfo(GuiGuide gui, List<ElementInfo> pageInfo);
 
-	public List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements);	
+	List<IGuidePageElement> getElements(GuiGuide gui, List<IGuidePageElement> elements);
 	
 }

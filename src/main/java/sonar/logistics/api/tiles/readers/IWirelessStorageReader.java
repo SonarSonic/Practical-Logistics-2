@@ -6,9 +6,9 @@ import net.minecraft.item.ItemStack;
 
 public interface IWirelessStorageReader  {
 
-	public int getEmitterIdentity(ItemStack stack);
+	int getEmitterIdentity(ItemStack stack);
 	
-	public void readPacket(ItemStack stack, EntityPlayer player, ByteBuf buf, int id);
+	void readPacket(ItemStack stack, EntityPlayer player, ByteBuf buf, int id);
 	
-	public void writePacket(ItemStack stack, EntityPlayer player, ByteBuf buf, int id);
+	void writePacket(ItemStack stack, EntityPlayer player, ByteBuf buf, int id);
 }

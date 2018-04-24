@@ -151,7 +151,7 @@ public class DisplayElementHelper {
 		for (int i = 0; i < max; i++) {
 			double p = percentage[i];
 			double s = toFit[i];
-			scale[i] = (((double) s / 100D) * p);
+			scale[i] = ((s / 100D) * p);
 		}
 		return scale;
 	}
@@ -380,13 +380,12 @@ public class DisplayElementHelper {
 
 	public static int doPageClick(double subClickX, double subClickY, double[] scaling, int page, int pageCount) {
 		if (subClickY > scaling[HEIGHT] - (scaling[HEIGHT] / 8)) {
-			int maxPage = pageCount;
 			if (subClickX < scaling[WIDTH] / 2) {
 				if (page != 0) {
 					return page - 1;
 				}
 			} else {
-				if (page != maxPage) {
+				if (page != pageCount) {
 					return page + 1;
 				}
 			}

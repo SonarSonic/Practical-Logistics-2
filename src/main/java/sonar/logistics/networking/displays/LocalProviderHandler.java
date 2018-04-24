@@ -1,12 +1,9 @@
 package sonar.logistics.networking.displays;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.sun.jna.platform.unix.X11.Display;
 
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
@@ -16,7 +13,6 @@ import sonar.logistics.api.errors.DestroyedError;
 import sonar.logistics.api.errors.DisconnectedError;
 import sonar.logistics.api.errors.ErrorHelper;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
@@ -102,7 +98,7 @@ public class LocalProviderHandler {
 				Map<DisplayGSI, List<InfoUUID>> affected = getConnectionsForTile(new HashMap(), update.getKey());
 				switch (update.getValue()) {
 				case NETWORK_CHANGE:
-					affected.forEach((GSI, UUIDS) -> doInfoReferenceConnect(GSI, UUIDS));
+					affected.forEach(LocalProviderHandler::doInfoReferenceConnect);
 					break;
 				case TILE_DESTROYED:
 					affected.forEach((GSI, UUIDS) -> {
@@ -125,7 +121,7 @@ public class LocalProviderHandler {
 		}
 	}
 
-	public static enum UpdateCause {
+	public enum UpdateCause {
 		TILE_DESTROYED, TILE_UNLOADED, NETWORK_CHANGE;
 
 		public static UpdateCause getCause(PL2AdditionType type) {

@@ -21,6 +21,8 @@ import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.wireless.ITileTransceiver;
 
+import javax.annotation.Nonnull;
+
 public class WirelessItemTransceiver extends SonarItem implements ITileTransceiver {
 
 	//// ITileTransceiver \\\\
@@ -43,11 +45,12 @@ public class WirelessItemTransceiver extends SonarItem implements ITileTransceiv
 
 	//// INTERACTION \\\\
 
-	@Override
+	@Nonnull
+    @Override
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IBlockState state = world.getBlockState(pos);
 		Block target = state.getBlock();
-		if (target != null && !world.isRemote) {
+		if (!world.isRemote) {
 			ItemStack stack = player.getHeldItem(hand);
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag == null)

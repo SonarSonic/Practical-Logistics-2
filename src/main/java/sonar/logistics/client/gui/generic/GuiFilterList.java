@@ -156,10 +156,10 @@ public class GuiFilterList extends GuiSelectionList {
 		boolean matches = tile.allowed(stack);
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
-				newList.add(stack.getRarity().rarityColor + (String) list.get(i));
+				newList.add(stack.getRarity().rarityColor + list.get(i));
 				newList.add(TextFormatting.GRAY + "Matches Filter: " + (matches ? TextFormatting.GREEN + "TRUE" : TextFormatting.RED + "FALSE"));
 			} else {
-				newList.add(TextFormatting.GRAY + (String) list.get(i));
+				newList.add(TextFormatting.GRAY + list.get(i));
 			}
 		}
 
@@ -352,7 +352,7 @@ public class GuiFilterList extends GuiSelectionList {
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			renderStrings(x, y);
 			List list = Lists.newArrayList(getGridList());
-			if (list != null && !list.isEmpty()) {
+			if (!list.isEmpty()) {
 				int start = (int) (getGridSize(list) / 12 * scroller.getCurrentScroll());
 				int i = start * 12;
 				int finish = Math.min(i + (12 * 7), getGridSize(list));
@@ -374,22 +374,20 @@ public class GuiFilterList extends GuiSelectionList {
 				int Y = (y - guiTop - 32) / 18;
 				int i = (start * 12) + X + ((Y) * 12);
 
-				if (list != null) {
-					if (i < list.size()) {
-						Object selection = list.get(i);
-						if (selection != null) {
+                if (i < list.size()) {
+                    Object selection = list.get(i);
+                    if (selection != null) {
 
-							// GL11.glDisable(GL11.GL_DEPTH_TEST);
-							GL11.glDisable(GL11.GL_LIGHTING);
-							this.renderToolTip(selection, x - guiLeft, y - guiTop);
-							GL11.glEnable(GL11.GL_LIGHTING);
-							// GL11.glEnable(GL11.GL_DEPTH_TEST);
-							// net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+                        // GL11.glDisable(GL11.GL_DEPTH_TEST);
+                        GL11.glDisable(GL11.GL_LIGHTING);
+                        this.renderToolTip(selection, x - guiLeft, y - guiTop);
+                        GL11.glEnable(GL11.GL_LIGHTING);
+                        // GL11.glEnable(GL11.GL_DEPTH_TEST);
+                        // net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 
-						}
-					}
-				}
-			}
+                    }
+                }
+            }
 			break;
 		case LIST:
 			// FontHelper.textCentre(FontHelper.translate("Filters"), xSize, 6, LogisticsColours.white_text);
@@ -485,8 +483,8 @@ public class GuiFilterList extends GuiSelectionList {
 			((INodeFilter) info).renderInfoInList(this, yPos);
 		} else if (state == GuiState.ORE_FILTER) {
 			GlStateManager.scale(0.75, 0.75, 0.75);
-			FontHelper.text("Ore Filter", 16, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
-			FontHelper.text("Type: " + info, 88, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
+			FontHelper.text("Ore Filter", 16, (int) ((yPos + 2) / 0.75), Color.white.getRGB());
+			FontHelper.text("Type: " + info, 88, (int) ((yPos + 2) / 0.75), Color.white.getRGB());
 			GlStateManager.scale(1 / 0.75, 1 / 0.75, 1 / 0.75);
 			net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 			GlStateManager.translate(0, 12, 0);
@@ -494,10 +492,7 @@ public class GuiFilterList extends GuiSelectionList {
 
 			int yOffset = 0;
 			for (int i = 0; i < Math.min(12, ores.size()); i++) {
-				if (i == 12) {
-					yOffset++;
-				}
-				ItemStack item = ores.get(i).copy();
+                ItemStack item = ores.get(i).copy();
 				if (item.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					item.setItemDamage(0);
 				}
@@ -533,7 +528,7 @@ public class GuiFilterList extends GuiSelectionList {
 			}
 			Slot itemSlot = null;
 			for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
-				Slot slot = (Slot) this.inventorySlots.inventorySlots.get(i);
+				Slot slot = this.inventorySlots.inventorySlots.get(i);
 
 				if (this.isPointInRegion(slot.xPos, slot.yPos, 16, 16, x, y)) {
 					itemSlot = slot;
@@ -566,7 +561,7 @@ public class GuiFilterList extends GuiSelectionList {
 				} else {
 					oreDictField.textboxKeyTyped(c, i);
 					final String text = oreDictField.getText();
-					setString((text.isEmpty() || text == "" || text == null) ? "" : text);
+					setString(text.isEmpty() ? "" : text);
 				}
 				return;
 			}
@@ -613,10 +608,11 @@ public class GuiFilterList extends GuiSelectionList {
 			ItemFilter filter = (ItemFilter) currentFilter;
 			if (button == 1 && selection != null) {
 				filter.removeItem((StoredItemStack) selection);
-			} else if (this.player.inventory.getItemStack() != null) {
-				filter.addItem(new StoredItemStack(this.player.inventory.getItemStack(), 1));
-				return;
-			}
+			} else {
+                this.player.inventory.getItemStack();
+                filter.addItem(new StoredItemStack(this.player.inventory.getItemStack(), 1));
+                return;
+            }
 
 		}
 		if (state == GuiState.FLUID_FILTER) {
@@ -690,10 +686,8 @@ public class GuiFilterList extends GuiSelectionList {
 	}
 
 	private boolean needsScrollBars(List list) {
-		if (getGridSize(list) <= (12 * 7))
-			return false;
-		return true;
-	}
+        return getGridSize(list) > (12 * 7);
+    }
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
@@ -769,7 +763,7 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			}
 
-			return !secondary ? 0 : 0 + 16;
+			return !secondary ? 0 : 16;
 		}
 
 		@Override
@@ -814,7 +808,7 @@ public class GuiFilterList extends GuiSelectionList {
 				break;
 			}
 
-			return !secondary ? 0 : 0 + 16;
+			return !secondary ? 0 : 16;
 		}
 
 		@Override

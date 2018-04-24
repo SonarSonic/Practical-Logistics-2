@@ -2,9 +2,6 @@ package sonar.logistics.api.displays.elements.types;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.GlStateManager;

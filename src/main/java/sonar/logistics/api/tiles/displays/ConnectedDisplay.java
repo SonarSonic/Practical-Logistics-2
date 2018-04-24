@@ -192,7 +192,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 				for (int z = Math.min(minZ, maxZ); z <= Math.max(minZ, maxZ); z++) {
 					BlockCoords coords = new BlockCoords(x, y, z);
 					IDisplay display = CableHelper.getDisplay(world, coords.getBlockPos(), EnumDisplayFaceSlot.fromFace(meta));
-					if (display == null || !(display instanceof ILargeDisplay)) {
+					if (!(display instanceof ILargeDisplay)) {
 						canBeRendered.setObject(false);
 						return;
 					}
@@ -213,7 +213,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 		List<ILargeDisplay> displays = DisplayHandler.instance().getConnections(registryID);
 		for (ILargeDisplay display : displays) {
 			if (display instanceof TileAbstractDisplay) {
-				monitors = DisplayHelper.getLocalProvidersFromDisplay(monitors, ((TileAbstractDisplay) display).getWorld(), ((TileAbstractDisplay) display).getPos(), (TileAbstractDisplay) display);
+				monitors = DisplayHelper.getLocalProvidersFromDisplay(monitors, ((TileAbstractDisplay) display).getWorld(), ((TileAbstractDisplay) display).getPos(), display);
 			}
 		}
 		return monitors;
@@ -310,8 +310,8 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 
 	@Override
 	public double[] getScaling() {
-		double max = Math.min(this.height.getObject().intValue() + 1.3, this.width.getObject().intValue() + 1);
-		return new double[] { this.getDisplayType().width + this.width.getObject().intValue(), this.getDisplayType().height + this.height.getObject().intValue(), max / 100 };
+		double max = Math.min(this.height.getObject() + 1.3, this.width.getObject() + 1);
+		return new double[] { this.getDisplayType().width + this.width.getObject(), this.getDisplayType().height + this.height.getObject(), max / 100 };
 	}
 
 	@Override

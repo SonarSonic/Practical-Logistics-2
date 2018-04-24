@@ -12,9 +12,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -26,19 +23,16 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
-import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.networking.events.NetworkCableEvent;
 
 public class TileDataCable extends TileSonarMultipart implements IDataCable, IOperatorTile, IOperatorProvider {
 
@@ -86,7 +80,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	}
 
 	public boolean isInternallyBlocked(EnumFacing dir) {
-		return info == null || dir == null ? false : info.getContainer().getPart(EnumFaceSlot.fromFace(dir)).isPresent();
+		return info != null && dir != null && info.getContainer().getPart(EnumFaceSlot.fromFace(dir)).isPresent();
 	}
 
 	@Override
@@ -140,7 +134,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player, world);
 			Pair<RayTraceResult, AxisAlignedBB> trace = RayTraceHelper.rayTraceBoxes(pos, look.getLeft(), look.getRight(), BlockDataCable.getSelectionBoxes(world, pos, new ArrayList<>()));
 
-			if (trace.b instanceof LabelledAxisAlignedBB) {
+			if (trace != null && trace.b instanceof LabelledAxisAlignedBB) {
 				if (isClient()) {
 					return true;
 				}

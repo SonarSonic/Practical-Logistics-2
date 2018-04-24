@@ -2,13 +2,9 @@ package sonar.logistics.networking.events;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
 import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
-import sonar.logistics.api.wireless.IDataReceiver;
 
 public class NetworkPartEvent<T extends INetworkTile> extends Event {
 

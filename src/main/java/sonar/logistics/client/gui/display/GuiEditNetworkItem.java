@@ -12,7 +12,6 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
-import sonar.logistics.api.displays.elements.types.NetworkGridElement;
 import sonar.logistics.api.displays.elements.types.NetworkItemElement;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.GuiColourSelection;

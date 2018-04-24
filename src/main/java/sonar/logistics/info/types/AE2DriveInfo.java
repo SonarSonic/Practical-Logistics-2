@@ -59,12 +59,12 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 
 	@Override
 	public boolean isIdenticalInfo(AE2DriveInfo info) {
-		return info.totalBytes.getObject()==totalBytes.getObject() && info.usedBytes.getObject()==usedBytes.getObject() && info.totalTypes.getObject()==totalTypes.getObject() && info.usedTypes.getObject()==usedTypes.getObject() && info.itemCount.getObject()==itemCount.getObject();
+		return (info.totalBytes.getObject().equals(totalBytes.getObject())) && (info.usedBytes.getObject().equals(usedBytes.getObject())) && (info.totalTypes.getObject().equals(totalTypes.getObject())) && (info.usedTypes.getObject().equals(usedTypes.getObject())) && (info.itemCount.getObject().equals(itemCount.getObject()));
 	}
 
 	@Override
 	public boolean isMatchingInfo(AE2DriveInfo info) {
-		return info.driveNum.getObject()==driveNum.getObject();
+		return info.driveNum.getObject().equals(driveNum.getObject());
 	}
 
 	@Override
@@ -124,6 +124,5 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 	@Override
 	public void setFromReturn(LogicPath path, Object returned) {
 		//custom handlers
-		Object obj = returned;
 	}
 }

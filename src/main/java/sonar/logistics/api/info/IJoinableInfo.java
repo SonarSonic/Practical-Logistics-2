@@ -5,8 +5,8 @@ package sonar.logistics.api.info;
 public interface IJoinableInfo<T extends IInfo> extends IInfo<T> {
 
 	/**can this info be joined together*/
-	public boolean canJoinInfo(T info);
+    boolean canJoinInfo(T info);
 	
 	/**join the info*/
-	public IJoinableInfo joinInfo(T info);
+    IJoinableInfo joinInfo(T info);
 }

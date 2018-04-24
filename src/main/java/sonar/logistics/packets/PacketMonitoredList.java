@@ -10,12 +10,9 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
-import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.info.InfoHelper;
-import sonar.logistics.networking.sorters.SortingHelper;
 
 public class PacketMonitoredList implements IMessage {
 

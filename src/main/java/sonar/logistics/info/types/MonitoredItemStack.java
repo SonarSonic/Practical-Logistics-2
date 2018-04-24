@@ -30,7 +30,7 @@ import sonar.logistics.api.tiles.signaller.ComparableObject;
 public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack>, IMonitoredValueInfo<MonitoredItemStack> {
 
 	public static final String id = "item";
-	public final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 0);
+	public final SyncNBTAbstract<StoredItemStack> itemStack = new SyncNBTAbstract<>(StoredItemStack.class, 0);
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 	{
 		syncList.addParts(itemStack, networkID);
@@ -54,7 +54,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 
 	@Override
 	public boolean isMatchingInfo(MonitoredItemStack info) {
-		return getStoredStack().equalStack(info.getStoredStack().getItemStack()) && networkID.getObject().equals(networkID.getObject());
+		return getStoredStack().equalStack(info.getStoredStack().getItemStack()) && networkID.getObject().equals(info.networkID.getObject());
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements 
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
 		StoredItemStack stack = itemStack.getObject();
 		objects.add(new ComparableObject(this, "Stored", stack.stored));
-		objects.add(new ComparableObject(this, "Damage", stack != null ? stack.getItemDamage() : -1));
+		objects.add(new ComparableObject(this, "Damage", stack.getItemDamage()));
 		objects.add(new ComparableObject(this, "NBT", stack.item.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound()));
 		return objects;
 

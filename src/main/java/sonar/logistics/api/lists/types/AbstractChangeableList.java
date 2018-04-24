@@ -80,8 +80,7 @@ public abstract class AbstractChangeableList<T> {
 				sorter.sortSaveableList(this);
 			}
 		}
-		List<T> saveable = createSaveableList();
-		return saveable;
+		return createSaveableList();
 	}
 
 	public abstract IMonitoredValue<T> createMonitoredValue(T obj);

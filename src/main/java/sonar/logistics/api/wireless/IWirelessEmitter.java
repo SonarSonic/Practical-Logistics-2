@@ -7,10 +7,10 @@ import sonar.logistics.api.cabling.INetworkTile;
 public interface IWirelessEmitter extends INetworkTile{
 
 	/** can the given player UUID connect to this IDataEmitter */
-	public EnumConnected canPlayerConnect(UUID uuid);
+    EnumConnected canPlayerConnect(UUID uuid);
 
 	/** the emitters name, as chosen by the user */
-	public String getEmitterName();
+    String getEmitterName();
 	
-	public WirelessSecurity getSecurity();
+	WirelessSecurity getSecurity();
 }

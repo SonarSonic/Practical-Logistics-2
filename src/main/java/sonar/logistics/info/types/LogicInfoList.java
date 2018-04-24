@@ -3,24 +3,19 @@ package sonar.logistics.info.types;
 import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.types.NetworkEnergyListElement;
 import sonar.logistics.api.displays.elements.types.NetworkFluidGridElement;
-import sonar.logistics.api.displays.elements.types.NetworkGridElement;
 import sonar.logistics.api.displays.elements.types.NetworkItemGridElement;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.networking.sorters.SortingHelper;
 

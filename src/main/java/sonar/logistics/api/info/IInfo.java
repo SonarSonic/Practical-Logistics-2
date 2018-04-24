@@ -11,7 +11,6 @@ import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.references.ReferenceType;
 import sonar.logistics.api.register.LogicPath;
@@ -20,32 +19,32 @@ import sonar.logistics.api.register.LogicPath;
 public interface IInfo<T extends IInfo> extends INBTSyncable {
 
 	/** this must be the same as the ID specified in {@link LogicInfoType} */
-	public String getID();
+    String getID();
 
 	/** if they are identical **/
-	public boolean isIdenticalInfo(T info);
+    boolean isIdenticalInfo(T info);
 
 	/** if they are of the same type with just different values **/
-	public boolean isMatchingInfo(T info);
+    boolean isMatchingInfo(T info);
 
 	/** if they are of the same type with just different values **/
-	public boolean isMatchingType(IInfo info);
+    boolean isMatchingType(IInfo info);
 
-	public default boolean isHeader() {
+	default boolean isHeader() {
 		return false;
 	}
 
-	public default void addDefaultElements(IElementStorageHolder h, InfoUUID uuid) {
+	default void addDefaultElements(IElementStorageHolder h, InfoUUID uuid) {
 		List<IDisplayElement> elements = new ArrayList<>();
 		createDefaultElements(elements, h, uuid);
 		elements.forEach(e -> h.getElements().addElement(e));
 	}
 
-	public default void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
+	default void createDefaultElements(List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
 		doCreateDefaultElements(this, toAdd, h, uuid);
 	}
 
-	public static void doCreateDefaultElements(IInfo info, List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
+	static void doCreateDefaultElements(IInfo info, List<IDisplayElement> toAdd, IElementStorageHolder h, InfoUUID uuid) {
 		StyledTitleElement element = new StyledTitleElement();
 		StyledStringLine line1 = new StyledStringLine(element), line2 = new StyledStringLine(element);
 		line1.setStrings(Lists.newArrayList(new StyledInfo(uuid, ReferenceType.IDENTIFIER)));
@@ -58,17 +57,17 @@ public interface IInfo<T extends IInfo> extends INBTSyncable {
 		toAdd.add(element);
 	}
 
-	public boolean isValid();
+	boolean isValid();
 
-	public LogicPath getPath();
+	LogicPath getPath();
 
-	public T setPath(LogicPath path);
+	T setPath(LogicPath path);
 
 	/** it is essential that you copy the LogicPath also */
-	public T copy();
+    T copy();
 
-	public void identifyChanges(T newInfo);
+	void identifyChanges(T newInfo);
 
-	public void onInfoStored();
+	void onInfoStored();
 
 }

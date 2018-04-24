@@ -17,7 +17,6 @@ import sonar.core.network.SonarClient;
 import sonar.core.translate.ILocalisationHandler;
 import sonar.core.translate.Localisation;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.displays.elements.text.StyledStringHelper;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer;
 import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.client.ClockRenderer;

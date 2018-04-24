@@ -6,6 +6,6 @@ import sonar.logistics.api.tiles.signaller.ComparableObject;
 
 public interface IComparableInfo<T extends IInfo> extends IInfo<T> {
 
-	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects);
+	List<ComparableObject> getComparableObjects(List<ComparableObject> objects);
 
 }

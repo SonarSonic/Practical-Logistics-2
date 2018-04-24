@@ -69,9 +69,7 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirele
 	@Override
 	public boolean isCategoryHeader(ClientWirelessEmitter info) {
 		if (!RenderBlockSelection.positions.isEmpty()) {
-			if (RenderBlockSelection.isPositionRenderered(info.coords.getCoords())) {
-				return true;
-			}
+            return RenderBlockSelection.isPositionRenderered(info.coords.getCoords());
 		}
 		return false;
 	}
@@ -83,11 +81,9 @@ public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirele
 		}
 		if (clickedIdentity == -1) {
 			ItemStack current = player.getHeldItemMainhand();
-			if (current != null && current.hasTagCompound()) {
+			if (current.hasTagCompound()) {
 				int uuid = current.getTagCompound().getInteger(WirelessStorageReader.EMITTER_UUID);
-				if (uuid == info.getIdentity()) {
-					return true;
-				}
+                return uuid == info.getIdentity();
 			}
 		}
 		return false;

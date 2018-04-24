@@ -20,7 +20,7 @@ import sonar.logistics.networking.LogisticsNetworkHandler;
 
 public abstract class AbstractConnectionHandler<T extends ICable> {
 
-	protected Map<Integer, List<T>> connections = new ConcurrentHashMap<Integer, List<T>>();
+	protected Map<Integer, List<T>> connections = new ConcurrentHashMap<>();
 	private LogisticsNetworkHandler NetworkManager;
 
 	public void removeAll() {
@@ -30,7 +30,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 
 	public LogisticsNetworkHandler NetworkManager() {
 		if (NetworkManager == null) {
-			NetworkManager = PL2.instance.proxy.networkManager;
+			NetworkManager = PL2.proxy.networkManager;
 		}
 		return NetworkManager;
 	}
@@ -122,7 +122,7 @@ public abstract class AbstractConnectionHandler<T extends ICable> {
 
 				if (!allConnections.isEmpty()) {
 					T cable = allConnections.remove(0); // removes first element
-					cable.setRegistryID(registryID == -1 ? getNextAvailableID() : registryID); // ensures original id is kept
+					cable.setRegistryID(registryID); // ensures original id is kept
 					addConnectionToNetwork(cable);
 				}
 				allConnections.forEach(oldCable -> {

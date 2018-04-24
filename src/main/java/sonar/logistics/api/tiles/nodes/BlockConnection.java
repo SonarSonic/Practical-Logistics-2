@@ -22,7 +22,7 @@ public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof BlockConnection) {
+		if (obj instanceof BlockConnection) {
 			return ((BlockConnection) obj).coords.equals(coords);
 		}
 		return false;

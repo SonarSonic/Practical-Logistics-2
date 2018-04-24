@@ -26,7 +26,7 @@ public class EntityConnection extends NodeConnection<MonitoredEntity> {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof EntityConnection) {
+		if (obj instanceof EntityConnection) {
 			return ((EntityConnection) obj).uuid.equals(uuid);
 		}
 		return false;

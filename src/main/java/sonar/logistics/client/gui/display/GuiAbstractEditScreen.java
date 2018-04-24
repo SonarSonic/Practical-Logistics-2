@@ -4,6 +4,7 @@ import static net.minecraft.client.renderer.GlStateManager.scale;
 
 import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -52,8 +53,8 @@ public abstract class GuiAbstractEditScreen extends GuiLogistics {
 	public void setContainerScaling() {
 		scaling = new double[] { (xSize) - 8, ((ySize / 2)) - 8, 1 };
 		double[] unscaled = getUnscaled();
-		actualLeft = (guiLeft) + 1 * 4;
-		actualTop = (guiTop) + 1 * 4;
+		actualLeft = (guiLeft) + 4;
+		actualTop = (guiTop) + 4;
 		actualElementScale = Math.min(scaling[0] / unscaled[0], scaling[1] / unscaled[1]);
 		actualElementWidth = (unscaled[0] * actualElementScale) * percentageFill;
 		actualElementHeight = (unscaled[1] * actualElementScale) * percentageFill;
@@ -122,10 +123,10 @@ public abstract class GuiAbstractEditScreen extends GuiLogistics {
 
 	public final boolean isDoubleClick() {
 		boolean isDoubleClick = false;
-		if (mc.getMinecraft().world.getTotalWorldTime() - lastClickTime < 5) {
+		if (Minecraft.getMinecraft().world.getTotalWorldTime() - lastClickTime < 5) {
 			isDoubleClick = true;
 		}
-		lastClickTime = mc.getMinecraft().world.getTotalWorldTime();
+		lastClickTime = Minecraft.getMinecraft().world.getTotalWorldTime();
 		return isDoubleClick;
 	}
 }

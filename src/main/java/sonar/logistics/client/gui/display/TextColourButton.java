@@ -8,6 +8,8 @@ import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.CustomColour;
 
+import javax.annotation.Nonnull;
+
 public abstract class TextColourButton extends GuiButton {
 
 	public int formattingColour;
@@ -21,12 +23,12 @@ public abstract class TextColourButton extends GuiButton {
 		this.gui = gui;
 		formattingColour = RenderHelper.getTextFormattingColour(c);
 		formattingShadow = RenderHelper.getTextFormattingShadow(c);
-		int r = (int) (formattingColour >> 16 & 255);
-		int g = (int) (formattingColour >> 8 & 255);
-		int b = (int) (formattingColour & 255);
-		int rS = (int) (formattingShadow >> 16 & 255);
-		int gS = (int) (formattingShadow >> 8 & 255);
-		int bS = (int) (formattingShadow & 255);
+		int r = formattingColour >> 16 & 255;
+		int g = formattingColour >> 8 & 255;
+		int b = formattingColour & 255;
+		int rS = formattingShadow >> 16 & 255;
+		int gS = formattingShadow >> 8 & 255;
+		int bS = formattingShadow & 255;
 		shadowRGB = new CustomColour(rS, gS, bS).getRGB();
 		colourRGB = new CustomColour(r, g, b).getRGB();
 		
@@ -36,7 +38,7 @@ public abstract class TextColourButton extends GuiButton {
 	public abstract boolean isSelected();
 
 	@Override
-	public void drawButton(Minecraft mc, int x, int y, float partialTicks) {
+	public void drawButton(@Nonnull Minecraft mc, int x, int y, float partialTicks) {
 		if (this.visible) {
 			this.hovered = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

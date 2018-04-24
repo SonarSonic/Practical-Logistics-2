@@ -2,6 +2,7 @@ package sonar.logistics.client.gui;
 
 import java.io.IOException;
 
+import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.inventory.Container;
@@ -49,7 +50,7 @@ public class GuiHyperlinkAdd extends GuiLogistics {
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
 		if (isCloseKey(i)) {
-			boolean isTyping = this.fieldList.stream().anyMatch(f -> f.isFocused());
+			boolean isTyping = this.fieldList.stream().anyMatch(GuiTextField::isFocused);
 			if (!isTyping) {
 				element.onGuiClosed(getCurrentHyperlink());
 				if (element instanceof HyperlinkRequest) {

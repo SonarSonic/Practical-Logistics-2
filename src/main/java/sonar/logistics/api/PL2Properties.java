@@ -26,7 +26,7 @@ public class PL2Properties {
 	public static final PropertyCableFace[] CABLE_FACES = new PropertyCableFace[] { NORTH, EAST, SOUTH, WEST, DOWN, UP };
 	
 
-	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.<NodeTransferMode>create("transfer", NodeTransferMode.class);
+	public static final PropertyEnum<NodeTransferMode> TRANSFER = PropertyEnum.create("transfer", NodeTransferMode.class);
 
 	public static double p = 0.0625;
 	public static LabelledAxisAlignedBB cableBox = new LabelledAxisAlignedBB(6 * p, 6 * p, 6 * p, 1 - 6 * p, 1 - 6 * p, 1 - 6 * p).labelAxis("c");

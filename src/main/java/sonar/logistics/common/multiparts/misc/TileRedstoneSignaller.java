@@ -105,7 +105,7 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements ILogist
 	@Override
 	public void markChanged(IDirtyPart part) {
 		super.markChanged(part);
-		if (part == isActive && this.getWorld() != null) {
+		if (part == isActive) {
 			IBlockState state = world.getBlockState(pos);
 			world.notifyNeighborsOfStateChange(pos, blockType, true);
 			SonarMultipartHelper.sendMultipartPacketAround(this, 0, 128);

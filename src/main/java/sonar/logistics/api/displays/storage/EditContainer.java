@@ -19,8 +19,8 @@ public class EditContainer extends DisplayElementContainer {
 	
 	public static EditContainer addEditContainer(DisplayGSI gsi) {
 		double[] scaling = new double[] { gsi.display.getDisplayType().width / 4, gsi.display.getDisplayType().height / 1.5, 1 };
-		EditContainer editContainer = new EditContainer(gsi, new double[] { 0, 0, 0 }, scaling, 1, gsi.EDIT_CONTAINER_ID);
-		gsi.containers.put(gsi.EDIT_CONTAINER_ID, editContainer);
+		EditContainer editContainer = new EditContainer(gsi, new double[] { 0, 0, 0 }, scaling, 1, DisplayGSI.EDIT_CONTAINER_ID);
+		gsi.containers.put(DisplayGSI.EDIT_CONTAINER_ID, editContainer);
 		editContainer.lock();
 		DisplayElementList editList = new DisplayElementList();
 

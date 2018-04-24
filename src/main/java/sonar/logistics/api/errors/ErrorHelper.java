@@ -2,11 +2,7 @@ package sonar.logistics.api.errors;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.networking.ServerInfoHandler;
 
 public class ErrorHelper {
 

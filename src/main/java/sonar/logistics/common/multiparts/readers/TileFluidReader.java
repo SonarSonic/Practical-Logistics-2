@@ -38,7 +38,6 @@ import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.networking.ServerInfoHandler;
-import sonar.logistics.networking.fluids.FluidHelper;
 import sonar.logistics.networking.fluids.FluidNetworkChannels;
 import sonar.logistics.networking.fluids.FluidNetworkHandler;
 import sonar.logistics.networking.sorters.FluidSorter;
@@ -48,7 +47,7 @@ public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack>
 
 	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_FLUID_SELECTED };
 
-	public SyncMonitoredType<MonitoredFluidStack> selected = new SyncMonitoredType<MonitoredFluidStack>(1);
+	public SyncMonitoredType<MonitoredFluidStack> selected = new SyncMonitoredType<>(1);
 	public SyncEnum<FluidReader.Modes> setting = (SyncEnum) new SyncEnum(FluidReader.Modes.values(), 2).addSyncType(SyncType.SPECIAL);
 	public SyncTagType.INT targetSlot = (INT) new SyncTagType.INT(3).addSyncType(SyncType.SPECIAL);
 	public SyncTagType.INT posSlot = (INT) new SyncTagType.INT(4).addSyncType(SyncType.SPECIAL);

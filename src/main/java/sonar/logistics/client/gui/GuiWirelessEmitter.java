@@ -32,7 +32,7 @@ public class GuiWirelessEmitter extends GuiLogistics {
 
 	public void onTextFieldChanged(SonarTextField field) {
 		final String text = field.getText();
-		this.part.emitterName.setObject((text.isEmpty() || text == "" || text == null) ? TileDataEmitter.UNNAMED : text);
+		this.part.emitterName.setObject(text.isEmpty() ? TileDataEmitter.UNNAMED : text);
 		part.sendByteBufPacket(2);
 	}
 

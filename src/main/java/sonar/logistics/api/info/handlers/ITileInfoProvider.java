@@ -17,7 +17,7 @@ import sonar.logistics.api.register.LogicPath;
 public interface ITileInfoProvider {
 
 	/** returns if this tile handler can provide info at the given position */
-	public boolean canProvide(World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable TileEntity tile, @Nullable Block block);
+    boolean canProvide(World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable TileEntity tile, @Nullable Block block);
 
 	/** allows you to add all types of info for a given position for use in the Info Reader
 	 * @param registry the master registry
@@ -30,5 +30,5 @@ public interface ITileInfoProvider {
 	 * @param dir the direction to obtain info from
 	 * @param tile the TileEntity (can be null)
 	 * @param block the Block (can be null) */
-	public void provide(IMasterInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable Block block, @Nullable TileEntity tile);
+    void provide(IMasterInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, @Nullable Block block, @Nullable TileEntity tile);
 }

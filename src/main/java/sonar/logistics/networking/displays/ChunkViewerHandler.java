@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -15,19 +13,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.SonarCore;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.ChunkHelper;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.viewers.ILogicListenable;
-import sonar.logistics.api.viewers.ListenerType;
-import sonar.logistics.helpers.PacketHelper;
-import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
-import sonar.logistics.packets.gsi.PacketGSIContentsPacket;
 
 /** caches display viewers, via accessing chunk PlayerMap */
 public class ChunkViewerHandler {
@@ -40,7 +32,7 @@ public class ChunkViewerHandler {
 	public List<DisplayGSI> ADDED_DISPLAYS = new ArrayList<>();
 	public List<DisplayGSI> REMOVED_DISPLAYS = new ArrayList<>();
 
-	public static final ChunkViewerHandler instance() {
+	public static ChunkViewerHandler instance() {
 		return PL2.proxy.chunkViewer;
 	}
 
@@ -181,11 +173,10 @@ public class ChunkViewerHandler {
 	}
 
 	public List<EntityPlayerMP> getWatchingPlayers(DisplayGSI d) {
-		List<EntityPlayerMP> players = cachedPlayers.computeIfAbsent(d.getDisplayGSIIdentity(), iden -> {
+		return cachedPlayers.computeIfAbsent(d.getDisplayGSIIdentity(), iden -> {
 			World server = SonarCore.proxy.getDimension(d.getDisplay().getCoords().getDimension());
 			return ChunkHelper.getChunkPlayers(server, getWatchingChunks(d));
 		});
-		return players;
 	}
 
 	//// WATCHING CHUNKS \\\\

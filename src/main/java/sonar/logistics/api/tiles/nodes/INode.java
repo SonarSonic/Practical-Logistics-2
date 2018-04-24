@@ -10,5 +10,5 @@ public interface INode extends INetworkTile, IPriority {
 
 	/** adds any available connections to the current Map
 	 * @param connections the current list of Entries */
-	public void addConnections(List<NodeConnection> connections);
+    void addConnections(List<NodeConnection> connections);
 }

@@ -51,7 +51,7 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, 
 
 	@Override
 	public boolean isIdenticalInfo(ClockInfo info) {
-		return info.firstNum.getObject() == firstNum.getObject() && info.secondNum.getObject() == secondNum.getObject();
+		return info.firstNum.getObject().equals(firstNum.getObject()) && info.secondNum.getObject().equals(secondNum.getObject());
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class ClockInfo extends BaseInfo<ClockInfo> implements IInfo<ClockInfo>, 
 
 	@Override
 	public List<ComparableObject> getComparableObjects(List<ComparableObject> objects) {
-		objects.add(new ComparableObject(this, "isEmitting", firstNum.getObject()==secondNum.getObject()));
+		objects.add(new ComparableObject(this, "isEmitting", firstNum.getObject().equals(secondNum.getObject())));
 		return objects;
 	}
 }

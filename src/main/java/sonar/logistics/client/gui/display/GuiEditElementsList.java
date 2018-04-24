@@ -1,12 +1,8 @@
 package sonar.logistics.client.gui.display;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import org.lwjgl.input.Keyboard;
 
@@ -51,7 +47,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 		grids = newgrids;
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 4 + 176 + 54, guiTop + 152 + 18 * 2, 32, 2 * 16, PL2Translate.BUTTON_DELETE.t(), ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 4 + 176 + 54, guiTop + 152, 12 * 16, 0, PL2Translate.BUTTON_EDIT.t(), ""));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 4 + 176 + 54, guiTop + 152 + 18 * 1, 12 * 16, 16, "Resize Element", ""));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 4 + 176 + 54, guiTop + 152 + 18, 12 * 16, 16, "Resize Element", ""));
 		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 4 + 176 + 54, guiTop + 152 + 18 * 3, 32, 2 * 16, PL2Translate.BUTTON_RESET.t(), ""));
 
 	}
@@ -77,14 +73,14 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 			if (!toDelete.isEmpty()) {
 				GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createDeleteElementsPacket(toDelete), -1, gsi);
 				List<IDisplayElement> elements = Lists.newArrayList(this.elements);
-				selected.forEach(e -> elements.remove(e));
+				selected.forEach(elements::remove);
 				selected.clear();
 				this.elements = elements;
 			}
 			return;
 		case 1:
 			if (!selected.isEmpty()) {
-				Optional<IDisplayElement> element = selected.stream().filter(e -> e != null).findFirst();
+				Optional<IDisplayElement> element = selected.stream().filter(Objects::nonNull).findFirst();
 				if (element.isPresent()) {
 					Object editScreen = element.get().getClientEditGui(display, this, mc.world, mc.player);
 					if (editScreen != null) { // FIXME make a default if there is not edit gui
@@ -95,7 +91,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 			break;
 		case 2:
 			if (!selected.isEmpty()) {
-				Optional<IDisplayElement> element = selected.stream().filter(e -> e != null).findFirst();
+				Optional<IDisplayElement> element = selected.stream().filter(Objects::nonNull).findFirst();
 				if (element.isPresent()) {
 					gsi.grid_mode.startResizeSelectionMode(element.get().getHolder().getContainer().getContainerIdentity());
 					this.mc.player.closeScreen();
@@ -134,7 +130,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 			if (selected.contains(e)) {
 				selected.removeIf(ee -> e == ee);
 			} else {
-				selected.add((IDisplayElement) e);
+				selected.add(e);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
 @InfoRegistry(modid = PL2Constants.MODID)
-public class LogisticsInfoRegistry extends IInfoRegistry {
+public class LogisticsInfoRegistry implements IInfoRegistry {
 
 	///NETWORK READER	
 	public static final String PL_TICK_TIME = "ILogisticsNetwork.pl2TickTime";

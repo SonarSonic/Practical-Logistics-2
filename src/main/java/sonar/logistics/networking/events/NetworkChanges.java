@@ -18,9 +18,9 @@ public enum NetworkChanges {
 		this.network = network;
 	}
 	
-	public static interface IUpdateNetwork{
+	public interface IUpdateNetwork{
 		
-		public void performUpdates(List<LogisticsNetwork> networks);
+		void performUpdates(List<LogisticsNetwork> networks);
 		
 	}
 	

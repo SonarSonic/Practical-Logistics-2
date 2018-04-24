@@ -13,7 +13,7 @@ public class ItemChangeableList extends AbstractChangeableList<MonitoredItemStac
 
 	public StorageSize sizing = new StorageSize(0, 0);
 
-	public static final ItemChangeableList newChangeableList() {
+	public static ItemChangeableList newChangeableList() {
 		return new ItemChangeableList();
 	}
 

@@ -11,7 +11,7 @@ import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = "extrautils2")
-public class ExtraUtilitiesRegistry extends IInfoRegistry {
+public class ExtraUtilitiesRegistry implements IInfoRegistry {
 
 	public void registerBaseReturns(IMasterInfoRegistry registry) {}
 

@@ -8,16 +8,16 @@ import sonar.logistics.api.tiles.nodes.TransferType;
 
 public interface ITransferFilteredTile extends IFilteredTile, INode, ITankFilter {
 
-	public NodeTransferMode getTransferMode();
+	NodeTransferMode getTransferMode();
 	
 	/**if this can transfer the given transfer type. this doesn't disable other nodes transferring to it though, Unless connection is disabled is on.*/
-	public boolean isTransferEnabled(TransferType type);
+    boolean isTransferEnabled(TransferType type);
 	
-	public void setTransferType(TransferType type, boolean enable);
+	void setTransferType(TransferType type, boolean enable);
 	
-	public BlockConnection getConnected();
+	BlockConnection getConnected();
 	
-	public boolean canConnectToNodeConnection();
+	boolean canConnectToNodeConnection();
 	
-	public void incrementTransferMode();
+	void incrementTransferMode();
 }

@@ -20,6 +20,8 @@ import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.helpers.DisplayElementHelper;
 
+import javax.annotation.Nonnull;
+
 public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 
 	public static final String TAG_NAME = "element_storage";
@@ -50,7 +52,7 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 		int id = DisplayElementHelper.getRegisteredID(e);
 		if (elements.getOrDefault(id, new ArrayList<>()).remove(e)) {
 			if (e instanceof IClickableElement) {
-				clickables.remove((IClickableElement) e);
+				clickables.remove(e);
 			}
 			onElementRemoved(e);
 		}
@@ -108,13 +110,13 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 	public void onElementRemoved(IDisplayElement e) {
 		elementCount--;
 		if (e instanceof IClickableElement) {
-			clickables.remove((IClickableElement) e);
+			clickables.remove(e);
 		}
 		if (e instanceof ILookableElement) {
-			lookables.remove((ILookableElement) e);
+			lookables.remove(e);
 		}
 		if (e instanceof IElementStorageHolder) {
-			holders.remove((IElementStorageHolder) e);
+			holders.remove(e);
 		}
 		holder.onElementRemoved(e);
 	}
@@ -236,7 +238,8 @@ public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 		return holders;
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public Iterator<IDisplayElement> iterator() {
 		return new StorageIterator(this);
 	}

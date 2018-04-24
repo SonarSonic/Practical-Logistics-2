@@ -46,16 +46,15 @@ public class GuiEditTitleStyledString extends GuiEditStyledStrings {
 	//// CLICK HELPERS \\\\
 	public int[] getIndexClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTitleElement) {
-			int[] clicked = ((StyledTitleElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
-			return clicked;
+		if (element != null && element.getFirst() instanceof StyledTitleElement) {
+			return ((StyledTitleElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return null;
 	}
 
 	public Tuple<StyledStringLine, Integer> getLineClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTitleElement) {
+		if (element != null && element.getFirst() instanceof StyledTitleElement) {
 			return ((StyledTitleElement) element.getFirst()).getLineClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);
@@ -63,7 +62,7 @@ public class GuiEditTitleStyledString extends GuiEditStyledStrings {
 
 	public Tuple<IStyledString, Integer> getStringClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTitleElement) {
+		if (element != null && element.getFirst() instanceof StyledTitleElement) {
 			return ((StyledTitleElement) element.getFirst()).getStringClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);
@@ -71,7 +70,7 @@ public class GuiEditTitleStyledString extends GuiEditStyledStrings {
 
 	public Tuple<Character, Integer> getCharClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledTitleElement) {
+		if (element != null && element.getFirst() instanceof StyledTitleElement) {
 			return ((StyledTitleElement) element.getFirst()).getCharClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);

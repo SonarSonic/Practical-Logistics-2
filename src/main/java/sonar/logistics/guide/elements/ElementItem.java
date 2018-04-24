@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
+import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
@@ -57,7 +58,7 @@ public class ElementItem implements IGuidePageElement {
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		gui.drawTransparentRect(x, y, x + SIZE, y + SIZE, LogisticsColours.blue_overlay.getRGB());
+		GuiSonar.drawTransparentRect(x, y, x + SIZE, y + SIZE, LogisticsColours.blue_overlay.getRGB());
 
 	}
 

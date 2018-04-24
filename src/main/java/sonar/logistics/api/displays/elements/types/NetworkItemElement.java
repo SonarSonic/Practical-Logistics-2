@@ -57,7 +57,7 @@ public class NetworkItemElement extends AbstractInfoElement<MonitoredItemStack> 
 		if (info != null && isType(info)) {
 			MonitoredItemStack stack = (MonitoredItemStack) info;
 			int networkID = stack.getNetworkSource();
-			GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createItemClickPacket(stack == null ? null : stack.getStoredStack(), networkID), getHolder().getContainer(), click);
+			GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createItemClickPacket(stack.getStoredStack(), networkID), getHolder().getContainer(), click);
 		}
 		return -1;
 	}

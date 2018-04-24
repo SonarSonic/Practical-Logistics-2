@@ -27,7 +27,7 @@ public class ContainerArray extends ContainerMultipartSync {
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = (Slot) this.inventorySlots.get(slotID);
+		Slot slot = this.inventorySlots.get(slotID);
 
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();

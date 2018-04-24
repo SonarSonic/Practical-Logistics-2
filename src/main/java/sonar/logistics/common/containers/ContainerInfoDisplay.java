@@ -16,7 +16,7 @@ public class ContainerInfoDisplay extends ContainerMultipartSync {
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		ItemStack itemstack = null;
-		Slot slot = (Slot) this.inventorySlots.get(slotID);
+		Slot slot = this.inventorySlots.get(slotID);
 		return itemstack;
 	}
 

@@ -130,9 +130,7 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 	public boolean isCategoryHeader(IInfo info) {
 		if (info instanceof MonitoredBlockCoords) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((MonitoredBlockCoords) info).getCoords())) {
-					return true;
-				}
+                return RenderBlockSelection.isPositionRenderered(((MonitoredBlockCoords) info).getCoords());
 			}
 		}
 		return false;
@@ -146,9 +144,7 @@ public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 			}
 		}
 		if (info instanceof MonitoredEntity) {
-			if (info.isValid() && !info.isHeader() && tile.getChannels().uuidList.contains(((MonitoredEntity) info).getUUID())) {
-				return true;
-			}
+            return info.isValid() && !info.isHeader() && tile.getChannels().uuidList.contains(((MonitoredEntity) info).getUUID());
 		}
 		return false;
 	}

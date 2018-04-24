@@ -9,19 +9,19 @@ import sonar.logistics.client.gui.GuiGuide;
 
 public interface IGuidePageElement {
 
-	public int getDisplayPage();
+	int getDisplayPage();
 	/**left, top, width, height*/
-	public int[] getSizing();
+    int[] getSizing();
 
-	public void drawElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY);
+	void drawElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY);
 	
-	public void drawForegroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY);
+	void drawForegroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY);
 	
-	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY);
+	void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY);
 	
-	public boolean mouseClicked(GuiGuide gui, IGuidePage page, int x, int y, int button);	
+	boolean mouseClicked(GuiGuide gui, IGuidePage page, int x, int y, int button);
 
-	public static void renderItem(GuiGuide gui, ItemStack stack, int xPos, int yPos) {
+	static void renderItem(GuiGuide gui, ItemStack stack, int xPos, int yPos) {
 		ItemStack rendStack = stack.copy();
 		if (rendStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 			rendStack.setItemDamage(0);

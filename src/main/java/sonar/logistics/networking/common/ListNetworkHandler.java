@@ -80,15 +80,13 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 			BlockConnection connection = (BlockConnection) c;
 			if (channels.isCoordsMonitored(connection)) { // isn't monitored???
 				newList.saveStates();
-				L info = (L) ((ITileMonitorHandler) this).updateInfo(channels, newList, connection);
-				return info;
+				return (L) ((ITileMonitorHandler) this).updateInfo(channels, newList, connection);
 			}
 		} else if (c instanceof EntityConnection) {
 			EntityConnection connection = (EntityConnection) c;
 			if (channels.isEntityMonitored(connection)) {
 				newList.saveStates();
-				L info = (L) ((IEntityMonitorHandler) this).updateInfo(channels, newList, connection);
-				return info;
+				return (L) ((IEntityMonitorHandler) this).updateInfo(channels, newList, connection);
 			}
 		}
 		return newList;

@@ -8,10 +8,10 @@ import sonar.logistics.api.tiles.signaller.LogicState;
 
 public interface ILogicComparator<T> extends IRegistryObject {
 
-	public LogicState getLogicState(LogicOperator operator, T info, T object);
+	LogicState getLogicState(LogicOperator operator, T info, T object);
 
-	public List<LogicOperator> getValidOperators();
+	List<LogicOperator> getValidOperators();
 	
-	public boolean isValidObject(Object obj);
+	boolean isValidObject(Object obj);
 
 }

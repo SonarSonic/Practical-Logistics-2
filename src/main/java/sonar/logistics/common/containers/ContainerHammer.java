@@ -8,6 +8,8 @@ import sonar.core.inventory.TransferSlotsManager;
 import sonar.core.inventory.slots.SlotBlockedInventory;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
+import javax.annotation.Nonnull;
+
 public class ContainerHammer extends ContainerSync {
 
 	private TileEntityHammer entity;
@@ -43,7 +45,8 @@ public class ContainerHammer extends ContainerSync {
 		}
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
 		return transfer.transferStackInSlot(this, entity, player, id);
 	}

@@ -44,7 +44,7 @@ public abstract class TileAbstractListReader<T extends IInfo> extends TileAbstra
 
 	public void sendRapidUpdate(EntityPlayer player) {
 		INetworkChannels list = getNetworkChannels();
-		if (list != null && list instanceof ListNetworkChannels) {
+		if (list instanceof ListNetworkChannels) {
 			((ListNetworkChannels) list).sendLocalRapidUpdate(this, player);
 		}
 	}

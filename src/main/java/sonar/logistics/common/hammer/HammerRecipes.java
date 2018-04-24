@@ -14,7 +14,7 @@ public class HammerRecipes extends DefinedRecipeHelper<ISonarRecipe> {
 		super(1, 1, false);
 	}
 
-	public static final HammerRecipes instance() {
+	public static HammerRecipes instance() {
 		return instance;
 	}
 

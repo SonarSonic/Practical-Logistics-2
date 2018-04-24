@@ -2,21 +2,21 @@ package sonar.logistics.api.lists;
 
 public interface IMonitoredValue<T> {
 
-	public void reset(T fullInfo);
+	void reset(T fullInfo);
 	
-	public EnumListChange getChange();
+	EnumListChange getChange();
 	
-	public void resetChange();
+	void resetChange();
 
-	public void combine(T combine);
+	void combine(T combine);
 	
-	public boolean isValid(Object info);
+	boolean isValid(Object info);
 
-	public boolean canCombine(T combine);
+	boolean canCombine(T combine);
 	
-	public void setNew();
+	void setNew();
 	
-	public boolean shouldDelete(EnumListChange change);
+	boolean shouldDelete(EnumListChange change);
 	
-	public T getSaveableInfo();
+	T getSaveableInfo();
 }

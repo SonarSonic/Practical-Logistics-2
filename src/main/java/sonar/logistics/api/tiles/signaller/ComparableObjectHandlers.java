@@ -36,11 +36,11 @@ public class ComparableObjectHandlers {
 			try {
 				tagMap = (Map<String, NBTBase>) FieldUtils.readField(tag, "tagMap", true);
 			} catch (IllegalAccessException e) {
-				tagMap = Maps.<String, NBTBase>newHashMap();
+				tagMap = Maps.newHashMap();
 			}
 			int tagCount = 0;
 			for (Entry<String, NBTBase> entry : tagMap.entrySet()) {
-				if (accepted.contains(entry.getValue().getId())) {
+				if (accepted.contains((int) entry.getValue().getId())) {
 					if (entry.getValue().getId() == NBT.TAG_COMPOUND) {
 						tagCount++;
 						getComparableObjects("tag " + tagCount, tag, objects);

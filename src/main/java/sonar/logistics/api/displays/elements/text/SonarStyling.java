@@ -178,11 +178,11 @@ public class SonarStyling implements INBTSyncable {
 		if (format.length != 5) {
 			return;
 		}
-		bold = format[0] == 1 ? true : false;
-		italic = format[1] == 1 ? true : false;
-		underlined = format[2] == 1 ? true : false;
-		strikethrough = format[3] == 1 ? true : false;
-		obfuscated = format[4] == 1 ? true : false;
+		bold = format[0] == 1;
+		italic = format[1] == 1;
+		underlined = format[2] == 1;
+		strikethrough = format[3] == 1;
+		obfuscated = format[4] == 1;
 	}
 
 }

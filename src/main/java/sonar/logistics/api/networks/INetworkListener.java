@@ -5,10 +5,10 @@ import sonar.core.utils.IWorldTile;
 
 public interface INetworkListener extends IValidate, IWorldTile {
 
-	public void onNetworkConnect(ILogisticsNetwork network);
+	void onNetworkConnect(ILogisticsNetwork network);
 	
-	public void onNetworkDisconnect(ILogisticsNetwork network);
+	void onNetworkDisconnect(ILogisticsNetwork network);
 
-	public int getNetworkID();
+	int getNetworkID();
 	
 }

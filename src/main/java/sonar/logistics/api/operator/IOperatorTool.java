@@ -6,6 +6,6 @@ import net.minecraft.item.ItemStack;
 public interface IOperatorTool {
 
 	/**the current mode of the operator*/
-	public OperatorMode getOperatorMode(ItemStack stack);
+    OperatorMode getOperatorMode(ItemStack stack);
 
 }

@@ -51,9 +51,9 @@ public class GuiEditProgressBar extends GuiAbstractEditElements {
 		spacing_scroller.setOrientation(ScrollerOrientation.HORIZONTAL);
 		setSpacingScroller((float) element.border_thickness);
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + 4 + 176 + 54, guiTop + 152, 12 * 16, 32 + (element.direction.ordinal() * 16), "Orientation", ""));
-		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 4 + 176 + 54, guiTop + 152 + 18 * 1, 13 * 16, (element.barType.ordinal() * 16), "Progress Bar Type", ""));
-		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 4 + 176 + 54 - 18, guiTop + 152 + 18 * 0, 13 * 16, 14 * 16, "SET BAR COLOUR", ""));
-		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 4 + 176 + 54 - 18, guiTop + 152 + 18 * 1, 13 * 16, 13 * 16, "SET BORDER COLOUR", ""));
+		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 4 + 176 + 54, guiTop + 152 + 18, 13 * 16, (element.barType.ordinal() * 16), "Progress Bar Type", ""));
+		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 4 + 176 + 54 - 18, guiTop + 152, 13 * 16, 14 * 16, "SET BAR COLOUR", ""));
+		this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 4 + 176 + 54 - 18, guiTop + 152 + 18, 13 * 16, 13 * 16, "SET BORDER COLOUR", ""));
 		this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 4 + 176 + 54 - 18, guiTop + 152 + 18 * 2, 13 * 16, 15 * 16, "SET Background COLOUR", ""));
 		this.buttonList.add(new LogisticsButton(this, 5, guiLeft + 4 + 176 + 54, guiTop + 152 + 18 * 2, 2 * 16, 6 * 16, "Remove Background", ""));
 	}

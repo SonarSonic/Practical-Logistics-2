@@ -3,7 +3,7 @@ package sonar.logistics.api.tiles.readers;
 /**all the modes used by the Fluid Reader*/
 public class EnergyReader {
 	
-	public static enum Modes {
+	public enum Modes {
 		STORAGES, STORAGE, TOTAL;
 		
 		public String getDescription() {
@@ -33,7 +33,7 @@ public class EnergyReader {
 		}
 	}
 	
-	public static enum SortingType {
+	public enum SortingType {
 		STORED, CAPACITY, INPUT, TYPE, NAME;
 		
 		public String getTypeName() {

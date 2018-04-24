@@ -6,6 +6,6 @@ import sonar.logistics.api.displays.references.InfoReference;
 
 public interface IInfoReferenceRequirementGui {
 
-	public void onReferenceRequirementCompleted(List<InfoReference> selected);
+	void onReferenceRequirementCompleted(List<InfoReference> selected);
 	
 }

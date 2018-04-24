@@ -38,26 +38,24 @@ public class HolographicDisplayRenderer extends TileEntitySpecialRenderer<TileHo
 
 		InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
 
-		if (part instanceof TileHolographicDisplay) {
-			bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));
-			pushMatrix();
-			RenderHelper.saveBlendState();
-			disableCull();
-			depthMask(false);
-			color(1.0F, 1.0F, 1.0F, 0.2F);
-			translate(-1 - 0.042, -1.2, .01);
-			scale(0.015, 0.015, 0.015);
-			enableBlend();
-			tryBlendFuncSeparate(770, 1, 1, 0);
-			RenderHelper.drawScaledCustomSizeModalRect(0, 0, 0, 0, 64, 36, 64, 36, 64, 36);
-			disableBlend();
-			RenderHelper.restoreBlendState();
-			popMatrix();
-			color(1.0F, 1.0F, 1.0F, 1.0F);
-			translate(-0.0625, 0, 0);
-		}
+        bindTexture(new ResourceLocation(RenderHammer.modelFolder + "hologram.png"));
+        pushMatrix();
+        RenderHelper.saveBlendState();
+        disableCull();
+        depthMask(false);
+        color(1.0F, 1.0F, 1.0F, 0.2F);
+        translate(-1 - 0.042, -1.2, .01);
+        scale(0.015, 0.015, 0.015);
+        enableBlend();
+        tryBlendFuncSeparate(770, 1, 1, 0);
+        RenderHelper.drawScaledCustomSizeModalRect(0, 0, 0, 0, 64, 36, 64, 36, 64, 36);
+        disableBlend();
+        RenderHelper.restoreBlendState();
+        popMatrix();
+        color(1.0F, 1.0F, 1.0F, 1.0F);
+        translate(-0.0625, 0, 0);
 
-		translate(-0.0625, 0, 0);
+        translate(-0.0625, 0, 0);
 		part.getGSI().render();
 		popMatrix();
 	}

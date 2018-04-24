@@ -19,6 +19,8 @@ import sonar.core.recipes.RecipeHelperV2;
 import sonar.logistics.client.gui.GuiHammer;
 import sonar.logistics.common.containers.ContainerHammer;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityHammer extends TileEntityInventory implements ISidedInventory, IByteBufTile, IFlexibleGui {
 
 	public SyncTagType.INT progress = new SyncTagType.INT(0);
@@ -74,9 +76,7 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 		} else if (!slots().get(1).isEmpty()) {
 			if (!slots().get(1).isItemEqual(outputStack)) {
 				return false;
-			} else if (slots().get(1).getCount() + outputStack.getCount() > slots().get(1).getMaxStackSize()) {
-				return false;
-			}
+			} else return slots().get(1).getCount() + outputStack.getCount() <= slots().get(1).getMaxStackSize();
 		}
 
 		return true;
@@ -103,35 +103,33 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack stack) {
-		if (slot == 0 && HammerRecipes.instance().isValidInput(stack)) {
-			return true;
-		}
-		return false;
+	public boolean isItemValidForSlot(int slot, @Nonnull ItemStack stack) {
+        return slot == 0 && HammerRecipes.instance().isValidInput(stack);
 
-	}
+    }
 
 	public boolean maxRender() {
 		return true;
 	}
 
-	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
+	@Nonnull
+    @Override
+	public int[] getSlotsForFace(@Nonnull EnumFacing side) {
 		return new int[] { 0, 1 };
 	}
 
 	@Override
-	public boolean canInsertItem(int slot, ItemStack item, EnumFacing side) {
+	public boolean canInsertItem(int slot, @Nonnull ItemStack item, @Nonnull EnumFacing side) {
 		return slot == 0;
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack item, EnumFacing side) {
+	public boolean canExtractItem(int slot, @Nonnull ItemStack item, @Nonnull EnumFacing side) {
 		return slot == 1;
 	}
 
 	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack) {
+	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
 		super.setInventorySlotContents(i, itemstack);
 		if (i == 1) {
 			markBlockForUpdate();

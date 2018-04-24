@@ -33,6 +33,6 @@ public class AE2CraftingProvider implements ITileInfoProvider {
 	public void provide(IMasterInfoRegistry registry, List<IProvidableInfo> infoList, LogicPath currentPath, Integer methodCode, World world, IBlockState state, BlockPos pos, EnumFacing dir, Block block, TileEntity tile) {
 		TileCraftingMonitorTile monitorTile = (TileCraftingMonitorTile) tile;
 		IAEItemStack stack = monitorTile.getJobProgress();
-		infoList.add(new MonitoredItemStack((StoredItemStack) (stack != null ? AE2Helper.convertAEItemStack(monitorTile.getJobProgress()) : new StoredItemStack(new ItemStack(Blocks.AIR, 0)))).setPath(currentPath.dupe())); //needs to be called what's crafting somehow!!!!
+		infoList.add(new MonitoredItemStack(stack != null ? AE2Helper.convertAEItemStack(monitorTile.getJobProgress()) : new StoredItemStack(new ItemStack(Blocks.AIR, 0))).setPath(currentPath.dupe())); //needs to be called what's crafting somehow!!!!
 	}
 }

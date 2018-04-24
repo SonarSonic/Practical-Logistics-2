@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.recipes.ISonarRecipe;
 import sonar.logistics.PL2Constants;
@@ -63,7 +64,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		gui.drawTransparentRect(x, y + 24, x + 80, y + 64, LogisticsColours.blue_overlay.getRGB());
+		GuiSonar.drawTransparentRect(x, y + 24, x + 80, y + 64, LogisticsColours.blue_overlay.getRGB());
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements 
 
 	@Override
 	public int[][] setSlots() {
-		return new int[][] { new int[] { 0, 0 }, new int[] { this.slotSize*2, 0 } };
+		return new int[][] { new int[] { 0, 0 }, new int[] { slotSize*2, 0 } };
 	}
 
 	@Override

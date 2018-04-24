@@ -8,29 +8,29 @@ import sonar.logistics.networking.CacheHandler;
 public interface INetworkChannels {
 	
 	/**the network which created this INetworkChannels and which it links to.*/
-	public ILogisticsNetwork getNetwork();
+    ILogisticsNetwork getNetwork();
 	
 	/**the cache types that this INetworkChannels can use*/
-	public CacheHandler[] getValidCaches();
+    CacheHandler[] getValidCaches();
 	
 	/**called when the channel is first created*/
-	public void onCreated();
+    void onCreated();
 
 	/**called when the channel is deleted, use this for clearing any lists*/
-	public void onDeleted();
+    void onDeleted();
 	
 	/**called when the connected {@link ILogisticsNetwork}s channels (blocks/entities it connects to) are changed*/
-	public void onChannelsChanged();
+    void onChannelsChanged();
 	
 	/**called when a connection is added to a valid CacheHandler, 
 	 * this will only has CacheHandlers this Channel can connect to see {@link INetworkChannels#getValidCaches()}*/
-	public void addConnection(CacheHandler cache, INetworkListener connection);
+    void addConnection(CacheHandler cache, INetworkListener connection);
 
 	/**called when a connection is removed from a valid CacheHandler*/
-	public void removeConnection(CacheHandler cache, INetworkListener connection);
+    void removeConnection(CacheHandler cache, INetworkListener connection);
 	
 	/**called when the {@link ILogisticsNetwork} is updated, 
 	 * after all other operations on the network have been performed
 	 * this method should be used to update the channel*/
-	public void updateChannel();
+    void updateChannel();
 }

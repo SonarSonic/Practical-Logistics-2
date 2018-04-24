@@ -38,9 +38,9 @@ public enum ConnectedDisplayChange {
 		return changeLogic.doChange(changes, change);
 	}
 
-	public static interface ChangeLogic {
+	public interface ChangeLogic {
 
-		public boolean doChange(List<ConnectedDisplayChange> changes, ConnectedDisplay change);
+		boolean doChange(List<ConnectedDisplayChange> changes, ConnectedDisplay change);
 	}
 
 }

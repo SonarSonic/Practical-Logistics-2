@@ -4,7 +4,7 @@ package sonar.logistics.api.cabling;
 public enum ConnectableType {
 	/** for standard Data Cables which are limited to one channel */
 	CONNECTABLE, //
-	/** for {@link ILogicTile} which can connect to a network */
+	/** for {@link INetworkTile} which can connect to a network */
 	TILE, //
 	/** for when there is no type of connection whatsoever, null should not be used! */
 	SCREEN, //
@@ -14,7 +14,7 @@ public enum ConnectableType {
 	/** @param type given CableType
 	 * @return if the given CableType can connect to the current one. */
 	public boolean canConnect(ConnectableType type) {
-		if (type == NONE || this == null) {
+		if (type == NONE) {
 			return false;
 		}
 		switch (this) {

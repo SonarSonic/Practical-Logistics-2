@@ -5,7 +5,6 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.values.InfoMonitoredValue;
-import sonar.logistics.api.lists.values.ItemCount;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
 
 public class InfoSorter implements ILogicListSorter<IProvidableInfo> {

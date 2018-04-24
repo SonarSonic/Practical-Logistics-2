@@ -25,7 +25,7 @@ public class NormalFluidProvider implements ITileInfoProvider {
 
 	@Override
 	public boolean canProvide(World world, IBlockState state, BlockPos pos, EnumFacing dir, TileEntity tile, Block block) {
-		return block != null && block instanceof BlockLiquid;
+		return block instanceof BlockLiquid;
 	}
 
 	@Override

@@ -34,14 +34,11 @@ public class RenderOperatorOverlay {
 			return;
 		}
 		ItemStack stack = evt.getPlayer().getHeldItemMainhand();
-		if (stack == null || !(stack.getItem() instanceof IOperatorTool)) {
+		if (!(stack.getItem() instanceof IOperatorTool)) {
 			return;
 		}
 		BlockPos pos = evt.getTarget().getBlockPos();
-		if (pos == null) {
-			return;
-		}
-		boolean requestPacket = !pos.equals(lastPos);
+        boolean requestPacket = !pos.equals(lastPos);
 		lastPos = pos;
 		TileEntity tile = evt.getPlayer().getEntityWorld().getTileEntity(pos);
 		if (tile == null) {
@@ -51,7 +48,7 @@ public class RenderOperatorOverlay {
 		if (evt instanceof DrawMultipartHighlightEvent) {
 			DrawMultipartHighlightEvent multipart = (DrawMultipartHighlightEvent) evt;
 			IMultipartTile multipartTile = multipart.getPartInfo().getTile();
-			if (multipartTile != null && multipartTile instanceof IOperatorProvider) {
+			if (multipartTile instanceof IOperatorProvider) {
 				provider = (IOperatorProvider) multipartTile;
 			}
 		} else {
@@ -84,12 +81,12 @@ public class RenderOperatorOverlay {
 			}
 			int maxWidth = 60;
 			int maxHeight = infoList.size() * 12;
-			for (int i = 0; i < infoList.size(); i++) {
-				int length = (int) ((RenderHelper.fontRenderer.getStringWidth(infoList.get(i)) + 4) * 0.8);
-				if (length > maxWidth) {
-					maxWidth = length;
-				}
-			}
+            for (String anInfoList : infoList) {
+                int length = (int) ((RenderHelper.fontRenderer.getStringWidth(anInfoList) + 4) * 0.8);
+                if (length > maxWidth) {
+                    maxWidth = length;
+                }
+            }
 			GlStateManager.translate(0.5, 1, 0.5);
 			GlStateManager.rotate(-view.rotationYaw - 180, 0, 1, 0);
 			GlStateManager.rotate(-view.rotationPitch, 1, 0, 0);

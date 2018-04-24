@@ -7,5 +7,5 @@ import sonar.logistics.api.cabling.ConnectableType;
 public interface ICableRenderer {
 
 	/**used by the client to check if the cable can connect, if it can it will render the connection*/
-	public ConnectableType canRenderConnection(EnumFacing dir);
+    ConnectableType canRenderConnection(EnumFacing dir);
 }

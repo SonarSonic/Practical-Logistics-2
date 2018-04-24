@@ -10,7 +10,6 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 
 public abstract class TileUUIDError extends AbstractUUIDError implements INBTSyncable, IInfoError {
@@ -47,7 +46,7 @@ public abstract class TileUUIDError extends AbstractUUIDError implements INBTSyn
 		super.writeData(nbt, type);
 		nbt.setInteger("iden", identity);
 		displayStack.writeToNBT(nbt);
-		coords.writeToNBT(nbt, coords);
+		BlockCoords.writeToNBT(nbt, coords);
 		return nbt;
 	}
 

@@ -14,6 +14,8 @@ import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.PL2Properties;
 
+import javax.annotation.Nonnull;
+
 //drops
 
 public class BlockLogisticsSided extends BlockLogistics {
@@ -23,11 +25,13 @@ public class BlockLogisticsSided extends BlockLogistics {
 		super(multipart);
 	}
 
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+	@Nonnull
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return PL2Properties.getStandardBox(getOrientation(state), getMultipart());
 	}
 	
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	@Nonnull
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		return getStateFromMeta(facing.ordinal());
 	}
 
@@ -45,7 +49,8 @@ public class BlockLogisticsSided extends BlockLogistics {
 		return state.getValue(SonarProperties.ORIENTATION);
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.VALUES[meta]);
 	}
@@ -55,7 +60,8 @@ public class BlockLogisticsSided extends BlockLogistics {
 		return getOrientation(state).ordinal();
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, SonarProperties.ORIENTATION);
 	}

@@ -44,7 +44,7 @@ public class ElementLink {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ElementLink) {
+		if (obj instanceof ElementLink) {
 			return obj.hashCode() == hashCode();
 		}
 		return false;

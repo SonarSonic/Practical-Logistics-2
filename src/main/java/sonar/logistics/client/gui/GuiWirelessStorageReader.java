@@ -32,7 +32,6 @@ import sonar.core.helpers.RenderHelper;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.ByteBufWritable;
-import sonar.core.utils.IWorldPosition;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
@@ -50,7 +49,6 @@ import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.ClientInfoHandler;
-import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.sorters.SortingHelper;
 import sonar.logistics.packets.PacketWirelessStorage;
 
@@ -70,7 +68,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	public static SyncEnum<FluidReader.SortingType> sortfluids = (SyncEnum) new SyncEnum(FluidReader.SortingType.values(), 0).addSyncType(SyncType.SPECIAL);
 
 	public GuiWirelessStorageReader(ItemStack reader, int identity, int networkID, EntityPlayer player) {
-		super(new ContainerStorageViewer(identity, player), (IWorldPosition) null);
+		super(new ContainerStorageViewer(identity, player), null);
 		this.reader = reader;
 		this.identity = identity;
 		this.networkID = networkID;
@@ -104,7 +102,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
 			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * sortfluids.getObject().ordinal(), sortfluids.getObject().getClientName(), ""));
 		}
-		this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 18 * 1, guiTop + 9, 16, items ? 80 : 96, "Storage Type: " + (items ? "Items" : "Fluids"), "button.StorageType"));
+		this.buttonList.add(new LogisticsButton(this, 6, guiLeft + start + 18, guiTop + 9, 16, items ? 80 : 96, "Storage Type: " + (items ? "Items" : "Fluids"), "button.StorageType"));
 
 	}
 
@@ -177,15 +175,14 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				return new ArrayList<>();
 			}
 			SortingHelper.sortItems(currentList, sortingOrder.getObject(), sortItems.getObject());
-			if (search == null || search.isEmpty() || search.equals(" ")) {
-				List<IInfo> infolist = Lists.newArrayList(currentList.createSaveableList());
-				return infolist;
+			if (search.isEmpty() || search.equals(" ")) {
+				return Lists.newArrayList(currentList.createSaveableList());
 			} else {
 				List<IInfo> searchlist = new ArrayList<>();
 				List<MonitoredItemStack> cached = currentList.createSaveableList();
 				for (MonitoredItemStack stack : cached) {
 					StoredItemStack item = stack.getStoredStack();
-					if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
+					if (item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 						searchlist.add(stack);
 					}
 				}
@@ -207,7 +204,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				@Override
 				public void writeToBuf(ByteBuf buf) {
 					MonitoredItemStack selection = (MonitoredItemStack) info;
-					if (selection != null && selection.getStoredStack().item != null) {
+					if (selection.getStoredStack().item != null) {
 						buf.writeBoolean(true);
 						ByteBufUtils.writeItemStack(buf, selection.getStoredStack().item);
 					} else {
@@ -283,7 +280,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 			List list = new ArrayList<>();
 			list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 			if (fluidStack.stored != 0) {
-				list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
+				list.add(TextFormatting.GRAY + PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
 			}
 			drawHoveringText(list, x, y, fontRenderer);
 		}

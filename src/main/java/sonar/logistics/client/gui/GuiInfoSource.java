@@ -67,9 +67,7 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 	public boolean isPairedInfo(Object info) {
 		if (info instanceof IInfoProvider) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((IInfoProvider) info).getCoords())) {
-					return true;
-				}
+                return RenderBlockSelection.isPositionRenderered(((IInfoProvider) info).getCoords());
 			}
 		}
 		return false;
@@ -88,7 +86,7 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			IInfo monitorInfo = ClientInfoHandler.instance().info.get((InfoUUID) info);
+			IInfo monitorInfo = ClientInfoHandler.instance().info.get(info);
 			if (monitorInfo != null) {
 				InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {

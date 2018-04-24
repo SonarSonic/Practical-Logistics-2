@@ -5,7 +5,7 @@ import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
 
 @InfoRegistry(modid = "endercore")
-public class EnderCoreRegistry extends IInfoRegistry {
+public class EnderCoreRegistry implements IInfoRegistry {
 
 	public void registerBaseReturns(IMasterInfoRegistry registry) {}
 

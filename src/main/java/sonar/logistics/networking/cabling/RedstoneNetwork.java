@@ -6,9 +6,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import sonar.core.helpers.ListHelper;
-import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerTally;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.api.cabling.IRedstonePowerProvider;
@@ -46,8 +44,8 @@ public class RedstoneNetwork implements IRedstoneNetwork {
 	}
 
 	public void tick() {
-		toAdd.forEach(add -> doAddConnection(add));
-		toRemove.forEach(remove -> doRemoveConnection(remove));
+		toAdd.forEach(this::doAddConnection);
+		toRemove.forEach(this::doRemoveConnection);
 		if (doCablesNeedUpdate()) {
 			updateCables();
 		}
@@ -55,11 +53,11 @@ public class RedstoneNetwork implements IRedstoneNetwork {
 	}
 
 	public void updateCables() {
-		Lists.newArrayList(providers).forEach(connectable -> removeConnection(connectable));
-		Lists.newArrayList(receivers).forEach(connectable -> removeConnection(connectable));
-		Lists.newArrayList(emitters).forEach(connectable -> removeConnection(connectable));
+		Lists.newArrayList(providers).forEach(this::removeConnection);
+		Lists.newArrayList(receivers).forEach(this::removeConnection);
+		Lists.newArrayList(emitters).forEach(this::removeConnection);
 		List<IRedstoneCable> cables = RedstoneConnectionHandler.instance().getConnections(registryID);
-		cables.forEach(cable -> RedstoneCableHelper.getConnectables(cable).forEach(connection -> addConnection(connection)));
+		cables.forEach(cable -> RedstoneCableHelper.getConnectables(cable).forEach(this::addConnection));
 		
 		cablesChanged = false;
 	}

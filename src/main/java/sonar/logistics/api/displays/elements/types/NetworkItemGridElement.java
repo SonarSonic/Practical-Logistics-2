@@ -2,8 +2,6 @@ package sonar.logistics.api.displays.elements.types;
 
 import static net.minecraft.client.renderer.GlStateManager.depthMask;
 import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.scale;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
@@ -16,7 +14,6 @@ import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
@@ -57,7 +54,7 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 	}
 
 	public void onChangeableListChanged(InfoUUID uuid, AbstractChangeableList list) {
-		if (info != null && info instanceof LogicInfoList) {
+		if (info instanceof LogicInfoList) {
 			((LogicInfoList)info).listChanged = true;
 		}
 	}

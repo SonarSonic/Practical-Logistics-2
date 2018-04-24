@@ -36,12 +36,11 @@ public class DisplayTextFields extends Gui {
 	}
 
 	public GuiTextField getSelectedField() {
-		for (int i = 0; i < fields.length; i++) {
-			GuiTextField field = fields[i];
-			if (field.isFocused()) {
-				return field;
-			}
-		}
+        for (GuiTextField field : fields) {
+            if (field.isFocused()) {
+                return field;
+            }
+        }
 		return null;
 	}
 
@@ -58,10 +57,9 @@ public class DisplayTextFields extends Gui {
 	public void drawTextBox() {
 		drawRect(x - 1, y - 1, x + this.width + 1, y + this.height * size + 1, -6250336);
 		drawRect(x, y, x + this.width, y + this.height * size, -16777216);
-		for (int i = 0; i < fields.length; i++) {
-			GuiTextField field = fields[i];
-			field.drawTextBox();
-		}
+        for (GuiTextField field : fields) {
+            field.drawTextBox();
+        }
 	}
 
 	public boolean isFocused() {
@@ -73,10 +71,9 @@ public class DisplayTextFields extends Gui {
 		if (!flag) {
 			return;
 		}
-		for (int i = 0; i < fields.length; i++) {
-			GuiTextField field = fields[i];
-			field.mouseClicked(mouseX, mouseY, mouseButton);
-		}
+        for (GuiTextField field : fields) {
+            field.mouseClicked(mouseX, mouseY, mouseButton);
+        }
 	}
 
 	public void keyTyped(char typedChar, int keyCode) {
@@ -110,11 +107,10 @@ public class DisplayTextFields extends Gui {
 	}
 
 	public ArrayList<String> textList() {
-		ArrayList<String> list = new ArrayList<String>();
-		for (int i = 0; i < fields.length; i++) {
-			GuiTextField field = fields[i];
-			list.add(field.getText());
-		}
+		ArrayList<String> list = new ArrayList<>();
+        for (GuiTextField field : fields) {
+            list.add(field.getText());
+        }
 		return list;
 	}
 }

@@ -13,16 +13,16 @@ public interface INetworkListHandler<I extends IInfo, L extends AbstractChangeab
 
 	//public String id();
 
-	public int updateRate();
+	int updateRate();
 
-	public Class<? extends INetworkListChannels> getChannelsType();
+	Class<? extends INetworkListChannels> getChannelsType();
 	
-	public L newChangeableList();
+	L newChangeableList();
 
-	public L updateConnection(INetworkListChannels channels, L list, NodeConnection c);
+	L updateConnection(INetworkListChannels channels, L list, NodeConnection c);
 	
-	public Map<NodeConnection, L> getAllChannels(Map<NodeConnection, L> list, ILogisticsNetwork network);
+	Map<NodeConnection, L> getAllChannels(Map<NodeConnection, L> list, ILogisticsNetwork network);
 
-	public Pair<InfoUUID, AbstractChangeableList<I>> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, AbstractChangeableList<I>> channelLists, boolean send);
+	Pair<InfoUUID, AbstractChangeableList<I>> updateAndSendList(ILogisticsNetwork network, IListReader<I> reader, Map<NodeConnection, AbstractChangeableList<I>> channelLists, boolean send);
 
 }

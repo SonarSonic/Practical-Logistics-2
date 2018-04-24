@@ -36,7 +36,7 @@ public abstract class BaseFilter extends BaseSyncListPart implements INodeFilter
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof BaseFilter) {
+		if (obj instanceof BaseFilter) {
 			return obj.hashCode() == hashCode();
 		}
 		return false;

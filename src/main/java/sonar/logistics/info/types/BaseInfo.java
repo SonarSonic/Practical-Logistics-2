@@ -37,7 +37,7 @@ public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart impleme
 	public void onInfoStored() {}
 
 	public boolean equals(Object object) {
-		if (object != null && object instanceof IInfo) {
+		if (object instanceof IInfo) {
 			IInfo info = (IInfo) object;
 			return (info.isHeader() && isHeader()) || (this.isMatchingType(info) && isMatchingInfo((T) info) && isIdenticalInfo((T) info));
 		}

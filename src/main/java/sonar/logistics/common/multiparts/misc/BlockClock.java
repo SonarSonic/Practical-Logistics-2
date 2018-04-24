@@ -1,8 +1,8 @@
 package sonar.logistics.common.multiparts.misc;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +22,7 @@ public class BlockClock extends BlockLogisticsSided {
 
 	public boolean isPowering(IBlockAccess world, BlockPos pos) {
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null && tile instanceof TileClock) {
+		if (tile instanceof TileClock) {
 			return ((TileClock) tile).powering;
 		}
 		return false;
@@ -50,13 +50,14 @@ public class BlockClock extends BlockLogisticsSided {
 
 	//// STATE \\\\
 
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+	@Nonnull
+    @Override
+	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		return state.withProperty(PL2Properties.CLOCK_HAND, false);
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { SonarProperties.ORIENTATION, PL2Properties.CLOCK_HAND });
+		return new BlockStateContainer(this, SonarProperties.ORIENTATION, PL2Properties.CLOCK_HAND);
 	}
 
 }

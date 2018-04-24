@@ -46,7 +46,7 @@ public class ChannelList implements ISyncPart {
 	}
 
 	public boolean equals(Object object) {
-		return object != null && (object instanceof ChannelList) ? ((ChannelList) object).identity == identity : coordList.equals(object);
+		return (object instanceof ChannelList) ? ((ChannelList) object).identity == identity : coordList.equals(object);
 	}
 
 	public void give(BlockCoords coords) {
@@ -100,7 +100,7 @@ public class ChannelList implements ISyncPart {
 	}
 
 	public boolean hasValidChannels() {
-		return type != ChannelType.UNLIMITED ? hasChannels() : true;
+		return type == ChannelType.UNLIMITED || hasChannels();
 	}
 
 	public boolean hasChannels() {

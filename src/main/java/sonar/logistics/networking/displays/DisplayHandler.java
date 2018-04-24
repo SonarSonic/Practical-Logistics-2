@@ -11,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.helpers.ListHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
@@ -19,19 +18,17 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.AbstractConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
-import sonar.logistics.networking.events.NetworkPartEvent;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 import stanhebben.zenscript.annotations.NotNull;
 
 public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 
 	public static DisplayHandler instance() {
-		return PL2.instance.proxy.server_display_manager;
+		return PL2.proxy.server_display_manager;
 	}
 
 	public List<Integer> rebuild = Lists.newArrayList();
@@ -48,15 +45,15 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	}
 
 	public void onDisplayAddition(ILargeDisplay display) {
-		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
-		addConnectionToNetwork((ILargeDisplay) display);
-		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
+		ListHelper.addWithCheck(rebuild, display.getRegistryID());
+		addConnectionToNetwork(display);
+		ListHelper.addWithCheck(rebuild, display.getRegistryID());
 	}
 
 	public void onDisplayRemoval(ILargeDisplay display) {
-		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
-		removeConnectionFromNetwork((ILargeDisplay) display);
-		ListHelper.addWithCheck(rebuild, ((ILargeDisplay) display).getRegistryID());
+		ListHelper.addWithCheck(rebuild, display.getRegistryID());
+		removeConnectionFromNetwork(display);
+		ListHelper.addWithCheck(rebuild, display.getRegistryID());
 	}
 
 	public void createConnectedDisplays() {
@@ -146,7 +143,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	/** abstract connection handler */
 	public Pair<ConnectableType, Integer> getConnectionType(ILargeDisplay source, World world, BlockPos pos, EnumFacing dir, ConnectableType cableType) {
 		ICableConnectable connection = CableHelper.getConnection(source, dir, CableConnectionType.NETWORK, false);
-		if (connection != null && connection instanceof ILargeDisplay && ((ILargeDisplay) connection).getCableFace() == source.getCableFace()) {
+		if (connection instanceof ILargeDisplay && ((ILargeDisplay) connection).getCableFace() == source.getCableFace()) {
 			return new Pair(ConnectableType.SCREEN, ((ILargeDisplay) connection).getRegistryID());
 		}
 		return new Pair(ConnectableType.NONE, -1);

@@ -1,8 +1,5 @@
 package sonar.logistics.networking.info;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,11 +9,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.EnumListChange;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.info.types.LogicInfo;
 
 public class InfoHelper {
 
@@ -108,7 +103,7 @@ public class InfoHelper {
 		public static boolean hasInfoChanged(IInfo info, IInfo newInfo) {
 		if (info == null && newInfo == null) {
 			return false;
-		} else if (info == null && newInfo != null || info != null && newInfo == null) {
+		} else if (info == null && newInfo != null || newInfo == null) {
 			return true;
 		}
 		return !info.isMatchingType(newInfo) || !info.isMatchingInfo(newInfo) || !info.isIdenticalInfo(newInfo);

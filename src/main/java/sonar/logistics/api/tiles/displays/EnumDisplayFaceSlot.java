@@ -21,7 +21,7 @@ public enum EnumDisplayFaceSlot implements IPartSlot {// , IPartSlot.IFaceSlot {
 	private final ResourceLocation name;
 	private final EnumFacing facing;
 
-	private EnumDisplayFaceSlot(EnumFacing facing) {
+	EnumDisplayFaceSlot(EnumFacing facing) {
 		this.name = new ResourceLocation(PL2Constants.MODID, name().toLowerCase() +"display");
 		this.facing = facing;
 	}

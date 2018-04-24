@@ -20,6 +20,8 @@ import sonar.core.common.item.SonarItem;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 
+import javax.annotation.Nonnull;
+
 public class WirelessEntityTransceiver extends SonarItem implements IEntityTransceiver {
 
 	//// IEntityTransceiver \\\\\
@@ -34,7 +36,8 @@ public class WirelessEntityTransceiver extends SonarItem implements IEntityTrans
 	
 	//// INTERACTIONS \\\\
 	
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	@Nonnull
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		if (player.isSneaking()) {
 			if (!world.isRemote) {

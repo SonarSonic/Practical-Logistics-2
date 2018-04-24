@@ -9,7 +9,6 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.InventoryReader;
@@ -18,6 +17,8 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
 import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
+
+import javax.annotation.Nonnull;
 
 public class ContainerInventoryReader extends ContainerMultipartSync implements IFlexibleContainer<InventoryReader.Modes> {
 
@@ -55,7 +56,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = (Slot) this.inventorySlots.get(id);
+		Slot slot = this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
@@ -63,7 +64,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 				if (!part.getWorld().isRemote) {
 					ILogisticsNetwork network = part.getNetwork();
 					StoredItemStack stack = new StoredItemStack(itemstack1);
-					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
+					if (ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
 						ItemHelper.addItemsFromPlayer(stack, player, network, ActionType.PERFORM, null);
 					} else {
 						StoredItemStack perform = ItemHelper.transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
@@ -74,14 +75,6 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 					ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 					if (channels != null)channels.sendLocalRapidUpdate(part, player);		
 					this.detectAndSendChanges();
-				}
-			} else if (id < 27) {
-				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
-					return ItemStack.EMPTY;
-				}
-			} else if (id >= 27 && id < 36) {
-				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
-					return ItemStack.EMPTY;
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 36, false)) {
 				return ItemStack.EMPTY;
@@ -108,11 +101,12 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 			part.getListenerList().removeListener(player, true, ListenerType.OLD_GUI_LISTENER);
 	}
 
-	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
+	@Nonnull
+    public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
 		if (slotID < this.inventorySlots.size()) {
-			Slot targetSlot = slotID < 0 ? null : (Slot) this.inventorySlots.get(slotID);
+			Slot targetSlot = slotID < 0 ? null : this.inventorySlots.get(slotID);
 			if ((targetSlot instanceof SlotList)) {
-				targetSlot.putStack(drag == 2 ? null : player.inventory.getItemStack() == null ? null : player.inventory.getItemStack().copy());
+				targetSlot.putStack(drag == 2 ? null : player.inventory.getItemStack().copy());
 				return player.inventory.getItemStack();
 			}
 			return super.slotClick(slotID, drag, click, player);

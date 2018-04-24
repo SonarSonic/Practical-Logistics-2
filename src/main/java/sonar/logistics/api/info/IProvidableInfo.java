@@ -5,9 +5,9 @@ import sonar.logistics.api.register.RegistryType;
 
 public interface IProvidableInfo<T extends IInfo> extends IInfo<T> {
 
-	public RegistryType getRegistryType();
+	RegistryType getRegistryType();
 	
-	public T setRegistryType(RegistryType type);
+	T setRegistryType(RegistryType type);
 	
-	public void setFromReturn(LogicPath path, Object returned);
+	void setFromReturn(LogicPath path, Object returned);
 }

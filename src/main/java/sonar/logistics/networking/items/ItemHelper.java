@@ -1,7 +1,6 @@
 package sonar.logistics.networking.items;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiPredicate;
@@ -27,10 +26,7 @@ import sonar.core.helpers.FluidHelper.ITankFilter;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.helpers.InventoryHelper.ITransferOverride;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.network.PacketStackUpdate;
-import sonar.core.utils.SortingDirection;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -42,7 +38,6 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.IWirelessStorageReader;
-import sonar.logistics.api.tiles.readers.InventoryReader.SortingType;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
@@ -89,19 +84,14 @@ public class ItemHelper {
 			return storage;
 		}
 		boolean specialProvider = false;
-		for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
-			if (provider.canHandleItems(tile, entry.face)) {
-				if (!specialProvider) {
-					StorageSize size = provider.getItems(storedStacks, tile, entry.face);
-					if (size != StorageSize.EMPTY) {
-						specialProvider = true;
-						storage.add(size);
-					}
-				} else {
-					continue;
+		for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers)
+			if (provider.canHandleItems(tile, entry.face) && !specialProvider) {
+				StorageSize size = provider.getItems(storedStacks, tile, entry.face);
+				if (size != StorageSize.EMPTY) {
+					specialProvider = true;
+					storage.add(size);
 				}
 			}
-		}
 		return storage;
 	}
 
@@ -127,8 +117,8 @@ public class ItemHelper {
 			for (Entry<NodeConnection, AbstractChangeableList<MonitoredItemStack>> entry : channels.channels.entrySet()) {
 				AbstractChangeableList<MonitoredItemStack> list = entry.getValue();
 				if (!list.getList().isEmpty() && list instanceof ItemChangeableList) {
-					for (IMonitoredValue<MonitoredItemStack> coordInfo : ((ItemChangeableList) list).getList()) {
-						updateList.add((MonitoredItemStack) coordInfo.getSaveableInfo().copy());
+					for (IMonitoredValue<MonitoredItemStack> coordInfo : list.getList()) {
+						updateList.add(coordInfo.getSaveableInfo().copy());
 					}
 				}
 			}
@@ -142,7 +132,7 @@ public class ItemHelper {
 		IInventory inv = player.inventory;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null && stack.getCount() != 0 && add.equalStack(stack)) {
+			if (stack.getCount() != 0 && add.equalStack(stack)) {
 				StoredItemStack toAdd = new StoredItemStack(stack.copy());
 				StoredItemStack perform = transferItems(network, toAdd.copy(), NodeTransferMode.ADD, ActionType.PERFORM, filter);
 				if (!toAdd.equals(perform)) {
@@ -156,14 +146,10 @@ public class ItemHelper {
 	public static StoredItemStack getEntityStack(EntityConnection connection, int slot) {
 		if (connection.entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) connection.entity;
-			IInventory inv = (IInventory) player.inventory;
+			IInventory inv = player.inventory;
 			if (slot < inv.getSizeInventory()) {
 				ItemStack stack = inv.getStackInSlot(slot);
-				if (stack == null) {
-					return null;
-				} else {
-					return new StoredItemStack(stack);
-				}
+				return new StoredItemStack(stack);
 			}
 		}
 		return null;
@@ -192,7 +178,7 @@ public class ItemHelper {
 			inv = player.getInventoryEnderChest();
 			size = inv.getSizeInventory();
 		}
-		if (inv == null || size == 0) {
+		if (size == 0) {
 			return add;
 		}
 		List<Integer> empty = new ArrayList<>();
@@ -200,7 +186,7 @@ public class ItemHelper {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (!stack.isEmpty()) {
 				if (!(stack.getCount() >= stack.getMaxStackSize()) && add.equalStack(stack) && stack.getCount() < inv.getInventoryStackLimit()) {
-					long used = (long) Math.min(add.item.getMaxStackSize(), Math.min(add.stored, inv.getInventoryStackLimit() - stack.getCount()));
+					long used = Math.min(add.item.getMaxStackSize(), Math.min(add.stored, inv.getInventoryStackLimit() - stack.getCount()));
 					stack.grow((int) used);
 					add.stored -= used;
 					if (used != 0 && !action.shouldSimulate()) {
@@ -249,14 +235,14 @@ public class ItemHelper {
 		int size = 0;
 		inv = !enderChest ? player.inventory : player.getInventoryEnderChest();
 		size = !enderChest ? player.inventory.mainInventory.size() : inv.getSizeInventory();
-		if (inv == null || size == 0) {
+		if (size == 0) {
 			return remove;
 		}
 		for (int i = 0; i < size; i++) {
 			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null && remove.equalStack(stack)) {
+			if (remove.equalStack(stack)) {
 				stack = stack.copy();
-				long used = (long) Math.min(remove.stored, Math.min(inv.getInventoryStackLimit(), stack.getCount()));
+				long used = Math.min(remove.stored, Math.min(inv.getInventoryStackLimit(), stack.getCount()));
 				stack.shrink((int) used);
 				remove.stored -= used;
 				if (!action.shouldSimulate()) {
@@ -278,8 +264,7 @@ public class ItemHelper {
 		if (simulate == null) {
 			return null;
 		}
-		StoredItemStack returned = SonarAPI.getItemHelper().getStackToAdd(stack.stored, simulate, addStackToPlayer(simulate.copy(), player, false, type));
-		return returned;
+		return SonarAPI.getItemHelper().getStackToAdd(stack.stored, simulate, addStackToPlayer(simulate.copy(), player, false, type));
 	}
 
 	public static StoredItemStack addFromPlayerInventory(StoredItemStack stack, long extractSize, ILogisticsNetwork network, EntityPlayer player, ActionType type) {
@@ -287,39 +272,24 @@ public class ItemHelper {
 		if (simulate == null) {
 			return null;
 		}
-		StoredItemStack returned = SonarAPI.getItemHelper().getStackToAdd(stack.stored, simulate, transferItems(network, simulate.copy(), NodeTransferMode.ADD, type, null));
-		return returned;
-
+		return SonarAPI.getItemHelper().getStackToAdd(stack.stored, simulate, transferItems(network, simulate.copy(), NodeTransferMode.ADD, type, null));
 	}
 
 	public static StoredItemStack extractItem(ILogisticsNetwork cache, StoredItemStack stack) {
 		if (stack != null && stack.stored != 0) {
 			StoredItemStack extract = transferItems(cache, stack.copy(), NodeTransferMode.REMOVE, ActionType.PERFORM, null);
-			StoredItemStack toAdd = SonarAPI.getItemHelper().getStackToAdd(stack.getStackSize(), stack, extract);
-			return toAdd;
+			return SonarAPI.getItemHelper().getStackToAdd(stack.getStackSize(), stack, extract);
 		}
 		return null;
 	}
 
 	public static long insertInventoryFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slotID) {
-		ItemStack add = null;
+		ItemStack add;
 		if (slotID == -1) {
 			add = player.inventory.getItemStack();
 		} else
 			add = player.inventory.getStackInSlot(slotID);
-		if (add == null) {
-			return 0;
-		}
 		StoredItemStack stack = new StoredItemStack(add).setStackSize(0);
-		IInventory inv = player.inventory;
-		List<Integer> slots = new ArrayList<>();
-		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			ItemStack item = inv.getStackInSlot(i);
-			if (stack.equalStack(item)) {
-				stack.add(item);
-				slots.add(i);
-			}
-		}
 		StoredItemStack remainder = transferItems(cache, stack.copy(), NodeTransferMode.ADD, ActionType.PERFORM, null);
 		StoredItemStack toAdd = SonarAPI.getItemHelper().getStackToAdd(stack.getStackSize(), stack, remainder);
 		removeStackFromPlayer(toAdd.copy(), player, false, ActionType.PERFORM);
@@ -328,8 +298,6 @@ public class ItemHelper {
 
 	public static long insertItemFromPlayer(EntityPlayer player, ILogisticsNetwork cache, int slot) {
 		ItemStack add = player.inventory.getStackInSlot(slot);
-		if (add == null)
-			return 0;
 		int original = add.getCount();
 		StoredItemStack stack = transferItems(cache, new StoredItemStack(add), NodeTransferMode.ADD, ActionType.PERFORM, null);
 		ItemStack returned = StoredItemStack.getActualStack(stack);
@@ -487,8 +455,7 @@ public class ItemHelper {
 			if (selected == null) {
 				return;
 			}
-			ItemStack stack = selected;
-			StoredItemStack toAdd = new StoredItemStack(stack.copy()).setStackSize(Math.min(stack.getMaxStackSize(), 64));
+			StoredItemStack toAdd = new StoredItemStack(selected.copy()).setStackSize(Math.min(selected.getMaxStackSize(), 64));
 			StoredItemStack removed = transferItems(network, toAdd.copy(), NodeTransferMode.REMOVE, ActionType.SIMULATE, null);
 			StoredItemStack simulate = SonarAPI.getItemHelper().getStackToAdd(toAdd.stored, toAdd, removed);
 			if (simulate != null && simulate.stored != 0) {

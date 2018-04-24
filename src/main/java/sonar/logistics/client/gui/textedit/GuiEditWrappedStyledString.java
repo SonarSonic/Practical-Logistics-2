@@ -3,24 +3,18 @@ package sonar.logistics.client.gui.textedit;
 import static net.minecraft.client.renderer.GlStateManager.popMatrix;
 import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import sonar.core.helpers.RenderHelper;
-import sonar.core.utils.Pair;
-import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.IStyledString;
 import sonar.logistics.api.displays.elements.text.StyledString;
-import sonar.logistics.api.displays.elements.text.StyledStringHelper;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
@@ -118,48 +112,29 @@ public class GuiEditWrappedStyledString extends GuiEditStyledStrings {
 	public int[] getDragPositionFromContainerXY(double clickX, double clickY) {
 		Tuple<SimpleIndex, Integer> string = ((StyledWrappedTextElement)text).getStringClicked(clickX, clickY);
 		Tuple<Character, Integer> charClicked = getCharClicked(clickX, clickY);
-		
-		if (string.getFirst() != null) {
-			int xPos = string.getFirst().lineIndex + string.getFirst().start + charClicked.getSecond();
-			int yPos = text.getLineIndex(string.getFirst().string.getLine());
-			return new int[]{xPos, yPos};
-		}
-		double[] align = text.getHolder().getAlignmentTranslation(text);
-		if (clickX < align[0] || clickY < align[1]) {
-			return new int[] { 0, 0 };
-		}
-		if (text.getLines().isEmpty()) {
-			StyledStringLine l = new StyledStringLine(text);
-			text.addNewLine(0, l);
-			l.addWithCombine(new StyledString("", createStylingFromEnabled()));
-			return new int[] { 0, 0 };
-		}
 
-		Tuple<StyledStringLine, Integer> line = getLineClicked(clickX, clickY);
-		int yPosition = Math.min(text.getLineCount() - 1, line.getSecond() == -1 ? text.getLineCount() - 1 : line.getSecond());
-		int xPosition = string.getSecond() == StyledTextElement.AFTER || string.getSecond() == -1 ? text.getLineLength(yPosition) : 0;
-		if (yPosition < 0) {
-			return new int[] { 0, 0 };
-		}
-		return new int[] { xPosition, yPosition };
-	}
+        string.getFirst();
+        int xPos = string.getFirst().lineIndex + string.getFirst().start + charClicked.getSecond();
+        int yPos = text.getLineIndex(string.getFirst().string.getLine());
+        return new int[]{xPos, yPos};
+
+    }
 	
 	
 	
 	public int[] getIndexClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledWrappedTextElement) {
-			int[] clicked = ((StyledWrappedTextElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
-			return clicked;
+		if (element != null && element.getFirst() instanceof StyledWrappedTextElement) {
+			return ((StyledWrappedTextElement) element.getFirst()).getIndexClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return null;
 	}
 
 	public Tuple<StyledStringLine, Integer> getLineClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledWrappedTextElement) {
+		if (element != null && element.getFirst() instanceof StyledWrappedTextElement) {
 			Tuple<SimpleIndex, Integer> string = ((StyledWrappedTextElement) element.getFirst()).getStringClicked(element.getSecond()[0], element.getSecond()[1]);
-			if (string != null && string.getFirst() != null) {
+			if (string != null) {
 				return new Tuple(string.getFirst().string.getLine(), text.getLineIndex(string.getFirst().string.getLine()));
 			}
 		}
@@ -168,10 +143,10 @@ public class GuiEditWrappedStyledString extends GuiEditStyledStrings {
 
 	public Tuple<IStyledString, Integer> getStringClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledWrappedTextElement) {
+		if (element != null && element.getFirst() instanceof StyledWrappedTextElement) {
 
 			Tuple<SimpleIndex, Integer> string = ((StyledWrappedTextElement) element.getFirst()).getStringClicked(element.getSecond()[0], element.getSecond()[1]);
-			if (string != null && string.getFirst() != null) {
+			if (string != null) {
 				return new Tuple(string.getFirst().string, string.getSecond());
 			}
 
@@ -181,7 +156,7 @@ public class GuiEditWrappedStyledString extends GuiEditStyledStrings {
 
 	public Tuple<Character, Integer> getCharClicked(double clickX, double clickY) {
 		Tuple<IDisplayElement, double[]> element = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY);
-		if (element != null && element.getFirst() != null && element.getFirst() instanceof StyledWrappedTextElement) {
+		if (element != null && element.getFirst() instanceof StyledWrappedTextElement) {
 			return ((StyledWrappedTextElement) element.getFirst()).getCharClicked(element.getSecond()[0], element.getSecond()[1]);
 		}
 		return new Tuple(null, -1);

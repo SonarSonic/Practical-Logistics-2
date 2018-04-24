@@ -5,10 +5,10 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.helpers.InfoRenderer;
 
 public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDisplayElement implements IInfoReferenceElement {
 
@@ -26,12 +26,8 @@ public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDispl
 		if (info != null && isType(info)) {
 			render((T) info);
 		}else{
-			//renderNoData();
+			InfoRenderer.renderCenteredStringsWithAdaptiveScaling(getActualScaling()[WIDTH], getActualScaling()[HEIGHT], getActualScaling()[SCALE], 0, 0.5, -1, Lists.newArrayList("NO DATA"));
 		}
-	}
-
-	public void renderNoData() {
-		FontHelper.text("WAITING FOR SERVER", 0, 0, -1);
 	}
 
 	public abstract boolean isType(IInfo info);

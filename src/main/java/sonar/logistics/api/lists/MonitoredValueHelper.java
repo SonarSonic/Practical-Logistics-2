@@ -12,9 +12,6 @@ public class MonitoredValueHelper {
 		if (count > old) {
 			return EnumListChange.INCREASED;
 		}
-		if (count < old) {
-			return EnumListChange.DECREASED;
-		}
-		return EnumListChange.NEW_VALUE;
-	}
+        return EnumListChange.DECREASED;
+    }
 }

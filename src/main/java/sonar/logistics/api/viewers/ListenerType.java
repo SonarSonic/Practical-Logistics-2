@@ -42,9 +42,9 @@ public enum ListenerType {
 		return toReplace.order < type.order ? Result.SUCCESS : Result.FAIL;
 	}
 
-	public static enum UpdateType {
-		GUI, DISPLAY, CHANNEL, NONE;
-	}
+	public enum UpdateType {
+		GUI, DISPLAY, CHANNEL, NONE
+    }
 	
 	public boolean shouldForceUpdate() {
 		return getSyncType() == SyncType.SAVE;

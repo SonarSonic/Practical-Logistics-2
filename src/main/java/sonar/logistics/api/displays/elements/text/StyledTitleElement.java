@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
@@ -21,7 +20,6 @@ import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 import sonar.logistics.client.gui.textedit.GuiEditTitleStyledString;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
@@ -136,13 +134,12 @@ public class StyledTitleElement extends StyledTextElement{
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
 		Tuple<IStyledString, Integer> string = getStringClicked(subClickX, subClickY);
-		if (string.getFirst() != null) {
-			IDisplayAction action = getAction(string.getFirst().getStyle().action_id);
-			if (action != null) {
-				return action.doAction(click, player, subClickX, subClickY);
-			}
-		}
-		return -1;
+        string.getFirst();
+        IDisplayAction action = getAction(string.getFirst().getStyle().action_id);
+        if (action != null) {
+            return action.doAction(click, player, subClickX, subClickY);
+        }
+        return -1;
 	}
 
 	@Nullable

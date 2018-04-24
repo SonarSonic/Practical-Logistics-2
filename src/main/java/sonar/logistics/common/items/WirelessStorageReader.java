@@ -24,6 +24,8 @@ import sonar.logistics.common.containers.ContainerStorageViewer;
 import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.items.ItemHelper;
 
+import javax.annotation.Nonnull;
+
 public class WirelessStorageReader extends SonarItem implements IWirelessStorageReader, IFlexibleGui<ItemStack> {
 
 	public static final String EMITTER_UUID = "uuid";
@@ -46,7 +48,8 @@ public class WirelessStorageReader extends SonarItem implements IWirelessStorage
 		stack.setTagCompound(nbt);
 	}
 
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	@Nonnull
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		if (!world.isRemote && !stack.isEmpty()) {
 			NBTTagCompound nbt = stack.getTagCompound();

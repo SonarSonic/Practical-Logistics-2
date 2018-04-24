@@ -4,9 +4,9 @@ import sonar.logistics.networking.cabling.IRedstoneNetwork;
 
 public interface IRedstoneConnectable extends ICableConnectable, IRedstoneListener {
 	
-	public int getIdentity();
+	int getIdentity();
 	
-	public IRedstoneNetwork getRedstoneNetwork();
+	IRedstoneNetwork getRedstoneNetwork();
 	
 	default void onCableChanged(int power){
 		

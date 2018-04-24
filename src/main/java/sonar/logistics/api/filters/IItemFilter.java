@@ -4,6 +4,6 @@ import sonar.core.api.inventories.StoredItemStack;
 
 public interface IItemFilter {
 
-	public boolean canTransferItem(StoredItemStack stack);
+	boolean canTransferItem(StoredItemStack stack);
 	
 }

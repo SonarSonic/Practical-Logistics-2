@@ -7,9 +7,9 @@ public class CursorPosition {
 
 	public static CursorPosition newInvalid() {
 		return new CursorPosition(-1, -1);
-	};
+	}
 
-	public int x, y;
+    public int x, y;
 
 	public CursorPosition(int[] pos) {
 		setCursor(pos);
@@ -85,7 +85,7 @@ public class CursorPosition {
 				setXToLast(text);
 			return;
 		}
-		x = newIndex < 0 ? 0 : newIndex;
+		x = newIndex;
 	}
 
 	public void moveY(StyledTextElement text, int moveY) {

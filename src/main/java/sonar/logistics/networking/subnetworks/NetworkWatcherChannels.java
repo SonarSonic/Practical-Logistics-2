@@ -72,7 +72,7 @@ public class NetworkWatcherChannels extends DefaultNetworkChannels {
 
 	@Override
 	public void removeConnection(CacheHandler cache, INetworkListener connection) {
-		if (readers.remove(connection)) {
+		if (connection instanceof IListReader && readers.remove(connection)) {
 			onChannelsChanged();
 			tickChannels();
 		}

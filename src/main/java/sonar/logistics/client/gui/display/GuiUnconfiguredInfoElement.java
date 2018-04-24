@@ -27,7 +27,7 @@ public class GuiUnconfiguredInfoElement extends GuiLogistics {
 		super(new ContainerMultipartSync(display), display);
 		this.display = display;
 		this.element = element;
-		if (origin != null && origin instanceof GuiScreen) {
+		if (origin instanceof GuiScreen) {
 			this.origin = (GuiScreen) origin;
 		}
 	}

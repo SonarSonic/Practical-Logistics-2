@@ -1,47 +1,31 @@
 package sonar.logistics.api.displays.elements.text;
 
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.ws.Holder;
-
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayAction;
-import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.IInfoReferenceElement;
-import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
-import sonar.logistics.api.displays.elements.text.StyledStringRenderer.StyledStringRenderHandler;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
-import sonar.logistics.client.gui.textedit.GuiEditWrappedStyledString;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 public abstract class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine>, IInfoReferenceElement {
@@ -62,16 +46,13 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 	}
 
 	public StyledTextElement(List<String> strings) {
-		strings.forEach(s -> addLine(s));
+		strings.forEach(this::addLine);
 	}
 
 	@Override
 	public void updateRender() {
 		super.updateRender();
 		if (updateTextContents) {
-			if (uuids != null && !uuids.isEmpty()) {
-				// this.getGSI().removeInfoReferences(uuids);
-			}
 			this.uuids = null;
 			unscaledWidthHeight = null;
 			maxScaling = null;
@@ -181,10 +162,11 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 
 	public static final int INVALID = -1, AFTER = -2, BEFORE = -3;
 
-	public static final boolean isValidReturn(int i_return) {
+	public static boolean isValidReturn(int i_return) {
 		return i_return != INVALID && i_return != AFTER && i_return != BEFORE;
 	}
 
+	@Nonnull
 	@Override
 	public Iterator<StyledStringLine> iterator() {
 		return textLines.iterator();

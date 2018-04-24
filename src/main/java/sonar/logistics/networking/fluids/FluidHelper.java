@@ -1,6 +1,5 @@
 package sonar.logistics.networking.fluids;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiPredicate;
 
@@ -12,16 +11,10 @@ import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
-import sonar.core.helpers.SonarHelper;
-import sonar.core.utils.SortingDirection;
-import sonar.logistics.api.lists.IMonitoredValue;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
-import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
 import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.networking.items.ItemHelper.ConnectionFilters;
 

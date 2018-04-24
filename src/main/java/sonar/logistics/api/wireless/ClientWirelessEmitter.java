@@ -17,7 +17,7 @@ import sonar.core.network.sync.SyncTagType;
 /** used when syncing Data Emitters for display in the Data Receiver with the client, since some may not be loaded on client side. */
 public class ClientWirelessEmitter implements INBTSyncable {
 
-	public List<ISyncPart> syncParts = new ArrayList<ISyncPart>();
+	public List<ISyncPart> syncParts = new ArrayList<>();
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
 	public SyncCoords coords = new SyncCoords(1);
 	public SyncTagType.STRING name = new SyncTagType.STRING(2);
@@ -60,7 +60,7 @@ public class ClientWirelessEmitter implements INBTSyncable {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ClientWirelessEmitter) {
+		if (obj instanceof ClientWirelessEmitter) {
 			return hashCode() == obj.hashCode() && coords.getCoords().equals(((ClientWirelessEmitter) obj).coords.getCoords());
 		}
 		return false;

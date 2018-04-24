@@ -27,7 +27,7 @@ import sonar.logistics.api.tiles.signaller.ComparableObject;
 public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {
 
 	public static final String id = "fluid";
-	public SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<StoredFluidStack>(StoredFluidStack.class, 0);
+	public SyncNBTAbstract<StoredFluidStack> fluidStack = new SyncNBTAbstract<>(StoredFluidStack.class, 0);
 	public final SyncTagType.INT networkID = (INT) new SyncTagType.INT(1).setDefault(-1);
 
 	{

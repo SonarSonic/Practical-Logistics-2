@@ -100,7 +100,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 		}
 		List<IProvidableInfo> selectedInfo = part.getSelectedInfo();
 		for (IProvidableInfo selected : selectedInfo) {
-			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((IProvidableInfo) selected)) {
+			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo(selected)) {
 				return true;
 			}
 		}
@@ -114,7 +114,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 		}
 		List<IProvidableInfo> pairedInfo = part.getPairedInfo();
 		for (IProvidableInfo selected : pairedInfo) {
-			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo((IProvidableInfo) selected)) {
+			if (selected != null && !selected.isHeader() && info.isMatchingType(selected) && info.isMatchingInfo(selected)) {
 				return true;
 			}
 		}
@@ -128,7 +128,7 @@ public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 
 	@Override
 	public int getColour(int i, int type) {
-		IProvidableInfo info = (IProvidableInfo) infoList.get(i + start);
+		IProvidableInfo info = infoList.get(i + start);
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}

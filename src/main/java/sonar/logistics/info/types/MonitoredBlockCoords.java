@@ -19,7 +19,7 @@ public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> impleme
 
 	public static final String id = "coords";
 	private SyncCoords syncCoords = new SyncCoords(1);
-	private final SyncNBTAbstract<StoredItemStack> blockStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 2);
+	private final SyncNBTAbstract<StoredItemStack> blockStack = new SyncNBTAbstract<>(StoredItemStack.class, 2);
 	{
 		syncList.addParts(syncCoords, blockStack);
 	}

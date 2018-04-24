@@ -5,8 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.xml.ws.Holder;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Tuple;
@@ -67,14 +65,13 @@ public class StyledWrappedTextElement extends StyledTextElement {
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
 		Tuple<SimpleIndex, Integer> string = getStringClicked(subClickX, subClickY);
-		if (string.getFirst() != null) {
-			IDisplayAction action = getAction(string.getFirst().string.getStyle().action_id);
-			if (action != null) {
-				return action.doAction(click, player, subClickX, subClickY);
-			}
-		}
+        string.getFirst();
+        IDisplayAction action = getAction(string.getFirst().string.getStyle().action_id);
+        if (action != null) {
+            return action.doAction(click, player, subClickX, subClickY);
+        }
 
-		boolean needsPages = handler.linesPerPage < handler.lines.size();
+        boolean needsPages = handler.linesPerPage < handler.lines.size();
 		if (needsPages) {
 			int totalPages = (int) (Math.ceil((double) handler.lines.size() / (double) handler.linesPerPage));
 			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);

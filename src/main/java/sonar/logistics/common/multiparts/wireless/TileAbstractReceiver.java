@@ -1,7 +1,6 @@
 package sonar.logistics.common.multiparts.wireless;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
@@ -27,8 +26,8 @@ public abstract class TileAbstractReceiver<E extends IWirelessEmitter, R extends
 
 	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_EMITTERS_CONNECTED, ErrorMessage.EMITTERS_OFFLINE };
 
-	public SyncNBTAbstractList<ClientWirelessEmitter> clientEmitters = new SyncNBTAbstractList<ClientWirelessEmitter>(ClientWirelessEmitter.class, 2);
-	public SyncNBTAbstract<ClientWirelessEmitter> selectedEmitter = new SyncNBTAbstract<ClientWirelessEmitter>(ClientWirelessEmitter.class, 4);
+	public SyncNBTAbstractList<ClientWirelessEmitter> clientEmitters = new SyncNBTAbstractList<>(ClientWirelessEmitter.class, 2);
+	public SyncNBTAbstract<ClientWirelessEmitter> selectedEmitter = new SyncNBTAbstract<>(ClientWirelessEmitter.class, 4);
 
 	{
 		syncList.addParts(clientEmitters, selectedEmitter);
@@ -62,9 +61,7 @@ public abstract class TileAbstractReceiver<E extends IWirelessEmitter, R extends
 	}
 	
 	public ClientWirelessEmitter getCachedEmitter(int identity) {
-		Iterator<ClientWirelessEmitter> iterator = clientEmitters.getObjects().iterator();
-		while (iterator.hasNext()) {
-			ClientWirelessEmitter entry = iterator.next();
+		for (ClientWirelessEmitter entry : clientEmitters.getObjects()) {
 			if (entry.getIdentity() == identity) {
 				return entry;
 			}

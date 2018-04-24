@@ -2,15 +2,12 @@ package sonar.logistics.networking.sorters;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidRegistry;
 import sonar.core.SonarCore;
 import sonar.core.api.energy.StoredEnergyStack;
@@ -36,11 +33,7 @@ import sonar.logistics.info.types.MonitoredItemStack;
 public class SortingHelper {
 
 	public static AbstractChangeableList<IProvidableInfo> sortInfo(AbstractChangeableList<IProvidableInfo> updateInfo) {
-		Collections.sort(updateInfo.getList(), new Comparator<IMonitoredValue<IProvidableInfo>>() {
-			public int compare(IMonitoredValue<IProvidableInfo> str1, IMonitoredValue<IProvidableInfo> str2) {
-				return Integer.compare(str1.getSaveableInfo().getRegistryType().sortOrder, str2.getSaveableInfo().getRegistryType().sortOrder);
-			}
-		});
+		updateInfo.getList().sort(Comparator.comparingInt(str -> str.getSaveableInfo().getRegistryType().sortOrder));
 		List<IProvidableInfo> info = new ArrayList<>();
 		IProvidableInfo lastInfo = null;
 		for (IMonitoredValue<IProvidableInfo> value : updateInfo.getList()) {
@@ -54,36 +47,30 @@ public class SortingHelper {
 			}
 		}
 		updateInfo.getList().clear();
-		info.forEach(value -> updateInfo.add(value));
+		info.forEach(updateInfo::add);
 
 		return updateInfo;
 	}
 
 	public static AbstractChangeableList<MonitoredItemStack> sortItems(AbstractChangeableList<MonitoredItemStack> updateInfo, SortingDirection direction, InventoryReader.SortingType type) {
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-			public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
-				StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
-				return SonarHelper.compareStringsWithDirection(item1.getItemStack().getDisplayName(), item2.getItemStack().getDisplayName(), direction);
-			}
+		updateInfo.getList().sort((str1, str2) -> {
+			StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
+			return SonarHelper.compareStringsWithDirection(item1.getItemStack().getDisplayName(), item2.getItemStack().getDisplayName(), direction);
 		});
 
 		switch (type) {
 		case STORED:
-			updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-				public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
-					StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
-					return SonarHelper.compareWithDirection(item1.stored, item2.stored, direction);
-				}
+			updateInfo.getList().sort((str1, str2) -> {
+				StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
+				return SonarHelper.compareWithDirection(item1.stored, item2.stored, direction);
 			});
 			break;
 		case MODID:
-			updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredItemStack>>() {
-				public int compare(IMonitoredValue<MonitoredItemStack> str1, IMonitoredValue<MonitoredItemStack> str2) {
-					StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
-					String modid1 = item1.getItemStack().getItem().getRegistryName().getResourceDomain();
-					String modid2 = item2.getItemStack().getItem().getRegistryName().getResourceDomain();
-					return SonarHelper.compareStringsWithDirection(modid1, modid2, direction);
-				}
+			updateInfo.getList().sort((str1, str2) -> {
+				StoredItemStack item1 = str1.getSaveableInfo().getStoredStack(), item2 = str2.getSaveableInfo().getStoredStack();
+				String modid1 = item1.getItemStack().getItem().getRegistryName().getResourceDomain();
+				String modid2 = item2.getItemStack().getItem().getRegistryName().getResourceDomain();
+				return SonarHelper.compareStringsWithDirection(modid1, modid2, direction);
 			});
 		default:
 			break;
@@ -92,58 +79,52 @@ public class SortingHelper {
 	}
 
 	public static AbstractChangeableList<MonitoredFluidStack> sortFluids(AbstractChangeableList<MonitoredFluidStack> updateInfo, final SortingDirection dir, SortingType type) {
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredFluidStack>>() {
-			public int compare(IMonitoredValue<MonitoredFluidStack> str1, IMonitoredValue<MonitoredFluidStack> str2) {
-				StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
-				int res = String.CASE_INSENSITIVE_ORDER.compare(flu1.getFullStack().getLocalizedName(), flu2.getFullStack().getLocalizedName());
-				if (res == 0) {
-					res = flu1.getFullStack().getLocalizedName().compareTo(flu2.getFullStack().getLocalizedName());
-				}
-				return dir == SortingDirection.DOWN ? res : -res;
+		updateInfo.getList().sort((str1, str2) -> {
+			StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
+			int res = String.CASE_INSENSITIVE_ORDER.compare(flu1.getFullStack().getLocalizedName(), flu2.getFullStack().getLocalizedName());
+			if (res == 0) {
+				res = flu1.getFullStack().getLocalizedName().compareTo(flu2.getFullStack().getLocalizedName());
 			}
+			return dir == SortingDirection.DOWN ? res : -res;
 		});
 
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredFluidStack>>() {
-			public int compare(IMonitoredValue<MonitoredFluidStack> str1, IMonitoredValue<MonitoredFluidStack> str2) {
-				StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
-				switch (type) {
-				case MODID:
-					String modid1 = FluidRegistry.getModId(flu1.getFullStack());
-					String modid2 = FluidRegistry.getModId(flu2.getFullStack());
-					return SonarHelper.compareStringsWithDirection(modid1 == null ? PL2Constants.MINECRAFT : modid1, modid2 == null ? PL2Constants.MINECRAFT : modid2, dir);
-				case NAME:
-					break;
-				case STORED:
-					return SonarHelper.compareWithDirection(flu1.stored, flu2.stored, dir);
-				case TEMPERATURE:
-					return SonarHelper.compareWithDirection(flu1.getFullStack().getFluid().getTemperature(), flu2.getFullStack().getFluid().getTemperature(), dir);
-				}
-				return 0;
+		updateInfo.getList().sort((str1, str2) -> {
+			StoredFluidStack flu1 = str1.getSaveableInfo().getStoredStack(), flu2 = str2.getSaveableInfo().getStoredStack();
+			switch (type) {
+			case MODID:
+				String modid1 = FluidRegistry.getModId(flu1.getFullStack());
+				String modid2 = FluidRegistry.getModId(flu2.getFullStack());
+				return SonarHelper.compareStringsWithDirection(modid1 == null ? PL2Constants.MINECRAFT : modid1, modid2 == null ? PL2Constants.MINECRAFT : modid2, dir);
+			case NAME:
+				break;
+			case STORED:
+				return SonarHelper.compareWithDirection(flu1.stored, flu2.stored, dir);
+			case TEMPERATURE:
+				return SonarHelper.compareWithDirection(flu1.getFullStack().getFluid().getTemperature(), flu2.getFullStack().getFluid().getTemperature(), dir);
 			}
+			return 0;
 		});
 		return updateInfo;
 	}
 
 	public static AbstractChangeableList<MonitoredEnergyStack> sortEnergy(AbstractChangeableList<MonitoredEnergyStack> updateInfo, final SortingDirection dir, EnergyReader.SortingType type) {
-		updateInfo.getList().sort(new Comparator<IMonitoredValue<MonitoredEnergyStack>>() {
-			public int compare(IMonitoredValue<MonitoredEnergyStack> str1, IMonitoredValue<MonitoredEnergyStack> str2) {
-				StoredEnergyStack item1 = str1.getSaveableInfo().getEnergyStack(), item2 = str2.getSaveableInfo().getEnergyStack();
-				switch (type) {
-				case CAPACITY:
-					return SonarHelper.compareWithDirection(item1.capacity, item2.capacity, dir);
-				case INPUT:
-					return SonarHelper.compareWithDirection(item1.input, item2.input, dir);
-				case NAME:
-					String modid1 = str1.getSaveableInfo().getMonitoredCoords().getUnlocalizedName();
-					String modid2 = str2.getSaveableInfo().getMonitoredCoords().getUnlocalizedName();
-					return SonarHelper.compareStringsWithDirection(modid1, modid2, dir);
-				case STORED:
-					return SonarHelper.compareWithDirection(item1.stored, item2.stored, dir);
-				case TYPE:
-					return SonarHelper.compareStringsWithDirection(item1.energyType.getName(), item2.energyType.getName(), dir);
-				}
-				return 0;
+		updateInfo.getList().sort((str1, str2) -> {
+			StoredEnergyStack item1 = str1.getSaveableInfo().getEnergyStack(), item2 = str2.getSaveableInfo().getEnergyStack();
+			switch (type) {
+			case CAPACITY:
+				return SonarHelper.compareWithDirection(item1.capacity, item2.capacity, dir);
+			case INPUT:
+				return SonarHelper.compareWithDirection(item1.input, item2.input, dir);
+			case NAME:
+				String modid1 = str1.getSaveableInfo().getMonitoredCoords().getUnlocalizedName();
+				String modid2 = str2.getSaveableInfo().getMonitoredCoords().getUnlocalizedName();
+				return SonarHelper.compareStringsWithDirection(modid1, modid2, dir);
+			case STORED:
+				return SonarHelper.compareWithDirection(item1.stored, item2.stored, dir);
+			case TYPE:
+				return SonarHelper.compareStringsWithDirection(item1.energyType.getName(), item2.energyType.getName(), dir);
 			}
+			return 0;
 		});
 		return updateInfo;
 	}

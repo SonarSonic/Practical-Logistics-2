@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
-import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
@@ -33,7 +32,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	public int coolDown = 0;
 
 	public GuiGuide(EntityPlayer player) {
-		super(new ContainerGuide(player), (IWorldPosition) null);
+		super(new ContainerGuide(player), null);
 		listHeight = 20;
 		listWidth = 330;
 		this.xSize = 350;// (182 + 66);
@@ -136,7 +135,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 				this.lastPagePos = -1;
 				return;
 			} else if (currentPage != null) {
-				this.currentPage = null;
+				currentPage = null;
 				reset();
 			} else {
 				Element3DRenderer.reset();
@@ -264,16 +263,16 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (keyCode == Keyboard.KEY_LEFT) {
-			if (this.pagePos == 0) {
+			if (pagePos == 0) {
 				this.buttonAction(-1);
-				this.pagePos = currentPage.getPageCount() - 1;
+				pagePos = currentPage.getPageCount() - 1;
 				this.reset();
 			} else {
 				this.buttonAction(-3);
 			}
 			return;
 		} else if (keyCode == Keyboard.KEY_RIGHT) {
-			if (this.pagePos == currentPage.getPageCount() - 1) {
+			if (pagePos == currentPage.getPageCount() - 1) {
 				this.buttonAction(-2);
 			} else {
 				this.buttonAction(-4);
@@ -283,7 +282,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		Element3DRenderer.reset();
 		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && currentPage != null) {
 			if (lastPos == -1 || lastPagePos == -1) {
-				this.currentPage = null;
+				currentPage = null;
 				reset();
 				return;
 			}

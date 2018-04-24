@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
+import sonar.core.utils.IValidate;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
@@ -36,10 +37,8 @@ import sonar.logistics.networking.ServerInfoHandler;
 public class LogisticsHelper {
 
 	public static boolean isPlayerUsingOperator(EntityPlayer player) {
-		if (player.getHeldItemMainhand() != null) {
-			return player.getHeldItemMainhand().getItem() instanceof IOperatorTool;
-		}
-		return false;
+		player.getHeldItemMainhand();
+		return player.getHeldItemMainhand().getItem() instanceof IOperatorTool;
 	}
 
 	/** gets a list of all valid networks from the provided network ids */
@@ -47,7 +46,7 @@ public class LogisticsHelper {
 		List<ILogisticsNetwork> networks = new ArrayList<>();
 		ids.forEach(id -> {
 			ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(id);
-			if (network != null && network.isValid()) {
+			if (network.isValid()) {
 				networks.add(network);
 			}
 		});
@@ -107,7 +106,7 @@ public class LogisticsHelper {
 		List<IInfo> infoList = new ArrayList<>();
 		for (InfoUUID id : ids) {
 			ILogicListenable monitor = ServerInfoHandler.instance().getIdentityTile(id.getIdentity());
-			if (monitor != null && monitor instanceof IInfoProvider) {
+			if (monitor instanceof IInfoProvider) {
 				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
 				if (info != null)
 					infoList.add(info);
@@ -117,7 +116,7 @@ public class LogisticsHelper {
 	}
 
 	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {
-		nodes.stream().filter(n -> n.isValid()).forEach(n -> n.addConnections(channels));
+		nodes.stream().filter(IValidate::isValid).forEach(n -> n.addConnections(channels));
 		return NodeConnection.sortConnections(channels);
 	}
 
@@ -125,7 +124,7 @@ public class LogisticsHelper {
 		TileEntity tile = coords.getTileEntity(world);
 		IBlockState state = coords.getBlockState(world);
 		ItemStack stack = coords.getBlock(world).getItem(world, coords.getBlockPos(), state);
-		if (stack == null || stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			stack = new ItemStack(Item.getItemFromBlock(state.getBlock()));
 		}
 		return stack;

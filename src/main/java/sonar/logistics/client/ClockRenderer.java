@@ -29,60 +29,58 @@ public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 	@Override
 	public void render(TileClock te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		World world = te.getWorld();
-		if (world != null) {
-			BlockPos pos = te.getPos();
-			RenderHelper.offsetRendering(pos, partialTicks);
-			disableLighting();
-			//enableTexture2D();
-			depthMask(true);
-			
-			BufferBuilder wr = Tessellator.getInstance().getBuffer();
-			
-			switch (te.getCableFace().getOpposite()) {
-			case UP:
-			case DOWN:
-				translate(0.5, 0, 0.5);
-				wr.setTranslation(-pos.getX() - 0.5, -pos.getY(), -pos.getZ() - 0.5);
-				rotate(te.rotation, 0, 1, 0);
-				break;
-			case WEST:
-			case EAST:
-				translate(0, 0.5, +0.5);
-				wr.setTranslation(-pos.getX(), -pos.getY() - 0.5, -pos.getZ() - 0.5);
-				rotate(te.rotation, 1, 0, 0);
-				break;
-			case NORTH:
-			case SOUTH:
-				translate(0.5, 0.5, 0);
-				wr.setTranslation(-pos.getX() - 0.5, -pos.getY() - 0.5, -pos.getZ());
-				rotate(te.rotation, 0, 0, 1);
-				break;
-			default:
-				break;
+        BlockPos pos = te.getPos();
+        RenderHelper.offsetRendering(pos, partialTicks);
+        disableLighting();
+        //enableTexture2D();
+        depthMask(true);
 
-			}
+        BufferBuilder wr = Tessellator.getInstance().getBuffer();
 
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			wr.begin(7, DefaultVertexFormats.BLOCK);
-			BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-			IBlockState state = te.getBlockType().getDefaultState().withProperty(SonarProperties.ORIENTATION, te.getCableFace()).withProperty(PL2Properties.CLOCK_HAND, true);
-			EnumBlockRenderType type = state.getRenderType();
-			if (type != EnumBlockRenderType.MODEL) {
-				blockrendererdispatcher.renderBlock(state, pos, world, wr);
-				return;
-			}
+        switch (te.getCableFace().getOpposite()) {
+        case UP:
+        case DOWN:
+            translate(0.5, 0, 0.5);
+            wr.setTranslation(-pos.getX() - 0.5, -pos.getY(), -pos.getZ() - 0.5);
+            rotate(te.rotation, 0, 1, 0);
+            break;
+        case WEST:
+        case EAST:
+            translate(0, 0.5, +0.5);
+            wr.setTranslation(-pos.getX(), -pos.getY() - 0.5, -pos.getZ() - 0.5);
+            rotate(te.rotation, 1, 0, 0);
+            break;
+        case NORTH:
+        case SOUTH:
+            translate(0.5, 0.5, 0);
+            wr.setTranslation(-pos.getX() - 0.5, -pos.getY() - 0.5, -pos.getZ());
+            rotate(te.rotation, 0, 0, 1);
+            break;
+        default:
+            break;
 
-			IBakedModel ibakedmodel = blockrendererdispatcher.getModelForState(state);
-			blockrendererdispatcher.getBlockModelRenderer().renderModel(world, ibakedmodel, state, pos, wr, true);
+        }
 
-			Tessellator.getInstance().draw();
-			Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
-			depthMask(false);
-			enableLighting();	
-			//disableTexture2D();	
-			popMatrix();
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        wr.begin(7, DefaultVertexFormats.BLOCK);
+        BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        IBlockState state = te.getBlockType().getDefaultState().withProperty(SonarProperties.ORIENTATION, te.getCableFace()).withProperty(PL2Properties.CLOCK_HAND, true);
+        EnumBlockRenderType type = state.getRenderType();
+        if (type != EnumBlockRenderType.MODEL) {
+            blockrendererdispatcher.renderBlock(state, pos, world, wr);
+            return;
+        }
 
-		}
-	}
+        IBakedModel ibakedmodel = blockrendererdispatcher.getModelForState(state);
+        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, ibakedmodel, state, pos, wr, true);
+
+        Tessellator.getInstance().draw();
+        Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
+        depthMask(false);
+        enableLighting();
+        //disableTexture2D();
+        popMatrix();
+
+    }
 
 }

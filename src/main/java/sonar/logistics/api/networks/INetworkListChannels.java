@@ -5,7 +5,7 @@ import sonar.logistics.api.tiles.nodes.EntityConnection;
 
 public interface INetworkListChannels<H extends INetworkListHandler> extends INetworkChannels{
 	
-	public H getHandler();
+	H getHandler();
 	/* W.I.P
 	
 	public void onListUpdate(INetworkListChannels<H> source, NodeConnection node, MonitoredList list, boolean rapid);
@@ -21,7 +21,7 @@ public interface INetworkListChannels<H extends INetworkListHandler> extends INe
 	public void updateAllChannels(boolean updateMasters);
 	*/
 
-	public boolean isCoordsMonitored(BlockConnection connection);
+	boolean isCoordsMonitored(BlockConnection connection);
 
-	public boolean isEntityMonitored(EntityConnection connection);
+	boolean isEntityMonitored(EntityConnection connection);
 }

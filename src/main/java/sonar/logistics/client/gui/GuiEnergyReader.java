@@ -44,7 +44,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 	public void initButtons() {
 		int start = 8;
 		this.buttonList.add(new LogisticsButton.CHANNELS(this, 0, guiLeft + start, guiTop + 9));
-		this.buttonList.add(new LogisticsButton.HELP(this, 1, guiLeft + start + 18 * 1, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 1, guiLeft + start + 18, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 18 * 2, guiTop + 9, 64 + 64 + 16, 16 * part.setting.getObject().ordinal(), part.setting.getObject().getName(), part.setting.getObject().getDescription()));
 		if (part.setting.getObject() != Modes.STORAGES) {
 			this.buttonList.add(new GuiButton(3, guiLeft + 190, guiTop + 6, 40, 20, part.energyType.getEnergyType().getStorageSuffix()));
@@ -95,7 +95,7 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		if (buttonID == 0) {
 			if (info.isValid() && !info.isHeader()) {
 				part.selected.setCoords(info.getMonitoredCoords().getCoords());
-				part.sendByteBufPacket(buttonID == 0 ? TileAbstractReader.ADD : TileAbstractReader.PAIRED);
+				part.sendByteBufPacket(TileAbstractReader.ADD);
 			}
 		} else {
 			RenderBlockSelection.addPosition(info.getMonitoredCoords().getCoords(), false);
@@ -133,9 +133,9 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (info.getEnergyStack().capacity > 0) {
 			int l = (int) (info.getEnergyStack().stored * 206 / info.getEnergyStack().capacity);
-			this.drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
+			drawTransparentRect(25, (yPos) + 6, 231, (yPos) + 14, new CustomColour(0, 10, 5).getRGB());
 			if (l != 0) {
-				this.drawTransparentRect(25, (yPos) + 6, 25+l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
+				drawTransparentRect(25, (yPos) + 6, 25+l, (yPos) + 14, new CustomColour(0, 100, 50).getRGB());
 			}
 		}
 		StoredItemStack storedStack = info.getDropStack();
@@ -148,16 +148,16 @@ public class GuiEnergyReader extends GuiSelectionList<MonitoredEnergyStack> {
 			RenderHelper.renderStoredItemStackOverlay(stack, 0, 8, yPos - 2, null, true);
 		}
 		GL11.glScaled(0.75, 0.75, 0.75);
-		FontHelper.text(info.getMonitoredCoords().getClientIdentifier() + " - " + info.getMonitoredCoords().getClientObject(), 35, (int) (yPos * 1 / 0.75) - 1, LogisticsColours.white_text.getRGB());
-		FontHelper.text(info.getClientIdentifier(), 35, (int) (yPos * 1 / 0.75) + 10, 1);
-		FontHelper.text(info.getClientObject(), 160, (int) (yPos * 1 / 0.75) + 10, 1);
+		FontHelper.text(info.getMonitoredCoords().getClientIdentifier() + " - " + info.getMonitoredCoords().getClientObject(), 35, (int) (yPos / 0.75) - 1, LogisticsColours.white_text.getRGB());
+		FontHelper.text(info.getClientIdentifier(), 35, (int) (yPos / 0.75) + 10, 1);
+		FontHelper.text(info.getClientObject(), 160, (int) (yPos / 0.75) + 10, 1);
 		GL11.glScaled(1 / 0.75, 1 / 0.75, 1 / 0.75);
 
 	}
 
 	@Override
 	public int getColour(int i, int type) {
-		IInfo info = (IInfo) infoList.get(i + start);
+		IInfo info = infoList.get(i + start);
 		if (info == null || info.isHeader()) {
 			return LogisticsColours.layers[1].getRGB();
 		}

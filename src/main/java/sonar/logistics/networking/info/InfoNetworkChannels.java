@@ -14,7 +14,6 @@ import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType.UpdateType;
 import sonar.logistics.networking.common.ListNetworkChannels;
-import sonar.logistics.networking.displays.ChunkViewerHandler;
 
 public class InfoNetworkChannels extends ListNetworkChannels<IProvidableInfo, InfoNetworkHandler> {
 

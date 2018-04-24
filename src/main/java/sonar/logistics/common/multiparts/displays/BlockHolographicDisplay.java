@@ -10,7 +10,7 @@ public class BlockHolographicDisplay extends BlockAbstractDisplay {
 
 	public static final double depth = 0.0625, height = depth * 16, width = 0, length = depth * 1;
 	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(0, 0, 0, 1, depth, 1);
-	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - depth, 1);
+	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1, 0, 1, 1 - depth, 1);
 	public static final AxisAlignedBB NORTH_AXIS = new AxisAlignedBB((width) / 2, depth * 4, length, 1 - width / 2, 1 - depth * 4, 0);
 	public static final AxisAlignedBB SOUTH_AXIS = new AxisAlignedBB((width) / 2, depth * 4, 1, 1 - width / 2, 1 - depth * 4, 1 - length);
 	public static final AxisAlignedBB WEST_AXIS = new AxisAlignedBB(length, depth * 4, (width) / 2, 0, 1 - depth * 4, 1 - width / 2);

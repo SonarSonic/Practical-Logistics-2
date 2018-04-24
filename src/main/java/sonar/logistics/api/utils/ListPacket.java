@@ -5,5 +5,5 @@ public enum ListPacket {
 	REMOVE,
 	MOVE_UP,
 	MOVE_DOWN,
-	CLEAR;
+	CLEAR
 }

@@ -7,8 +7,8 @@ import sonar.logistics.packets.sync.SyncFilterList;
 
 public interface IFilteredTile extends IChannelledTile, ILogicListenable, IInventoryFilter {
 
-	public SyncFilterList getFilters();
+	SyncFilterList getFilters();
 	
-	public int getSlotID();
+	int getSlotID();
 	
 }

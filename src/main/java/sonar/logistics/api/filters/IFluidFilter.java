@@ -4,6 +4,6 @@ import sonar.core.api.fluids.StoredFluidStack;
 
 public interface IFluidFilter {
 
-	public boolean canTransferFluid(StoredFluidStack stack);
+	boolean canTransferFluid(StoredFluidStack stack);
 	
 }

@@ -4,12 +4,12 @@ package sonar.logistics.api.info;
 public interface ISuffixable {
 
 	/**gets the suffix for the info*/
-	public String getSuffix();
+    String getSuffix();
 
 	/**gets the prefix for the info*/
-	public String getPrefix();
+    String getPrefix();
 
 	/**gets the raw unedited data from the info*/
-	public String getRawData();
+    String getRawData();
 
 }

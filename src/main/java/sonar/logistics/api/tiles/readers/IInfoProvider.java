@@ -6,9 +6,9 @@ import sonar.logistics.api.viewers.ILogicListenable;
 
 public interface IInfoProvider extends ILogicListenable {
 	
-	public IInfo getMonitorInfo(int pos);
+	IInfo getMonitorInfo(int pos);
 
-	public int getMaxInfo();
+	int getMaxInfo();
 
-	public ILogisticsNetwork getNetwork();
+	ILogisticsNetwork getNetwork();
 }

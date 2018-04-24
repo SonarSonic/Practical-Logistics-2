@@ -23,9 +23,9 @@ import sonar.logistics.networking.CacheHandler;
 public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R extends IWirelessReceiver> implements IWirelessManager<E, R> {
 
 	/** a cache of all Data Emitters which currently belong to a network */
-	public List<E> emitters = new ArrayList<E>();
+	public List<E> emitters = new ArrayList<>();
 	/** a cache of all Data Receivers which currently belong to a network */
-	public List<R> receivers = new ArrayList<R>();
+	public List<R> receivers = new ArrayList<>();
 	/// ** players which are currently viewing the selection menu in the {@link IDataReceiver}'s GUI */
 	public ListenableList<PlayerListener> player_viewers = new ListenableList(this, 1);
 
@@ -82,7 +82,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	}
 
 	/** connects a {@link IDataEmitter} to a {@link ILogisticsNetwork}'s
-	 * @param main the {@link IDataEmitter}'s network
+	 * @param network the {@link IDataEmitter}'s network
 	 * @param emitter the {@link IDataEmitter} which has been connected */
 	public void onEmitterConnected(N network, E emitter) {
 		receivers.forEach(receiver -> {
@@ -93,7 +93,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	}
 
 	/** disconnects a {@link IDataEmitter} from a {@link ILogisticsNetwork}'s
-	 * @param main the {@link IDataEmitter}'s network
+	 * @param network the {@link IDataEmitter}'s network
 	 * @param emitter the {@link IDataEmitter} which has been disconnected */
 	public void onEmitterDisconnected(N network, E emitter) {
 		receivers.forEach(receiver -> {

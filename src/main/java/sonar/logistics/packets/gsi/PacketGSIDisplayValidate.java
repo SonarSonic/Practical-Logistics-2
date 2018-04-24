@@ -11,7 +11,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.networking.ClientInfoHandler;
 
@@ -50,9 +49,7 @@ public class PacketGSIDisplayValidate implements IMessage {
 			if (ctx.side == Side.CLIENT) {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 				if (player != null) {
-					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						doMessage(message, ctx);
-					});
+					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> doMessage(message, ctx));
 				}
 			}
 			return null;

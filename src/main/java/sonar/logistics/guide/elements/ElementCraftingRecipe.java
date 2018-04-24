@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.recipes.RecipeUtils;
 import sonar.logistics.PL2Constants;
@@ -65,7 +66,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		gui.drawTransparentRect(x, y, x + 80, y + 80 + 16, LogisticsColours.blue_overlay.getRGB());
+		GuiSonar.drawTransparentRect(x, y, x + 80, y + 80 + 16, LogisticsColours.blue_overlay.getRGB());
 	}
 
 	public IRecipe getRecipe() {
@@ -84,7 +85,7 @@ public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGu
 	public int[][] setSlots() {
 		int xOffset = 4;
 		int yOffset = -20;
-		return new int[][] { new int[] { xOffset, yOffset }, new int[] { slotSize + xOffset, yOffset }, new int[] { slotSize * 2 + xOffset, yOffset }, new int[] { 0 + xOffset, slotSize + yOffset }, new int[] { slotSize + xOffset, slotSize + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize + yOffset }, new int[] { 0 + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize * 2 + yOffset } };
+		return new int[][] { new int[] { xOffset, yOffset }, new int[] { slotSize + xOffset, yOffset }, new int[] { slotSize * 2 + xOffset, yOffset }, new int[] {xOffset, slotSize + yOffset }, new int[] { slotSize + xOffset, slotSize + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize + yOffset }, new int[] {xOffset, slotSize * 2 + yOffset }, new int[] { slotSize + xOffset, slotSize * 2 + yOffset }, new int[] { slotSize * 2 + xOffset, slotSize * 2 + yOffset } };
 
 	}
 

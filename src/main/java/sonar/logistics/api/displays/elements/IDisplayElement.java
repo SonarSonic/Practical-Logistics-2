@@ -1,7 +1,5 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import sonar.core.api.nbt.INBTSyncable;
@@ -9,9 +7,6 @@ import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
@@ -61,7 +56,7 @@ public interface IDisplayElement extends IDisplayRenderable, INBTSyncable {
 
 	int[] getUnscaledWidthHeight();
 
-	public default double[] getAlignmentTranslation(double[] maxScaling, double[] actualScaling) {
+	default double[] getAlignmentTranslation(double[] maxScaling, double[] actualScaling) {
 		return DisplayElementHelper.alignArray(maxScaling, actualScaling, getWidthAlignment(), getHeightAlignment());
 	}		
 	

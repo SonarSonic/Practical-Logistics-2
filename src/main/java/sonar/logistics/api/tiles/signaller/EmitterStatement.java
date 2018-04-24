@@ -83,7 +83,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	public Object getObject(Map<InfoUUID, IInfo> info, InfoUUID id, String key) {
 		if (InfoUUID.valid(id) && key != null) {
 			IInfo info1 = info.get(id);
-			if (info1 != null && info1 instanceof IComparableInfo) {
+			if (info1 instanceof IComparableInfo) {
 				IComparableInfo provider1 = (IComparableInfo) info1;
 				ComparableObject obj = ComparableObject.getComparableObject(provider1.getComparableObjects(new ArrayList<>()), key);
 				if (getComparator() != null && getComparator().isValidObject(obj.object)) {
@@ -120,7 +120,7 @@ public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsS
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof EmitterStatement) {
+		if (obj instanceof EmitterStatement) {
 			return obj.hashCode() == hashCode();
 		}
 		return false;

@@ -32,7 +32,7 @@ import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = PL2Constants.MODID)
-public class VanillaInfoRegistry extends IInfoRegistry {
+public class VanillaInfoRegistry implements IInfoRegistry {
 
 	@Override
 	public void registerBaseReturns(IMasterInfoRegistry registry) {

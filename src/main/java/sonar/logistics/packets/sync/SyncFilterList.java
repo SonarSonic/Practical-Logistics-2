@@ -130,7 +130,7 @@ public class SyncFilterList extends SyncPart {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof SyncFilterList) {
+		if (obj instanceof SyncFilterList) {
 			return ((SyncFilterList) obj).getObjects().equals(this.objs);
 		}
 		return false;

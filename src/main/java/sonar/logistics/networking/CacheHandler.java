@@ -14,7 +14,6 @@ import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
-import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.transfers.TransferNetworkChannels;
 
 public abstract class CacheHandler<T> {

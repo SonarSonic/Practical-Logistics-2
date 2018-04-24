@@ -104,10 +104,10 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 	@Override
 	public void renderInfoInList(GuiSonar screen, int yPos) {
 		GlStateManager.scale(0.75, 0.75, 0.75);
-		FontHelper.text("Ore Filter", 16, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
-		FontHelper.text("Type: " + this.getTransferMode().name(), 88, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
-		FontHelper.text("List Type: " + this.getListType().name(), 200, (int) ((yPos + 2) * 1 / 0.75), Color.white.getRGB());
-		FontHelper.text("Keys: " + FontHelper.getStringListToText(oreDict.objs), 16, (int) ((yPos + 14) * 1 / 0.75), Color.white.getRGB());
+		FontHelper.text("Ore Filter", 16, (int) ((yPos + 2) * (1 / 0.75)), Color.white.getRGB());
+		FontHelper.text("Type: " + this.getTransferMode().name(), 88, (int) ((yPos + 2) * (1 / 0.75)), Color.white.getRGB());
+		FontHelper.text("List Type: " + this.getListType().name(), 200, (int) ((yPos + 2) * (1 / 0.75)), Color.white.getRGB());
+		FontHelper.text("Keys: " + FontHelper.getStringListToText(oreDict.objs), 16, (int) ((yPos + 14) * (1 / 0.75)), Color.white.getRGB());
 		GlStateManager.scale(1 / 0.75, 1 / 0.75, 1 / 0.75);
 
 	}

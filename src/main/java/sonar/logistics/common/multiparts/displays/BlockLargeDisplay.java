@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,11 +30,11 @@ import sonar.logistics.api.tiles.displays.ILargeDisplay;
 
 public class BlockLargeDisplay extends BlockAbstractDisplay {
 
-	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.<DisplayConnections>create("type", DisplayConnections.class);
+	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.create("type", DisplayConnections.class);
 
 	public static final double depth = 0.0625, height = depth * 16, width = 0, length = depth * 1;
 	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(0, 0, 0, 1, length, 1);
-	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1 - 0, 0, 1, 1 - length, 1);
+	public static final AxisAlignedBB UP_AXIS = new AxisAlignedBB(0, 1, 0, 1, 1 - length, 1);
 	public static final AxisAlignedBB NORTH_AXIS = new AxisAlignedBB((width) / 2, 0, length, 1 - width / 2, height, 0);
 	public static final AxisAlignedBB SOUTH_AXIS = new AxisAlignedBB((width) / 2, 0, 1, 1 - width / 2, height, 1 - length);
 	public static final AxisAlignedBB WEST_AXIS = new AxisAlignedBB(length, 0, (width) / 2, 0, height, 1 - width / 2);
@@ -48,7 +47,7 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null && tile instanceof TileLargeDisplayScreen) {
+		if (tile instanceof TileLargeDisplayScreen) {
 			TileLargeDisplayScreen source = ((TileLargeDisplayScreen) tile);
 			ConnectedDisplay connectedDisplay = source.getConnectedDisplay();
 			if(connectedDisplay == null){
@@ -71,10 +70,9 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 	//// STATE \\\\
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess w, BlockPos pos) {
-		IBlockState currentState = state;
 		List<EnumFacing> faces = new ArrayList<>();
 		TileEntity tile = w.getTileEntity(pos);
-		if (tile != null && tile instanceof TileLargeDisplayScreen) {
+		if (tile instanceof TileLargeDisplayScreen) {
 			TileLargeDisplayScreen screen = (TileLargeDisplayScreen) tile;
 			for (EnumFacing face : EnumFacing.VALUES) {
 				if (face == screen.getCableFace() || face == screen.getCableFace().getOpposite()) {
@@ -127,7 +125,7 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 			}
 		}
 		DisplayConnections type = DisplayConnections.getType(faces);
-		return currentState.withProperty(SonarProperties.ROTATION, EnumFacing.NORTH).withProperty(TYPE, type);
+		return state.withProperty(SonarProperties.ROTATION, EnumFacing.NORTH).withProperty(TYPE, type);
 	}
 
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -136,6 +134,6 @@ public class BlockLargeDisplay extends BlockAbstractDisplay {
 
 	@Override
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { SonarProperties.ORIENTATION, SonarProperties.ROTATION, TYPE });
+		return new BlockStateContainer(this, SonarProperties.ORIENTATION, SonarProperties.ROTATION, TYPE);
 	}
 }

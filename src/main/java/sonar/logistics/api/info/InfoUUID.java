@@ -46,7 +46,7 @@ public class InfoUUID implements INBTSyncable {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof InfoUUID) {
+		if (obj instanceof InfoUUID) {
 			return this.identity == ((InfoUUID) obj).identity && this.channelID == ((InfoUUID) obj).channelID;
 		}
 		return false;
@@ -57,11 +57,8 @@ public class InfoUUID implements INBTSyncable {
 	}
 
 	public static boolean valid(InfoUUID uuid) {
-		if (uuid == null || uuid.identity < 0 || uuid.channelID < 0) {
-			return false;
-		}
-		return true;
-	}
+        return uuid != null && uuid.identity >= 0 && uuid.channelID >= 0;
+    }
 
 	/** if this uuid has been received from the server yet */
 	public static boolean shouldRender(InfoUUID uuid) {

@@ -13,8 +13,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,7 +22,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.api.IFlexibleGui;
@@ -42,12 +39,10 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.sync.SyncableList;
-import sonar.core.utils.CustomColour;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.buttons.EmptyInfoElement;
-import sonar.logistics.api.displays.elements.ElementSelectionType;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
@@ -61,7 +56,6 @@ import sonar.logistics.api.errors.IInfoError;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.api.tiles.displays.DisplayScreenLook;
@@ -70,15 +64,12 @@ import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
-import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.client.gsi.GSIOverlays;
 import sonar.logistics.client.gui.display.GuiEditElementsList;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
-import sonar.logistics.info.types.InfoError;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
@@ -158,7 +149,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				grid_mode.onClicked(type, click);
 			} else {
 				Tuple<IDisplayElement, double[]> clickedElement = getElementFromXY(click.clickX - 0.0625, click.clickY - 0.0625);
-				if ((clickedElement == null || clickedElement.getFirst() == null || !isEditContainer(clickedElement.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
+				if ((clickedElement == null || !isEditContainer(clickedElement.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
 					//// COMPLETES ELEMENT SELECTION MODE \\\\
 					for (DisplayElementContainer container : containers.values()) {
 						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX - 0.0625, click.clickY - 0.0625)) {
@@ -184,9 +175,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 					if (clickedElement != null && clickedElement.getFirst() instanceof IClickableElement) {
 						List<IInfoError> errors = getErrors(clickedElement.getFirst());
 						if (errors != null && !errors.isEmpty()) {
-							if (world.isRemote) {
-								player.sendMessage(new TextComponentTranslation(errors.get(0).getDisplayMessage().get(0)));
-							}
+							player.sendMessage(new TextComponentTranslation(errors.get(0).getDisplayMessage().get(0)));
 							return true;
 						}
 						int gui = ((IClickableElement) clickedElement.getFirst()).onGSIClicked(click, player, clickedElement.getSecond()[0], clickedElement.getSecond()[1]);
@@ -231,7 +220,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		lookElement = null;
 		if (look != null) {
 			Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX - 0.0625, look.lookY - 0.0625);
-			if (e != null && e.getFirst() != null && e.getFirst() instanceof ILookableElement) {
+			if (e != null && e.getFirst() instanceof ILookableElement) {
 				lookElement = e.getFirst();
 				lookX = e.getSecond()[0];
 				lookY = e.getSecond()[1];
@@ -283,7 +272,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	//// INFO REFERENCES \\\\
 
 	public void forEachValidUUID(Consumer<InfoUUID> action) {
-		references.forEach(uuid -> action.accept(uuid));
+		references.forEach(action);
 	}
 
 	public void forEachElement(Consumer<IDisplayElement> action) {
@@ -353,9 +342,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public void removeInfoErrors(List<IInfoError> errors) {
 		if (!getWorld().isRemote && !errors.isEmpty()) {
-			if (errors.removeAll(errors)) {
-				sendInfoContainerPacket();
-			}
+			errors.clear();
+			sendInfoContainerPacket();
 		}
 
 	}
@@ -392,7 +380,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			List<IInfoError> validErrors = new ArrayList<>();
 			for (IInfoError error : errors) {
 				List<InfoUUID> affected = error.getAffectedUUIDs();
-				boolean valid = affected.stream().anyMatch(uuid -> uuids.contains(uuid));
+				boolean valid = affected.stream().anyMatch(uuids::contains);
 				if (valid) {
 					validErrors.add(error);
 				}
@@ -661,12 +649,9 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			PL2.network.sendTo(new PacketGSIConnectedDisplayValidate(this, display), player);
 		} else if (display instanceof TileAbstractDisplay) {
 			//two tick delay to wait for multiparts to be sent to client
-			LogisticsEventHandler.instance().NOTIFYING.scheduleRunnable(() -> {
-				PL2.network.sendTo(new PacketGSIStandardDisplayValidate((TileAbstractDisplay) display, this), player);
-			}, 2);
+			LogisticsEventHandler.instance().NOTIFYING.scheduleRunnable(() -> PL2.network.sendTo(new PacketGSIStandardDisplayValidate((TileAbstractDisplay) display, this), player), 2);
 
-			;
-		}
+        }
 	}
 
 	public void sendInvalidatePacket(EntityPlayerMP player) {
@@ -844,11 +829,11 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				}
 				PL2.proxy.getServerManager().displays.put(getDisplayGSIIdentity(), this);
 				List<EntityPlayerMP> watchers = ChunkViewerHandler.instance().getWatchingPlayers(this);
-				watchers.forEach(watcher -> sendValidatePacket(watcher));
+				watchers.forEach(this::sendValidatePacket);
 			} else {
 				PL2.proxy.getClientManager().displays_gsi.put(getDisplayGSIIdentity(), this);
 			}
-			forEachElement(e -> validateElement(e));
+			forEachElement(this::validateElement);
 
 			PL2.logger.info("Validated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
 		}
@@ -864,7 +849,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				PL2.proxy.getClientManager().displays_gsi.remove(getDisplayGSIIdentity());
 			}
 			LocalProviderHandler.doInfoReferenceDisconnect(this, references);
-			forEachElement(e -> invalidateElement(e));
+			forEachElement(this::invalidateElement);
 			PL2.logger.info("Invalidated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
 		}
 	}

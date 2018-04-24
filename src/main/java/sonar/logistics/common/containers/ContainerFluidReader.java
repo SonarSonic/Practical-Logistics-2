@@ -15,6 +15,8 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.readers.TileFluidReader;
 import sonar.logistics.info.types.MonitoredFluidStack;
 
+import javax.annotation.Nonnull;
+
 public class ContainerFluidReader extends ContainerMultipartSync {
 
 	private static final int INV_START = 0, INV_END = INV_START + 26, HOTBAR_START = INV_END + 1, HOTBAR_END = HOTBAR_START + 8;
@@ -43,13 +45,13 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = (Slot) this.inventorySlots.get(par2);
+		Slot slot = this.inventorySlots.get(par2);
 
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 
-			if (stackMode && par2 >= INV_START) {
+			if (stackMode) {
 				if (!part.getWorld().isRemote) {
 					ItemStack copy = itemstack1.copy();
 					FluidStack fluid = FluidUtil.getFluidContained(copy);
@@ -62,11 +64,11 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 				if (!this.mergeItemStack(itemstack1.copy(), 0, INV_START, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (par2 >= INV_START && par2 < HOTBAR_START) {
+			} else if (par2 < HOTBAR_START) {
 				if (!this.mergeItemStack(itemstack1, HOTBAR_START, HOTBAR_END + 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (par2 >= HOTBAR_START && par2 < HOTBAR_END + 1) {
+			} else if (par2 < HOTBAR_END + 1) {
 				if (!this.mergeItemStack(itemstack1, INV_START, INV_END + 1, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -93,13 +95,15 @@ public class ContainerFluidReader extends ContainerMultipartSync {
 			part.getListenerList().removeListener(player, true, ListenerType.OLD_GUI_LISTENER);
 	}
 
-	public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
-		Slot targetSlot = slotID < 0 ? null : (Slot) this.inventorySlots.get(slotID);
+	@Nonnull
+    public ItemStack slotClick(int slotID, int drag, ClickType click, EntityPlayer player) {
+		Slot targetSlot = slotID < 0 ? null : this.inventorySlots.get(slotID);
 		if ((targetSlot instanceof SlotList)) {
 			if (drag == 2) {
 				targetSlot.putStack(null);
 			} else {
-				targetSlot.putStack(player.inventory.getItemStack() == null ? null : player.inventory.getItemStack().copy());
+                player.inventory.getItemStack();
+                targetSlot.putStack(player.inventory.getItemStack().copy());
 			}
 			return player.inventory.getItemStack();
 		}

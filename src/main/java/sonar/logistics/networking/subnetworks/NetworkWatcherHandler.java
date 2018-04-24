@@ -78,8 +78,7 @@ public class NetworkWatcherHandler implements INetworkHandler {
 			
 			final AbstractChangeableList<IProvidableInfo> updateList = currentList == null ? newChangeableList() : currentList;
 			updateList.saveStates();
-			networkList.createSaveableList().forEach(obj -> updateList.add(obj));
-			AbstractChangeableList<IProvidableInfo> viewableList = updateList;
+			networkList.createSaveableList().forEach(updateList::add);
 			if (reader instanceof INetworkReader) {
 				((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels, uuid);
 			}

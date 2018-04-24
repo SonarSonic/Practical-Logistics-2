@@ -31,7 +31,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
@@ -42,11 +41,9 @@ import sonar.logistics.api.tiles.readers.INetworkReader;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
-import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.networking.PL2ListenerList;
-import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.sync.SyncMonitoredType;
 
 public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogistics implements INetworkReader<T>, IByteBufTile, IFlexibleGui {
@@ -56,7 +53,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	public final PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
 	public final ChannelList list = new ChannelList(getIdentity(), this.channelType(), -2);
 	protected List<INetworkHandler> validHandlers = null;
-	public SyncMonitoredType<T> selectedInfo = new SyncMonitoredType<T>(-5);
+	public SyncMonitoredType<T> selectedInfo = new SyncMonitoredType<>(-5);
 	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-4);
 	public int lastPos = -1;
 

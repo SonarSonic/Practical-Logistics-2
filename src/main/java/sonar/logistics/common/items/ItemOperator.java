@@ -39,6 +39,8 @@ import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.ServerInfoHandler;
 
+import javax.annotation.Nonnull;
+
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
 
 	//// IOperatorTool \\\\
@@ -53,7 +55,8 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 
 	//// INTERACTIONS \\\\
 
-	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	@Nonnull
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Optional<IMultipartContainer> c = MultipartHelper.getContainer(world, pos);
 		if (c.isPresent()) {
 			IBlockState state = world.getBlockState(pos);
@@ -77,16 +80,14 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 				break;
 			case DEFAULT:
 				if (!player.isSneaking()) {
-					if (part != null && part instanceof IOperatorTile) {
+					if (part instanceof IOperatorTile) {
 						boolean operation = ((IOperatorTile) part).performOperation(result, mode, player, hand, facing, hitX, hitY, hitZ);
 						return operation ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
 					}
-				} else {
 				}
-
 				break;
 			case CHANNELS:
-				if (part != null && part instanceof IChannelledTile) {
+				if (part instanceof IChannelledTile) {
 					if (!world.isRemote) {
 						IChannelledTile tile = (IChannelledTile) part;
 						tile.getNetwork().sendConnectionsPacket(player);
@@ -117,7 +118,8 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		return EnumActionResult.PASS;
 	}
 
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	@Nonnull
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		if (player.isSneaking()) {
 			stack = changeOperatorMode(stack);
@@ -155,7 +157,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		switch (id) {
 		case 0:
 			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(tag.getInteger("hash"));
-			if (listen != null && listen instanceof IChannelledTile) {
+			if (listen instanceof IChannelledTile) {
 				IChannelledTile tile = (IChannelledTile) listen;
 				return new ContainerChannelSelection(tile);
 			}
@@ -168,7 +170,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		switch (id) {
 		case 0:
 			ILogicListenable listen = ClientInfoHandler.instance().getIdentityTile(tag.getInteger("hash"));
-			if (listen != null && listen instanceof IChannelledTile) {
+			if (listen instanceof IChannelledTile) {
 				IChannelledTile tile = (IChannelledTile) listen;
 				return new GuiChannelSelection(player, tile, 0);
 			}

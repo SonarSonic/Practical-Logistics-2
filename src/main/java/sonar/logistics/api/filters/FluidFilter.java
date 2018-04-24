@@ -21,7 +21,7 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 
 	public static final String id = "fluid";
 
-	public SyncNBTAbstractList<StoredFluidStack> list = new SyncNBTAbstractList<StoredFluidStack>(StoredFluidStack.class, 1);
+	public SyncNBTAbstractList<StoredFluidStack> list = new SyncNBTAbstractList<>(StoredFluidStack.class, 1);
 	{
 		syncList.addPart(list);
 	}
@@ -72,9 +72,9 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 	@Override
 	public void renderInfoInList(GuiSonar screen, int yPos) {
 		GlStateManager.scale(0.75, 0.75, 0.75);
-		FontHelper.text("Fluid Filter", 16, (int)((yPos + 2)*1/0.75), Color.white.getRGB());		
-		FontHelper.text("Type: " + this.getTransferMode().name(), 88, (int)((yPos + 2)*1/0.75), Color.white.getRGB());
-		FontHelper.text("List Type: " + this.getListType().name(), 200, (int)((yPos + 2)*1/0.75), Color.white.getRGB());
+		FontHelper.text("Fluid Filter", 16, (int)((yPos + 2) /0.75), Color.white.getRGB());
+		FontHelper.text("Type: " + this.getTransferMode().name(), 88, (int)((yPos + 2) /0.75), Color.white.getRGB());
+		FontHelper.text("List Type: " + this.getListType().name(), 200, (int)((yPos + 2) /0.75), Color.white.getRGB());
 		GlStateManager.scale(1/0.75, 1/0.75, 1/0.75);
 		
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
@@ -82,10 +82,7 @@ public class FluidFilter extends BaseFilter implements IFluidFilter {
 		GlStateManager.translate(0, 12, 0);
 		int yOffset = 0;
 		for (int i = 0; i < Math.min(12, list.objs.size()); i++) {
-			if (i == 12) {
-				yOffset++;
-			}
-			StoredFluidStack item = list.objs.get(i);
+            StoredFluidStack item = list.objs.get(i);
 
 			TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(item.fluid.getFluid().getStill().toString());
 			Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);

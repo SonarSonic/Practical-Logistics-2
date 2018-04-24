@@ -12,6 +12,8 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.networking.ServerInfoHandler;
 
+import javax.annotation.Nonnull;
+
 public class ConnectedDisplayData extends WorldSavedData {
 
 	public static final String IDENTIFIER = "sonar.logistics.networks.displays";
@@ -26,7 +28,7 @@ public class ConnectedDisplayData extends WorldSavedData {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbt) {
 		NBTTagList tag = nbt.getTagList("displays", NBT.TAG_COMPOUND);
 		
 		for (int t = 0; t < tag.tagCount(); t++) {
@@ -45,8 +47,9 @@ public class ConnectedDisplayData extends WorldSavedData {
 
 	}
 
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	@Nonnull
+    @Override
+	public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
 		NBTTagList list = new NBTTagList();
 		for (Entry<Integer, ConnectedDisplay> display : ServerInfoHandler.instance().connectedDisplays.entrySet()) {
 			if (display.getValue() != null) {

@@ -44,7 +44,7 @@ public class AE2DriveProvider implements ITileInfoProvider {
 		for (int i = 0; i < drives.getInternalInventory().getSlots(); i++) {
 			ItemStack is = drives.getInternalInventory().getStackInSlot(i);
 			List<IMEInventoryHandler> handlers = new ArrayList<>();
-			if (is != null) {
+			if (!is.isEmpty()) {
 				IMEInventoryHandler itemInventory = AEApi.instance().registries().cell().getCellInventory(is, null, Api.INSTANCE.storage().getStorageChannel(IItemStorageChannel.class)); //should ISaveProvider by null?
 				IMEInventoryHandler fluidInventory = AEApi.instance().registries().cell().getCellInventory(is, null, Api.INSTANCE.storage().getStorageChannel(IFluidStorageChannel.class));
 				handlers = Arrays.asList(itemInventory, fluidInventory);

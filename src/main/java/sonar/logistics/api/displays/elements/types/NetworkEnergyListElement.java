@@ -2,18 +2,13 @@ package sonar.logistics.api.displays.elements.types;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
 
-import net.minecraft.client.renderer.GlStateManager;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.helpers.DisplayElementHelper;
-import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredEnergyStack;
-import sonar.logistics.info.types.MonitoredItemStack;
 
 public class NetworkEnergyListElement extends NetworkListElement<MonitoredEnergyStack> {
 

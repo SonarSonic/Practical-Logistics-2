@@ -33,7 +33,7 @@ public class DisplayHelper {
 	}
 
 	public static List<ILogicListenable> getLocalProviders(IDisplay part, IBlockAccess world, BlockPos pos) {
-		List<ILogicListenable> providers = new ArrayList<ILogicListenable>();
+		List<ILogicListenable> providers = new ArrayList<>();
 		if (part instanceof ILargeDisplay) {
 			ConnectedDisplay display = ((ILargeDisplay) part).getConnectedDisplay();
 			providers = display != null ? display.getLocalProviders(providers) : getLocalProvidersFromDisplay(providers, world, pos, part);
@@ -51,7 +51,7 @@ public class DisplayHelper {
 		IBlockAccess actualWorld = SonarMultipartHelper.unwrapBlockAccess(world);
 		Optional<IMultipartTile> connectedPart = SonarMultipartHelper.getMultipartTile(actualWorld, pos, EnumFaceSlot.fromFace(part.getCableFace()), tile -> true);
 		if (connectedPart.isPresent() && connectedPart.get() instanceof IInfoProvider) {
-			if (!viewables.contains((IInfoProvider) connectedPart.get())) {
+			if (!viewables.contains(connectedPart.get())) {
 				viewables.add((IInfoProvider) connectedPart.get());
 			}
 		} else {

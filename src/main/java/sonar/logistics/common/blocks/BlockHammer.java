@@ -18,6 +18,8 @@ import sonar.core.common.block.SonarMaterials;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
+import javax.annotation.Nonnull;
+
 public class BlockHammer extends SonarMachineBlock {
 
 	public BlockHammer() {
@@ -37,24 +39,21 @@ public class BlockHammer extends SonarMachineBlock {
 	//// CREATE \\\\
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int i) {
 		return new TileEntityHammer();
 	}
 
 	@Override
-	public boolean canPlaceBlockAt(World world, BlockPos pos) {
-		if (!world.isAirBlock(pos.offset(EnumFacing.UP, 1)) || !world.isAirBlock(pos.offset(EnumFacing.UP, 2))) {
-			return false;
-		}
-		return true;
-	}
+	public boolean canPlaceBlockAt(World world, @Nonnull BlockPos pos) {
+        return world.isAirBlock(pos.offset(EnumFacing.UP, 1)) && world.isAirBlock(pos.offset(EnumFacing.UP, 2));
+    }
 
 	//// EVENTS \\\\
 
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		super.breakBlock(world, pos, state);
-		forEachPosition(pos, p -> world.setBlockToAir(p));
+		forEachPosition(pos, world::setBlockToAir);
 	}
 
 	@Override
@@ -74,6 +73,7 @@ public class BlockHammer extends SonarMachineBlock {
 		return true;
 	}
 
+	@Nonnull
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}

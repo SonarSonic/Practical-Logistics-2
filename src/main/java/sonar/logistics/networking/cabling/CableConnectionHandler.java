@@ -5,15 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-
-import mcmultipart.api.container.IPartInfo;
-import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
@@ -22,13 +17,9 @@ import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.networks.EmptyLogisticsNetwork;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.networking.LogisticsNetworkHandler;
-import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.events.NetworkEvent;
-import sonar.logistics.networking.events.NetworkPartEvent;
 
 public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable> {
 
@@ -166,7 +157,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 			List<IDataCable> cables = getConnections(id);
 			if (cables.isEmpty()) {
 				ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(id);
-				if (network != null) {
+				if (network.isValid()) {
 					network.onNetworkRemoved();
 				}
 			}
@@ -212,7 +203,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	@Override
 	public void addConnectionToNetwork(IDataCable add) {
 		int networkID = addConnection(add);
-		queueNetworkChange(add.getRegistryID());
+		queueNetworkChange(networkID);
 	}
 
 	@Override

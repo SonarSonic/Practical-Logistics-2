@@ -29,8 +29,6 @@ import sonar.logistics.api.viewers.ListenerType.UpdateType;
 import sonar.logistics.api.viewers.UpdateListenerList;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.CacheHandler;
-import sonar.logistics.networking.displays.ChunkViewerHandler;
-import sonar.logistics.networking.events.LogisticsEventHandler;
 
 public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels implements INetworkListChannels<H> {
 
@@ -135,7 +133,7 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 
 	@Override
 	public void removeConnection(CacheHandler cache, INetworkListener connection) {
-		if (readers.remove(connection)) {
+		if (connection instanceof IListReader && readers.remove(connection)) {
 			removeReaderUsedChannels(((IListReader) connection).getIdentity());
 			onChannelsChanged();
 			tickChannels();
@@ -145,7 +143,7 @@ public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkLis
 	@Override
 	public void onChannelsChanged() {
 		channels = handler.getAllChannels(new HashMap<>(), network);
-		readers.forEach(reader -> updateReaderUsedChannels(reader));
+		readers.forEach(this::updateReaderUsedChannels);
 		tickChannels();
 	}
 

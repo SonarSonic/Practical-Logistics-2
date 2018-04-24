@@ -147,7 +147,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		List<String> used = new ArrayList<>();
 		Method[] methods = classType.getMethods();
 		for (Method method : methods) {
-			if (!used.contains(method.getName()) && (methodNames.isEmpty() || (exclude ? !methodNames.contains(method.getName()) : methodNames.contains(method.getName())))) {
+			if (!used.contains(method.getName()) && (methodNames.isEmpty() || (exclude != methodNames.contains(method.getName())))) {
 				boolean validParams = validateParameters(method.getParameterTypes()), validReturns = isValidReturnType(method.getReturnType());
 				if (validParams && validReturns) {
 					validMethods.get(type).get(classType).add(method);
@@ -178,7 +178,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		validFields.get(type).putIfAbsent(classType, new ArrayList<>());
 		Field[] fields = classType.getDeclaredFields();
 		for (Field field : fields) {
-			if ((fieldNames.isEmpty() || (exclude ? !fieldNames.contains(field.getName()) : fieldNames.contains(field.getName())))) {
+			if ((fieldNames.isEmpty() || (exclude != fieldNames.contains(field.getName())))) {
 				if (!field.isAccessible())
 					field.setAccessible(true);
 				boolean validReturns = isValidReturnType(field.getType());
@@ -388,12 +388,12 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 				if (arg instanceof IInventory) {
 					Map<String, Integer> fields = validInvFields.get(argClass);
 					if (fields != null && !fields.isEmpty()) {
-						fields.entrySet().forEach(field -> {
-							LogicPath invPath = currentPath.dupe();
-							invPath.addObject(new InvField(field.getKey(), field.getValue(), type));
-							invPath.setRegistryType(type);
-							infoList.add(LogicInfo.buildDirectInfo(argClass.getSimpleName() + "." + field.getKey(), type, ((IInventory) arg).getField(field.getValue())).setPath(invPath));
-						});
+						fields.forEach((key, value) -> {
+                            LogicPath invPath = currentPath.dupe();
+                            invPath.addObject(new InvField(key, value, type));
+                            invPath.setRegistryType(type);
+                            infoList.add(LogicInfo.buildDirectInfo(argClass.getSimpleName() + "." + key, type, ((IInventory) arg).getField(value)).setPath(invPath));
+                        });
 					}
 				}
 				addCapabilities(infoList, currentPath.dupe(), arg, currentFace, available);
@@ -429,22 +429,21 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 		}
 		Pair<Boolean, T> newPaired = null;
 		if (!connections.isEmpty()) {
-			T info = monitorInfo;
-			if (info.getPath() == null) { // RESTORE PATH FOR SAVED INFO
-				IMonitoredValue<T> latest = updateInfo.find(info);
+			if (monitorInfo.getPath() == null) { // RESTORE PATH FOR SAVED INFO
+				IMonitoredValue<T> latest = updateInfo.find(monitorInfo);
 				// Object latest = updateInfo.getLatestInfo(info).b;
 				if (latest != null) {
 					IInfo saveableInfo = latest.getSaveableInfo();
-					if (saveableInfo != null && saveableInfo instanceof IProvidableInfo) {
+					if (saveableInfo instanceof IProvidableInfo) {
 						IProvidableInfo latestInfo = ((IProvidableInfo) saveableInfo);
 						if (latestInfo.getPath() != null) {
-							info.setPath(latestInfo.getPath().dupe());
+							monitorInfo.setPath(latestInfo.getPath().dupe());
 						}
 					}
 				}
 			}
 			// FIXME emergency path recovery - Happens when a list isn't being updated but the info in it is
-			if (info.getPath() == null) {
+			if (monitorInfo.getPath() == null) {
 				NodeConnection connect = connections.get(0);
 				InfoChangeableList list = InfoChangeableList.newChangeableList();
 				if (connect instanceof BlockConnection) {
@@ -452,19 +451,19 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 				} else if (connect instanceof EntityConnection) {
 					list = InfoNetworkHandler.INSTANCE.updateInfo(null, list, (EntityConnection) connect);
 				}
-				IMonitoredValue<T> latest = list.find(info);
+				IMonitoredValue<T> latest = list.find(monitorInfo);
 				if (latest != null) {
 					IInfo saveableInfo = latest.getSaveableInfo();
-					if (saveableInfo != null && saveableInfo instanceof IProvidableInfo) {
+					if (saveableInfo instanceof IProvidableInfo) {
 						IProvidableInfo latestInfo = ((IProvidableInfo) saveableInfo);
 						if (latestInfo.getPath() != null) {
-							info.setPath(latestInfo.getPath().dupe());
+							monitorInfo.setPath(latestInfo.getPath().dupe());
 						}
 					}
 				}
 				//what happens if we didn't get it???
 			}
-			newPaired = getLatestInfo(info, connections.get(0));
+			newPaired = getLatestInfo(monitorInfo, connections.get(0));
 		}
 		if (newPaired == null) {
 			IMonitoredValue<T> latest = updateInfo.find(monitorInfo);

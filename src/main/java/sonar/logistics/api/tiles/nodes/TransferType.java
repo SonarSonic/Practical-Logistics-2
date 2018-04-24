@@ -5,5 +5,5 @@ public enum TransferType {
 	ITEMS,
 	FLUID,
 	ENERGY,
-	GAS;	
+	GAS
 }

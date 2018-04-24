@@ -18,15 +18,7 @@ import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
-import sonar.logistics.networking.LogisticsNetworkHandler;
-import sonar.logistics.networking.ServerInfoHandler;
-import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
-import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
-import sonar.logistics.networking.cabling.WirelessDataManager;
-import sonar.logistics.networking.cabling.WirelessRedstoneManager;
-import sonar.logistics.networking.displays.ChunkViewerHandler;
-import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
 
 public class PL2Events {
@@ -70,13 +62,13 @@ public class PL2Events {
 		BlockPos pos = event.getPos();
 		World world = event.getWorld();
 		EntityPlayer player = event.getEntityPlayer();
-		if (pos != null && world != null && player != null) {
+		if (world != null && player != null) {
 			if (coolDownClick == 0) {
 				IBlockState state = world.getBlockState(pos);
 				Block block = state.getBlock();
 				if (block == MCMultiPart.multipart) {
 					IDisplay display = CableHelper.getDisplay(world, pos, EnumDisplayFaceSlot.fromFace(event.getFace()));
-					if (display != null && display instanceof TileAbstractDisplay) {
+					if (display instanceof TileAbstractDisplay) {
 						if (display.getGSI() != null) {
 							Vec3d vec = event.getHitVec();
 							float vecX = (float) vec.x - pos.getX();

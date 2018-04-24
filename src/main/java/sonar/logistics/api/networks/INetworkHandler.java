@@ -6,15 +6,15 @@ import sonar.logistics.api.tiles.readers.IListReader;
 public interface INetworkHandler {
 	
 	//public String id();
-	public default int getReaderID(IListReader reader) {
+	default int getReaderID(IListReader reader) {
 		return 0;
 	}
 	
-	public default InfoUUID getReaderUUID(IListReader reader){
+	default InfoUUID getReaderUUID(IListReader reader){
 		return new InfoUUID(reader.getIdentity(), getReaderID(reader));
 	}
 		
-	public int updateRate();
+	int updateRate();
 	
-	public Class<? extends INetworkChannels> getChannelsType();
+	Class<? extends INetworkChannels> getChannelsType();
 }

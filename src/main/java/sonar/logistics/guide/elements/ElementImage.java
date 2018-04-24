@@ -1,5 +1,6 @@
 package sonar.logistics.guide.elements;
 
+import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.IGuidePage;
@@ -48,7 +49,7 @@ public class ElementImage implements IGuidePageElement {
 	public void drawForegroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
 		gui.mc.getTextureManager().bindTexture(location);
 		// gui.drawTexturedModalRect(x, y, 0, 0 , 64, 64);
-		gui.drawScaledCustomSizeModalRect(x, y, minU, minV, maxU, maxV, width, height, maxU, maxU);
+		Gui.drawScaledCustomSizeModalRect(x, y, minU, minV, maxU, maxV, width, height, maxU, maxU);
 
 	}
 

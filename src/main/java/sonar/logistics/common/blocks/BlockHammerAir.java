@@ -18,6 +18,8 @@ import sonar.core.SonarCore;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
+import javax.annotation.Nonnull;
+
 public class BlockHammerAir extends Block {
 
 	public BlockHammerAir() {
@@ -29,7 +31,7 @@ public class BlockHammerAir extends Block {
 		for (int i = 1; i < 3; i++) {
 			BlockPos adj = pos.offset(EnumFacing.DOWN, i);
 			TileEntity tile = world.getTileEntity(adj);
-			if (tile != null && tile instanceof TileEntityHammer) {
+			if (tile instanceof TileEntityHammer) {
 				SonarCore.instance.guiHandler.openBasicTile(false, tile, player, world, adj, 0);
 				return true;
 			}
@@ -41,7 +43,7 @@ public class BlockHammerAir extends Block {
 	//// EVENTS \\\\
 
 	@Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+	public void breakBlock(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
 		world.setBlockToAir(pos);
 		for (int i = 1; i < 3; i++) {
 			BlockPos adj = pos.offset(EnumFacing.DOWN, i);
@@ -71,6 +73,7 @@ public class BlockHammerAir extends Block {
 		return false;
 	}
 
+	@Nonnull
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.INVISIBLE;
 	}
@@ -82,7 +85,8 @@ public class BlockHammerAir extends Block {
 		return 0;
 	}
 
-	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+	@Nonnull
+	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
 		return new ItemStack(PL2Blocks.hammer, 1, 0);
 	}
 }

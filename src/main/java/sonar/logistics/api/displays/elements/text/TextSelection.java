@@ -65,14 +65,9 @@ public class TextSelection {
 			return true;
 		}
 
-		if (end > s && end < e) {
+        return end > s && end < e;
 
-			return true;
-
-		}
-
-		return false;
-	}
+    }
 
 	public void combine(TextSelection selection) {
 		combine(selection.startX, selection.endX, selection.startY, selection.endY);

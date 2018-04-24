@@ -22,7 +22,7 @@ import sonar.logistics.networking.sorters.SortingHelper;
 /** used when syncing Logic Monitors for display in the Display Screen with the client, since some may not be loaded on client side. */
 public class ClientLocalProvider implements INBTSyncable {
 
-	public List<ISyncPart> syncParts = new ArrayList<ISyncPart>();
+	public List<ISyncPart> syncParts = new ArrayList<>();
 	public SyncTagType.INT identity = new SyncTagType.INT(0);
 	public SyncCoords coords = new SyncCoords(1);
 	public ItemStack stack;
@@ -71,16 +71,11 @@ public class ClientLocalProvider implements INBTSyncable {
 	}
 
 	public ILogicListenable getViewable() {
-		ILogicListenable viewable = ClientInfoHandler.instance().getIdentityTile(identity.getObject());
-		if (viewable != null && viewable instanceof ILogicListenable) {
-			ILogicListenable partViewer = (ILogicListenable) viewable;
-			viewable = (ILogicListenable) viewable;
-		}
-		return viewable;
+		return ClientInfoHandler.instance().getIdentityTile(identity.getObject());
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof ClientWirelessEmitter) {
+		if (obj instanceof ClientWirelessEmitter) {
 			return hashCode() == obj.hashCode() && coords.getCoords().equals(((ClientWirelessEmitter) obj).coords.getCoords());
 		}
 		return false;

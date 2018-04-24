@@ -3,6 +3,7 @@ package sonar.logistics.common.multiparts.cables;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mcmultipart.api.container.IPartInfo;
@@ -40,7 +41,8 @@ public class BlockRedstoneCable extends BlockLogistics {
 		super(PL2Multiparts.REDSTONE_CABLE);
 	}
 
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+	@Nonnull
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return PL2Properties.cableBox;
 	}
 
@@ -60,14 +62,14 @@ public class BlockRedstoneCable extends BlockLogistics {
 		return collidingBoxes;
 	}
 
-	public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+	public void addCollisionBoxToList(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
 		super.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entityIn, isActualState);
 		List<AxisAlignedBB> boxes = getSelectionBoxes(world, pos, new ArrayList<>());
 		boxes.forEach(box -> addCollisionBoxToList(pos, entityBox, collidingBoxes, box));
 	}
 
 	@Override
-	public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
+	public RayTraceResult collisionRayTrace(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
 		return RayTraceHelper.rayTraceBoxes(pos, start, end, getSelectionBoxes(world, pos, new ArrayList<>())).getLeft();
 	}
 
@@ -104,8 +106,9 @@ public class BlockRedstoneCable extends BlockLogistics {
 		}
 	}
 
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	@Nonnull
+    @Override
+	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileRedstoneCable cable = RedstoneCableHelper.getCable(world, pos);
 		if (cable == null) {
 			return state;
@@ -116,7 +119,8 @@ public class BlockRedstoneCable extends BlockLogistics {
 		return state;
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public IBlockState getStateFromMeta(int meta) {
 		IBlockState state = this.getDefaultState();
 		for (PropertyCableFace p : PL2Properties.CABLE_FACES) {
@@ -130,7 +134,8 @@ public class BlockRedstoneCable extends BlockLogistics {
 		return state.getValue(PL2Properties.ACTIVE) ? 1 : 0;
 	}
 
-	public BlockStateContainer createBlockState() {
+	@Nonnull
+    public BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, PL2Properties.ACTIVE, PL2Properties.NORTH, PL2Properties.EAST, PL2Properties.SOUTH, PL2Properties.WEST, PL2Properties.DOWN, PL2Properties.UP);
 	}
 

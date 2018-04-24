@@ -6,7 +6,7 @@ import sonar.logistics.PL2Translate;
 /** all the modes used by the Fluid Reader */
 public class FluidReader {
 
-	public static enum Modes {
+	public enum Modes {
 		TANKS, SELECTED, POS, STORAGE;
 		Localisation desc, name;
 
@@ -24,7 +24,7 @@ public class FluidReader {
 		}
 	}
 
-	public static enum SortingType {
+	public enum SortingType {
 		STORED, NAME, MODID, TEMPERATURE;
 		Localisation name;
 

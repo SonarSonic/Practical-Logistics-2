@@ -5,6 +5,6 @@ public enum Result {
 	SUCCESS, PASS, FAIL;
 	
 	public boolean getBoolean(){
-		return this == Result.FAIL ? false : true;
+		return this != Result.FAIL;
 	}
 }

@@ -5,10 +5,7 @@ import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
 import static net.minecraft.client.renderer.GlStateManager.translate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,7 +24,6 @@ import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.IStyledString;
 import sonar.logistics.api.displays.elements.text.SonarStyling;
 import sonar.logistics.api.displays.elements.text.StyledInfo;
@@ -164,7 +160,7 @@ public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 						if (cursorPosition.y != 0) {
 							int newPosition = text.getLineLength(cursorPosition.y - 1);
 							StyledStringLine upLine = text.getLine(cursorPosition.y - 1);
-							line.forEach(string -> upLine.addWithCombine(string));
+							line.forEach(upLine::addWithCombine);
 							text.deleteLine(cursorPosition.y);
 							cursorPosition.setY(cursorPosition.y - 1);
 							cursorPosition.setX(newPosition);
@@ -240,7 +236,7 @@ public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 		String[] splits = string.split("\n");
 		for (String s : splits) {
 			StyledStringLine line = new StyledStringLine(text);
-			StyledStringHelper.getStyledStringsFromText(s).forEach(ss -> line.addWithCombine(ss));
+			StyledStringHelper.getStyledStringsFromText(s).forEach(line::addWithCombine);
 			lines.add(line);
 		}
 		return lines;
@@ -383,7 +379,7 @@ public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 						// DO STYLEDINFo
 						if (subStart >= 0 && subStart < subEnd) {
 							if (ss instanceof StyledInfo) {
-								RenderHelper.drawRect(subWidth + 0, 0, subWidth + ss.getStringWidth(), line.getStringHeight());
+								RenderHelper.drawRect(subWidth, 0, subWidth + ss.getStringWidth(), line.getStringHeight());
 							} else {
 								String text = ss.getUnformattedString();
 								String before = subStart == 0 ? "" : text.substring(0, subStart);
@@ -475,12 +471,12 @@ public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 
 	/** for every StyledStringCompound */
 	public void forCompounds(Consumer<StyledStringLine> format) {
-		text.forEach(t -> format.accept(t));
+		text.forEach(format::accept);
 	}
 
 	/** for every StyledString */
 	public void forStrings(Consumer<IStyledString> format) {
-		text.forEach(t -> t.getStrings().forEach(ss -> format.accept(ss)));
+		text.forEach(t -> t.getStrings().forEach(format::accept));
 	}
 
 	//// QUICK FORMATTING METHODS \\\\

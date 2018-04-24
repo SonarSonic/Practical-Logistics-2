@@ -15,7 +15,7 @@ import sonar.logistics.networking.displays.ChunkViewerHandler;
 /**used on Readers for caching the displays connected to their info*/
 public class PL2ListenerList extends ListenableList<PlayerListener> {
 	
-	private ListenerList<DisplayGSI> displayListeners = new ListenerList<DisplayGSI>(1);
+	private ListenerList<DisplayGSI> displayListeners = new ListenerList<>(1);
 
 	public PL2ListenerList(ISonarListenable<PlayerListener> listen, int maxTypes) {
 		super(listen, maxTypes);

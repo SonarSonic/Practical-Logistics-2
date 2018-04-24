@@ -3,7 +3,6 @@ package sonar.logistics.common.multiparts.readers;
 import java.util.List;
 import java.util.Map;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -24,7 +23,6 @@ import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.info.types.ProgressInfo;
 import sonar.logistics.networking.ServerInfoHandler;
-import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.networking.sorters.InfoSorter;
 import sonar.logistics.networking.subnetworks.NetworkWatcherHandler;
 
@@ -56,7 +54,7 @@ public class TileNetworkReader extends TileAbstractLogicReader<IProvidableInfo> 
 				if (pair != null && ProgressInfo.isStorableInfo(pair.getSaveableInfo()) && ProgressInfo.isStorableInfo(info.getSaveableInfo())) {
 					latestInfo = new ProgressInfo(info.getSaveableInfo(), pair.getSaveableInfo());
 				} else {
-					latestInfo = info != null ? info.getSaveableInfo() : InfoError.noData;
+					latestInfo = info.getSaveableInfo();
 				}
 			}
 			ServerInfoHandler.instance().changeInfo(this, id, latestInfo);

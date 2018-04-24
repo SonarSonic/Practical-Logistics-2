@@ -26,15 +26,15 @@ public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends
 	private List<SyncMonitoredType<T>> selected = Lists.newArrayListWithCapacity(getMaxInfo()), paired = Lists.newArrayListWithCapacity(getMaxInfo());
 	{
 		for (int i = 0; i < getMaxInfo(); i++) {
-			selected.add(i, new SyncMonitoredType<T>(i + 10));
-			paired.add(i, new SyncMonitoredType<T>(i + 10 + 100));
+			selected.add(i, new SyncMonitoredType<>(i + 10));
+			paired.add(i, new SyncMonitoredType<>(i + 10 + 100));
 		}
 		syncList.addParts(selected);
 		syncList.addParts(paired);
 	}
 
 	public List<T> getCachedInfo(List<SyncMonitoredType<T>> parts) {
-		List<T> cached = Lists.<T>newArrayList();
+		List<T> cached = Lists.newArrayList();
 		parts.forEach(i -> cached.add(i.getMonitoredInfo()));
 		return cached;
 	}
@@ -89,7 +89,7 @@ public abstract class TileAbstractLogicReader<T extends IProvidableInfo> extends
 				if (pair != null && ProgressInfo.isStorableInfo(pair.b) && ProgressInfo.isStorableInfo(info.b)) {
 					latestInfo = new ProgressInfo(info.b, pair.b);
 				} else {
-					latestInfo = info != null ? info.b : InfoError.noData;
+					latestInfo = info.b;
 				}
 			}
 			ServerInfoHandler.instance().changeInfo(this, id, latestInfo);

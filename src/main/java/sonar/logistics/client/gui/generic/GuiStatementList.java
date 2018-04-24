@@ -79,8 +79,8 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case LIST:
 			int start = 42;
-			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 48, 0 + 16 * tile.emitterMode().getObject().ordinal(), "Emit If: " + tile.emitterMode().getObject().name(), "button.EmitterMode"));
-			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20 * 1, guiTop + 6, 32, 128, "New Statement", "button.NewStatement"));
+			this.buttonList.add(new LogisticsButton(this, 0, guiLeft + start, guiTop + 6, 48, 16 * tile.emitterMode().getObject().ordinal(), "Emit If: " + tile.emitterMode().getObject().name(), "button.EmitterMode"));
+			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + start + 20, guiTop + 6, 32, 128, "New Statement", "button.NewStatement"));
 			this.buttonList.add(new LogisticsButton(this, 2, guiLeft + start + 20 * 2, guiTop + 6, 32, 0, PL2Translate.BUTTON_MOVE_UP.t(), "button.MoveUpStatement"));
 			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + start + 20 * 3, guiTop + 6, 32, 16, PL2Translate.BUTTON_MOVE_DOWN.t(), "button.MoveDownStatement"));
 			this.buttonList.add(new LogisticsButton(this, 4, guiLeft + start + 20 * 4, guiTop + 6, 32, 32, PL2Translate.BUTTON_DELETE.t(), "button.DeleteStatement"));
@@ -91,7 +91,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STATEMENT:
 			this.buttonList.add(new GuiButton(0, guiLeft + xSize / 2 - 60, guiTop + 116, 120, 20, "Input Type: " + currentFilter.getInputType()));
 			this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 6, guiTop + 16, 32, 48, "Info Source", "button.InfoSignallerSource"));
-			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 6, guiTop + 16 + 20 * 1, 32, 80, "Object Selection", "button.ObjectSelectionSource"));
+			this.buttonList.add(new LogisticsButton(this, 3, guiLeft + 6, guiTop + 16 + 20, 32, 80, "Object Selection", "button.ObjectSelectionSource"));
 			if (currentFilter.getInputType().usesInfo()) {
 				this.buttonList.add(new LogisticsButton(this, 2, guiLeft + 6, guiTop + 72, 32, 48, "Info Source", "button.InfoSignallerSource"));
 				this.buttonList.add(new LogisticsButton(this, 4, guiLeft + 6, guiTop + 92, 32, 80, "Object Selection", "button.ObjectSelectionSource"));
@@ -236,7 +236,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case CHANNELS:
 			FontHelper.textCentre(FontHelper.translate("Info Selection"), xSize, 6, LogisticsColours.white_text);
-			FontHelper.textCentre(String.format("Select the Info you wish to check against"), xSize, 18, LogisticsColours.grey_text);
+			FontHelper.textCentre("Select the Info you wish to check against", xSize, 18, LogisticsColours.grey_text);
 			break;
 		case LIST:
 			break;
@@ -250,7 +250,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 			if (InfoUUID.valid(uuid1)) {
 				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid1).copy();
-				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
+				if (monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>()), currentFilter.key1.getObject());
 					if (obj != null) {
@@ -262,7 +262,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			if (currentFilter.getInputType().usesInfo()) {
 				if (InfoUUID.valid(uuid2)) {
 					IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid2).copy();
-					if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
+					if (monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>()), currentFilter.key2.getObject());
 						if (obj != null) {
@@ -341,9 +341,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	public boolean isPairedInfo(Object info) {
 		if (info instanceof INetworkReader) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((INetworkReader) info).getCoords())) {
-					return true;
-				}
+                return RenderBlockSelection.isPositionRenderered(((INetworkReader) info).getCoords());
 			}
 		}
 		return false;
@@ -353,7 +351,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	public boolean isSelectedInfo(Object info) {
 		switch (state) {
 		case CHANNELS:
-			if (info != null && info instanceof InfoUUID && currentFilter != null) {
+			if (info instanceof InfoUUID && currentFilter != null) {
 				if (infoPos == 0)
 					return currentFilter.uuid1.getObject() != null && currentFilter.uuid1.getObject().equals(info);
 				else
@@ -365,7 +363,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STATEMENT:
 			break;
 		case STRING:
-			if (info != null && info instanceof ComparableObject && currentFilter != null) {
+			if (info instanceof ComparableObject && currentFilter != null) {
 				if (infoPos == 0)
 					return currentFilter.key1.getObject() != null && currentFilter.key1.getObject().equals(((ComparableObject) info).string);
 				else
@@ -394,7 +392,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case CHANNELS:
 			if (info instanceof InfoUUID) {
-				IInfo monitorInfo = ClientInfoHandler.instance().info.get((InfoUUID) info);
+				IInfo monitorInfo = ClientInfoHandler.instance().info.get(info);
 				if (monitorInfo != null) {
 					InfoRenderer.renderMonitorInfoInGUI(monitorInfo, yPos + 1, LogisticsColours.white_text.getRGB());
 				} else {
@@ -543,7 +541,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (InfoUUID.valid(uuid)) {
 				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid);
-				if (monitorInfo != null && monitorInfo instanceof IComparableInfo) {
+				if (monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;
 					List objects = new ArrayList<ComparableObject>();
 					comparable.getComparableObjects(objects);

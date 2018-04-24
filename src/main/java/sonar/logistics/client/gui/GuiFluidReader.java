@@ -78,7 +78,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 
 		int start = 8;
 		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + 8, guiTop + 9));
-		this.buttonList.add(new LogisticsButton.HELP(this, 3, guiLeft + start + 18 * 1, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 3, guiLeft + start + 18, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 128, 16 * part.setting.getObject().ordinal(), getSetting().getClientName(), getSetting().getDescription()));
 
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
@@ -126,14 +126,14 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 	@Override
 	public List<MonitoredFluidStack> getGridList() {
 		String search = searchField.getText();
-		if (search == null || search.isEmpty() || search.equals(" ") || search.equals(""))
+		if (search == null || search.isEmpty() || search.equals(" "))
 			return part.getMonitoredList().createSaveableList(part.getSorter());
 		else {
 			List<MonitoredFluidStack> searchlist = new ArrayList<>();
 			List<MonitoredFluidStack> cached = part.getMonitoredList().createSaveableList(part.getSorter());
 			for (MonitoredFluidStack stack : cached) {
 				StoredFluidStack fluidStack = stack.getStoredStack();
-				if (stack != null && fluidStack.fluid != null && fluidStack.fluid.getLocalizedName().toLowerCase().contains(searchField.getText().toLowerCase())) {
+				if (fluidStack.fluid != null && fluidStack.fluid.getLocalizedName().toLowerCase().contains(searchField.getText().toLowerCase())) {
 					searchlist.add(stack);
 				}
 			}
@@ -227,7 +227,7 @@ public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 		List list = new ArrayList<>();
 		list.add(fluidStack.fluid.getFluid().getLocalizedName(fluidStack.fluid));
 		if (fluidStack.stored != 0) {
-			list.add(TextFormatting.GRAY + (String) PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
+			list.add(TextFormatting.GRAY + PL2Translate.BUTTON_STORED.t() + ": " + fluidStack.stored + " mB");
 		}
 		drawHoveringText(list, x, y, fontRenderer);
 	}

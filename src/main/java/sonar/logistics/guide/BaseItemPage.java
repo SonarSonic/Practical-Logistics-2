@@ -23,7 +23,7 @@ public class BaseItemPage extends GeneralPage implements IGuidePage {
 	public double rotate = 0;
 
 	public BaseItemPage(int pageID, ItemStack stack) {
-		this(pageID, stack, new String[] { "guide." + stack.getUnlocalizedName().substring(5) + ".name" });
+		this(pageID, stack, "guide." + stack.getUnlocalizedName().substring(5) + ".name");
 	}
 
 	public BaseItemPage(int pageID, ItemStack stack, String... descKey) {

@@ -18,7 +18,7 @@ import sonar.logistics.api.cabling.IRedstoneConnectable;
 public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedstoneCable> {
 
 	public static RedstoneConnectionHandler instance() {
-		return PL2.instance.proxy.redstoneManager;
+		return PL2.proxy.redstoneManager;
 	}
 
 	public final List<Integer> forUpdate = new ArrayList<>();
@@ -39,10 +39,10 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 		networks.forEach((I, N) -> N.tick());
 
 		if (!forUpdate.isEmpty()) {
-			networks.values().forEach(network -> network.updateLocalPower());
-			networks.values().forEach(network -> network.updateGlobalPower());
+			networks.values().forEach(IRedstoneNetwork::updateLocalPower);
+			networks.values().forEach(IRedstoneNetwork::updateGlobalPower);
 			// networks.values().forEach(network -> network.notifyWatchingNetworksOfChange());
-			networks.values().forEach(network -> network.updateActualPower());
+			networks.values().forEach(IRedstoneNetwork::updateActualPower);
 			// L//ist<Integer> update = Lists.newArrayList(forUpdate);
 			// update.forEach(registryID -> updatePower(registryID));
 			forUpdate.clear();
@@ -102,14 +102,12 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 	}
 
 	public void addAllConnectionsToNetwork(IRedstoneCable cable, IRedstoneNetwork network) {
-		RedstoneCableHelper.getConnectables(cable).forEach(t -> network.addConnection(t));
+		RedstoneCableHelper.getConnectables(cable).forEach(network::addConnection);
 	}
 
 	/** called only by the logistics network to move connections from network to network */
 	public void removeAllConnectionsFromNetwork(IRedstoneCable cable, IRedstoneNetwork network) {
-		RedstoneCableHelper.getConnectables(cable).forEach(t -> {
-			network.removeConnection(t);
-		});
+		RedstoneCableHelper.getConnectables(cable).forEach(network::removeConnection);
 	}
 
 	//// ADD/REMOVE CABLES \\\\

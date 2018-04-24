@@ -34,9 +34,7 @@ public class PacketConnectedDisplayRemove implements IMessage {
 		@Override
 		public IMessage onMessage(PacketConnectedDisplayRemove message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					ClientInfoHandler.instance().getConnectedDisplays().remove(message.registryID);
-				});
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> ClientInfoHandler.instance().getConnectedDisplays().remove(message.registryID));
 			}
 			return null;
 		}

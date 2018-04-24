@@ -2,9 +2,6 @@ package sonar.logistics.api.displays.buttons;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -53,7 +50,7 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 		RenderHelper.drawModalRectWithCustomSizedTexture(0, 0, (buttonX * 16) * 0.0625, (buttonY * 16) * 0.0625, 1, 1, 16, 16);
 		
 		if (isPlayerLooking()) {
-			/** renders a blue select box around the button if has been clicked */
+			/* renders a blue select box around the button if has been clicked */
 			RenderHelper.drawModalRectWithCustomSizedTexture(0, 0, (15 * 16) * 0.0625, (15 * 16) * 0.0625, 1, 1, 16, 16);
 
 			double displayScale = 0.008;// FIXME

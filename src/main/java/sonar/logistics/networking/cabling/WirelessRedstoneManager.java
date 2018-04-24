@@ -12,7 +12,7 @@ import sonar.logistics.api.wireless.WirelessConnectionType;
 public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNetwork, IRedstoneEmitter, IRedstoneReceiver> {
 
 	public static WirelessRedstoneManager instance() {
-		return PL2.instance.proxy.wirelessRedstoneManager;
+		return PL2.proxy.wirelessRedstoneManager;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNe
 
 	/** disconnects two {@link IRedstoneNetwork}'s so the {@link IDataReceiver}'s network can no longer read the {@link IDataEmitter}'s network, however if multiple receivers/emitters between the two networks exist the networks will remain connected
 	 * @param watcher the {@link IDataReceiver}'s Network (which watches the emitters network)
-	 * @param connected the {@link IDataEmitters}'s Network (which is connected to by the receivers network) */
+	 * @param connected the {@link IDataEmitter}'s Network (which is connected to by the receivers network) */
 	public void disconnectNetworks(IRedstoneNetwork watcher, IRedstoneNetwork connected) {
 		if (watcher.isValid() && connected.isValid()) {
 			watcher.getListenerList().removeListener(connected, true, IRedstoneNetwork.CONNECTED_NETWORK);
@@ -57,7 +57,7 @@ public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNe
 	}
 
 	/** disconnects a {@link IDataReceiver} from a {@link IRedstoneNetwork}'s
-	 * @param main the {@link IDataReceiver}'s network
+	 * @param network the {@link IDataReceiver}'s network
 	 * @param receiver the {@link IDataReceiver} which has been disconnected */
 	public void onReceiverDisconnected(IRedstoneNetwork network, IRedstoneReceiver receiver) {
 		receiver.refreshConnectedNetworks();

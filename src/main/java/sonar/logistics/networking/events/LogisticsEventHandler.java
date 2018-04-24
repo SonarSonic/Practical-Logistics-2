@@ -6,9 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
-
-import com.google.common.collect.Lists;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -20,20 +17,16 @@ import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListener;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.nodes.IEntityNode;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
-import sonar.logistics.api.tiles.readers.IListReader;
-import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
-import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.LogisticsNetwork;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.NetworkHelper;
@@ -222,11 +215,11 @@ public class LogisticsEventHandler {
 	}
 
 	public void updateGlobalProviders(List<LogisticsNetwork> networks) {
-		networks.forEach(network -> network.createGlobalProviders());
+		networks.forEach(LogisticsNetwork::createGlobalProviders);
 	}
 
 	public void updateGlobalChannels(List<LogisticsNetwork> networks) {
-		networks.forEach(network -> network.createGlobalChannels());
+		networks.forEach(LogisticsNetwork::createGlobalChannels);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

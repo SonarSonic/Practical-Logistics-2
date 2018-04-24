@@ -84,7 +84,7 @@ public class SyncStatementList extends SyncPart {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof SyncStatementList) {
+		if (obj instanceof SyncStatementList) {
 			return ((SyncStatementList) obj).getObjects().equals(this.objs);
 		}
 		return false;

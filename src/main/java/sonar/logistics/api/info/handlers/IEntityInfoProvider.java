@@ -11,11 +11,11 @@ public interface IEntityInfoProvider {
 	/** @param world the world
 	 * @param entity the entity
 	 * @return if this handler can provide info on the given entity */
-	public boolean canProvide(World world, Entity entity);
+    boolean canProvide(World world, Entity entity);
 
 	/** allows you to add all types of info for a given Entity for use in the Info Reader
 	 * @param infoList the current info list
 	 * @param world the world
 	 * @param entity the entity */
-	public void provide(List<IProvidableInfo> infoList, World world, Entity entity);
+    void provide(List<IProvidableInfo> infoList, World world, Entity entity);
 }

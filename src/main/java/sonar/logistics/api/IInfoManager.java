@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -17,31 +16,31 @@ import sonar.logistics.api.viewers.ILogicListenable;
 
 public interface IInfoManager {
 
-	public Map<Integer,ILogicListenable> getMonitors();
+	Map<Integer,ILogicListenable> getMonitors();
 
-	public Map<InfoUUID, IInfo> getInfoList();	
+	Map<InfoUUID, IInfo> getInfoList();
 
-	public IInfo getInfoFromUUID(InfoUUID uuid);
+	IInfo getInfoFromUUID(InfoUUID uuid);
 	
-	public void setInfo(InfoUUID uuid, IInfo newInfo);
+	void setInfo(InfoUUID uuid, IInfo newInfo);
 
-	public Map<Integer, ConnectedDisplay> getConnectedDisplays();
+	Map<Integer, ConnectedDisplay> getConnectedDisplays();
 
 	@Nullable
-	public <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid);
+    <T extends IInfo> AbstractChangeableList getMonitoredList(InfoUUID uuid);
 
-	public ConnectedDisplay getConnectedDisplay(int iden);
+	ConnectedDisplay getConnectedDisplay(int iden);
 
-	public void addIdentityTile(ILogicListenable infoProvider, PL2AdditionType type);
+	void addIdentityTile(ILogicListenable infoProvider, PL2AdditionType type);
 
-	public void removeIdentityTile(ILogicListenable monitor, PL2RemovalType type);
+	void removeIdentityTile(ILogicListenable monitor, PL2RemovalType type);
 
-	public void removeAll();
+	void removeAll();
 	
-	public DisplayGSI getGSI(int iden);
+	DisplayGSI getGSI(int iden);
 
-	public void addDisplay(IDisplay display);
+	void addDisplay(IDisplay display);
 
-	public void removeDisplay(IDisplay display);
+	void removeDisplay(IDisplay display);
 	
 }

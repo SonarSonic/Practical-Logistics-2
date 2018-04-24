@@ -23,12 +23,10 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
-import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.worlddata.ConnectedDisplayData;
 import sonar.logistics.worlddata.IdentityCountData;
 import sonar.logistics.worldgen.SapphireOreGen;
@@ -120,7 +118,7 @@ public class PL2 {
 	public void onServerStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandResetInfoRegistry());
         MapStorage storage = DimensionManager.getWorld(0).getMapStorage();
-        if(storage.getOrLoadData(IdentityCountData.class, IdentityCountData.IDENTIFIER) == null) {
+		if(storage.getOrLoadData(IdentityCountData.class, IdentityCountData.IDENTIFIER) == null) {
             storage.setData(IdentityCountData.IDENTIFIER, new IdentityCountData());
         }
         if(storage.getOrLoadData(ConnectedDisplayData.class, ConnectedDisplayData.IDENTIFIER) == null) {

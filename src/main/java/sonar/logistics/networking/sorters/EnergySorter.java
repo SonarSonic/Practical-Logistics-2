@@ -1,15 +1,10 @@
 package sonar.logistics.networking.sorters;
 
-import java.util.Comparator;
-
 import net.minecraft.nbt.NBTTagCompound;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicListSorter;
-import sonar.logistics.api.displays.elements.types.ItemStackElement;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.readers.EnergyReader.SortingType;

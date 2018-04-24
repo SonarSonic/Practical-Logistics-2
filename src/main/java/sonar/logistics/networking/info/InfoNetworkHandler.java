@@ -53,7 +53,7 @@ public class InfoNetworkHandler<I extends IProvidableInfo<I>, L extends InfoChan
 				handler.provide(LogicInfoRegistry.INSTANCE, providedInfo, path, null, world, state, pos, face, block, tile);
 			}
 		}
-		providedInfo.forEach(info -> list.add(info));		
+		providedInfo.forEach(list::add);
 		
 		return (L) list;
 	}
@@ -69,7 +69,7 @@ public class InfoNetworkHandler<I extends IProvidableInfo<I>, L extends InfoChan
 				handler.provide(providedInfo, world, entity);
 			}
 		}
-		providedInfo.forEach(info -> list.add(info));	
+		providedInfo.forEach(list::add);
 		return (L) list;
 	}
 

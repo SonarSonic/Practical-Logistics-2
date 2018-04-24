@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 
@@ -253,7 +252,7 @@ public class PL2ASMLoader {
 	}
 
 	public static <T extends INBTSyncable> List<T> readListFromNBT(Class<T> type, NBTTagCompound tag) {
-		List<T> loaded = new ArrayList<T>();
+		List<T> loaded = new ArrayList<>();
 		String s = asm_loadables_nbt.get(type);
 		NBTTagList list = tag.getTagList(s + "_list", NBT.TAG_COMPOUND);
 		for (int i = 0; i < list.tagCount(); i++) {

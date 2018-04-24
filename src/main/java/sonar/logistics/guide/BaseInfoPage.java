@@ -95,7 +95,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				for (ElementLink link : links) {
 					if (link.lineNum >= from && link.lineNum <= to) {
 						int linePos = lineTally + link.lineNum - 1;
-						link.setDisplayPosition(ordinal, (int) (this.getLineOffset(linePos, ordinal) + link.index), (int) (topOffset+9 + ((linePos-((numPagesNeeded - currentPages)*GuidePageHelper.maxLinesPerPage)) * 12)));
+						link.setDisplayPosition(ordinal, this.getLineOffset(linePos, ordinal) + link.index, topOffset+9 + ((linePos-((numPagesNeeded - currentPages)*GuidePageHelper.maxLinesPerPage)) * 12));
 						pageLinks.add(link);
 					} else {
 						break;
@@ -107,7 +107,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				if (!wrapLines.isEmpty()) {
 					ElementInfo infoSource = new ElementInfo(info.key, info.additionals);
 					ElementInfoFormatted infoFormatted = new ElementInfoFormatted(ordinal, infoSource, wrapLines, pageLinks);
-					infoFormatted.setDisplayPosition(8, lineTally == 0 ? 0 : (int) ((lineTally) * 12));
+					infoFormatted.setDisplayPosition(8, lineTally == 0 ? 0 : (lineTally) * 12);
 
 					if (ordinal == subPage) {
 						newData.add(infoFormatted);
@@ -140,7 +140,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 
 	public int getLineWidth(int linePos, int page) {
 		int wrapWidth = 342;
-		int pos = (int) (topOffset + (linePos * 12));
+		int pos = topOffset + (linePos * 12);
 
 		for (IGuidePageElement e : elements) {
 			if (e.getDisplayPage() == page) {
@@ -155,7 +155,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 	}
 
 	public int getLineOffset(int linePos, int page) {
-		int pos = (int) (topOffset + linePos * 12);
+		int pos = topOffset + linePos * 12;
 		int offset = 0;
 		for (IGuidePageElement e : elements) {
 			if (e.getDisplayPage() == page) {
@@ -167,7 +167,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 				}
 			}
 		}
-		return (int) (offset);
+		return offset;
 	}
 	
 	public void drawPageInGui(GuiGuide gui, int yPos) {
@@ -205,8 +205,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 
 	public void drawForegroundPage(GuiGuide gui, int x, int y, int page, float partialTicks) {
 		color(1.0F, 1.0F, 1.0F, 1.0F);
-		for (int i = 0; i < this.guideButtons.size(); ++i) {
-			GuiButton button = ((GuiButton) this.guideButtons.get(i));
+		for (GuiButton button : guideButtons) {
 			button.drawButtonForegroundLayer(x, y);
 		}
 		int listTally = 0;
@@ -228,8 +227,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 			}
 		}
 
-		for (int i = 0; i < this.guideButtons.size(); ++i) {
-			GuiButton button = ((GuiButton) this.guideButtons.get(i));
+		for (GuiButton button : this.guideButtons) {
 			int left = x + gui.getGuiLeft(), top = y + gui.getGuiTop();
 			button.drawButton(gui.mc, left, top, partialTicks);
 		}
@@ -240,7 +238,7 @@ public abstract class BaseInfoPage implements IGuidePage {
 	public void mouseClicked(GuiGuide gui, int x, int y, int button) {
 		if (button == 0) {
 			for (int i = 0; i < this.guideButtons.size(); ++i) {
-				GuiButton guibutton = (GuiButton) this.guideButtons.get(i);
+				GuiButton guibutton = this.guideButtons.get(i);
 
 				if (guibutton.mousePressed(gui.mc, x - gui.getGuiLeft(), y - gui.getGuiTop())) {
 					ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(gui, guibutton, this.guideButtons);

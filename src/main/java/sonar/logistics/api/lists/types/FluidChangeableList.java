@@ -13,7 +13,7 @@ public class FluidChangeableList extends AbstractChangeableList<MonitoredFluidSt
 
 	public StorageSize sizing = new StorageSize(0, 0);
 
-	public static final FluidChangeableList newChangeableList(){
+	public static FluidChangeableList newChangeableList(){
 		return new FluidChangeableList();		
 	}
 

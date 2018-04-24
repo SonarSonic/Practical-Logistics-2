@@ -19,10 +19,10 @@ import sonar.logistics.networking.CacheHandler;
 public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILogisticsNetwork> {
 
 	/**networks which provide connects to this one*/
-	public static final int CONNECTED_NETWORK = 0;
+    int CONNECTED_NETWORK = 0;
 	
 	/**networks which take info from this one*/
-	public static final int WATCHING_NETWORK = 1;
+    int WATCHING_NETWORK = 1;
 	
 	/**the current network ID, this matches the ID of the {@link IDataCable}s which form this network*/
 	int getNetworkID();
@@ -58,11 +58,11 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	void onConnectionChanged(INetworkListener tile);
 
 	/**called by {@link IDataCable}s when a neighbouring connection is added
-	 * see {@link #addConnections()}*/
+	 * see */
 	void addConnection(INetworkListener tile);
 
 	/**called by {@link IDataCable}s when a neighbouring connection is removed
-	 * see {@link #removeConnections()}*/
+	 * see */
 	void removeConnection(INetworkListener tile);
 	
 	/**called by {@link IDataCable}s when a neighbouring info provider is added
@@ -106,7 +106,7 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	
 	//// MONITORING \\\\
 	/**returns the networks last tick time in nanoseconds*/
-	public default long getNetworkTickTime(){
+	default long getNetworkTickTime(){
 		return 0;
 	}
 	

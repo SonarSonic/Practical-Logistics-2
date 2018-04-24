@@ -5,5 +5,5 @@ import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 
 public interface ITypingAction {
 
-	public void trigger(GuiEditStyledStrings s, StyledStringLine line, char c, int i);
+	void trigger(GuiEditStyledStrings s, StyledStringLine line, char c, int i);
 }

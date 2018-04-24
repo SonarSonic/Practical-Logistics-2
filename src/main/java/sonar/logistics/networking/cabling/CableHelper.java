@@ -16,6 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
 import sonar.logistics.api.cabling.CableConnectionType;
@@ -38,7 +39,7 @@ public class CableHelper {
 		IMultipartContainer container = null;
 		if (!(tile instanceof IMultipartContainer)) {
 			Optional<IMultipartContainer> cont = MultipartHelper.getContainer(tile.getWorld(), tile.getPos());
-			container = cont.isPresent() ? cont.get() : null;
+			container = cont.orElse(null);
 		} else {
 			container = (IMultipartContainer) tile;
 		}
@@ -122,7 +123,7 @@ public class CableHelper {
 	}
 
 	public static TileDataCable getCable(IBlockAccess world, BlockPos pos) {
-		IBlockAccess actualWorld = world;
+		IBlockAccess actualWorld = SonarMultipartHelper.unwrapBlockAccess(world);
 		TileEntity tile = actualWorld.getTileEntity(pos);
 		if (tile != null) {
 			if (tile instanceof TileDataCable) {

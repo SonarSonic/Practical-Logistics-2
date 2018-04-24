@@ -31,20 +31,15 @@ public abstract class GuiAbstractReceiver extends GuiSelectionList<ClientWireles
 	@Override
 	public boolean isCategoryHeader(ClientWirelessEmitter info) {
 		if (!RenderBlockSelection.positions.isEmpty()) {
-			if (RenderBlockSelection.isPositionRenderered(info.coords.getCoords())) {
-				return true;
-			}
+            return RenderBlockSelection.isPositionRenderered(info.coords.getCoords());
 		}
 		return false;
 	}
 
 	@Override
 	public boolean isSelectedInfo(ClientWirelessEmitter info) {
-		if (tile.clientEmitters.getObjects().contains(info)) {
-			return true;
-		}
-		return false;
-	}
+        return tile.clientEmitters.getObjects().contains(info);
+    }
 
 	@Override
 	public void renderInfo(ClientWirelessEmitter info, int yPos) {

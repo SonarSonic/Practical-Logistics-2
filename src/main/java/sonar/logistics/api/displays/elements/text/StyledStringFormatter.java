@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
-
 public class StyledStringFormatter {
 
 	public static void formatTextSelections(StyledTextElement text, List<TextSelection> selections, BiFunction<Integer, IStyledString, IStyledString> formatter) {

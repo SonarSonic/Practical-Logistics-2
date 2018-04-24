@@ -33,10 +33,8 @@ import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.networking.ServerInfoHandler;
-import sonar.logistics.networking.energy.EnergyHelper;
 import sonar.logistics.networking.energy.EnergyNetworkHandler;
 import sonar.logistics.networking.sorters.EnergySorter;
-import sonar.logistics.networking.sorters.FluidSorter;
 
 public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStack> implements IByteBufTile {
 

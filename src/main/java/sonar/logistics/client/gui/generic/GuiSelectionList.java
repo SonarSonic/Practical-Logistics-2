@@ -140,7 +140,7 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 		if (enableListRendering) {
 			if (button == 1) {
 				for (int l = 0; l < this.buttonList.size(); ++l) {
-					GuiButton guibutton = (GuiButton) this.buttonList.get(l);
+					GuiButton guibutton = this.buttonList.get(l);
 					if (guibutton.mousePressed(this.mc, x, y)) {
 						ActionPerformedEvent.Pre event = new ActionPerformedEvent.Pre(this, guibutton, this.buttonList);
 						if (MinecraftForge.EVENT_BUS.post(event))
@@ -226,10 +226,8 @@ public abstract class GuiSelectionList<T> extends GuiLogistics {
 	}
 
 	public boolean needsScrollBars() {
-		if (infoSize() <= size)
-			return false;
-		return true;
-	}	
+        return infoSize() > size;
+    }
 
 	public void onSelectionHovered(T info, int x,int y){
 		

@@ -25,7 +25,7 @@ public class GSIHelper {
 		return DisplayElementHelper.toNearestMultiple(y, gsi.getDisplayScaling()[1], getGridYScale(gsi));
 	}
 	
-	public static final DisplayScreenClick createFakeClick(DisplayGSI gsi, double clickX, double clickY, boolean doubleClick, int key) {
+	public static DisplayScreenClick createFakeClick(DisplayGSI gsi, double clickX, double clickY, boolean doubleClick, int key) {
 		DisplayScreenClick fakeClick = new DisplayScreenClick();
 		fakeClick.gsi = gsi;
 		fakeClick.type = key == 0 ? BlockInteractionType.LEFT : BlockInteractionType.RIGHT;

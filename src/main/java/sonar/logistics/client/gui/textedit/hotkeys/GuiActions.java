@@ -4,9 +4,9 @@ import sonar.logistics.client.gui.textedit.GuiStyledStringFunctions;
 
 public enum GuiActions implements IGuiAction {
 
-	SELECT_ALL(t -> t.selectAll()),
-	DESELECT_ALL(t -> t.deselectAll()),
-	DELETE_SELECTED(t -> t.deleteAllSelected()),
+	SELECT_ALL(GuiStyledStringFunctions::selectAll),
+	DESELECT_ALL(GuiStyledStringFunctions::deselectAll),
+	DELETE_SELECTED(GuiStyledStringFunctions::deleteAllSelected),
 	UPDATE_TEXT_SCALING(t -> t.text.onElementChanged());
 
 	public IGuiAction action;

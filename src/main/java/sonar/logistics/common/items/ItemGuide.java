@@ -13,9 +13,12 @@ import sonar.core.common.item.SonarItem;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.common.containers.ContainerGuide;
 
+import javax.annotation.Nonnull;
+
 public class ItemGuide extends SonarItem implements IFlexibleGui<ItemStack> {
 
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	@Nonnull
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
 		ItemStack stack = player.getHeldItem(hand);
 		if (!world.isRemote) {
 			SonarCore.instance.guiHandler.openBasicItemStack(false, stack, player, world, player.getPosition(), 0);

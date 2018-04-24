@@ -7,6 +7,6 @@ public enum OperatorMode {
 	ROTATE,/**rotates the block*/	
 	INFO,/**displays all the info provided by IOperatorProvider*/	
 	CHANNELS,/***/
-	ANALYSE;/***/
+	ANALYSE /***/
 
 }

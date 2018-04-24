@@ -1,12 +1,9 @@
 package sonar.logistics.networking;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.common.collect.Lists;
 
@@ -15,10 +12,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.listener.ListenableList;
 import sonar.logistics.PL2;
-import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.networks.INetworkChannels;
@@ -29,10 +24,8 @@ import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
-import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler.UpdateCause;
-import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 
@@ -87,7 +80,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 			cache_list.forEach(tile -> cache_handler.onConnectionRemoved(this, tile)); // removing on every
 		});
 
-		handlers.values().forEach(CHANNELS -> CHANNELS.onDeleted());
+		handlers.values().forEach(INetworkChannels::onDeleted);
 
 		caches.clear();
 		handlers.clear();
@@ -219,14 +212,12 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public void createGlobalProviders() {
 		this.globalProviders = Lists.newArrayList(localProviders);
-		NetworkHelper.getAllNetworks(this, ILogisticsNetwork.CONNECTED_NETWORK).forEach(network -> {
-			ListHelper.addWithCheck(globalProviders, network.getLocalInfoProviders());
-		});
+		NetworkHelper.getAllNetworks(this, ILogisticsNetwork.CONNECTED_NETWORK).forEach(network -> ListHelper.addWithCheck(globalProviders, network.getLocalInfoProviders()));
 	}
 
 	public void updateNetworkHandlers() {
-		handlers.values().forEach(CHANNELS -> CHANNELS.updateChannel());
-		localProviders.forEach(provider -> PacketHelper.sendNormalProviderInfo(provider));
+		handlers.values().forEach(INetworkChannels::updateChannel);
+		localProviders.forEach(PacketHelper::sendNormalProviderInfo);
 	}
 
 	public void updateHandlerChannels() {

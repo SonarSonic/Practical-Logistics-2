@@ -1,7 +1,6 @@
 package sonar.logistics.api.displays.elements.types;
 
 import static net.minecraft.client.renderer.GlStateManager.color;
-import static net.minecraft.client.renderer.GlStateManager.depthMask;
 import static net.minecraft.client.renderer.GlStateManager.disableLighting;
 import static net.minecraft.client.renderer.GlStateManager.disableRescaleNormal;
 import static net.minecraft.client.renderer.GlStateManager.enableLighting;
@@ -18,19 +17,12 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2Constants;
-import sonar.logistics.api.asm.DisplayElementType;
-import sonar.logistics.api.displays.buttons.ButtonElement;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
@@ -39,9 +31,6 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.client.gsi.GSIClickPacketHelper;
-import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
@@ -190,7 +179,7 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			}
 		}
 		int slot = ((ySlot * xSlots) + xSlot) + start;
-		if (info != null && info instanceof LogicInfoList) {
+		if (info instanceof LogicInfoList) {
 			LogicInfoList list = (LogicInfoList) info;
 			double[] align = this.getHolder().getAlignmentTranslation(this);
 			DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { click.clickX - 0.5, click.clickY });

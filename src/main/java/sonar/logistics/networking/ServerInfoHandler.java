@@ -2,23 +2,16 @@ package sonar.logistics.networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -28,15 +21,12 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.errors.IInfoError;
-import sonar.logistics.api.errors.UUIDError;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -44,7 +34,6 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
-import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.info.InfoHelper;
 
 public class ServerInfoHandler implements IInfoManager {
@@ -59,7 +48,7 @@ public class ServerInfoHandler implements IInfoManager {
 	public Map<Integer, ConnectedDisplay> connectedDisplays = new HashMap<>();
 
 	public static ServerInfoHandler instance() {
-		return (ServerInfoHandler) PL2.proxy.getServerManager();
+		return PL2.proxy.getServerManager();
 	}
 
 	public void removeAll() {
@@ -159,7 +148,7 @@ public class ServerInfoHandler implements IInfoManager {
 
 	public void sendInfoUpdates() {
 		if (!changedInfo.isEmpty() && !displays.isEmpty()) {
-			Map<EntityPlayerMP, NBTTagList> savePackets = new HashMap<EntityPlayerMP, NBTTagList>();
+			Map<EntityPlayerMP, NBTTagList> savePackets = new HashMap<>();
 			for (Entry<ILogicListenable, List<Integer>> id : changedInfo.entrySet()) {
 				PL2ListenerList list = id.getKey().getListenerList();
 				List<PlayerListener> listeners = list.getAllListeners(ListenerType.OLD_GUI_LISTENER, ListenerType.OLD_DISPLAY_LISTENER);
@@ -178,7 +167,7 @@ public class ServerInfoHandler implements IInfoManager {
 				}
 			}
 			if (!savePackets.isEmpty()) {// || !syncPackets.isEmpty()) {
-				savePackets.entrySet().forEach(entry -> PacketHelper.sendInfoUpdatePacket(entry.getKey(), entry.getValue(), SyncType.SAVE));
+				savePackets.forEach((key, value) -> PacketHelper.sendInfoUpdatePacket(key, value, SyncType.SAVE));
 				changedInfo.clear();
 			}
 		}

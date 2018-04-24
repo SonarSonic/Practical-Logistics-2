@@ -21,11 +21,9 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 
 	@Override
 	public void render(TileAbstractDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-		if (part.getWorld() == null) {
-			return;
-		}
-		if (part instanceof ILargeDisplay && (!((ILargeDisplay) part).shouldRender() || ((ILargeDisplay) part).getConnectedDisplay() == null || !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject())) {
-			boolean bool = ((ILargeDisplay) part).getConnectedDisplay() == null ? false : !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject();
+        part.getWorld();
+        if (part instanceof ILargeDisplay && (!((ILargeDisplay) part).shouldRender() || ((ILargeDisplay) part).getConnectedDisplay() == null || !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject())) {
+			boolean bool = ((ILargeDisplay) part).getConnectedDisplay() != null && !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject();
 
 			if (bool) {
 				DisplayGSI container = part.getGSI();

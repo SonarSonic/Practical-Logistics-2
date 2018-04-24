@@ -18,5 +18,5 @@ public interface IOperatorTile {
 	 * @param hitY the y hit
 	 * @param hitZ the z hit
 	 * @return if an operation was performed */
-	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ);
+    boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ);
 }

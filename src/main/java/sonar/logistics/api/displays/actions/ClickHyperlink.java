@@ -39,7 +39,7 @@ public class ClickHyperlink implements IDisplayAction {
         try
         {	URI uri = new URI(hyperlink);
             Class<?> oclass = Class.forName("java.awt.Desktop");
-            Object object = oclass.getMethod("getDesktop").invoke((Object)null);
+            Object object = oclass.getMethod("getDesktop").invoke(null);
             oclass.getMethod("browse", URI.class).invoke(object, uri);
 
 			player.sendMessage(new TextComponentTranslation("Opened: " + hyperlink));
@@ -47,7 +47,7 @@ public class ClickHyperlink implements IDisplayAction {
         catch (Throwable throwable1)
         {
             Throwable throwable = throwable1.getCause();
-            PL2.logger.error("Couldn't open link: {}", (Object)(throwable == null ? "<UNKNOWN>" : throwable.getMessage()));
+            PL2.logger.error("Couldn't open link: {}", throwable == null ? "<UNKNOWN>" : throwable.getMessage());
             
         }
 		return -1;

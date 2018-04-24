@@ -20,6 +20,8 @@ import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.helpers.DisplayElementHelper;
 
+import javax.annotation.Nonnull;
+
 public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 
 	private StyledTextElement text;
@@ -148,7 +150,7 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 	public String getCachedFormattedString() {
 		if (cachedFormattedString == null) {
 			StringBuilder build = new StringBuilder();
-			strings.forEach(s -> build.append(s.getFormattedString() + TextFormatting.RESET));
+			strings.forEach(s -> build.append(s.getFormattedString()).append(TextFormatting.RESET));
 			cachedFormattedString = build.toString();
 		}
 		return cachedFormattedString;
@@ -221,7 +223,8 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 		return nbt;
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public Iterator<IStyledString> iterator() {
 		return strings.iterator();
 	}

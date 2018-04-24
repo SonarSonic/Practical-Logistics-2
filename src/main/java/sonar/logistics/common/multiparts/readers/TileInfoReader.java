@@ -15,7 +15,6 @@ import sonar.logistics.client.gui.GuiInfoReader;
 import sonar.logistics.client.gui.generic.GuiChannelSelection;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
-import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.networking.info.InfoNetworkHandler;
 import sonar.logistics.networking.sorters.InfoSorter;
 

@@ -4,5 +4,5 @@ import sonar.logistics.client.gui.textedit.GuiEditStyledStrings;
 
 public interface IHotKeyAction {
 
-	public void trigger(GuiEditStyledStrings s, char c, int i);
+	void trigger(GuiEditStyledStrings s, char c, int i);
 }

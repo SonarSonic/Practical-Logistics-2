@@ -57,21 +57,20 @@ public class InfoRenderer {
 		int unscaledMaximumWidth = 0;
 		List<Double[]> matrices = new ArrayList<>();
 
-		for (int i = 0; i < toDisplay.size(); i++) {
-			String s = toDisplay.get(i);
-			int unscaledWidth = getStringWidth(s);
-			int unscaledHeight = getStringHeight();
-			double scale = Math.min(width / unscaledWidth, maxIndividualHeight / unscaledHeight);
-			double maxWidth = (unscaledWidth * scale) * percentageFill;
-			double maxHeight = (unscaledHeight * scale) * percentageFill;
-			matrices.add(new Double[] { maxWidth, maxHeight, scale });
-			if (maxWidth > maximumWidth) {
-				maximumWidth = maxWidth;
-				unscaledMaximumWidth = unscaledWidth;
-			}
-			compressedHeight += maxHeight;
+        for (String s : toDisplay) {
+            int unscaledWidth = getStringWidth(s);
+            int unscaledHeight = getStringHeight();
+            double scale = Math.min(width / unscaledWidth, maxIndividualHeight / unscaledHeight);
+            double maxWidth = (unscaledWidth * scale) * percentageFill;
+            double maxHeight = (unscaledHeight * scale) * percentageFill;
+            matrices.add(new Double[]{maxWidth, maxHeight, scale});
+            if (maxWidth > maximumWidth) {
+                maximumWidth = maxWidth;
+                unscaledMaximumWidth = unscaledWidth;
+            }
+            compressedHeight += maxHeight;
 
-		}
+        }
 		GlStateManager.translate((width - maximumWidth) / 2, (height - compressedHeight) / 2, 0);
 		for (int i = 0; i < toDisplay.size(); i++) {
 			String s = toDisplay.get(i);
@@ -176,10 +175,10 @@ public class InfoRenderer {
 
 		double widthnew = (minU + (barWidth * (maxU - minU) / 1));
 		double heightnew = (minV + ((maxY - minY) * (maxV - minV) / 1));
-		vertexbuffer.pos((double) (minX + 0), maxY, zLevel).tex((double) minU, heightnew).endVertex();
-		vertexbuffer.pos((double) (minX + barWidth), maxY, zLevel).tex(widthnew, heightnew).endVertex();
-		vertexbuffer.pos((double) (minX + barWidth), (double) (minY + 0), zLevel).tex(widthnew, (double) minV).endVertex();
-		vertexbuffer.pos((double) (minX + 0), (double) (minY + 0), zLevel).tex((double) minU, (double) minV).endVertex();
+		vertexbuffer.pos(minX + 0, maxY, zLevel).tex(minU, heightnew).endVertex();
+		vertexbuffer.pos(minX + barWidth, maxY, zLevel).tex(widthnew, heightnew).endVertex();
+		vertexbuffer.pos(minX + barWidth, minY + 0, zLevel).tex(widthnew, minV).endVertex();
+		vertexbuffer.pos(minX + 0, minY + 0, zLevel).tex(minU, minV).endVertex();
 		tessellator.draw();
 	}
 
@@ -196,10 +195,10 @@ public class InfoRenderer {
 
 		double widthnew = (minU + (barWidth * (maxU - minU) / 1));
 		double heightnew = (minV + ((maxY - minY) * (maxV - minV) / 1));
-		vertexbuffer.pos((double) (minX + 0), maxY, zLevel).tex((double) minU, heightnew).endVertex();
-		vertexbuffer.pos((double) (minX + barWidth), maxY, zLevel).tex(widthnew, heightnew).endVertex();
-		vertexbuffer.pos((double) (minX + barWidth), (double) (minY + 0), zLevel).tex(widthnew, (double) minV).endVertex();
-		vertexbuffer.pos((double) (minX + 0), (double) (minY + 0), zLevel).tex((double) minU, (double) minV).endVertex();
+		vertexbuffer.pos(minX + 0, maxY, zLevel).tex(minU, heightnew).endVertex();
+		vertexbuffer.pos(minX + barWidth, maxY, zLevel).tex(widthnew, heightnew).endVertex();
+		vertexbuffer.pos(minX + barWidth, minY + 0, zLevel).tex(widthnew, minV).endVertex();
+		vertexbuffer.pos(minX + 0, minY + 0, zLevel).tex(minU, minV).endVertex();
 		tessellator.draw();
 	}
 
@@ -209,15 +208,15 @@ public class InfoRenderer {
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 
 		double minX = -barOffset, minY = -barOffset, maxX = width + barOffset, maxY = height + barOffset;
-		double barWidth = ((double) progress * (maxX - minX)) / maxProgress;
+		double barWidth = (progress * (maxX - minX)) / maxProgress;
 		double divide = Math.max((maxX - minX), (maxY - minY));
 
 		double widthnew = (sprite.getMinU() + (barWidth * (sprite.getMaxU() - sprite.getMinU()) / (maxX - minX)));
 		double heightnew = (sprite.getMinV() + ((maxY - minY) * (sprite.getMaxV() - sprite.getMinV()) / (maxX - minX)));
-		vertexbuffer.pos((double) (minX + 0), maxY, zLevel).tex((double) sprite.getMinU(), heightnew).endVertex();
-		vertexbuffer.pos((double) (minX + barWidth), maxY, zLevel).tex(widthnew, heightnew).endVertex();
-		vertexbuffer.pos((double) (minX + barWidth), (double) (minY + 0), zLevel).tex(widthnew, (double) sprite.getMinV()).endVertex();
-		vertexbuffer.pos((double) (minX + 0), (double) (minY + 0), zLevel).tex((double) sprite.getMinU(), (double) sprite.getMinV()).endVertex();
+		vertexbuffer.pos(minX + 0, maxY, zLevel).tex((double) sprite.getMinU(), heightnew).endVertex();
+		vertexbuffer.pos(minX + barWidth, maxY, zLevel).tex(widthnew, heightnew).endVertex();
+		vertexbuffer.pos(minX + barWidth, minY + 0, zLevel).tex(widthnew, (double) sprite.getMinV()).endVertex();
+		vertexbuffer.pos(minX + 0, minY + 0, zLevel).tex((double) sprite.getMinU(), (double) sprite.getMinV()).endVertex();
 		tessellator.draw();
 	}
 
@@ -274,11 +273,8 @@ public class InfoRenderer {
 				String category = ((LogicInfo) directInfo).getRegistryType().name();
 				FontHelper.text(category.substring(0, 1) + category.substring(1).toLowerCase(), left_offset + 4, yPos, colour);
 			}
-		} else if (info instanceof MonitoredBlockCoords) {
-			MonitoredBlockCoords directInfo = (MonitoredBlockCoords) info;
-			FontHelper.text(directInfo.getCoords().toString(), left_offset, yPos, colour);
 		}
-	}
+    }
 	
 	/**TODO adaptive scaling version*/
 	public static void renderTripleStringIntoGUI(String left, String middle, String right, int yPos, int colour){		

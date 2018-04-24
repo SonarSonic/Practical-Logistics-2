@@ -5,6 +5,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import sonar.logistics.networking.cabling.WirelessDataManager;
 
+import javax.annotation.Nonnull;
+
 public class ContainerEmitterList extends Container {
 	public EntityPlayer player;
 
@@ -18,12 +20,13 @@ public class ContainerEmitterList extends Container {
 			WirelessDataManager.instance().removeViewer(player);
 	}
 
-	public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
+	@Nonnull
+    public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer player) {
+	public boolean canInteractWith(@Nonnull EntityPlayer player) {
 		return true;
 	}
 

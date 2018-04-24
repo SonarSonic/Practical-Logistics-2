@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import sonar.core.helpers.RenderHelper;
@@ -28,17 +27,17 @@ public class RenderHammer extends TileEntitySpecialRenderer<TileEntityHammer> {
 		RenderHelper.beginRender(x + 0.5F, y + 1.5F, z + 0.5F, RenderHelper.setMetaData(hammer), texture);
 		int progress = 0;
 		boolean cooling = false;
-		if (hammer != null && hammer.getWorld() != null) {
+		if (hammer != null) {
 			if (hammer.coolDown.getObject() != 0) {
 				progress = hammer.coolDown.getObject();
 				cooling = true;
 			} else
 				progress = hammer.progress.getObject();
 			// double move = progress * 1.625 / hammer.speed;
-			double move = !cooling ? progress * 1.625 / hammer.speed : progress * 1.625 / 200;
-			model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, true, move);
+			double move = !cooling ? progress * 1.625 / TileEntityHammer.speed : progress * 1.625 / 200;
+			model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, true, move);
 		} else {
-			model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, false, 0);
+			model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, false, 0);
 		}
 		RenderHelper.finishRender();
 		/*
@@ -95,7 +94,7 @@ public class RenderHammer extends TileEntitySpecialRenderer<TileEntityHammer> {
 		GL11.glPushMatrix();
 		translate(x, y, z);
 
-		if (hammer != null && hammer.getWorld() != null) {
+		if (hammer != null) {
 			ItemStack target = (progress == 0 || cooling) && hammer.getStackInSlot(1) != null ? hammer.getStackInSlot(1) : hammer.getStackInSlot(0);
 			if (target != null) {
 				if (!Minecraft.getMinecraft().getRenderItem().shouldRenderItemIn3D(target)) {
@@ -113,8 +112,8 @@ public class RenderHammer extends TileEntitySpecialRenderer<TileEntityHammer> {
 						if (cooling) {
 							progress = (progress / 2) - offset;
 						}
-						translate(0, -((progress - pos) * 0.0015 / (hammer.speed - pos)), 0);
-						scale(1, 1 - ((progress - pos) * 0.8 / (hammer.speed - pos)), 1);
+						translate(0, -((progress - pos) * 0.0015 / (TileEntityHammer.speed - pos)), 0);
+						scale(1, 1 - ((progress - pos) * 0.8 / (TileEntityHammer.speed - pos)), 1);
 					}
 				}
 				Minecraft.getMinecraft().getRenderItem().renderItem(target, TransformType.GROUND);

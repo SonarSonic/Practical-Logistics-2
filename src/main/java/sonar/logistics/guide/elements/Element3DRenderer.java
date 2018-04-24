@@ -2,6 +2,7 @@ package sonar.logistics.guide.elements;
 
 import org.lwjgl.opengl.GL11;
 
+import sonar.core.client.gui.GuiSonar;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.IGuidePage;
@@ -68,7 +69,7 @@ public class Element3DRenderer implements IGuidePageElement {
 
 	@Override
 	public void drawBackgroundElement(GuiGuide gui, int x, int y, int page, int mouseX, int mouseY) {
-		gui.drawTransparentRect(x, y, x + width, y + height, LogisticsColours.blue_overlay.getRGB());		
+		GuiSonar.drawTransparentRect(x, y, x + width, y + height, LogisticsColours.blue_overlay.getRGB());
 	}
 
 	@Override

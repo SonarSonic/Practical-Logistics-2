@@ -11,20 +11,11 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
-import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
-import sonar.core.common.block.properties.SonarProperties;
-import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IDisplayRenderable;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayLayout;
-import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.DisplayElementHelper;

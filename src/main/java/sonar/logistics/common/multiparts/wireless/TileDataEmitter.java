@@ -19,7 +19,6 @@ import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.networks.INetworkChannels;
 import sonar.logistics.api.networks.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
@@ -66,7 +65,7 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 		SonarMultipartHelper.sendMultipartSyncToPlayer(this, (EntityPlayerMP) player);
 		for (INetworkHandler handler : getValidHandlers()) {
 			INetworkChannels list = network.getNetworkChannels(handler.getChannelsType());
-			if (list != null && list instanceof ListNetworkChannels) {
+			if (list instanceof ListNetworkChannels) {
 				((ListNetworkChannels) list).sendLocalRapidUpdate(this, player);
 			}
 		}

@@ -9,7 +9,6 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -84,7 +83,7 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		super.initButtons();
 		int start = 8;
 		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + start, guiTop + 9));
-		this.buttonList.add(new LogisticsButton.HELP(this, 5, guiLeft + start + 18 * 1, guiTop + 9));
+		this.buttonList.add(new LogisticsButton.HELP(this, 5, guiLeft + start + 18, guiTop + 9));
 		this.buttonList.add(new LogisticsButton(this, -1, guiLeft + start + 18 * 2, guiTop + 9, 64 + 32, 16 * part.setting.getObject().ordinal(), getSettingsString(), ""));
 		this.buttonList.add(new LogisticsButton(this, 0, guiLeft + xSize - 168 + 18, guiTop + 9, 32, 16 * part.sortingOrder.getObject().ordinal(), PL2Translate.BUTTON_SORTING_ORDER.t(), ""));
 		this.buttonList.add(new LogisticsButton(this, 1, guiLeft + xSize - 168 + 18 * 2, guiTop + 9, 64 + 48, 16 * part.sortingType.getObject().ordinal(), part.sortingType.getObject().getClientName(), ""));
@@ -172,14 +171,14 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 	@Override
 	public List<MonitoredItemStack> getGridList() {
 		String search = searchField.getText();
-		if (search == null || search.isEmpty() || search.equals(" ")) {
+		if (search.isEmpty() || search.equals(" ")) {
 			return part.getMonitoredList().createSaveableList(part.getSorter());
 		} else {
 			List<MonitoredItemStack> searchlist = new ArrayList<>();
 			List<MonitoredItemStack> cached = part.getMonitoredList().createSaveableList(part.getSorter());
 			for (MonitoredItemStack stack : cached) {
 				StoredItemStack item = stack.getStoredStack();
-				if (stack != null && item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
+				if (item != null && item.item.getDisplayName().toLowerCase().contains(search.toLowerCase())) {
 					searchlist.add(stack);
 				}
 			}

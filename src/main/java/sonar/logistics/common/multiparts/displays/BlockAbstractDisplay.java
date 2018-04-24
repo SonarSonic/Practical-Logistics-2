@@ -2,7 +2,6 @@ package sonar.logistics.common.multiparts.displays;
 
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.slot.IPartSlot;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,6 +23,8 @@ import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.common.multiparts.BlockLogisticsSided;
 import sonar.logistics.networking.displays.DisplayHelper;
+
+import javax.annotation.Nonnull;
 
 public class BlockAbstractDisplay extends BlockLogisticsSided {
 
@@ -58,7 +59,7 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null && tile instanceof TileAbstractDisplay) {
+		if (tile instanceof TileAbstractDisplay) {
 			TileAbstractDisplay display = (TileAbstractDisplay) tile;
 			if (facing != state.getValue(SonarProperties.ORIENTATION)) {
 				if (!world.isRemote && canOpenGui(player)) {
@@ -82,14 +83,11 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 
 	public boolean canPlayerDestroy(IBlockState state, World world, BlockPos pos, EntityPlayer player) {
 		RayTraceResult rayResult = RayTraceHelper.getRayTraceEyes(player, world);
-		if (rayResult == null || state.getValue(SonarProperties.ORIENTATION).getOpposite() == rayResult.sideHit) {
-			return true;
-		}
-		return false;
+		return rayResult == null || state.getValue(SonarProperties.ORIENTATION).getOpposite() == rayResult.sideHit;
 	}
 
 	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+	public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
 		if (!canPlayerDestroy(state, world, pos, player)) {
 			onBlockClicked(world, pos, player);
 			return false;
@@ -113,18 +111,19 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 
 	}
 
+	@Nonnull
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		EnumFacing rotation = EnumFacing.NORTH;
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null && tile instanceof TileAbstractDisplay) {
+		if (tile instanceof TileAbstractDisplay) {
 			rotation = ((TileAbstractDisplay) tile).getGSI().getRotation();
 		}
 		return state.withProperty(SonarProperties.ROTATION, rotation);
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { SonarProperties.ORIENTATION, SonarProperties.ROTATION });
+		return new BlockStateContainer(this, SonarProperties.ORIENTATION, SonarProperties.ROTATION);
 	}
 
 }

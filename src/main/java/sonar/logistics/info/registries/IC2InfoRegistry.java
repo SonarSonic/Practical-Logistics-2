@@ -11,7 +11,7 @@ import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = "IC2")
-public class IC2InfoRegistry extends IInfoRegistry {
+public class IC2InfoRegistry implements IInfoRegistry {
 
 	public void registerBaseReturns(IMasterInfoRegistry registry) {
 		registry.registerValidReturn(IReactor.class);

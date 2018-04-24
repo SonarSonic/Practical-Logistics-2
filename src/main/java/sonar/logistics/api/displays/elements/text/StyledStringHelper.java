@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.utils.CustomColour;
 import sonar.core.utils.Pair;
 
@@ -62,9 +58,9 @@ public class StyledStringHelper {
 						i1 = 15;
 					}
 					int formattingColour = GuiUtils.colorCodes[i1];
-					int r = (int) (formattingColour >> 16 & 255);
-					int g = (int) (formattingColour >> 8 & 255);
-					int b = (int) (formattingColour & 255);
+					int r = formattingColour >> 16 & 255;
+					int g = formattingColour >> 8 & 255;
+					int b = formattingColour & 255;
 					style.rgb = new CustomColour(r, g, b).getRGB();
 
 				} else if (i1 == 16) {

@@ -10,19 +10,16 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import sonar.core.api.utils.TileAdditionType;
-import sonar.core.api.utils.TileRemovalType;
 import sonar.core.common.block.SonarMaterials;
 import sonar.core.integration.multipart.BlockSonarMultipart;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.common.multiparts.readers.TileAbstractReader;
 import sonar.logistics.helpers.LogisticsHelper;
-import sonar.logistics.networking.events.NetworkPartEvent;
+
+import javax.annotation.Nonnull;
 
 public abstract class BlockLogistics extends BlockSonarMultipart {
 
@@ -38,7 +35,7 @@ public abstract class BlockLogistics extends BlockSonarMultipart {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World var1, int var2) {
+	public TileEntity createNewTileEntity(@Nonnull World var1, int var2) {
 		return getMultipart().createTileEntity();
 	}
 
@@ -63,11 +60,8 @@ public abstract class BlockLogistics extends BlockSonarMultipart {
 	}
 
 	public boolean canOpenGui(EntityPlayer player) {
-		if (LogisticsHelper.isPlayerUsingOperator(player)) {
-			return false;
-		}
-		return true;
-	}
+        return !LogisticsHelper.isPlayerUsingOperator(player);
+    }
 
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
@@ -79,7 +73,7 @@ public abstract class BlockLogistics extends BlockSonarMultipart {
 	}
 
 	@Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+	public void breakBlock(World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof TileAbstractReader && !world.isRemote) {
 			((TileLogistics)tile).doRemovalEvent(PL2RemovalType.PLAYER_REMOVED);		

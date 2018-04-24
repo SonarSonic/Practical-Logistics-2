@@ -5,10 +5,10 @@ import sonar.logistics.networking.cabling.IRedstoneNetwork;
 
 public interface IRedstoneListener extends IValidate {
 
-	public void onNetworkConnect(IRedstoneNetwork network);
+	void onNetworkConnect(IRedstoneNetwork network);
 	
-	public void onNetworkDisconnect(IRedstoneNetwork network);
+	void onNetworkDisconnect(IRedstoneNetwork network);
 
-	public int getNetworkID();
+	int getNetworkID();
 	
 }	

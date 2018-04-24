@@ -70,10 +70,10 @@ public enum ErrorMessage implements IState {
 	}
 
 	public static List<ErrorMessage> fromBytes(byte[] bytes) {
-		List<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-		for (int i = 0; i < bytes.length; i++) {
-			errors.add(ErrorMessage.values()[bytes[i]]);
-		}
+		List<ErrorMessage> errors = new ArrayList<>();
+        for (byte aByte : bytes) {
+            errors.add(ErrorMessage.values()[aByte]);
+        }
 		return errors;
 	}
 }

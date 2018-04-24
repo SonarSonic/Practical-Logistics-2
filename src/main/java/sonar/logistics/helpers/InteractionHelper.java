@@ -21,7 +21,6 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
@@ -37,8 +36,8 @@ import sonar.logistics.packets.PacketItemInteractionText;
 public class InteractionHelper {
 
 	public enum ItemInteractionType {
-		ADD, REMOVE;
-	}
+		ADD, REMOVE
+    }
 
 	public static Pair<Integer, ItemInteractionType> getItemsToRemove(BlockInteractionType type) {
 		switch (type) {
@@ -128,10 +127,9 @@ public class InteractionHelper {
 			BlockCoords coords = connected.getCoords();
 			if (coords != null) {
 				BlockPos leftPos = coords.getBlockPos();
-				BlockPos displayPos = clickPos;
-				int x = Math.abs(leftPos.getX() - displayPos.getX());
-				int y = Math.abs(leftPos.getY() - displayPos.getY());
-				int z = Math.abs(leftPos.getZ() - displayPos.getZ());
+				int x = Math.abs(leftPos.getX() - clickPos.getX());
+				int y = Math.abs(leftPos.getY() - clickPos.getY());
+				int z = Math.abs(leftPos.getZ() - clickPos.getZ());
 				if (container.getFacing().getAxis() != Axis.Y) {
 					clickPosition[0] += x + z;
 					clickPosition[1] += y;
@@ -174,13 +172,12 @@ public class InteractionHelper {
 	/* public static double[] getActualBox(double mouseX, double mouseY, DisplayInfo renderInfo) { double[] actualIntersect = new double[8]; double[] sect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition()); actualIntersect[0] = sect[0]; //actual start x actualIntersect[1] = sect[1]; //actual start y actualIntersect[2] = sect[2]; //actual finish x actualIntersect[3] = sect[3]; //actual finish y actualIntersect[4] = sect[2] - sect[0]; // actual width actualIntersect[5] = sect[3] - sect[1]; // actual height actualIntersect[6] = mouseX - sect[0]; // actual x click actualIntersect[7] = mouseY - sect[1]; // actual y click return actualIntersect; } public static int getSlot(DisplayScreenClick click, DisplayInfo renderInfo, int xSize, int ySize) { double[] actualIntersect = getActualBox(click.clickX, click.clickY, renderInfo); int xPos = (int) (actualIntersect[6] * xSize); int yPos = (int) (actualIntersect[7] * ySize); int slot = (int) (xPos + (yPos * (Math.ceil(actualIntersect[4] * xSize)))); return slot; } public static int getListSlot(DisplayScreenClick click, DisplayInfo renderInfo, double elementSize, double spacing, int maxPageSize) { double[] sect = getPositionedClickBox(renderInfo.container, renderInfo.getInfoPosition()); for (int i = 0; i < maxPageSize; i++) { double yStart = (i * elementSize) + (Math.max(0, (i - 1) * spacing)) + 0.0625 + sect[1]; double yEnd = yStart + elementSize; if (click.clickY > yStart && click.clickY < yEnd) { return i; } } return -1; } */
 
 	public static double[] getTranslation(double[] scaling, DisplayLayout layout, int pos) {
-		double[] displaySize = scaling;
-		double width = displaySize[0], height = displaySize[1];
+		double width = scaling[0], height = scaling[1];
 		switch (layout) {
 		case DUAL:
 			return new double[] { 0, pos == 1 ? height / 2 : 0, 0 };
 		case GRID:
-			return new double[] { pos == 1 || pos == 3 ? (double) width / 2 : 0, (double) pos > 1 ? height / 2 : 0, 0 };
+			return new double[] { pos == 1 || pos == 3 ? width / 2 : 0, (double) pos > 1 ? height / 2 : 0, 0 };
 		case LIST:
 			return new double[] { 0, pos * (height / 4), 0 };
 		default:
@@ -189,8 +186,7 @@ public class InteractionHelper {
 	}
 
 	public static double[] getScaling(double[] scaling, DisplayLayout layout, int pos) {
-		double[] displaySize = scaling;
-		double width = displaySize[0], height = displaySize[1], scale = displaySize[2];
+		double width = scaling[0], height = scaling[1], scale = scaling[2];
 		switch (layout) {
 		case DUAL:
 			return new double[] { width, height / 2, scale };

@@ -2,7 +2,6 @@ package sonar.logistics.networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import sonar.core.helpers.FunctionHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
@@ -23,7 +19,6 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
@@ -31,30 +26,29 @@ import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
-import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.networking.events.NetworkPartEvent;
 
 public class ClientInfoHandler implements IInfoManager {
 
-	private Map<Integer, ConnectedDisplay> connectedDisplays = new ConcurrentHashMap<Integer, ConnectedDisplay>();
+	private Map<Integer, ConnectedDisplay> connectedDisplays = new ConcurrentHashMap<>();
 	public Map<Integer, DisplayGSI> displays_gsi = new HashMap<>();
 	public Map<Integer, IDisplay> displays_tile = new HashMap<>();
 
 	public Map<InfoUUID, IInfo> info = new LinkedHashMap<>();
 
-	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<Integer, List<Object>>();
-	public Map<Integer, List<ClientLocalProvider>> clientLogicMonitors = new ConcurrentHashMap<Integer, List<ClientLocalProvider>>();
+	public Map<Integer, List<Object>> sortedLogicMonitors = new ConcurrentHashMap<>();
+	public Map<Integer, List<ClientLocalProvider>> clientLogicMonitors = new ConcurrentHashMap<>();
 
 	public Map<InfoUUID, AbstractChangeableList> changeableLists = new LinkedHashMap<>();
 	public Map<Integer, ILogicListenable> identityTiles = new LinkedHashMap<>();
-	public Map<Integer, InfoChangeableList> channelMap = new ConcurrentHashMap<Integer, InfoChangeableList>();
+	public Map<Integer, InfoChangeableList> channelMap = new ConcurrentHashMap<>();
 
 	// emitters
-	public List<ClientWirelessEmitter> clientDataEmitters = new ArrayList<ClientWirelessEmitter>();
-	public List<ClientWirelessEmitter> clientRedstoneEmitters = new ArrayList<ClientWirelessEmitter>();
+	public List<ClientWirelessEmitter> clientDataEmitters = new ArrayList<>();
+	public List<ClientWirelessEmitter> clientRedstoneEmitters = new ArrayList<>();
 
 	public static ClientInfoHandler instance() {
-		return (ClientInfoHandler) PL2.proxy.getClientManager();
+		return PL2.proxy.getClientManager();
 	}
 
 	@SubscribeEvent

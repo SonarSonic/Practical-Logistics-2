@@ -36,7 +36,7 @@ public class TileEntityNode extends TileSidedLogistics implements INode, IByteBu
 
 	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 
-	public SyncEnum<EntityTarget> entityTarget = new SyncEnum<EntityTarget>(EntityTarget.values(), 1);
+	public SyncEnum<EntityTarget> entityTarget = new SyncEnum<>(EntityTarget.values(), 1);
 	public SyncTagType.INT entityRange = (INT) new SyncTagType.INT(2).setDefault(10);
 	public SyncTagType.BOOLEAN nearest = (BOOLEAN) new SyncTagType.BOOLEAN(3).setDefault(true);
 	public UUID uuid;

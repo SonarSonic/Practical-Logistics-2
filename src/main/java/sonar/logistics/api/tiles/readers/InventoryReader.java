@@ -5,7 +5,7 @@ import sonar.logistics.PL2Translate;
 
 /** all the modes used by the Inventory Reader */
 public class InventoryReader {
-	public static enum Modes {
+	public enum Modes {
 		INVENTORIES, STACK, SLOT, POS, STORAGE, FILTERED;
 
 		Localisation name;
@@ -19,7 +19,7 @@ public class InventoryReader {
 		}
 	}
 
-	public static enum SortingType {
+	public enum SortingType {
 		STORED, NAME, MODID;
 		
 		Localisation name;

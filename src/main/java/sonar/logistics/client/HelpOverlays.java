@@ -13,11 +13,8 @@ public class HelpOverlays {
 		{
 			this.overlays.add(new HelpOverlay<GuiInfoReader>("select channel", 7, 5, 20, 19, Color.RED.getRGB()) {
 				public boolean isCompletedSuccess(GuiInfoReader gui) {
-					if (!gui.part.getChannels().hasChannels()) {
-						return true;
-					}
-					return false;
-				}
+                    return !gui.part.getChannels().hasChannels();
+                }
 
 				public boolean canBeRendered(GuiInfoReader gui) {
 					return true;
@@ -25,11 +22,8 @@ public class HelpOverlays {
 			});
 			this.overlays.add(new HelpOverlay<GuiInfoReader>("guide.Hammer.name", 4, 26, 231, 137, Color.RED.getRGB()) {
 				public boolean isCompletedSuccess(GuiInfoReader gui) {
-					if (gui.part.getSelectedInfo().get(0) != null) {
-						return true;
-					}
-					return false;
-				}
+                    return gui.part.getSelectedInfo().get(0) != null;
+                }
 
 				public boolean canBeRendered(GuiInfoReader gui) {
 					return true;

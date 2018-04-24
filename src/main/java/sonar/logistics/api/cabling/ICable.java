@@ -7,13 +7,13 @@ import sonar.core.utils.IWorldPosition;
 public interface ICable extends IWorldPosition, ICableConnectable {
 
 	/** is the cable limited by the number of channels, true for Channelled Cables, false for Data Cables */
-	public ConnectableType getConnectableType();
+    ConnectableType getConnectableType();
 
 	/** returns the ID of this connection's network */
-	public int getRegistryID();
+    int getRegistryID();
 
 	/** sets the ID of this connection. Shouldn't be called outside of the ConnectionManager */
-	public void setRegistryID(int id);
+    void setRegistryID(int id);
 
 	/** can the Tile connect to cables on the given direction
 	 * @param registryID the id of the connection trying to connect
@@ -21,7 +21,7 @@ public interface ICable extends IWorldPosition, ICableConnectable {
 	 * @param dir the direction it is connecting from
 	 * @param internal if this cable is within the bounds of this block.
 	 * @return if the tile can connect. */
-	public CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal);
+    CableConnectionType canConnect(int registryID, ConnectableType type, EnumFacing dir, boolean internal);
 	
-	public boolean isBlocked(EnumFacing dir);
+	boolean isBlocked(EnumFacing dir);
 }

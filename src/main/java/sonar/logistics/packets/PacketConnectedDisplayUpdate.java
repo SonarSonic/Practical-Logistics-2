@@ -75,9 +75,7 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 		@Override
 		public IMessage onMessage(PacketConnectedDisplayUpdate message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					doMessage(message, ctx);
-				});
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> doMessage(message, ctx));
 			}
 			return null;
 		}
@@ -104,14 +102,14 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 					display = CableHelper.getDisplay(world, coords.getBlockPos(), EnumDisplayFaceSlot.fromFace(message.screen.getCableFace()));
 					ClientInfoHandler.instance().displays_tile.put(iden, display);
 				}
-				if (display != null && display instanceof TileLargeDisplayScreen) {
+				if (display instanceof TileLargeDisplayScreen) {
 					TileLargeDisplayScreen large = ((TileLargeDisplayScreen) display);
 					large.identity.setObject(iden);
 					large.setRegistryID(message.registryID);
 					boolean isTopLeft = iden == message.topLeft;
 					large.setShouldRender(isTopLeft);
 					if (isTopLeft) {
-						message.screen.setTopLeftScreen(large, isTopLeft);
+						message.screen.setTopLeftScreen(large, true);
 					}
 					BlockCoords coords = large.getCoords();
 					world.markBlockRangeForRenderUpdate(coords.getBlockPos(), coords.getBlockPos());

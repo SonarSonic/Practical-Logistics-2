@@ -1,8 +1,8 @@
 package sonar.logistics.common.multiparts.misc;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -25,7 +25,7 @@ public class BlockRedstoneSignaller extends BlockLogisticsSided {
 	@Override
 	public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null && tile instanceof TileRedstoneSignaller) {
+		if (tile instanceof TileRedstoneSignaller) {
 			return ((TileRedstoneSignaller) tile).isActive() ? 15 : 0;
 		}
 		return 0;
@@ -43,18 +43,19 @@ public class BlockRedstoneSignaller extends BlockLogisticsSided {
 
 	//// STATE \\\\
 
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	@Nonnull
+    @Override
+	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		boolean active = false;
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null && tile instanceof TileRedstoneSignaller) {
+		if (tile instanceof TileRedstoneSignaller) {
 			active = ((TileRedstoneSignaller) tile).isActive();
 		}
 		return state.withProperty(PL2Properties.ACTIVE, active);
 	}
 
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] { SonarProperties.ORIENTATION, PL2Properties.ACTIVE });
+		return new BlockStateContainer(this, SonarProperties.ORIENTATION, PL2Properties.ACTIVE);
 	}
 
 }

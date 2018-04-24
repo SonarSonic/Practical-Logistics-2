@@ -34,24 +34,8 @@ public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNe
 			if (tile != null && provider.canProvideEnergy(tile, connection.face)) {
 				StoredEnergyStack info = provider.getEnergy(new StoredEnergyStack(provider.getProvidedType()), tile, connection.face);
 				if (info != null) {
-					if (maxEnergy == null) {
-						maxEnergy = info;
-					} else {
-						StoredEnergyStack converted = info.copy().convertEnergyType(maxEnergy.energyType);
-						if (!maxEnergy.hasInput && converted.hasInput) {
-							maxEnergy.hasInput = true;
-							maxEnergy.input = converted.input;
-						}
-						if (!maxEnergy.hasOutput && converted.hasOutput) {
-							maxEnergy.hasOutput = true;
-							maxEnergy.output = converted.output;
-						}
-						if (!maxEnergy.hasUsage && converted.hasUsage) {
-							maxEnergy.hasUsage = true;
-							maxEnergy.usage = converted.usage;
-						}
-					}
-					break;
+                    maxEnergy = info;
+                    break;
 				}
 			}
 		}

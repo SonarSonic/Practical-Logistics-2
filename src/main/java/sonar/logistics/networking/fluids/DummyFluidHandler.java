@@ -6,7 +6,6 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
-import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 
@@ -74,12 +73,12 @@ public class DummyFluidHandler implements IFluidHandler, IFluidTankProperties {
 
 	@Override
 	public boolean canFillFluidType(FluidStack fluidStack) {
-		return fluid == null ? true : fluid.equalStack(fluidStack);
+		return fluid == null || fluid.equalStack(fluidStack);
 	}
 
 	@Override
 	public boolean canDrainFluidType(FluidStack fluidStack) {
-		return fluid == null ? false : fluid.equalStack(fluidStack);
+		return fluid != null && fluid.equalStack(fluidStack);
 	}
 
 }

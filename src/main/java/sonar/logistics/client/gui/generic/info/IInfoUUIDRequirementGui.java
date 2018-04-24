@@ -6,6 +6,6 @@ import sonar.logistics.api.info.InfoUUID;
 
 public interface IInfoUUIDRequirementGui {
 
-	public void onInfoUUIDRequirementCompleted(List<InfoUUID> selected);
+	void onInfoUUIDRequirementCompleted(List<InfoUUID> selected);
 	
 }

@@ -197,8 +197,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 	public double[] createMaxScaling(IDisplayElement element) {
 		double fill = element.getPercentageFill() == 0 ? percentageFill : element.getPercentageFill();
 		double maxIndividualHeight = getMaxScaling()[HEIGHT] / elements.getElementCount();
-		double[] maxScaling = DisplayElementHelper.getScaling(element.getUnscaledWidthHeight(), new double[] { getMaxScaling()[0], maxIndividualHeight, getMaxScaling()[2] }, fill);
-		return maxScaling;
+		return DisplayElementHelper.getScaling(element.getUnscaledWidthHeight(), new double[] { getMaxScaling()[0], maxIndividualHeight, getMaxScaling()[2] }, fill);
 	}
 
 	public double[] createActualScaling(IDisplayElement element) {

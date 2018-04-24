@@ -8,7 +8,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IWirelessEmitter;

@@ -6,9 +6,9 @@ import java.util.List;
 public interface IOperatorProvider {
 
 	/**add to the list of info what you would like to be displayed, the block name should be added first*/
-	public void addInfo(List<String> info);
+    void addInfo(List<String> info);
 	
 	/**called by the client side*/
-	public void updateOperatorInfo();
+    void updateOperatorInfo();
 
 }

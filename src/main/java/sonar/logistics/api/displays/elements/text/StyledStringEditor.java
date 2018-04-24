@@ -18,7 +18,7 @@ public class StyledStringEditor {
 					return ss;
 				});
 			}
-			strings.forEach(ss -> newLine.addWithCombine(ss));
+			strings.forEach(newLine::addWithCombine);
 			if (cursorPosition.x != text.getLineLength(cursorPosition.y)) {
 				TextSelection after = new TextSelection(cursorPosition.x, Integer.MAX_VALUE, cursorPosition.y, cursorPosition.y);
 				StyledStringFormatter.formatTextSelections(text, Lists.newArrayList(after), (line, ss) -> {
@@ -55,7 +55,7 @@ public class StyledStringEditor {
 
 			for (StyledStringLine line : lines) {
 				if (!combinedFirst) {
-					line.getStrings().forEach(ss -> beforeLine.addWithCombine(ss));
+					line.getStrings().forEach(beforeLine::addWithCombine);
 					combinedFirst = true;
 				} else {
 					text.addNewLine(yPos, line);

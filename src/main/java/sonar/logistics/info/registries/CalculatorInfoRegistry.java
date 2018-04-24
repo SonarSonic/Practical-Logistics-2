@@ -15,7 +15,7 @@ import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = "calculator")
-public class CalculatorInfoRegistry extends IInfoRegistry {
+public class CalculatorInfoRegistry implements IInfoRegistry {
 
 	@Override
 	public void registerBaseMethods(IMasterInfoRegistry registry) {

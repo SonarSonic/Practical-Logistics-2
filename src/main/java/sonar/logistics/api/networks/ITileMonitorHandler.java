@@ -10,8 +10,7 @@ public interface ITileMonitorHandler<I extends IInfo, L extends AbstractChangeab
 	/** updates info for the given tile.
 	 * @param channels the {@link INetworkChannels} calling for the updated info
 	 * @param newList the new list given by the {@link INetworkChannels}
-	 * @param previousList the last list the handler gave for this connection
 	 * @param connection the tile connection to provide info for
 	 * @return the list to set the updated info to. */
-	public L updateInfo(C channels, L newList, BlockConnection connection);
+    L updateInfo(C channels, L newList, BlockConnection connection);
 }

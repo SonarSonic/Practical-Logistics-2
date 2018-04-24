@@ -24,7 +24,6 @@ import sonar.logistics.client.gui.display.GuiEditNetworkFluid;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredFluidStack;
-import sonar.logistics.info.types.MonitoredItemStack;
 
 @DisplayElementType(id = NetworkFluidElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkFluidElement extends AbstractInfoElement<MonitoredFluidStack> implements IClickableElement {
@@ -56,7 +55,7 @@ public class NetworkFluidElement extends AbstractInfoElement<MonitoredFluidStack
 		if (info != null && isType(info)) {
 			MonitoredFluidStack stack = (MonitoredFluidStack) info;
 			int networkID = stack.getNetworkSource();
-			GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createFluidClickPacket(stack == null ? null : stack.getStoredStack(), networkID), getHolder().getContainer(), click);
+			GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createFluidClickPacket(stack.getStoredStack(), networkID), getHolder().getContainer(), click);
 	}
 		return -1;
 	}

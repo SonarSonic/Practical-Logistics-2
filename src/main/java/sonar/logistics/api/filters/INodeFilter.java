@@ -8,16 +8,16 @@ import sonar.logistics.api.tiles.nodes.TransferType;
 
 public interface INodeFilter extends ISyncableListener, INBTSyncable {
 	
-	public String getNodeID();
+	String getNodeID();
 
-	public TransferType[] getTypes();
+	TransferType[] getTypes();
 	
-	public NodeTransferMode getTransferMode();
+	NodeTransferMode getTransferMode();
 		
-	public void renderInfoInList(GuiSonar screen, int yPos);
+	void renderInfoInList(GuiSonar screen, int yPos);
 	
-	public FilterList getListType();
+	FilterList getListType();
 	
-	public boolean isValidFilter();
+	boolean isValidFilter();
 	
 }

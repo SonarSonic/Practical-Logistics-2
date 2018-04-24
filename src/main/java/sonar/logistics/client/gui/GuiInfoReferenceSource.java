@@ -69,9 +69,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 	public boolean isPairedInfo(Object info) {
 		if (info instanceof IInfoProvider) {
 			if (!RenderBlockSelection.positions.isEmpty()) {
-				if (RenderBlockSelection.isPositionRenderered(((IInfoProvider) info).getCoords())) {
-					return true;
-				}
+                return RenderBlockSelection.isPositionRenderered(((IInfoProvider) info).getCoords());
 			}
 		}
 		return false;
@@ -88,7 +86,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 					break;
 				}
 			}
-			return (!isSelected || expanded.contains(uuid)) ? false : true;
+			return isSelected && !expanded.contains(uuid);
 		}
 		return info instanceof InfoReference && selected.contains(info);
 	}
@@ -103,7 +101,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			last = ClientInfoHandler.instance().info.get((InfoUUID) info);
+			last = ClientInfoHandler.instance().info.get(info);
 			if (last != null) {
 				InfoRenderer.renderMonitorInfoInGUI(last, yPos + 1, LogisticsColours.white_text.getRGB());
 			} else {
@@ -160,7 +158,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 			while (it.hasNext()) {
 				Object next = it.next();
 				if (next instanceof InfoUUID && expanded.contains(next)) {
-					IInfo monitorInfo = ClientInfoHandler.instance().info.get((InfoUUID) next);
+					IInfo monitorInfo = ClientInfoHandler.instance().info.get(next);
 					for (ReferenceType type : ReferenceType.values()) {
 						it.add(new InfoReference((InfoUUID) next, type, monitorInfo.getID().hashCode()));
 					}

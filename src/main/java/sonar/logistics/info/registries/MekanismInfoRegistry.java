@@ -15,7 +15,7 @@ import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.register.RegistryType;
 
 @InfoRegistry(modid = "Mekanism")
-public class MekanismInfoRegistry extends IInfoRegistry {
+public class MekanismInfoRegistry implements IInfoRegistry {
 
 	@Override
 	public void registerBaseReturns(IMasterInfoRegistry registry) {

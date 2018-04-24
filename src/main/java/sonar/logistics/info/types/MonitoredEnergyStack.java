@@ -21,9 +21,9 @@ import sonar.logistics.packets.sync.SyncMonitoredType;
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {
 
 	public static final String id = "energy";
-	private SyncNBTAbstract<StoredEnergyStack> energyStack = new SyncNBTAbstract<StoredEnergyStack>(StoredEnergyStack.class, 0);
-	private SyncMonitoredType<MonitoredBlockCoords> coords = new SyncMonitoredType<MonitoredBlockCoords>(1);
-	private final SyncNBTAbstract<StoredItemStack> dropStack = new SyncNBTAbstract<StoredItemStack>(StoredItemStack.class, 3);
+	private SyncNBTAbstract<StoredEnergyStack> energyStack = new SyncNBTAbstract<>(StoredEnergyStack.class, 0);
+	private SyncMonitoredType<MonitoredBlockCoords> coords = new SyncMonitoredType<>(1);
+	private final SyncNBTAbstract<StoredItemStack> dropStack = new SyncNBTAbstract<>(StoredItemStack.class, 3);
 
 	{
 		syncList.addParts(energyStack, coords, dropStack);

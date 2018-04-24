@@ -18,6 +18,8 @@ import sonar.core.recipes.RecipeHelperV2;
 import sonar.core.recipes.RecipeObjectType;
 import sonar.logistics.PL2Constants;
 
+import javax.annotation.Nonnull;
+
 public class ForgingHammerJEI extends JEICategoryV2 {
 
 	private final IDrawable background;
@@ -31,7 +33,8 @@ public class ForgingHammerJEI extends JEICategoryV2 {
 		this.arrow = guiHelper.createAnimatedDrawable(arrowDrawable, 100, IDrawableAnimated.StartDirection.LEFT, false);
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public IDrawable getBackground() {
 		return background;
 	}
@@ -57,7 +60,8 @@ public class ForgingHammerJEI extends JEICategoryV2 {
 
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public String getModName() {
 		return PL2Constants.MODID;
 	}

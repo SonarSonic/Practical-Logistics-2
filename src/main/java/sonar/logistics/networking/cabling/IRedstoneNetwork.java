@@ -7,37 +7,37 @@ import sonar.logistics.api.cabling.IRedstoneConnectable;
 public interface IRedstoneNetwork extends ISonarListener, ISonarListenable<IRedstoneNetwork> {
 
 	/**networks which provides power to this one*/
-	public static final int CONNECTED_NETWORK = 0;
+    int CONNECTED_NETWORK = 0;
 	
 	/**networks which take power from this one*/
-	public static final int WATCHING_NETWORK = 1;
+    int WATCHING_NETWORK = 1;
 
-	public int getNetworkID();
+	int getNetworkID();
 	
-	public void markCablesChanged();
+	void markCablesChanged();
 	
-	public boolean doCablesNeedUpdate();
+	boolean doCablesNeedUpdate();
 	
-	public void tick();
+	void tick();
 	
-	public int updateActualPower();
+	int updateActualPower();
 	
-	public int updateLocalPower();
+	int updateLocalPower();
 	
-	public int updateGlobalPower();
+	int updateGlobalPower();
 	
-	public int getActualPower();
+	int getActualPower();
 	
-	public int getLocalPower();
+	int getLocalPower();
 	
-	public int getGlobalPower();
+	int getGlobalPower();
 	
-	public void notifyWatchingNetworksOfChange();
+	void notifyWatchingNetworksOfChange();
 	
-	public void onNetworkPowerChanged(IRedstoneNetwork network);
+	void onNetworkPowerChanged(IRedstoneNetwork network);
 	
-	public void addConnection(IRedstoneConnectable connectable);
+	void addConnection(IRedstoneConnectable connectable);
 
-	public void removeConnection(IRedstoneConnectable connectable);
+	void removeConnection(IRedstoneConnectable connectable);
 
 }

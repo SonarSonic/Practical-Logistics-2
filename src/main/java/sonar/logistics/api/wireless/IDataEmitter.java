@@ -10,9 +10,9 @@ import sonar.logistics.info.types.MonitoredItemStack;
 /** implemented on the Data Emitter */
 public interface IDataEmitter extends IWirelessEmitter, IListReader<IInfo> {
 
-	public AbstractChangeableList<MonitoredItemStack> getServerItems();
+	AbstractChangeableList<MonitoredItemStack> getServerItems();
 	
-	public AbstractChangeableList<MonitoredFluidStack> getServerFluids();
+	AbstractChangeableList<MonitoredFluidStack> getServerFluids();
 
-	public void sendRapidUpdate(EntityPlayer player);
+	void sendRapidUpdate(EntityPlayer player);
 }

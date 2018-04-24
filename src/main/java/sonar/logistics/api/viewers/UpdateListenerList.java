@@ -58,11 +58,6 @@ public class UpdateListenerList {
 		canAdd.put(updateType, false);
 	}
 
-	public ListenerType getListenerType(UpdateType ...updateType) {
-		ListenerType type = types.get(updateType);
-		return type == null ? ListenerType.NONE : type;
-	}
-
 	public boolean canForceUpdate(UpdateType ...updateTypes) {
 		for(UpdateType updateType :updateTypes){
 			ListenerType type = types.get(updateType);

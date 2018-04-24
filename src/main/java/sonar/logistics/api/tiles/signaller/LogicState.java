@@ -5,7 +5,7 @@ public enum LogicState {
 	TRUE, FALSE, INVALID_KEY, INVALID_OBJECT;
 
 	public boolean getBool() {
-		return this == TRUE ? true : false;
+		return this == TRUE;
 	}
 
 	public static LogicState getState(boolean bool) {

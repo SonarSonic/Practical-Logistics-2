@@ -20,7 +20,7 @@ import sonar.logistics.networking.cabling.RedstoneCableHelper;
 public class TileRedstoneNode extends TileSonarMultipart implements IRedstoneConnectable, IRedstonePowerProvider {
 
 	public IRedstoneNetwork rNetwork = EmptyRedstoneNetwork.INSTANCE;
-	private SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault((int) -1);
+	private SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault(-1);
 	public SyncTagType.INT networkID = (INT) new SyncTagType.INT(0).setDefault(-1);
 	private SyncTagType.INT power = (INT) new SyncTagType.INT("power");
 	public boolean isSelfChecking = false;

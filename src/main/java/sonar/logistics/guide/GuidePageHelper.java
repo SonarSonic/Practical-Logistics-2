@@ -83,7 +83,7 @@ public class GuidePageHelper {
 				String s = sp.substring(0, i);
 				char c0 = sp.charAt(i);
 				boolean flag = c0 == 32 || c0 == 10;
-				String s1 = render.getFormatFromString(s) + sp.substring(i + (flag ? 1 : 0));
+				String s1 = FontRenderer.getFormatFromString(s) + sp.substring(i + (flag ? 1 : 0));
 				addNewLine(s, lines, pageNums, pageLinks);
 				createLines(current, ordinal, lineTally, info, lines, pageNums, pageLinks, s1);
 			}
@@ -97,7 +97,7 @@ public class GuidePageHelper {
 			int link = iterator.next();
 			IGuidePage linked = GuidePageRegistry.getGuidePage(link);
 			String before = line.substring(0, index);
-			pageLinks.add(new ElementLink(link, (int) ((RenderHelper.fontRenderer.getStringWidth(linked != null ? linked.getDisplayName() : PAGE_LINK_ERROR))), lines.size(), (int) (RenderHelper.fontRenderer.getStringWidth(before))));
+			pageLinks.add(new ElementLink(link, (RenderHelper.fontRenderer.getStringWidth(linked != null ? linked.getDisplayName() : PAGE_LINK_ERROR)), lines.size(), RenderHelper.fontRenderer.getStringWidth(before)));
 
 			line = before + line.substring(index + 1);
 		}
@@ -110,7 +110,7 @@ public class GuidePageHelper {
 		for (; it.hasNext();) {
 			IRecipe recipe = it.next();
 			ItemStack output = recipe.getRecipeOutput();
-			if (output != null && ItemStack.areItemsEqual(stack, output)) {
+			if (ItemStack.areItemsEqual(stack, output)) {
 				itemRecipe = recipe;
 			}
 		}
