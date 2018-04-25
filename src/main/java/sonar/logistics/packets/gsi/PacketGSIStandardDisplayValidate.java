@@ -15,6 +15,7 @@ import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 
 public class PacketGSIStandardDisplayValidate extends PacketMultipart {
 
@@ -47,13 +48,16 @@ public class PacketGSIStandardDisplayValidate extends PacketMultipart {
 
 		@Override
 		public IMessage processMessage(PacketGSIStandardDisplayValidate message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
-			if (ctx.side == Side.CLIENT && part instanceof TileAbstractDisplay) {
+			if (ctx.side == Side.CLIENT && part instanceof TileDisplayScreen) {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					DisplayGSI gsi = ((TileAbstractDisplay) part).getGSI();
-					if (gsi != null) {
-						gsi.readData(message.SAVE_TAG, SyncType.SAVE);
-						gsi.validate();
+					TileDisplayScreen display = (TileDisplayScreen) part;
+					DisplayGSI gsi = display.getGSI();
+					if(gsi == null){
+						gsi = display.container = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID());
 					}
+					gsi.readData(message.SAVE_TAG, SyncType.SAVE);
+					gsi.validate();
+
 				});
 			}
 			return null;

@@ -48,7 +48,7 @@ public class GSIOverlays {
 						display = null;
 					}
 				}
-				if (display != null) {
+				if (display != null && display.getGSI() != null) {
 					Vec3d vec = evt.getTarget().hitVec;
 					float hitX = (float) (vec.x - (double) clickPos.getX());
 					float hitY = (float) (vec.y - (double) clickPos.getY());

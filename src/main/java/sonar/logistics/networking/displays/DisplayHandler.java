@@ -8,22 +8,31 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.helpers.ListHelper;
+import sonar.core.helpers.NBTHelper;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICableConnectable;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.utils.PL2AdditionType;
+import sonar.logistics.api.utils.PL2RemovalType;
+import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.AbstractConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
-import stanhebben.zenscript.annotations.NotNull;
+import sonar.logistics.worlddata.GSIData;
+
+import javax.annotation.Nonnull;
 
 public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 
@@ -62,13 +71,56 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 		ListHelper.addWithCheck(rebuild, display.getRegistryID());
 	}
 
+	public void addDisplay(IDisplay display, PL2AdditionType type){
+	    if(display instanceof TileDisplayScreen) {
+            TileDisplayScreen screen = (TileDisplayScreen) display;
+            screen.container = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID());
+            NBTTagCompound tag = GSIData.unloadedGSI.get(display.getInfoContainerID());
+            if(tag != null){
+                screen.container.readData(tag, NBTHelper.SyncType.SAVE);
+            }
+        }
+        DisplayGSI gsi = display.getGSI();
+        if (gsi != null && gsi.getDisplay() != null && !ServerInfoHandler.instance().displays.containsValue(gsi)) {
+            validateGSI(display, gsi);
+        }
+    }
+
+    public void removeDisplay(IDisplay display, PL2RemovalType type){
+        if(display instanceof TileDisplayScreen) {
+            TileDisplayScreen screen = (TileDisplayScreen) display;
+            if(type == PL2RemovalType.PLAYER_REMOVED){
+                GSIData.unloadedGSI.remove(display.getInfoContainerID());
+            }else{
+                GSIData.unloadedGSI.put(display.getInfoContainerID(), display.getGSI().writeData(new NBTTagCompound(), NBTHelper.SyncType.SAVE));
+            }
+        }
+        DisplayGSI gsi = display.getGSI();
+        if (gsi != null && gsi.getDisplay() != null) {
+            invalidateGSI(display, gsi);
+        }
+    }
+
+    public void validateGSI(IDisplay display, DisplayGSI gsi) {
+        if (display == gsi.getDisplay().getActualDisplay()) {
+            gsi.validate();
+            gsi.sendInfoContainerPacket();
+			ChunkViewerHandler.instance().onDisplayAdded(gsi);
+        }
+    }
+
+    public void invalidateGSI(IDisplay display, DisplayGSI gsi) {
+        gsi.invalidate();
+		ChunkViewerHandler.instance().onDisplayRemoved(gsi);
+    }
+
 	public void createConnectedDisplays() {
 		for (Integer i : rebuild) {
 			ConnectedDisplay display = ServerInfoHandler.instance().getConnectedDisplays().get(i);
 			List<ILargeDisplay> displays = getConnections(i);
 			if (displays.isEmpty()) {
 				if (display != null) {
-					ServerInfoHandler.instance().invalidateGSI(display, display.getGSI());
+					invalidateGSI(display, display.getGSI());
 				}
 				ServerInfoHandler.instance().getConnectedDisplays().remove(i);
 			} else if (display == null) {
@@ -86,7 +138,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 		}
 	}
 
-	public void markConnectedDisplayChanged(int registryID, @NotNull ConnectedDisplayChange... changes) {
+	public void markConnectedDisplayChanged(int registryID, @Nonnull ConnectedDisplayChange... changes) {
 		display_updates.putIfAbsent(registryID, new ArrayList<>());
 		for (ConnectedDisplayChange change : changes) {
 			if (!display_updates.get(registryID).contains(change)) {

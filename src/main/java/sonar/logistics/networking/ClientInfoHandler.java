@@ -54,14 +54,14 @@ public class ClientInfoHandler implements IInfoManager {
 	@SubscribeEvent
 	public void onPartAdded(NetworkPartEvent.AddedPart event) {
 		if (event.tile instanceof IDisplay && event.world.isRemote) {
-			addDisplay((IDisplay) event.tile);
+			addDisplay((IDisplay) event.tile, event.type);
 		}
 	}
 
 	@SubscribeEvent
 	public void onPartRemoved(NetworkPartEvent.RemovedPart event) {
 		if (event.tile instanceof IDisplay && event.world.isRemote) {
-			removeDisplay((IDisplay) event.tile);
+			removeDisplay((IDisplay) event.tile, event.type);
 		}
 	}
 
@@ -110,13 +110,13 @@ public class ClientInfoHandler implements IInfoManager {
 		return displays_gsi.get(iden);
 	}
 
-	public void addDisplay(IDisplay display) {
+	public void addDisplay(IDisplay display, PL2AdditionType type) {
 		if (!displays_tile.containsValue(display)) {
 			displays_tile.put(display.getIdentity(), display);
 		}
 	}
 
-	public void removeDisplay(IDisplay display) {
+	public void removeDisplay(IDisplay display, PL2RemovalType type) {
 		displays_tile.remove(display.getIdentity());
 	}
 

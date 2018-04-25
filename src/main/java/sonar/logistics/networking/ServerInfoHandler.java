@@ -34,6 +34,7 @@ import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.InfoError;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
+import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.info.InfoHelper;
 
 public class ServerInfoHandler implements IInfoManager {
@@ -101,33 +102,12 @@ public class ServerInfoHandler implements IInfoManager {
 		return identityTiles.get(iden);
 	}
 
-	public void addDisplay(IDisplay display) {
-		DisplayGSI gsi = display.getGSI();
-		if (gsi != null && gsi.getDisplay() != null && display.getCoords() != null && !displays.containsValue(gsi)) {
-			validateGSI(display, gsi);
-		}
+	public void addDisplay(IDisplay display, PL2AdditionType type) {
+		DisplayHandler.instance().addDisplay(display, type);
 	}
 
-	public void removeDisplay(IDisplay display) {
-		DisplayGSI gsi = display.getGSI();
-		if (gsi != null && gsi.getDisplay() != null && display.getCoords() != null) {
-			invalidateGSI(display, gsi);
-		}
-	}
-
-	public void validateGSI(IDisplay display, DisplayGSI gsi) {
-		if (gsi.getDisplay().getCoords() != null) {
-			if (display == gsi.getDisplay().getActualDisplay()) {
-				ChunkViewerHandler.instance().onDisplayAdded(gsi);
-				gsi.validate();
-				gsi.sendInfoContainerPacket();
-			}
-		}
-	}
-
-	public void invalidateGSI(IDisplay display, DisplayGSI gsi) {
-		ChunkViewerHandler.instance().onDisplayRemoved(gsi);
-		gsi.invalidate();
+	public void removeDisplay(IDisplay display, PL2RemovalType type) {
+		DisplayHandler.instance().removeDisplay(display, type);
 	}
 
 	@Override

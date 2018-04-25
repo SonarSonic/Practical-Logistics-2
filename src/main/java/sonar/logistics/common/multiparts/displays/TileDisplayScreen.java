@@ -9,15 +9,17 @@ import sonar.logistics.api.tiles.displays.DisplayType;
 
 public class TileDisplayScreen extends TileAbstractDisplay {
 
-	private DisplayGSI container;
+	public DisplayGSI container;
 
 	//// IInfoDisplay \\\\
 
 	@Override
 	public DisplayGSI getGSI() {
+		/*
 		if (container == null) {
 			container = new DisplayGSI(this, getWorld(), getInfoContainerID());
 		}
+		*/
 		return container;
 	}
 
@@ -29,21 +31,6 @@ public class TileDisplayScreen extends TileAbstractDisplay {
 	@Override
 	public DisplayType getDisplayType() {
 		return DisplayType.SMALL;
-	}
-
-	//// SAVING \\\\
-
-	@Override
-	public NBTTagCompound writeData(NBTTagCompound tag, SyncType type) {
-		super.writeData(tag, type);
-		getGSI().writeData(tag, type.isType(SyncType.SPECIAL) ? SyncType.SAVE : type);
-		return tag;
-	}
-
-	@Override
-	public void readData(NBTTagCompound tag, SyncType type) {
-		super.readData(tag, type);
-		getGSI().readData(tag, type.isType(SyncType.SPECIAL) ? SyncType.SAVE : type);
 	}
 
 	@Override

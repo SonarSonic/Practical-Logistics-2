@@ -39,8 +39,8 @@ public interface IInfoManager {
 	
 	DisplayGSI getGSI(int iden);
 
-	void addDisplay(IDisplay display);
+	void addDisplay(IDisplay display, PL2AdditionType type);
 
-	void removeDisplay(IDisplay display);
+	void removeDisplay(IDisplay display, PL2RemovalType type);
 	
 }

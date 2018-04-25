@@ -12,6 +12,7 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.networking.ClientInfoHandler;
 
 public class PacketGSIDisplayValidate implements IMessage {
@@ -58,10 +59,9 @@ public class PacketGSIDisplayValidate implements IMessage {
 		public static void doMessage(PacketGSIDisplayValidate message, MessageContext ctx) {
 			IDisplay display = ClientInfoHandler.instance().getConnectedDisplay(message.DISPLAY_ID);
 			DisplayGSI gsi = display.getGSI();
-			if (gsi != null) {							
-				gsi.readData(message.SAVE_TAG, SyncType.SAVE);
-				gsi.validate();
-			}
+			gsi.readData(message.SAVE_TAG, SyncType.SAVE);
+			gsi.validate();
+
 		}
 
 	}

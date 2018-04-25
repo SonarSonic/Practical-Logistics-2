@@ -1,5 +1,7 @@
 package sonar.logistics;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,6 +30,7 @@ import sonar.logistics.commands.CommandResetInfoRegistry;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.worlddata.ConnectedDisplayData;
+import sonar.logistics.worlddata.GSIData;
 import sonar.logistics.worlddata.IdentityCountData;
 import sonar.logistics.worldgen.SapphireOreGen;
 
@@ -124,11 +127,14 @@ public class PL2 {
         if(storage.getOrLoadData(ConnectedDisplayData.class, ConnectedDisplayData.IDENTIFIER) == null) {
             storage.setData(ConnectedDisplayData.IDENTIFIER, new ConnectedDisplayData());
         }
+		if(storage.getOrLoadData(GSIData.class, GSIData.IDENTIFIER) == null) {
+			storage.setData(GSIData.IDENTIFIER, new GSIData());
+		}
 	}
 
 	@EventHandler
 	public void serverClose(FMLServerStoppedEvent event) {
 		proxy.removeAll();
 	}
-	
+
 }

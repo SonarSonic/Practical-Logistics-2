@@ -1,6 +1,5 @@
 package sonar.logistics;
 
-import mcmultipart.MCMultiPart;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,7 +11,9 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
@@ -49,6 +50,11 @@ public class PL2Events {
 		if (coolDownClick != 0) {
 			coolDownClick--;
 		}
+	}
+
+	@SubscribeEvent
+	public void clientDisconnection(FMLNetworkEvent.ClientDisconnectionFromServerEvent event){
+		SonarCore.proxy.getThreadListener(Side.CLIENT).addScheduledTask(() -> PL2.proxy.removeAll());
 	}
 
 	@SubscribeEvent

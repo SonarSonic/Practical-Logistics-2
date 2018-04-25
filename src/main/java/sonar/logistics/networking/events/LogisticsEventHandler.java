@@ -172,8 +172,8 @@ public class LogisticsEventHandler {
 
 	public void flushDisplays(Map<IDisplay, PL2AdditionType> added, Map<IDisplay, PL2RemovalType> removed) {
 		if (!added.isEmpty() || !removed.isEmpty()) {
-			added.forEach((display, type) -> ServerInfoHandler.instance().addDisplay(display));
-			removed.forEach((display, type) -> ServerInfoHandler.instance().removeDisplay(display));
+			added.forEach((display, type) -> ServerInfoHandler.instance().addDisplay(display, type));
+			removed.forEach((display, type) -> ServerInfoHandler.instance().removeDisplay(display, type));
 		}
 	}
 

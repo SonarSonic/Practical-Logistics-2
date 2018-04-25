@@ -62,6 +62,9 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof TileAbstractDisplay) {
 			TileAbstractDisplay display = (TileAbstractDisplay) tile;
+			if(display.getGSI() == null){
+				return false;
+			}
 			if (facing != state.getValue(SonarProperties.ORIENTATION)) {
 				if (!world.isRemote && canOpenGui(player)) {
 					display.openFlexibleGui(player, 0);
@@ -123,7 +126,8 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 		EnumFacing rotation = EnumFacing.NORTH;
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof TileAbstractDisplay) {
-			rotation = ((TileAbstractDisplay) tile).getGSI().getRotation();
+			//FIXME
+			//rotation = ((TileAbstractDisplay) tile).getGSI().getRotation();
 		}
 		return state.withProperty(SonarProperties.ROTATION, rotation);
 	}

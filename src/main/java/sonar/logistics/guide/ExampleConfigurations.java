@@ -52,6 +52,7 @@ public class ExampleConfigurations {
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.info_reader.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileInfoReader());
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL), new TileDataCable());
 			TileDisplayScreen screen = new TileDisplayScreen();
+			screen.container = new DisplayGSI(screen, screen.getWorld(), screen.getInfoContainerID());
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
 			double[] displayScaling = new double[] { screen.getDisplayType().width, screen.getDisplayType().height, 1 };
@@ -82,6 +83,7 @@ public class ExampleConfigurations {
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.DOWN, CableRenderType.INTERNAL), new TileDataCable());
 
 			TileDisplayScreen screen = new TileDisplayScreen();
+			screen.container = new DisplayGSI(screen, screen.getWorld(), screen.getInfoContainerID());
 			double[] displayScaling = new double[] { screen.getDisplayType().width, screen.getDisplayType().height, 1 };
 			screen.getGSI().currentScaling = displayScaling;
 			DisplayElementContainer container = new DisplayElementContainer(screen.getGSI(), new double[] { 0, 0, 0 }, displayScaling, 1, 1);	
@@ -96,30 +98,6 @@ public class ExampleConfigurations {
 			addBlock(new BlockPos(0, 0, 0), PL2Blocks.display_screen.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), screen);
 			addBlock(new BlockPos(0, -1, 0), Blocks.CHEST.getDefaultState().withProperty(BlockChest.FACING, EnumFacing.SOUTH), new TileEntityChest());
 		}
-	}
-
-	public static class WirelessRedstone extends Logistics3DRenderer {
-
-		public WirelessRedstone() {
-			super(16);
-			addBlock(new BlockPos(1, 0, 0), Blocks.REDSTONE_WIRE.getDefaultState().withProperty(BlockRedstoneWire.POWER, 15));
-			addBlock(new BlockPos(-1, 0, -1), Blocks.REDSTONE_WIRE.getDefaultState().withProperty(BlockRedstoneWire.POWER, 15));
-
-			addBlock(new BlockPos(1, 0, -1), Blocks.LEVER.getDefaultState().withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_Z).withProperty(BlockLever.POWERED, true));
-
-			addBlock(new BlockPos(1, 0, 1), PL2Blocks.node.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileNode());
-			addBlock(new BlockPos(1, 0, 1), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.EAST, CableRenderType.INTERNAL).withProperty(PL2Properties.NORTH, CableRenderType.INTERNAL), new TileDataCable());
-			addBlock(new BlockPos(1, 0, 1), PL2Blocks.data_emitter.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.EAST), new TileDataEmitter());
-
-			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.info_reader.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH).withProperty(PL2Properties.HASDISPLAY, false), new TileInfoReader());
-			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_receiver.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.WEST), new TileDataReceiver());
-			addBlock(new BlockPos(-1, 0, 1), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.WEST, CableRenderType.INTERNAL), new TileDataCable());
-
-			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.redstone_signaller.getDefaultState().withProperty(SonarProperties.ORIENTATION, EnumFacing.NORTH), new TileRedstoneSignaller());
-			addBlock(new BlockPos(-1, 0, 0), PL2Blocks.data_cable.getDefaultState().withProperty(PL2Properties.SOUTH, CableRenderType.CABLE), new TileDataCable());
-
-		}
-
 	}
 
 	public static class MultipleInventory extends Logistics3DRenderer {
