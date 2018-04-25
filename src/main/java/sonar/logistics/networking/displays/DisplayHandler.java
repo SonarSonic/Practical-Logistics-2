@@ -34,6 +34,12 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	public List<Integer> rebuild = Lists.newArrayList();
 	public final Map<Integer, List<ConnectedDisplayChange>> display_updates = new HashMap<>();
 
+	@Override
+	public void removeAll(){
+		rebuild.clear();
+		display_updates.clear();
+	}
+
 	public void updateConnectedDisplays() {
 		if (!display_updates.isEmpty()) {
 			Map<Integer, ConnectedDisplay> connected = ServerInfoHandler.instance().getConnectedDisplays();

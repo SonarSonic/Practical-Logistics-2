@@ -60,7 +60,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 		Optional<IMultipartContainer> c = MultipartHelper.getContainer(world, pos);
 		if (c.isPresent()) {
 			IBlockState state = world.getBlockState(pos);
-			RayTraceResult result = RayTraceHelper.getRayTraceEyes(player, world);
+			RayTraceResult result = RayTraceHelper.getRayTraceEyes(player);
 
 			IMultipartContainer container = c.get();
 			if (result == null) {

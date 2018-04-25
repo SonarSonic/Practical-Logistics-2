@@ -40,6 +40,9 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 		updateRenders.clear();
 		changedNetworks.clear();
 		cableUpdates.clear();
+		cable_tiles.clear();
+		cable_providers.clear();
+		info_providers.clear();
 	}
 
 	public void addRenderUpdate(IDataCable cable) {

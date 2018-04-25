@@ -35,6 +35,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	public void removeAll() {
 		emitters.clear();
 		receivers.clear();
+		player_viewers.clear();
 	}
 
 	//// CONNECTION EVENTS \\\\

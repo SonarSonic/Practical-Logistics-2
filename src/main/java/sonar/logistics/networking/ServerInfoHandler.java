@@ -52,13 +52,13 @@ public class ServerInfoHandler implements IInfoManager {
 	}
 
 	public void removeAll() {
+		IDENTITY_COUNT = 0;
 		changedInfo.clear();
 		displays.clear();
 		info.clear();
 		monitoredLists.clear();
 		identityTiles.clear();
 		connectedDisplays.clear();
-		IDENTITY_COUNT = 0;
 	}
 
 	public int getNextIdentity() {

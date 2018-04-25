@@ -63,24 +63,22 @@ public class PL2Events {
 		World world = event.getWorld();
 		EntityPlayer player = event.getEntityPlayer();
 		if (world != null && player != null) {
-			if (coolDownClick == 0) {
-				IBlockState state = world.getBlockState(pos);
-				Block block = state.getBlock();
-				if (block == MCMultiPart.multipart) {
-					IDisplay display = CableHelper.getDisplay(world, pos, EnumDisplayFaceSlot.fromFace(event.getFace()));
-					if (display instanceof TileAbstractDisplay) {
-						if (display.getGSI() != null) {
-							Vec3d vec = event.getHitVec();
-							float vecX = (float) vec.x - pos.getX();
-							float vecY = (float) vec.y - pos.getY();
-							float vecZ = (float) vec.z - pos.getZ();
-							coolDownClick = 3;
-							BlockInteractionType interactionType = player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT;
-							display.getGSI().onClicked((TileAbstractDisplay) display, interactionType, world, pos, state, player, event.getHand(), event.getFace(), vecX, vecY, vecZ);
-							event.setCanceled(true);
-						}
+			IBlockState state = world.getBlockState(pos);
+			Block block = state.getBlock();
+			IDisplay display = CableHelper.getDisplay(world, pos, EnumDisplayFaceSlot.fromFace(event.getFace()));
+			if (display instanceof TileAbstractDisplay) {
+				if (coolDownClick == 0) {
+					if (display.getGSI() != null) {
+						Vec3d vec = event.getHitVec();
+						float vecX = (float) vec.x - pos.getX();
+						float vecY = (float) vec.y - pos.getY();
+						float vecZ = (float) vec.z - pos.getZ();
+						coolDownClick = 3;
+						BlockInteractionType interactionType = player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT;
+						display.getGSI().onClicked((TileAbstractDisplay) display, interactionType, world, pos, state, player, event.getHand(), event.getFace(), vecX, vecY, vecZ);
 					}
 				}
+				event.setCanceled(true);
 			}
 		}
 

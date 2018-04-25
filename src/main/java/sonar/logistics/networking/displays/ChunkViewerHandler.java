@@ -39,6 +39,10 @@ public class ChunkViewerHandler {
 	public void removeAll() {
 		displayChunks.clear();
 		cachedPlayers.clear();
+		UNWATCHED_CHUNKS.clear();
+		WATCHED_CHUNKS.clear();
+		ADDED_DISPLAYS.clear();
+		REMOVED_DISPLAYS.clear();
 	}
 
 	public void onDisplayAdded(DisplayGSI display) {
