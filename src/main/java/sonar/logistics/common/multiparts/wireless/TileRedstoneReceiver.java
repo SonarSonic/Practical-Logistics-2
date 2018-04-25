@@ -50,7 +50,7 @@ public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter,
 				currentPower.setObject(toSet);
 				TileRedstoneCable cable = RedstoneCableHelper.getCable(world, pos);
 				if (cable != null) {
-					RedstoneConnectionHandler.instance().markPowerForUpdate(cable.registryID);
+					RedstoneConnectionHandler.instance().markPowerForUpdate(cable.getRegistryID());
 				}
 			}
 		}

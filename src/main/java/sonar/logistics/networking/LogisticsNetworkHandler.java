@@ -21,11 +21,13 @@ public class LogisticsNetworkHandler {
 
 	public static LogisticsNetworkHandler instance() {
 		return PL2.proxy.networkManager;
-	}	
+	}
 	
 	public Map<Integer, ILogisticsNetwork> cache = new ConcurrentHashMap<>();
+	private int ID_COUNT;
 
 	public void removeAll() {
+		ID_COUNT = 0;
 		cache.clear();
 	}
 
@@ -43,6 +45,19 @@ public class LogisticsNetworkHandler {
 				network.onNetworkTick();
 			}
 		}
+	}
+
+	public int getNextIdentity(){
+		return ID_COUNT++;
+	}
+
+	public int getCurrentIdentity() {
+		return ID_COUNT;
+	}
+
+	/** warning do not use unless reading WorldSavedData, or your world will be corrupted!!!! */
+	public int setIdentityCount(int count) {
+		return ID_COUNT = count;
 	}
 
 	@Nonnull

@@ -23,17 +23,32 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 
 	public final List<Integer> forUpdate = new ArrayList<>();
 	public final Map<Integer, Integer> powerCache = new HashMap<>();
-
 	public final Map<Integer, IRedstoneNetwork> networks = new HashMap<>();
-
+	private int REDSTONE_NETWORK_COUNT;
 
 	/* public void queueConnectorAddition(IRedstoneConnectable connection) { removedConnectors.remove(connection); addedConnectors.add(connection); } public void queueConnectorRemoval(IRedstoneConnectable connection) { addedConnectors.remove(connection); removedConnectors.add(connection); } */
 	public void removeAll() {
 		super.removeAll();
+		REDSTONE_NETWORK_COUNT = 0;
 		forUpdate.clear();
 		powerCache.clear();
 		networks.clear();
 	}
+
+	@Override
+	public int getNextAvailableID() {
+		return REDSTONE_NETWORK_COUNT++;
+	}
+
+	public int getCurrentIdentity() {
+		return REDSTONE_NETWORK_COUNT;
+	}
+
+	/** warning do not use unless reading WorldSavedData, or your world will be corrupted!!!! */
+	public int setIdentityCount(int count) {
+		return REDSTONE_NETWORK_COUNT = count;
+	}
+
 
 	public void tick() {
 		networks.forEach((I, N) -> N.tick());

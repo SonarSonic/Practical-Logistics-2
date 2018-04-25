@@ -16,6 +16,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.integration.multipart.TileSonarMultipart;
+import sonar.core.network.sync.SyncTagType;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2Multiparts;
@@ -38,11 +39,12 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 
 	public int[] isBlocked = new int[6];
 	public int[] isConnected = new int[6];
+	public SyncTagType.INT registryID = (SyncTagType.INT) new SyncTagType.INT(0).setDefault(-1);
 
-	public int registryID = -1;
+	{this.syncList.addPart(registryID);}
 
 	public ILogisticsNetwork getNetwork() {
-		return LogisticsNetworkHandler.instance().getNetwork(registryID);
+		return LogisticsNetworkHandler.instance().getNetwork(registryID.getObject());
 	}
 	
 	public final void onFirstTick(){
@@ -102,12 +104,14 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 
 	@Override
 	public int getRegistryID() {
-		return registryID;
+		return registryID.getObject();
 	}
 
 	@Override
 	public void setRegistryID(int id) {
-		registryID = id;
+		if(registryID.getObject() != id) {
+			registryID.setObject(id);
+		}
 	}
 
 	@Override
@@ -125,13 +129,13 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 	@Override
 	public void addInfo(List<String> info) {
 		info.add(TextFormatting.UNDERLINE + PL2Multiparts.DATA_CABLE.getDisplayName());
-		info.add("Network ID: " + registryID);
+		info.add("Network ID: " + registryID.getObject());
 	}
 
 	@Override
 	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (mode == OperatorMode.DEFAULT) {
-			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player, world);
+			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player);
 			Pair<RayTraceResult, AxisAlignedBB> trace = RayTraceHelper.rayTraceBoxes(pos, look.getLeft(), look.getRight(), BlockDataCable.getSelectionBoxes(world, pos, new ArrayList<>()));
 
 			if (trace != null && trace.b instanceof LabelledAxisAlignedBB) {
@@ -143,6 +147,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 				face = !label.equals("c") ? EnumFacing.valueOf(label.toUpperCase()) : facing;
 				TileDataCable adjCable = CableHelper.getCable(world, pos.offset(face));
 				if (adjCable != null) {
+
 					//remove both cables
 					CableConnectionHandler.instance().removeConnection(this);
 					CableConnectionHandler.instance().removeConnection(adjCable);

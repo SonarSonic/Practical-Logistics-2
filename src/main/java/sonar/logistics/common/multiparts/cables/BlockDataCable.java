@@ -99,7 +99,7 @@ public class BlockDataCable extends BlockLogistics {
 		if(!world.isRemote){
 			TileEntity tile = world.getTileEntity(pos);
 			if(tile instanceof TileDataCable){
-				FontHelper.sendMessage("ID: " + ((TileDataCable)tile).registryID, world, player);
+				FontHelper.sendMessage("ID: " + ((TileDataCable)tile).registryID.getObject(), world, player);
 			}
 		}
 		return false;

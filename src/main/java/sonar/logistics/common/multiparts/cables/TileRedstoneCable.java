@@ -17,6 +17,7 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.integration.multipart.TileSonarMultipart;
+import sonar.core.network.sync.SyncTagType;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2Multiparts;
@@ -41,8 +42,7 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 
 	public int[] isBlocked = new int[6];
 	public int[] isConnected = new int[6];
-
-	public int registryID = -1;
+	public SyncTagType.INT registryID = (SyncTagType.INT) new SyncTagType.INT(0).setDefault(-1);
 
 	
 	public final void onFirstTick(){
@@ -97,12 +97,14 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 
 	@Override
 	public int getRegistryID() {
-		return registryID;
+		return registryID.getObject();
 	}
 
 	@Override
 	public void setRegistryID(int id) {
-		registryID = id;
+		if(registryID.getObject() != id) {
+			registryID.setObject(id);
+		}
 	}
 
 	@Override
@@ -120,13 +122,13 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 	@Override
 	public void addInfo(List<String> info) {
 		info.add(TextFormatting.UNDERLINE + PL2Multiparts.DATA_CABLE.getDisplayName());
-		info.add("Network ID: " + registryID);
+		info.add("Network ID: " + registryID.getObject());
 	}
 
 	@Override
 	public boolean performOperation(RayTraceResult rayTrace, OperatorMode mode, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (mode == OperatorMode.DEFAULT) {
-			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player, world);
+			Pair<Vec3d, Vec3d> look = RayTraceHelper.getPlayerLookVec(player);
 			Pair<RayTraceResult, AxisAlignedBB> trace = RayTraceHelper.rayTraceBoxes(pos, look.getLeft(), look.getRight(), BlockDataCable.getSelectionBoxes(world, pos, new ArrayList<>()));
 
 			if (trace.b instanceof LabelledAxisAlignedBB) {

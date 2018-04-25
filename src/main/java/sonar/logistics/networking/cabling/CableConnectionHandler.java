@@ -37,9 +37,6 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 
 	public void removeAll() {
 		super.removeAll();
-		cable_tiles.clear();
-		cable_providers.clear();
-		info_providers.clear();
 		updateRenders.clear();
 		changedNetworks.clear();
 		cableUpdates.clear();
@@ -198,6 +195,11 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 	@Override
 	public void onNetworksDisconnected(List<Integer> newNetworks) {
 		ListHelper.addWithCheck(changedNetworks, newNetworks);
+	}
+
+	@Override
+	public int getNextAvailableID() {
+		return LogisticsNetworkHandler.instance().getNextIdentity();
 	}
 
 	@Override
