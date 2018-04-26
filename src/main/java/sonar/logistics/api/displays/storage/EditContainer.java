@@ -18,7 +18,11 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 public class EditContainer extends DisplayElementContainer {
 	
 	public static EditContainer addEditContainer(DisplayGSI gsi) {
-		double[] scaling = new double[] { gsi.display.getDisplayType().width / 4, gsi.display.getDisplayType().height / 1.5, 1 };
+		double[] scaling = new double[] { gsi.display.getDisplayType().width / 4, gsi.display.getDisplayType().height, 1 };
+		if(gsi.display.getDisplayType()==DisplayType.CONNECTED || gsi.display.getDisplayType()==DisplayType.LARGE){
+			scaling[1]=gsi.display.getDisplayType().height/1.5;
+		}
+
 		EditContainer editContainer = new EditContainer(gsi, new double[] { 0, 0, 0 }, scaling, 1, DisplayGSI.EDIT_CONTAINER_ID);
 		gsi.containers.put(DisplayGSI.EDIT_CONTAINER_ID, editContainer);
 		editContainer.lock();

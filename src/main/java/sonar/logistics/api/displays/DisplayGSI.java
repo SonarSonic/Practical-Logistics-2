@@ -148,11 +148,11 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			if (this.isGridSelectionMode) {
 				grid_mode.onClicked(type, click);
 			} else {
-				Tuple<IDisplayElement, double[]> clickedElement = getElementFromXY(click.clickX - 0.0625, click.clickY - 0.0625);
+				Tuple<IDisplayElement, double[]> clickedElement = getElementFromXY(click.clickX, click.clickY);
 				if ((clickedElement == null || !isEditContainer(clickedElement.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
 					//// COMPLETES ELEMENT SELECTION MODE \\\\
 					for (DisplayElementContainer container : containers.values()) {
-						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX - 0.0625, click.clickY - 0.0625)) {
+						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
 							selection_mode.onElementSelected(container.getContainerIdentity(), type);
 							break;
 						}
@@ -219,7 +219,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		DisplayScreenLook look = GSIOverlays.getCurrentLook(this);
 		lookElement = null;
 		if (look != null) {
-			Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX - 0.0625, look.lookY - 0.0625);
+			Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX, look.lookY);
 			if (e != null && e.getFirst() instanceof ILookableElement) {
 				lookElement = e.getFirst();
 				lookX = e.getSecond()[0];

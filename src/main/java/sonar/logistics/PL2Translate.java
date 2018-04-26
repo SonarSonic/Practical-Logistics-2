@@ -41,6 +41,7 @@ public class PL2Translate {
 	public static final Localisation WIRELESS_STORAGE_READER = t("item.WirelessStorage.name");
 	public static final Localisation REDSTONE_SIGNALLER = t("tile.RedstoneSignaller.name"); 
 	public static final Localisation CLOCK = t("tile.Clock.name");
+	public static final Localisation MINI_DISPLAY = t("tile.MiniDisplay.name");
 	public static final Localisation DISPLAY_SCREEN = t("tile.DisplayScreen.name"); 
 	public static final Localisation LARGE_DISPLAY_SCREEN = t("tile.LargeDisplayScreen.name"); 
 	public static final Localisation HOLOGRAPHIC_DISPLAY = t("tile.HolographicDisplay.name");

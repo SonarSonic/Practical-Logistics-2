@@ -7,6 +7,7 @@ import sonar.logistics.common.multiparts.cables.TileRedstoneCable;
 import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
+import sonar.logistics.common.multiparts.displays.TileMiniDisplay;
 import sonar.logistics.common.multiparts.misc.TileClock;
 import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
 import sonar.logistics.common.multiparts.nodes.TileArray;
@@ -45,6 +46,7 @@ public enum PL2Multiparts {
 	REDSTONE_NODE(0.0625 * 8, 0, 0.0625 * 2, "RedstoneNode", TileRedstoneNode.class, PL2Translate.REDSTONE_NODE), //
 
 	DISPLAY_SCREEN(0, 0, 0, "DisplayScreen", TileDisplayScreen.class, PL2Translate.DISPLAY_SCREEN), //
+	MINI_DISPLAY(0, 0, 0, "MiniDisplay", TileMiniDisplay.class, PL2Translate.MINI_DISPLAY), //
 	HOLOGRAPHIC_DISPLAY(0, 0, 0, "HolographicDisplay", TileHolographicDisplay.class, PL2Translate.HOLOGRAPHIC_DISPLAY), //
 	LARGE_DISPLAY_SCREEN(0, 0, 0, "LargeDisplayScreen", TileLargeDisplayScreen.class, PL2Translate.LARGE_DISPLAY_SCREEN); // //
 	public double width, heightMin, heightMax;

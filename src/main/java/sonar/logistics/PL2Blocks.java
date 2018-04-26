@@ -17,6 +17,7 @@ import sonar.logistics.common.multiparts.cables.BlockRedstoneCable;
 import sonar.logistics.common.multiparts.displays.BlockDisplayScreen;
 import sonar.logistics.common.multiparts.displays.BlockHolographicDisplay;
 import sonar.logistics.common.multiparts.displays.BlockLargeDisplay;
+import sonar.logistics.common.multiparts.displays.BlockMiniDisplay;
 import sonar.logistics.common.multiparts.misc.BlockClock;
 import sonar.logistics.common.multiparts.misc.BlockRedstoneSignaller;
 import sonar.logistics.common.multiparts.nodes.BlockArray;
@@ -35,7 +36,7 @@ public class PL2Blocks extends PL2 {
 	public static Block sapphire_ore, hammer, hammer_air;
 	public static Block info_reader, fluid_reader, energy_reader, inventory_reader, network_reader, data_cable, redstone_cable, node, data_emitter, data_receiver, redstone_emitter, redstone_receiver;
 	public static Block array, entity_node, transfer_node, redstone_node, redstone_signaller, clock;
-	public static Block display_screen, large_display_screen, holographic_display;
+	public static Block display_screen, mini_display, large_display_screen, holographic_display;
 
 	public static void registerBlocks() {
 		hammer = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryBlock(new BlockHammer(), "Hammer", TileEntityHammer.class).setProperties());
@@ -56,7 +57,8 @@ public class PL2Blocks extends PL2 {
 
 		clock = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockClock()));
 		redstone_signaller = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryConnectableMultipart(new BlockRedstoneSignaller()));
-		
+
+		mini_display = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockMiniDisplay()));
 		display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDisplayScreen()));
 		large_display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockLargeDisplay()));
 		holographic_display = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockHolographicDisplay()));

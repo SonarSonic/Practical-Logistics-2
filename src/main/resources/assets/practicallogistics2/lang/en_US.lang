@@ -28,6 +28,7 @@ tile.Clock.name=Clock
 
 
 //items
+tile.MiniDisplay.name=Mini Display
 tile.DisplayScreen.name=Display Screen
 tile.HolographicDisplay.name=Holographic Display
 tile.LargeDisplayScreen.name=Large Display Screen
