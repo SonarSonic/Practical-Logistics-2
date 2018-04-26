@@ -15,5 +15,5 @@ public interface IInfoRequirement {
 	/**sends the selected info to the server*/
 	void onGuiClosed(List<InfoUUID> selected);	
 	
-	void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require, int requirementRef);
+	void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require);
 }

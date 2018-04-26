@@ -34,7 +34,8 @@ public class GuiUnconfiguredInfoElement extends GuiLogistics {
 
 	@Override
 	public void initGui() {
-		while (count < element.elements.size()) {
+		//calling getInfoElements() makes sure the elements are not null.
+		while (count < element.getInfoElements().size()) {
 			IDisplayElement e = element.elements.get(count);
 			count++;
 			if (e != null) {
@@ -49,8 +50,10 @@ public class GuiUnconfiguredInfoElement extends GuiLogistics {
 				}
 			}
 		}
-		element.elements = configured;
-		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createConfigureInfoPacket(element), element.getElementIdentity(), element.getGSI());
+		if(!configured.isEmpty()) {
+			element.elements = configured;
+			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createConfigureInfoPacket(element), element.getElementIdentity(), element.getGSI());
+		}
 		FMLClientHandler.instance().showGuiScreen(origin);
 	}
 

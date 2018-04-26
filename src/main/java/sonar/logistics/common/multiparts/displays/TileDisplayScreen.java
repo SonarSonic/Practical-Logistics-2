@@ -24,6 +24,11 @@ public class TileDisplayScreen extends TileAbstractDisplay {
 	}
 
 	@Override
+	public void setGSI(DisplayGSI gsi) {
+		this.container = gsi;
+	}
+
+	@Override
 	public int getInfoContainerID() {
 		return getIdentity();
 	}

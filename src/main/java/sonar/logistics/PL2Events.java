@@ -1,9 +1,15 @@
 package sonar.logistics;
 
+import mcmultipart.MCMultiPart;
+import mcmultipart.RayTraceHelper;
+import mcmultipart.api.multipart.MultipartHelper;
+import mcmultipart.api.multipart.MultipartOcclusionHelper;
+import mcmultipart.block.BlockMultipartContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -13,12 +19,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.commons.lang3.tuple.Pair;
 import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
+import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.events.LogisticsEventHandler;
 
@@ -54,7 +62,7 @@ public class PL2Events {
 
 	@SubscribeEvent
 	public void clientDisconnection(FMLNetworkEvent.ClientDisconnectionFromServerEvent event){
-		SonarCore.proxy.getThreadListener(Side.CLIENT).addScheduledTask(() -> PL2.proxy.removeAll());
+		ClientInfoHandler.instance().removeAll();
 	}
 
 	@SubscribeEvent
@@ -73,6 +81,15 @@ public class PL2Events {
 			Block block = state.getBlock();
 			IDisplay display = CableHelper.getDisplay(world, pos, EnumDisplayFaceSlot.fromFace(event.getFace()));
 			if (display instanceof TileAbstractDisplay) {
+				TileAbstractDisplay tile = (TileAbstractDisplay)display;
+				if(block == MCMultiPart.multipart){
+					BlockMultipartContainer container = (BlockMultipartContainer)block;
+					Pair<Vec3d, Vec3d> pair =  RayTraceHelper.getRayTraceVectors(player);
+					RayTraceResult result = container.collisionRayTrace(state, world, pos, pair.getLeft(), pair.getRight());
+					if(result.subHit != tile.getSlotID()){
+						return;
+					}
+				}
 				if (coolDownClick == 0) {
 					if (display.getGSI() != null) {
 						Vec3d vec = event.getHitVec();
@@ -85,6 +102,7 @@ public class PL2Events {
 					}
 				}
 				event.setCanceled(true);
+
 			}
 		}
 

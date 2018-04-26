@@ -20,6 +20,7 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.tiles.displays.ILargeDisplay;
@@ -45,6 +46,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 
 	@Override
 	public void removeAll(){
+		super.removeAll();
 		rebuild.clear();
 		display_updates.clear();
 	}
@@ -104,7 +106,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
     public void validateGSI(IDisplay display, DisplayGSI gsi) {
         if (display == gsi.getDisplay().getActualDisplay()) {
             gsi.validate();
-            gsi.sendInfoContainerPacket();
+            gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 			ChunkViewerHandler.instance().onDisplayAdded(gsi);
         }
     }

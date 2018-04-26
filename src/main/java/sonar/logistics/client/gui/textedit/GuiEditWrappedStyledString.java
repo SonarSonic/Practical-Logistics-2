@@ -31,6 +31,7 @@ public class GuiEditWrappedStyledString extends GuiEditStyledStrings {
 	}
 
 	public void renderDisplayScreen(float partialTicks, int x, int y) {
+		text.updateRender();
 		text.getHolder().startElementRender(text);
 		pushMatrix();
 		DisplayElementHelper.align(text.getHolder().getAlignmentTranslation(text));

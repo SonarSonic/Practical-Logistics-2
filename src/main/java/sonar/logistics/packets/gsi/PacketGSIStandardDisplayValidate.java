@@ -14,8 +14,10 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
+import sonar.logistics.networking.ClientInfoHandler;
 
 public class PacketGSIStandardDisplayValidate extends PacketMultipart {
 
@@ -60,6 +62,19 @@ public class PacketGSIStandardDisplayValidate extends PacketMultipart {
 
 				});
 			}
+			return null;
+		}
+
+		public IMessage onFailure(PacketGSIStandardDisplayValidate message, EntityPlayer player, World world, MessageContext ctx){
+			SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				IDisplay display = ClientInfoHandler.instance().displays_tile.get(message.GSI_IDENTITY);
+				if(display != null){
+					display.getGSI().readData(message.SAVE_TAG, SyncType.SAVE);
+					display.getGSI().validate();
+				}else {
+					ClientInfoHandler.instance().invalid_gsi.put(message.GSI_IDENTITY, message.SAVE_TAG);
+				}
+			});
 			return null;
 		}
 

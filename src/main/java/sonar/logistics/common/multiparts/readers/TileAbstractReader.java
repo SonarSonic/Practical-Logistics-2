@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import io.netty.buffer.ByteBuf;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -50,8 +51,8 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 
 	public static final int ADD = -9, PAIRED = -10, ALL = 100;
 
-	public final PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
-	public final ChannelList list = new ChannelList(getIdentity(), this.channelType(), -2);
+	public PL2ListenerList listeners = new PL2ListenerList(this, ListenerType.ALL.size());
+	public ChannelList list = new ChannelList(getIdentity(), this.channelType(), -2);
 	protected List<INetworkHandler> validHandlers = null;
 	public SyncMonitoredType<T> selectedInfo = new SyncMonitoredType<>(-5);
 	public SyncTagType.BOOLEAN hasMonitor = new SyncTagType.BOOLEAN(-4);
@@ -190,6 +191,9 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	@Override
 	public void writePacket(ByteBuf buf, int id) {
 		switch (id) {
+		case -5:
+			list.writeToBuf(buf);
+			break;
 		case -4:
 			lastSelectedUUID.writeToBuf(buf);
 			break;
@@ -202,15 +206,24 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	@Override
 	public void readPacket(ByteBuf buf, int id) {
 		switch (id) {
+		case -5:
+			list.readFromBuf(buf);
+			break;
 		case -4:
 			lastSelectedUUID.readFromBuf(buf);
 			list.give(lastSelectedUUID.getUUID());
-			sendByteBufPacket(1);
+			//TODO
+			//List<PlayerListener> listeners = getListenerList().getAllListeners(ListenerType.NEW_GUI_LISTENER, ListenerType.OLD_GUI_LISTENER);
+			//listeners.forEach(listener -> SonarMultipartHelper.sendMultipartSyncToPlayer(this, listener.player));
+			sendByteBufPacket(-5);
 			break;
+
 		case -3:
 			lastSelected.readFromBuf(buf);
 			list.give(lastSelected.getCoords());
-			sendByteBufPacket(1);
+			//listeners = getListenerList().getAllListeners(ListenerType.NEW_GUI_LISTENER, ListenerType.OLD_GUI_LISTENER);
+			//listeners.forEach(listener -> SonarMultipartHelper.sendMultipartSyncToPlayer(this, listener.player));
+			sendByteBufPacket(-5);
 			break;
 		}
 	}

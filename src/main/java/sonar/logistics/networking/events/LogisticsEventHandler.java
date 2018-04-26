@@ -107,7 +107,7 @@ public class LogisticsEventHandler {
 		ServerInfoHandler.instance().sendErrors();
 		WirelessDataManager.instance().sendDataEmittersToListeners();
 		WirelessRedstoneManager.instance().sendDataEmittersToListeners();
-		
+		ServerInfoHandler.instance().sendGSIUpdates();
 		NOTIFYING.flushEvents();
 	}
 

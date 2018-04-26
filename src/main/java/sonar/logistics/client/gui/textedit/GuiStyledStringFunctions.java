@@ -253,7 +253,7 @@ public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 
 	public void renderDisplayScreen(float partialTicks, int x, int y) {
 		/* double[] scaling = DisplayElementHelper.getScaling(text.getUnscaledWidthHeight(), text.getMaxScaling(), 100); GlStateManager.scale(scaling[2], scaling[2], scaling[2]); text.getHolder().startElementRender(text); pushMatrix(); DisplayElementHelper.align(text.getHolder().getAlignmentTranslation(text)); double scale = text.getActualScaling()[2]; scale(scale, scale, scale); int i = 0; List<TextSelection> allSelection = getAllSelections(); for (StyledStringLine s : text) { text.preRender(s); if (i == cursorPosition.y) { renderCursor(s); } s.render(); renderSelections(allSelection, s, i); text.postRender(s); i++; } popMatrix(); text.getHolder().endElementRender(text); */
-
+		text.updateRender();
 		text.getHolder().startElementRender(text);
 		pushMatrix();
 		DisplayElementHelper.align(text.getHolder().getAlignmentTranslation(text));

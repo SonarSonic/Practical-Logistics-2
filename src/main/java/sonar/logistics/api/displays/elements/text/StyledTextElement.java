@@ -52,15 +52,14 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 	@Override
 	public void updateRender() {
 		super.updateRender();
-		if (updateTextContents) {
+		if (updateTextContents || updateTextScaling) {
 			this.uuids = null;
 			unscaledWidthHeight = null;
 			maxScaling = null;
 			actualScaling = null;
 			updateTextContents = false;
+			this.getHolder().getContainer().updateActualScaling();
 			getGSI().updateInfoReferences();
-		} else if (updateTextScaling) {
-			updateTextScaling = false;
 		}
 	}
 
@@ -194,6 +193,7 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 		}
 
 		action_id_count = nbt.getInteger("action_id");
+		this.markTextScalingChanged();
 	}
 
 	@Override

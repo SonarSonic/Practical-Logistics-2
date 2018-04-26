@@ -10,6 +10,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
 import sonar.core.helpers.ItemStackHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
@@ -30,24 +31,27 @@ import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
+import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
+import sonar.logistics.networking.events.NetworkPartEvent;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.sync.SyncTileMessages;
 
 public abstract class TileLogistics extends TileSonarMultipart implements INetworkTile, INetworkListener, IOperatorProvider {
 
+	//very important, used for identifying this tile within the network, don't alter unless you know what you're doing
+	public int identity = -1;
 	public static final ErrorMessage[] defaultValidStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 	public ILogisticsNetwork network = EmptyLogisticsNetwork.INSTANCE;
-	public SyncTagType.INT identity = (INT) new SyncTagType.INT("identity").setDefault(-1);
 	public SyncTagType.INT networkID = (INT) new SyncTagType.INT(0).setDefault(-1);
 	public SyncTileMessages states = new SyncTileMessages(this, 101);
 
 	{
-		syncList.addParts(networkID, identity, states);
+		syncList.addParts(networkID, states);
 		states.markAllMessages(true);
 	}
 
@@ -78,10 +82,11 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	//// ILogicTile \\\\
 
 	public int getIdentity() {
-		if (identity.getObject() == -1 && this.isServer()) {
-			identity.setObject(ServerInfoHandler.instance().getNextIdentity());
+		if (identity == -1 && this.isServer()) {
+			identity = ServerInfoHandler.instance().getNextIdentity();
+			markDirty();
 		}
-		return identity.getObject();
+		return identity;
 	}
 
 	public ItemStack getDisplayStack() {
@@ -96,12 +101,16 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	public void doAdditionEvent(PL2AdditionType type) {
 		if (!getWorld().isRemote){
 			LogisticsEventHandler.instance().queueNetworkAddition(this, type);
+		}else{
+			MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.AddedPart(this, this.getActualWorld(), type));
 		}
 	}
 
 	public void doRemovalEvent(PL2RemovalType type) {
 		if (!getWorld().isRemote){
 			LogisticsEventHandler.instance().queueNetworkRemoval(this, type);
+		}else{
+			MinecraftForge.EVENT_BUS.post(new NetworkPartEvent.RemovedPart(this, this.getActualWorld(), type));
 		}
 	}
 
@@ -134,6 +143,9 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		super.invalidate();
 		if (getIdentity() != -1) {
 			doChunkUnloadEvent();
+		}
+		if(this instanceof ILogicListenable){
+			((ILogicListenable) this).getListenerList().invalidateList();
 		}
 	}
 
@@ -175,6 +187,18 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		}
 	}
 
+	@Override
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		super.readData(nbt, type);
+		identity = nbt.getInteger("identity");
+	}
+
+	@Override
+	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		nbt.setInteger("identity", getIdentity());
+		return super.writeData(nbt, type);
+	}
+
 	//// LISTENERS \\\\
 
 	public void onListenerAdded(ListenerTally<PlayerListener> tally) {}
@@ -205,7 +229,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			info.add(TextFormatting.UNDERLINE + multipart.getDisplayName());
 		info.add("Network ID: " + networkID.getObject());
 		info.add("Has channels: " + (this instanceof TileInfoReader));
-		info.add("IDENTITY: " + identity.getObject());
+		info.add("IDENTITY: " + getIdentity());
 	}
 
 	@Override

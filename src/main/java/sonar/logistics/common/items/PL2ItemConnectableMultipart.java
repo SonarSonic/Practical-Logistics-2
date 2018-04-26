@@ -48,7 +48,7 @@ public class PL2ItemConnectableMultipart extends ItemBlockMultipart {
 		if(this.multipartBlock instanceof BlockAbstractReader){
 			Optional<IMultipartTile> screenTile = MultipartHelper.getPartTile(world, pos, EnumDisplayFaceSlot.fromFace(facing.getOpposite()));
 			if(screenTile.isPresent() && screenTile.get() instanceof IDisplay){
-				facing = ((IDisplay)screenTile.get()).getGSI().getFacing();
+				facing = ((IDisplay)screenTile.get()).getCableFace();
 			}else if(cable == null){
 				facing = DisplayHelper.getScreenOrientation(placer, facing)[0];
 			}

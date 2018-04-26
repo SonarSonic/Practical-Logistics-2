@@ -10,7 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import sonar.core.helpers.NBTHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
@@ -21,6 +23,7 @@ import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
 import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
@@ -33,6 +36,9 @@ public class ClientInfoHandler implements IInfoManager {
 	private Map<Integer, ConnectedDisplay> connectedDisplays = new ConcurrentHashMap<>();
 	public Map<Integer, DisplayGSI> displays_gsi = new HashMap<>();
 	public Map<Integer, IDisplay> displays_tile = new HashMap<>();
+
+	//received before multipart/tile entity data packets, so it's cached here and then recovered.
+	public Map<Integer, NBTTagCompound> invalid_gsi = new HashMap<>();
 
 	public Map<InfoUUID, IInfo> info = new LinkedHashMap<>();
 
@@ -78,6 +84,7 @@ public class ClientInfoHandler implements IInfoManager {
 		channelMap.clear();
 		clientDataEmitters.clear();
 		clientRedstoneEmitters.clear();
+		invalid_gsi.clear();
 	}
 
 	@Override
@@ -111,8 +118,25 @@ public class ClientInfoHandler implements IInfoManager {
 	}
 
 	public void addDisplay(IDisplay display, PL2AdditionType type) {
-		if (!displays_tile.containsValue(display)) {
+		if (!displays_tile.containsKey(display.getIdentity())) {
 			displays_tile.put(display.getIdentity(), display);
+			if(display instanceof ILargeDisplay){
+				display = ((ILargeDisplay) display).getConnectedDisplay();
+				if(display == null){
+					return;
+				}
+			}
+			DisplayGSI gsi = display.getGSI();
+			if(gsi == null){
+				gsi = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID());
+				display.setGSI(gsi);
+			}
+			NBTTagCompound tag = invalid_gsi.get(display.getInfoContainerID());
+			if(tag != null){
+				gsi.readData(tag, NBTHelper.SyncType.SAVE);
+				gsi.validate();
+				invalid_gsi.remove(display.getInfoContainerID());
+			}
 		}
 	}
 

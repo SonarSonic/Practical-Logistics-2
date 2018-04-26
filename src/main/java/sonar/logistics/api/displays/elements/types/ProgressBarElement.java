@@ -1,9 +1,11 @@
 package sonar.logistics.api.displays.elements.types;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
@@ -17,6 +19,9 @@ import sonar.logistics.client.gui.display.GuiEditProgressBar;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.info.types.ProgressInfo;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate;
 
 @DisplayElementType(id = ProgressBarElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {
@@ -57,7 +62,7 @@ public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {
 		}
 		GlStateManager.translate(0, 0, -0.001);
 		if (background_colour != 0) {
-			DisplayElementHelper.drawRect(bar_start_width + actual_border_thickness, bar_start_height + actual_border_thickness, bar_end_width - actual_border_thickness, bar_end_height - border_thickness, background_colour);
+			DisplayElementHelper.drawRect(bar_start_width + actual_border_thickness, bar_start_height + actual_border_thickness, bar_end_width - actual_border_thickness, bar_end_height - actual_border_thickness, background_colour);
 		}
 		bar_start_width += actual_border_thickness * 2;
 		bar_start_height += actual_border_thickness * 2;

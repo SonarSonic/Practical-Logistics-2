@@ -21,12 +21,14 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 
 	@Override
 	public void render(TileAbstractDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        part.getWorld();
+		DisplayGSI container = part.getGSI();
+		if(container == null){
+			return;
+		}
         if (part instanceof ILargeDisplay && (!((ILargeDisplay) part).shouldRender() || ((ILargeDisplay) part).getConnectedDisplay() == null || !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject())) {
 			boolean bool = ((ILargeDisplay) part).getConnectedDisplay() != null && !((ILargeDisplay) part).getConnectedDisplay().canBeRendered.getObject();
 
 			if (bool) {
-				DisplayGSI container = part.getGSI();
 				RenderHelper.offsetRendering(part.getPos(), partialTicks);
 				InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);
 
@@ -39,7 +41,6 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 
 			return;
 		}
-		DisplayGSI container = part.getGSI();
 
 		RenderHelper.offsetRendering(part.getPos(), partialTicks);
 		InfoRenderer.rotateDisplayRendering(container.getFacing(), container.getRotation(), 0, 0);

@@ -11,47 +11,52 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.networking.ClientInfoHandler;
 
-public class PacketGSIContentsPacket implements IMessage {
+public class PacketGSISavedDataPacket implements IMessage {
 
 	public NBTTagCompound SAVE_TAG;
 	public int GSI_IDENTITY = -1;
+	public DisplayGSISaveHandler.DisplayGSISavedData saveType;
 
-	public PacketGSIContentsPacket() {}
+	public PacketGSISavedDataPacket() {}
 
-	public PacketGSIContentsPacket(DisplayGSI gsi) {
+	public PacketGSISavedDataPacket(DisplayGSI gsi, DisplayGSISaveHandler.DisplayGSISavedData saveType) {
 		GSI_IDENTITY = gsi.getDisplayGSIIdentity();
-		SAVE_TAG = gsi.writeData(new NBTTagCompound(), SyncType.SAVE);
+		SAVE_TAG = DisplayGSISaveHandler.writeGSIData(gsi, new NBTTagCompound(), SyncType.SAVE, saveType);
+		this.saveType = saveType;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		GSI_IDENTITY = buf.readInt();
 		SAVE_TAG = ByteBufUtils.readTag(buf);
+		saveType = DisplayGSISaveHandler.DisplayGSISavedData.values()[buf.readInt()];
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		buf.writeInt(GSI_IDENTITY);
 		ByteBufUtils.writeTag(buf, SAVE_TAG);
+		buf.writeInt(saveType.ordinal());
 	}
 
-	public static class Handler implements IMessageHandler<PacketGSIContentsPacket, IMessage> {
+	public static class Handler implements IMessageHandler<PacketGSISavedDataPacket, IMessage> {
 
 		@Override
-		public IMessage onMessage(PacketGSIContentsPacket message, MessageContext ctx) {
+		public IMessage onMessage(PacketGSISavedDataPacket message, MessageContext ctx) {
 			if (ctx.side == Side.CLIENT) {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null) {
-					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (player != null) {
 						DisplayGSI gsi = ClientInfoHandler.instance().getGSI(message.GSI_IDENTITY);
-						if (gsi != null) {							
-							gsi.readData(message.SAVE_TAG, SyncType.SAVE);
+						if (gsi != null) {
+							DisplayGSISaveHandler.readGSIData(gsi, message.SAVE_TAG, SyncType.SAVE, message.saveType);
 							gsi.validate();
 						}
-					});
-				}
+					}
+				});
 			}
 			return null;
 		}

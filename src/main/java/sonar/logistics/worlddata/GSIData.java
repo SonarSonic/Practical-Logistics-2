@@ -56,7 +56,7 @@ public class GSIData extends WorldSavedData {
         }
 
         compound.setTag("gsi", list);
-        unloadedGSI.clear();
+        //unloadedGSI.clear();
         return compound;
     }
 

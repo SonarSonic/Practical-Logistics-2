@@ -3,6 +3,7 @@ package sonar.logistics.api.errors;
 import java.util.List;
 
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 
 public class ErrorHelper {
 
@@ -14,7 +15,7 @@ public class ErrorHelper {
 		for (IInfoError error : errors) {
 			if(error.canCombine(newError)){
 				error.addError(newError);
-				gsi.sendInfoContainerPacket();
+				gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ERRORS);
 				return;
 			}
 		}

@@ -16,6 +16,8 @@ public interface IDisplay extends INetworkTile, ISyncableListener, ISonarListene
 
 	DisplayGSI getGSI();
 
+	void setGSI(DisplayGSI gsi);
+
 	EnumFacing getCableFace();
 
 	DisplayType getDisplayType();

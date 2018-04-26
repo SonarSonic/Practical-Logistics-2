@@ -40,7 +40,6 @@ public class ExamplesPages extends BaseInfoPage {
 		try {
 			elements.add(new Element3DRenderer(new FurnaceProgress(), 0, 48, 4, 16, 106, 160));
 			elements.add(new Element3DRenderer(new InventoryExample(), 1, 48, 4, 16, 106, 160));
-			elements.add(new Element3DRenderer(new ExampleConfigurations.WirelessRedstone(), 2, 32, 4, 16, 160, 160));
 			elements.add(new Element3DRenderer(new ExampleConfigurations.MultipleInventory(), 3, 32, 4, 16, 160, 160));
 		} catch (Throwable t) {
 

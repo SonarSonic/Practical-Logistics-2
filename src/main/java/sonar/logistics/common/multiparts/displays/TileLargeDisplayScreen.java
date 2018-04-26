@@ -44,6 +44,14 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	@Override
+	public void setGSI(DisplayGSI gsi){
+		ConnectedDisplay display = getConnectedDisplay();
+		if(display != null) {
+			display.setGSI(gsi);
+		}
+	}
+
+	@Override
 	public DisplayType getDisplayType() {
 		return DisplayType.LARGE;
 	}

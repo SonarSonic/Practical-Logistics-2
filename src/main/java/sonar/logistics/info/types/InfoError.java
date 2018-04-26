@@ -6,10 +6,11 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.register.LogicPath;
 
 @LogicInfoType(id = InfoError.id, modid = PL2Constants.MODID)
-public class InfoError implements IInfo<InfoError> {
+public class InfoError implements IInfo<InfoError>, INameableInfo<InfoError> {
 
 	public static final InfoError noData = new InfoError("NO DATA");
 	public static final InfoError noMonitor = new InfoError("NO MONITOR");
@@ -56,10 +57,13 @@ public class InfoError implements IInfo<InfoError> {
 	}
 
 	@Override
-	public void readData(NBTTagCompound nbt, SyncType type) {}
+	public void readData(NBTTagCompound nbt, SyncType type) {
+		error = nbt.getString("error");
+	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
+		nbt.setString("error", error);
 		return nbt;
 	}
 
@@ -79,4 +83,18 @@ public class InfoError implements IInfo<InfoError> {
 	@Override
 	public void onInfoStored() {}
 
+	@Override
+	public String getClientIdentifier() {
+		return "Info Error";
+	}
+
+	@Override
+	public String getClientObject() {
+		return error;
+	}
+
+	@Override
+	public String getClientType() {
+		return "error";
+	}
 }

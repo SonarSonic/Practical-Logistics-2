@@ -13,28 +13,29 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.AbstractDisplayElement;
-import sonar.logistics.api.displays.elements.ElementFillType;
-import sonar.logistics.api.displays.elements.IClickableElement;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.IInfoReferenceElement;
-import sonar.logistics.api.displays.elements.ILookableElement;
+import sonar.logistics.api.displays.elements.*;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.client.gsi.GSIElementPacketHelper;
+import sonar.logistics.client.gui.GuiInfoSource;
 import sonar.logistics.client.gui.display.GuiUnconfiguredInfoElement;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+import sonar.logistics.helpers.InfoRenderer;
 
 @DisplayElementType(id = UnconfiguredInfoElement.REGISTRY_NAME, modid = PL2Constants.MODID)
-public class UnconfiguredInfoElement extends AbstractDisplayElement implements ILookableElement, IClickableElement, IInfoReferenceElement, IFlexibleGui {
+public class UnconfiguredInfoElement extends AbstractDisplayElement implements ILookableElement, IClickableElement, IInfoReferenceElement, IInfoRequirement, IFlexibleGui {
 
 	public List<IDisplayElement> elements;
 	public InfoUUID uuid;
@@ -59,18 +60,25 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 	}
 
 	public void render() {
-		for (IDisplayElement e : elements) {
-			pushMatrix();
-			DisplayElementHelper.align(getHolder().getAlignmentTranslation(e));
-			double scale = e.getActualScaling()[SCALE];
-			scale(scale, scale, scale);
-			e.render();
-			popMatrix();
+		if(getInfoElements().isEmpty()){
+			InfoRenderer.renderCenteredStringsWithAdaptiveScaling(getActualScaling()[WIDTH], getActualScaling()[HEIGHT], getActualScaling()[SCALE], 0, 0.5, -1, Lists.newArrayList("NO DATA"));
+		}else {
+			for (IDisplayElement e : getInfoElements()) {
+				pushMatrix();
+				DisplayElementHelper.align(getHolder().getAlignmentTranslation(e));
+				double scale = e.getActualScaling()[SCALE];
+				scale(scale, scale, scale);
+				e.render();
+				popMatrix();
+			}
 		}
 	}
 
 	@Override
 	public Object getClientEditGui(TileAbstractDisplay obj, Object origin, World world, EntityPlayer player) {
+		if(this.getInfoElements().isEmpty()){
+			return IGuiOrigin.withOrigin(new GuiInfoSource(this, getGSI(), new ContainerMultipartSync(obj)), origin);
+		}
 		return new GuiUnconfiguredInfoElement(obj, this, origin);
 	}
 
@@ -156,8 +164,8 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
-		if (elements == null) {
-			return -1;
+		if (this.getInfoElements().isEmpty()) {
+			return -2;
 		}
 		for (IDisplayElement e : elements) {
 			if (e instanceof IClickableElement) {
@@ -187,11 +195,14 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 				}
 			}
 		}
-		return id == 0 ? new ContainerMultipartSync((TileSonarMultipart) obj) : null;
+		return id == 0 || id == -2 ? new ContainerMultipartSync((TileSonarMultipart) obj) : null;
 	}
 
 	@Override
 	public Object getClientElement(Object obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
+		if(id == -2){
+			return new GuiInfoSource(this, getGSI(), new ContainerMultipartSync((TileSonarMultipart) obj));
+		}
 		if (elements != null) {
 			for (IDisplayElement e : elements) {
 				if (e instanceof IFlexibleGui) {
@@ -205,4 +216,28 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 		return null;
 	}
 
+	// INFO SOURCE GUI \\
+
+	@Override
+	public int getRequired() {
+		return 1;
+	}
+
+	@Override
+	public List<InfoUUID> getSelectedInfo() {
+		return getInfoReferences();
+	}
+
+	@Override
+	public void onGuiClosed(List<InfoUUID> selected) {
+		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createInfoRequirementPacket(selected), getElementIdentity(), getGSI());
+	}
+
+	public void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require) {
+		InfoUUID infoUUID = require.get(0);
+		if(InfoUUID.valid(infoUUID)){
+			this.uuid = infoUUID;
+			gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
+		}
+	}
 }

@@ -134,11 +134,12 @@ public class StyledTitleElement extends StyledTextElement{
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
 		Tuple<IStyledString, Integer> string = getStringClicked(subClickX, subClickY);
-        string.getFirst();
-        IDisplayAction action = getAction(string.getFirst().getStyle().action_id);
-        if (action != null) {
-            return action.doAction(click, player, subClickX, subClickY);
-        }
+		if(string !=null && string.getFirst()!=null) {
+			IDisplayAction action = getAction(string.getFirst().getStyle().action_id);
+			if (action != null) {
+				return action.doAction(click, player, subClickX, subClickY);
+			}
+		}
         return -1;
 	}
 

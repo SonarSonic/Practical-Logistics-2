@@ -34,7 +34,7 @@ public class GSIGridMode {
 				finishGridSelectionMode();
 			}
 		} else {
-			double[] newPosition = new double[] { click.clickX - 0.0625, click.clickY - 0.0625 };
+			double[] newPosition = new double[] { click.clickX, click.clickY };
 			if (clickPosition1 == null) {
 				clickPosition1 = newPosition;
 

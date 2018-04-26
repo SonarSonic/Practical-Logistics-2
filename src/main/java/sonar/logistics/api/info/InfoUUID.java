@@ -6,9 +6,14 @@ import com.google.common.base.Objects;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.cabling.INetworkTile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** used to identify info and find the monitor which created it */
 @Nonnull
@@ -95,4 +100,23 @@ public class InfoUUID implements INBTSyncable {
 		nbt.setInteger("pos", channelID);
 		return nbt;
 	}
+
+	public static List<InfoUUID> readInfoList(NBTTagCompound nbt, String tagName) {
+		List<InfoUUID> newUUIDs = new ArrayList<>();
+		NBTTagList tagList = nbt.getTagList(tagName, Constants.NBT.TAG_COMPOUND);
+		for (int i = 0; i < tagList.tagCount(); i++) {
+			InfoUUID loaded = new InfoUUID();
+			loaded.readData(tagList.getCompoundTagAt(i), SyncType.SAVE);
+			newUUIDs.add(loaded);
+		}
+		return newUUIDs;
+	}
+
+	public static NBTTagCompound writeInfoList(NBTTagCompound nbt, List<InfoUUID> uuids, String tagName) {
+		NBTTagList tagList = new NBTTagList();
+		uuids.forEach(obj -> tagList.appendTag(obj.writeData(new NBTTagCompound(), SyncType.SAVE)));
+		nbt.setTag(tagName, tagList);
+		return nbt;
+	}
+
 }

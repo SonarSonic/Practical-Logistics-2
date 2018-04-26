@@ -30,21 +30,12 @@ public class AbstractUUIDError implements INBTSyncable {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		List<InfoUUID> newUUIDs = new ArrayList<>();
-		NBTTagList tagList = nbt.getTagList("uuids", NBT.TAG_COMPOUND);
-		for (int i = 0; i < tagList.tagCount(); i++) {
-			InfoUUID loaded = new InfoUUID();
-			loaded.readData(tagList.getCompoundTagAt(i), type);
-			newUUIDs.add(loaded);
-		}
-		uuids = newUUIDs;		
+		uuids = InfoUUID.readInfoList(nbt, "uuids");
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		NBTTagList tagList = new NBTTagList();
-		uuids.forEach(obj -> tagList.appendTag(obj.writeData(new NBTTagCompound(), SyncType.SAVE)));
-		nbt.setTag("uuids", tagList);
+		nbt = InfoUUID.writeInfoList(nbt, uuids, "uuids");
 		return nbt;
 	}	
 

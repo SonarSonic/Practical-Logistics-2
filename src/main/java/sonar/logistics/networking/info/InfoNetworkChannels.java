@@ -2,6 +2,8 @@ package sonar.logistics.networking.info;
 
 import javax.annotation.Nullable;
 
+import sonar.core.listener.ListenableList;
+import sonar.core.listener.ListenerList;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
@@ -28,14 +30,12 @@ public class InfoNetworkChannels extends ListNetworkChannels<IProvidableInfo, In
 			updateChannels();
 			updateReaders(true);
 		}
-		
 		if (UPDATES.canSyncUpdate(UpdateType.DISPLAY)) {
 			for (IListReader reader : readers) {
-				if (reader instanceof INetworkReader && !reader.getListenerList().getDisplayListeners().isEmpty()) {
+				if (reader instanceof INetworkReader && !reader.getListenerList().getDisplayListeners().listener_tallies.isEmpty()) {
 					InfoUUID uuid = handler.getReaderUUID(reader);
 					AbstractChangeableList<IProvidableInfo> updateList = handler.getUUIDLatestList(uuid);
 					((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels.get(reader.getIdentity()), uuid);
-
 				}
 			}
 		}

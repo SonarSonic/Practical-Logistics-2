@@ -65,12 +65,12 @@ public class StyledWrappedTextElement extends StyledTextElement {
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
 		Tuple<SimpleIndex, Integer> string = getStringClicked(subClickX, subClickY);
-        string.getFirst();
-        IDisplayAction action = getAction(string.getFirst().string.getStyle().action_id);
-        if (action != null) {
-            return action.doAction(click, player, subClickX, subClickY);
-        }
-
+		if(string !=null && string.getFirst()!=null) {
+			IDisplayAction action = getAction(string.getFirst().string.getStyle().action_id);
+			if (action != null) {
+				return action.doAction(click, player, subClickX, subClickY);
+			}
+		}
         boolean needsPages = handler.linesPerPage < handler.lines.size();
 		if (needsPages) {
 			int totalPages = (int) (Math.ceil((double) handler.lines.size() / (double) handler.linesPerPage));

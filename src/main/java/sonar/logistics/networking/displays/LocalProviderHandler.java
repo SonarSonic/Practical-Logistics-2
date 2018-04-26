@@ -9,6 +9,7 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.api.errors.DestroyedError;
 import sonar.logistics.api.errors.DisconnectedError;
 import sonar.logistics.api.errors.ErrorHelper;
@@ -17,6 +18,7 @@ import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
+import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.networking.ServerInfoHandler;
 
 public class LocalProviderHandler {
@@ -84,12 +86,15 @@ public class LocalProviderHandler {
 		logicTile.getListenerList().getDisplayListeners().addListener(display, 0);
 		// triggers the info packet to be sent to watchers
 		ServerInfoHandler.instance().markChanged(logicTile, uuid);
+		display.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.INFO_REFERENCES);
+		display.forEachWatcher(watcher -> logicTile.getListenerList().addListener(watcher, ListenerType.TEMPORARY_LISTENER));
 	}
 
 	private static void doLocalProviderDisconnect(DisplayGSI display, ILogicListenable logicTile, InfoUUID uuid) {
 		logicTile.getListenerList().getDisplayListeners().removeListener(display, true, 0);
 		// triggers the info packet to be sent to watchers
 		ServerInfoHandler.instance().markChanged(logicTile, uuid);
+		display.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.INFO_REFERENCES);
 	}
 
 	public static void updateLocalProviderConnections() {

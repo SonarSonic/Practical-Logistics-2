@@ -12,6 +12,7 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.buttons.ButtonElement;
 import sonar.logistics.api.displays.buttons.CreateElementButton;
 import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.tiles.displays.DisplayType;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
@@ -69,9 +70,9 @@ public class EditContainer extends DisplayElementContainer {
 	}
 
 	public void render() {
-		translate(0, 0, -0.01);
+		translate(0, 0, -0.002);
 		super.render();
-		translate(0, 0, 0.01);
+		translate(0, 0, 0.002);
 	}
 	public boolean canRender() {
 		return isWithinScreenBounds && gsi.edit_mode.getObject() && !gsi.isGridSelectionMode;

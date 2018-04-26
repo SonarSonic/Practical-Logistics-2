@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -51,6 +52,8 @@ import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler.DisplayGSISavedData;
 import sonar.logistics.api.displays.storage.EditContainer;
 import sonar.logistics.api.errors.IInfoError;
 import sonar.logistics.api.info.IInfo;
@@ -75,10 +78,7 @@ import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.packets.gsi.PacketGSIConnectedDisplayValidate;
-import sonar.logistics.packets.gsi.PacketGSIContentsPacket;
-import sonar.logistics.packets.gsi.PacketGSIInvalidate;
-import sonar.logistics.packets.gsi.PacketGSIStandardDisplayValidate;
+import sonar.logistics.packets.gsi.*;
 
 public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListener, IFlexibleGui<IDisplay>, ISonarListener {
 
@@ -229,18 +229,18 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void render() {
+		//fixes brightness issues when transparent blocks are nearby.
+		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 		if (lastLookElementUpdate == 0 || (System.currentTimeMillis() - lastLookElementUpdate) > 50) {
 			lastLookElementUpdate = System.currentTimeMillis();
 			updateLookElement();
 		}
-
 		// renders viewable the display element containers
 		if (isGridSelectionMode) {
 			grid_mode.renderSelectionMode();
 		} else {
 			getViewableContainers().forEach(DisplayElementContainer::render);
 		}
-
 	}
 
 	//// GSI/ELEMENT SCALING \\\\
@@ -319,7 +319,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void addInfoError(IInfoError error) {
 		if (!getWorld().isRemote) {
 			if (ListHelper.addWithCheck(errors, error)) {
-				sendInfoContainerPacket();
+                sendInfoContainerPacket(DisplayGSISavedData.ERRORS);
 			}
 		}
 	}
@@ -327,7 +327,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void addInfoErrors(List<IInfoError> errors) {
 		if (!getWorld().isRemote && !errors.isEmpty()) {
 			if (ListHelper.addWithCheck(this.errors, errors)) {
-				sendInfoContainerPacket();
+                sendInfoContainerPacket(DisplayGSISavedData.ERRORS);
 			}
 		}
 	}
@@ -335,7 +335,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void removeInfoError(IInfoError error) {
 		if (!getWorld().isRemote) {
 			if (errors.remove(error)) {
-				sendInfoContainerPacket();
+                sendInfoContainerPacket(DisplayGSISavedData.ERRORS);
 			}
 		}
 	}
@@ -343,7 +343,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void removeInfoErrors(List<IInfoError> errors) {
 		if (!getWorld().isRemote && !errors.isEmpty()) {
 			errors.clear();
-			sendInfoContainerPacket();
+            sendInfoContainerPacket(DisplayGSISavedData.ERRORS);
 		}
 
 	}
@@ -422,7 +422,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	//// INFO REFERENCES \\\\
 
 	public void updateInfoReferences() {
-		if (!isValid()) {
+		if (!isValid() || getWorld().isRemote) {
 			return;
 		}
 		List<InfoUUID> newReferences = new ArrayList<>();
@@ -451,6 +451,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void validateAllInfoReferences() {
 		updateInfoReferences();
 		LocalProviderHandler.doInfoReferenceConnect(this, references);
+
 	}
 	
 	public void sendConnectedInfo(EntityPlayer player){
@@ -579,7 +580,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		DisplayElementContainer container = new DisplayElementContainer(this, translate, scale, pScale, identity);
 		containers.put(identity, container);
 		validateContainer(container);
-		sendInfoContainerPacket();
+        sendInfoContainerPacket(DisplayGSISavedData.ALL_DATA);
 		return container;
 	}
 
@@ -587,7 +588,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void removeElementContainer(int containerID) {
 		invalidateContainer(containers.get(containerID));
 		containers.remove(containerID);
-		sendInfoContainerPacket();
+        sendInfoContainerPacket(DisplayGSISavedData.ALL_DATA);
 	}
 
 	public DisplayElementContainer getContainer(int identity) {
@@ -619,38 +620,57 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public void onElementAdded(IElementStorageHolder c, IDisplayElement e) {
 		validateElement(e);
-		updateInfoReferences();
-		sendInfoContainerPacket();
+		if(!getWorld().isRemote) {
+			updateInfoReferences();
+			sendInfoContainerPacket(DisplayGSISavedData.ALL_DATA);
+		}
 	}
 
 	public void onElementRemoved(IElementStorageHolder c, IDisplayElement e) {
 		invalidateElement(e);
-		updateInfoReferences();
-		sendInfoContainerPacket();
+		if(!getWorld().isRemote) {
+			updateInfoReferences();
+			sendInfoContainerPacket(DisplayGSISavedData.ALL_DATA);
+		}
 	}
 
-	public void sendInfoContainerPacket() {
+	public List<EntityPlayerMP> getWatchers(){
+	    return ChunkViewerHandler.instance().getWatchingPlayers(this);
+    }
+
+    public void forEachWatcher(Consumer<EntityPlayerMP> action){
+        getWatchers().forEach(action);
+    }
+
+    public List<DisplayGSISavedData> queuedUpdates = new ArrayList<>();
+
+	public void sendInfoContainerPacket(DisplayGSISavedData type) {
 		if (world != null && display != null && !world.isRemote) {
 			if (!isValid()) {
 				return;
 			}
-			List<EntityPlayerMP> players = ChunkViewerHandler.instance().getWatchingPlayers(this);
-			players.forEach(listener -> PL2.network.sendTo(new PacketGSIContentsPacket(this), listener));
-			this.display.onInfoContainerPacket();
+            queuedUpdates.add(type);
 		}
 	}
 
-	public void sendInfoContainerPacket(EntityPlayerMP player) {
-		PL2.network.sendTo(new PacketGSIContentsPacket(this), player);
-	}
+	public void doQueuedUpdates(){
+	    if(!queuedUpdates.isEmpty()) {
+            DisplayGSISavedData type = queuedUpdates.size()== 1 ? queuedUpdates.get(0) : DisplayGSISavedData.ALL_DATA;
+            forEachWatcher(listener -> PL2.network.sendTo(new PacketGSISavedDataPacket(this, type), listener));
+            this.display.onInfoContainerPacket();
+			queuedUpdates.clear();
+        }
+    }
+
+	//public void sendInfoContainerPacket(EntityPlayerMP player, DisplayGSISavedData type) {
+	//	PL2.network.sendTo(new PacketGSISavedDataPacket(this, type), player);
+	//}
 
 	public void sendValidatePacket(EntityPlayerMP player) {
 		if (display instanceof ConnectedDisplay) {
 			PL2.network.sendTo(new PacketGSIConnectedDisplayValidate(this, display), player);
 		} else if (display instanceof TileAbstractDisplay) {
-			//two tick delay to wait for multiparts to be sent to client
-			LogisticsEventHandler.instance().NOTIFYING.scheduleRunnable(() -> PL2.network.sendTo(new PacketGSIStandardDisplayValidate((TileAbstractDisplay) display, this), player), 2);
-
+			PL2.network.sendTo(new PacketGSIStandardDisplayValidate((TileAbstractDisplay) display, this), player);
         }
 	}
 
@@ -675,85 +695,14 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	//// NBT \\\\
-
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		if (type.isType(SyncType.SAVE)) {
-			List<Integer> loaded = new ArrayList<>();
-			NBTTagList tagList = nbt.getTagList("containers", NBT.TAG_COMPOUND);
-			tagList.forEach(tag -> loaded.add(loadContainer((NBTTagCompound) tag, type).getContainerIdentity()));
-			loaded.add(EDIT_CONTAINER_ID);
-			List<Integer> toDelete = new ArrayList<>();
-			forEachContainer(c -> {
-				if (!loaded.contains(c.getContainerIdentity())) {
-					toDelete.add(c.getContainerIdentity());
-				}
-			});
-			toDelete.forEach(del -> {
-				invalidateContainer(containers.get(del));
-				containers.remove(del);
-			});
-		}
-		NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
-		if (!tag.hasNoTags()) {
-			NBTHelper.readSyncParts(tag, type, syncParts);
-		}
-		errors = PL2ASMLoader.readListFromNBT(IInfoError.class, nbt);
-		if (getWorld().isRemote) {
-			updateErroredElements();
-		}
+        DisplayGSISaveHandler.readGSIData(this, nbt, type, DisplayGSISavedData.ALL_DATA);
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		if (type.isType(SyncType.SAVE)) {
-			NBTTagList tagList = new NBTTagList();
-			forEachContainer(c -> {
-				NBTTagCompound tag = saveContainer(c, type);
-				if (!tag.hasNoTags()) {
-					tagList.appendTag(tag);
-				}
-			});
-			nbt.setTag("containers", tagList);
-		}
-		NBTTagCompound tag = NBTHelper.writeSyncParts(new NBTTagCompound(), type, syncParts, type.mustSync());
-		if (!tag.hasNoTags()) {
-			nbt.setTag(this.getTagName(), tag);
-		}
-		PL2ASMLoader.writeListToNBT(IInfoError.class, errors, nbt);
-		return nbt;
-	}
-
-	public NBTTagCompound saveContainer(DisplayElementContainer c, SyncType type) {
-		if (isEditContainer(c) && !edit_mode.getObject()) {
-			return new NBTTagCompound(); // don't send the edit container if it isn't being viewed
-		}
-		return c.writeData(new NBTTagCompound(), type);
-	}
-
-	public DisplayElementContainer loadContainer(NBTTagCompound nbt, SyncType type) {
-		int identity = nbt.getInteger("iden");
-		DisplayElementContainer container = containers.get(identity);
-		if (container == null) {
-			container = new DisplayElementContainer();
-			container.gsi = this;
-			container.readData(nbt, type);
-			containers.put(identity, container);
-			validateContainer(container);
-		} else {
-			List<Integer> elements = new ArrayList<>();
-			container.getElements().forEach(e -> elements.add(e.getElementIdentity()));
-			container.readData(nbt, type);
-
-			List<Integer> loaded = new ArrayList<>();
-			container.getElements().forEach(e -> loaded.add(e.getElementIdentity()));
-			elements.removeAll(loaded);
-
-			for (Integer del : elements) {
-				invalidateElement(container.getElements().getElementFromIdentity(del));
-			}
-		}
-		return container;
+		return DisplayGSISaveHandler.writeGSIData(this, nbt, type, DisplayGSISavedData.ALL_DATA);
 	}
 
 	@Override
@@ -819,22 +768,24 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void validate() {
 		if (!isValid) {
 			isValid = true;
-			updateInfoReferences();
-			updateCachedInfo();
-			updateScaling();
-			display.onGSIValidate();
 			if (!world.isRemote) {
+				references.clear();
+                updateInfoReferences();
+                updateCachedInfo();
+                updateScaling();
 				if (display instanceof ConnectedDisplay) {
 					DisplayHandler.updateWatchers(Lists.newArrayList(), (ConnectedDisplay) display);
 				}
 				PL2.proxy.getServerManager().displays.put(getDisplayGSIIdentity(), this);
-				List<EntityPlayerMP> watchers = ChunkViewerHandler.instance().getWatchingPlayers(this);
-				watchers.forEach(this::sendValidatePacket);
+				forEachWatcher(this::sendValidatePacket);
 			} else {
+                updateCachedInfo();
+                updateScaling();
 				PL2.proxy.getClientManager().displays_gsi.put(getDisplayGSIIdentity(), this);
 			}
 			forEachElement(this::validateElement);
 
+            display.onGSIValidate();
 			PL2.logger.info("Validated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
 		}
 	}
@@ -842,14 +793,16 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void invalidate() {
 		if (isValid) {
 			isValid = false;
-			display.onGSIInvalidate();
 			if (!world.isRemote) {
 				PL2.proxy.getServerManager().displays.remove(getDisplayGSIIdentity());
+                LocalProviderHandler.doInfoReferenceDisconnect(this, references);
+				forEachWatcher(this::sendInvalidatePacket);
 			} else {
 				PL2.proxy.getClientManager().displays_gsi.remove(getDisplayGSIIdentity());
 			}
-			LocalProviderHandler.doInfoReferenceDisconnect(this, references);
 			forEachElement(this::invalidateElement);
+
+            display.onGSIInvalidate();
 			PL2.logger.info("Invalidated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
 		}
 	}

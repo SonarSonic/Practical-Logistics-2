@@ -46,16 +46,17 @@ public class PacketGSIElement implements IMessage {
 		@Override
 		public IMessage onMessage(PacketGSIElement message, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-				if (player != null) {
-					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
+					if (player != null) {
 						DisplayGSI gsi = ServerInfoHandler.instance().getGSI(message.gsiIdentity);
 						if (gsi != null) {
 							IDisplayElement e = gsi.getElementFromIdentity(message.elementIdentity);
 							GSIElementPacketHelper.handler.runGSIElementPacket(gsi, e, player, message.clickTag);
 						}
-					});
-				}
+					}
+				});
+
 			}
 			return null;
 		}

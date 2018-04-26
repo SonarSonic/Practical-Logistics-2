@@ -39,6 +39,6 @@ public class InfoUUIDRequest implements IInfoRequirement {
 	}
 
 	@Override
-	public void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require, int requirementRef) {}
+	public void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require) {}
 	
 }

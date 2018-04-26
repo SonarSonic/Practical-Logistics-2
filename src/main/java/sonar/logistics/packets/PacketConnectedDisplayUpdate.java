@@ -104,7 +104,7 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 				}
 				if (display instanceof TileLargeDisplayScreen) {
 					TileLargeDisplayScreen large = ((TileLargeDisplayScreen) display);
-					large.identity.setObject(iden);
+					large.identity = iden;
 					large.setRegistryID(message.registryID);
 					boolean isTopLeft = iden == message.topLeft;
 					large.setShouldRender(isTopLeft);

@@ -240,6 +240,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, IScaleableDispl
 		return gsi;
 	}
 
+	@Override
 	public void setGSI(DisplayGSI gsi) {
 		this.gsi = gsi;
 	}

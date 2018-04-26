@@ -20,6 +20,7 @@ import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IInfoRequirement;
 import sonar.logistics.api.displays.elements.types.UnconfiguredInfoElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
@@ -72,7 +73,7 @@ public class GSIElementPacketHelper {
 		double pScale = packetTag.getDouble("pscale");
 		DisplayElementContainer c = gsi.addElementContainer(translate, scale, pScale);
 		IDisplayElement e = CreateInfoType.values()[packetTag.getInteger("type")].logic.create(c);
-		gsi.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 
 	//// REQUEST GUI \\\\
@@ -105,13 +106,12 @@ public class GSIElementPacketHelper {
 
 	//// INFO REQUIREMENT \\\\
 
-	public static NBTTagCompound createInfoRequirementPacket(List<InfoUUID> uuids, int requiredRef) {
+	public static NBTTagCompound createInfoRequirementPacket(List<InfoUUID> uuids) {
 		NBTTagCompound tag = new NBTTagCompound();
 		writePacketID(tag, GSIElementPackets.INFO_SET);
 		NBTTagList list = new NBTTagList();
 		uuids.forEach(uuid -> list.appendTag(uuid.writeData(new NBTTagCompound(), SyncType.SAVE)));
 		tag.setTag("uuids", list);
-		tag.setInteger("ref", requiredRef);
 		return tag;
 	}
 
@@ -128,7 +128,7 @@ public class GSIElementPacketHelper {
 				}
 			}
 			if (required.size() == require.getRequired()) {
-				require.doInfoRequirementPacket(gsi, player, required, packetTag.getInteger("ref"));
+				require.doInfoRequirementPacket(gsi, player, required);
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public class GSIElementPacketHelper {
 			toDelete.add(tag.getIntAt(i));
 		}
 		toDelete.forEach(gsi::removeElementContainer);
-		gsi.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 
 	//// DELETE ELEMENTS \\\\
@@ -172,7 +172,7 @@ public class GSIElementPacketHelper {
 			toDelete.add(tag.getIntAt(i));
 		}
 		toDelete.forEach(gsi::removeElement);
-		gsi.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 
 	//// RESIZE CONTAINERS \\\\
@@ -196,7 +196,7 @@ public class GSIElementPacketHelper {
 		if (c != null) {
 			c.resize(translate, scale, pScale);
 			c.updateActualScaling();
-			gsi.sendInfoContainerPacket();
+			gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.CONTAINERS);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class GSIElementPacketHelper {
 				IDisplayElement e = DisplayElementHelper.loadElement(nbt, element.getHolder());
 				element.getHolder().getElements().addElement(e);
 			}
-			gsi.sendInfoContainerPacket();
+			gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class GSIElementPacketHelper {
 		tag.setInteger(AbstractDisplayElement.IDENTITY_TAG_NAME, element.getElementIdentity());
 		element.readData(tag, SyncType.SAVE);
 		element.onElementChanged();
-		gsi.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 
 	//// EDIT MODE \\\\
@@ -257,7 +257,7 @@ public class GSIElementPacketHelper {
 
 	public static void doEditModePacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		gsi.edit_mode.setObject(packetTag.getBoolean("edit_mode"));
-		gsi.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.SYNC_PARTS);
 	}
 
 	//// UPDATE ELEMENT \\\\
@@ -286,7 +286,7 @@ public class GSIElementPacketHelper {
 	public static void doResetGSIPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		gsi.containers.clear();
 		gsi.edit_mode.setObject(true);
-		gsi.sendInfoContainerPacket();
+		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 
 }

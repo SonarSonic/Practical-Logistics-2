@@ -20,6 +20,7 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.api.errors.IInfoError;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
@@ -36,6 +37,8 @@ import sonar.logistics.info.types.InfoError;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.info.InfoHelper;
+import sonar.logistics.worlddata.ConnectedDisplayData;
+import sonar.logistics.worlddata.GSIData;
 
 public class ServerInfoHandler implements IInfoManager {
 
@@ -60,6 +63,8 @@ public class ServerInfoHandler implements IInfoManager {
 		monitoredLists.clear();
 		identityTiles.clear();
 		connectedDisplays.clear();
+		GSIData.unloadedGSI.clear();
+		ConnectedDisplayData.unloadedDisplays.clear();
 	}
 
 	public int getNextIdentity() {
@@ -152,7 +157,10 @@ public class ServerInfoHandler implements IInfoManager {
 			}
 		}
 		return;
+	}
 
+	public void sendGSIUpdates(){
+		displays.values().forEach(DisplayGSI::doQueuedUpdates);
 	}
 
 	public void changeInfo(ILogicListenable source, InfoUUID id, IInfo info) {
@@ -249,7 +257,7 @@ public class ServerInfoHandler implements IInfoManager {
 		}
 		for (Entry<DisplayGSI, List<IInfoError>> entry : affectedGSIs.entrySet()) {
 			entry.getKey().addInfoErrors(entry.getValue());
-			entry.getKey().sendInfoContainerPacket();
+			entry.getKey().sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ERRORS);
 		}
 
 	}

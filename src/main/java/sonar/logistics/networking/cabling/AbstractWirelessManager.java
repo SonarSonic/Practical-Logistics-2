@@ -35,7 +35,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 	public void removeAll() {
 		emitters.clear();
 		receivers.clear();
-		player_viewers.clear();
+		player_viewers.invalidateList();
 	}
 
 	//// CONNECTION EVENTS \\\\
@@ -151,7 +151,7 @@ public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R e
 
 	public void sendDataEmittersToListeners() {
 		if (dirty) {
-			player_viewers.forEach(player -> PacketHelper.sendEmittersToPlayer(player.listener.player, this));
+			player_viewers.listener_tallies.forEach(player -> PacketHelper.sendEmittersToPlayer(player.listener.player, this));
 			dirty = false;
 		}
 	}

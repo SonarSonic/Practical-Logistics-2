@@ -199,8 +199,10 @@ public class ChannelList implements ISyncPart {
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
-		coordList = BlockCoords.readBlockCoords(nbt, getTagName());
-		uuidList = readUUIDS(nbt);
+		if(nbt.hasKey(getTagName())) {
+			coordList = BlockCoords.readBlockCoords(nbt, getTagName());
+			uuidList = readUUIDS(nbt);
+		}
 	}
 
 	public List<UUID> readUUIDS(NBTTagCompound nbt) {

@@ -43,10 +43,7 @@ import sonar.logistics.client.gui.generic.GuiFilterList;
 import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.common.containers.ContainerInventoryReader;
-import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.info.types.LogicInfoList;
-import sonar.logistics.info.types.MonitoredItemStack;
-import sonar.logistics.info.types.ProgressInfo;
+import sonar.logistics.info.types.*;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
@@ -159,10 +156,12 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 			break;
 		case STACK:
 			ItemStack stack = inventory.getStackInSlot(0);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				MonitoredItemStack dummyInfo = new MonitoredItemStack(new StoredItemStack(stack.copy(), 0), network.getNetworkID());
 				IMonitoredValue<MonitoredItemStack> value = updateInfo.find(dummyInfo);				
 				info = value == null ? dummyInfo : new MonitoredItemStack(value.getSaveableInfo().getStoredStack().copy(), network.getNetworkID()); // FIXME should check EnumlistChange
+			}else{
+				info = new InfoError("NO ITEM SELECTED");
 			}
 			break;
 		case STORAGE:

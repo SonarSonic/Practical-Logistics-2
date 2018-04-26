@@ -51,11 +51,14 @@ public class PacketGSIConnectedDisplayValidate implements IMessage {
 				if (player != null) {
 					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 						IDisplay display = ClientInfoHandler.instance().getConnectedDisplay(message.DISPLAY_ID);
-						DisplayGSI gsi = display.getGSI();
-						if (gsi != null) {							
-							gsi.readData(message.SAVE_TAG, SyncType.SAVE);
-							gsi.validate();
+						DisplayGSI gsi = display == null? null : display.getGSI();
+						if(display == null || gsi == null){
+							ClientInfoHandler.instance().invalid_gsi.put(message.GSI_IDENTITY, message.SAVE_TAG);
+							return;
 						}
+						gsi.readData(message.SAVE_TAG, SyncType.SAVE);
+						gsi.validate();
+
 					});
 				}
 			}

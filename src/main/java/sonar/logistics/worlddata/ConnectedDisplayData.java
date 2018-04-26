@@ -66,7 +66,7 @@ public class ConnectedDisplayData extends WorldSavedData {
 		}
 		
 		compound.setTag("displays", list);
-		unloadedDisplays.clear();
+		//unloadedDisplays.clear();
 		return compound;
 	}
 

@@ -31,12 +31,7 @@ import sonar.logistics.packets.PacketLocalProviders;
 import sonar.logistics.packets.PacketMonitoredList;
 import sonar.logistics.packets.PacketNodeFilter;
 import sonar.logistics.packets.PacketWirelessStorage;
-import sonar.logistics.packets.gsi.PacketGSIConnectedDisplayValidate;
-import sonar.logistics.packets.gsi.PacketGSIContentsPacket;
-import sonar.logistics.packets.gsi.PacketGSIClick;
-import sonar.logistics.packets.gsi.PacketGSIElement;
-import sonar.logistics.packets.gsi.PacketGSIInvalidate;
-import sonar.logistics.packets.gsi.PacketGSIStandardDisplayValidate;
+import sonar.logistics.packets.gsi.*;
 
 public class PL2Common {
 
@@ -70,7 +65,7 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketConnectedDisplayRemove.Handler.class, PacketConnectedDisplayRemove.class, 14, Side.CLIENT);
 		PL2.network.registerMessage(PacketLocalProviderSelection.Handler.class, PacketLocalProviderSelection.class, 15, Side.SERVER);
 		PL2.network.registerMessage(PacketDisplayTextEdit.Handler.class, PacketDisplayTextEdit.class, 16, Side.SERVER);
-		PL2.network.registerMessage(PacketGSIContentsPacket.Handler.class, PacketGSIContentsPacket.class, 17, Side.CLIENT);
+		PL2.network.registerMessage(PacketGSISavedDataPacket.Handler.class, PacketGSISavedDataPacket.class, 17, Side.CLIENT);
 		PL2.network.registerMessage(PacketGSIConnectedDisplayValidate.Handler.class, PacketGSIConnectedDisplayValidate.class, 18, Side.CLIENT);
 		PL2.network.registerMessage(PacketGSIStandardDisplayValidate.Handler.class, PacketGSIStandardDisplayValidate.class, 19, Side.CLIENT);
 		PL2.network.registerMessage(PacketGSIInvalidate.Handler.class, PacketGSIInvalidate.class, 20, Side.CLIENT);

@@ -69,12 +69,10 @@ public class EmptyInfoElement extends ButtonElement implements IFlexibleGui<Tile
 
 	@Override
 	public void onGuiClosed(List<InfoUUID> selected) {
-		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createInfoRequirementPacket(selected, 0), getElementIdentity(), getGSI());
+		GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createInfoRequirementPacket(selected), getElementIdentity(), getGSI());
 	}
-	
-	//// SELECTED INFO \\\\
 
-	public void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require, int requirementRef) {
+	public void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require) {
 		InfoUUID infoUUID = require.get(0);
 		if(InfoUUID.valid(infoUUID)){	
 			getHolder().getElements().addElement(new UnconfiguredInfoElement(infoUUID));	
