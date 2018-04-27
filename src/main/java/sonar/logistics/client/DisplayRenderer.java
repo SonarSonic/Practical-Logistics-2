@@ -48,6 +48,5 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 		translate(part.getDisplayType().xPos, part.getDisplayType().yPos, 0);
 		container.render();
 		popMatrix();
-		// }
 	}
 }

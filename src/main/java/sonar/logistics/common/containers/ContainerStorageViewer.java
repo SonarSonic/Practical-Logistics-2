@@ -9,6 +9,7 @@ import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.slots.SlotLimiter;
 import sonar.logistics.PL2Items;
+import sonar.logistics.api.PL2API;
 import sonar.logistics.api.networks.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.viewers.ListenerType;
@@ -17,8 +18,6 @@ import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.common.ListNetworkChannels;
 import sonar.logistics.networking.items.ItemHelper;
 import sonar.logistics.networking.items.ItemNetworkChannels;
-
-import javax.annotation.Nonnull;
 
 public class ContainerStorageViewer extends Container {
 
@@ -47,10 +46,9 @@ public class ContainerStorageViewer extends Container {
 		}
 	}
 
-	@Nonnull
-    public ItemStack transferStackInSlot(EntityPlayer player, int id) {
+	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(id);
+		Slot slot = (Slot) this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
@@ -59,7 +57,7 @@ public class ContainerStorageViewer extends Container {
 					ILogisticsNetwork network = emitter.getNetwork();
 
 					StoredItemStack stack = new StoredItemStack(itemstack1);
-					if (ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
+					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
 						ItemHelper.addItemsFromPlayer(stack, player, network, ActionType.PERFORM, null);
 					} else {
 						StoredItemStack perform = ItemHelper.transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
@@ -71,9 +69,17 @@ public class ContainerStorageViewer extends Container {
 					if (channels != null) channels.sendLocalRapidUpdate(emitter, player);
 					this.detectAndSendChanges();
 				}
+			} else if (id < 27) {
+				if (!this.mergeItemStack(itemstack1, 27, 36, false)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (id >= 27 && id < 36) {
+				if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
+					return ItemStack.EMPTY;
+				}
 			}
 
-            if (itemstack1.getCount() == 0) {
+			if (itemstack1.getCount() == 0) {
 				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
@@ -100,7 +106,7 @@ public class ContainerStorageViewer extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(@Nonnull EntityPlayer player) {
+	public boolean canInteractWith(EntityPlayer player) {
 		return true;
 	}
 }

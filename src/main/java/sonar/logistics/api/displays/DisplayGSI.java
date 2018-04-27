@@ -150,7 +150,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				grid_mode.onClicked(type, click);
 			} else {
 				Tuple<IDisplayElement, double[]> clickedElement = getElementFromXY(click.clickX, click.clickY);
-				if ((clickedElement == null || !isEditContainer(clickedElement.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
+				if ((clickedElement == null || clickedElement.getFirst() == null || !isEditContainer(clickedElement.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
 					//// COMPLETES ELEMENT SELECTION MODE \\\\
 					for (DisplayElementContainer container : containers.values()) {
 						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
