@@ -19,14 +19,15 @@ import sonar.core.helpers.ListHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 
 /** caches display viewers, via accessing chunk PlayerMap */
 public class ChunkViewerHandler {
 
-	public Map<DisplayGSI, List<ChunkPos>> displayChunks = new HashMap<>();
+    public static int CHECK_RADIUS = 8;
+	public Map<Integer, List<ChunkPos>> displayChunks = new HashMap<>();
 	public Map<Integer, List<EntityPlayerMP>> cachedPlayers = new HashMap<>(); // with the identity of the DisplayGSI, and current players attached to it
-	public static int CHECK_RADIUS = 8;
 	public Map<EntityPlayerMP, Map<Integer, List<ChunkPos>>> UNWATCHED_CHUNKS = new HashMap<>();
 	public Map<EntityPlayerMP, Map<Integer, List<ChunkPos>>> WATCHED_CHUNKS = new HashMap<>();
 	public List<DisplayGSI> ADDED_DISPLAYS = new ArrayList<>();
@@ -85,13 +86,14 @@ public class ChunkViewerHandler {
 
 	public void onViewerRemoved(DisplayGSI gsi, EntityPlayerMP player) {
 		gsi.sendInvalidatePacket(player);
-		PL2.logger.info("Viewer Removed: " + gsi.getDisplayGSIIdentity() + " " + player);
 	}
 
 	public void updateDisplayViewers() {
 		if (!ADDED_DISPLAYS.isEmpty()) {
 			for (DisplayGSI gsi : ADDED_DISPLAYS) {
 				if (gsi.isValid()) {
+					displayChunks.remove(gsi.getDisplayGSIIdentity());
+					cachedPlayers.remove(gsi.getDisplayGSIIdentity());
 					List<EntityPlayerMP> watchers = getWatchingPlayers(gsi);
 					watchers.forEach(watcher -> onViewerAdded(gsi, watcher));
 				}
@@ -102,13 +104,13 @@ public class ChunkViewerHandler {
 			for (DisplayGSI gsi : REMOVED_DISPLAYS) {
 				List<EntityPlayerMP> watchers = getWatchingPlayers(gsi);
 				watchers.forEach(watcher -> onViewerRemoved(gsi, watcher));
-				displayChunks.remove(gsi);
+				displayChunks.remove(gsi.getDisplayGSIIdentity());
 				cachedPlayers.remove(gsi.getDisplayGSIIdentity());
 			}
 			REMOVED_DISPLAYS.clear();
 		}
 
-		if (!WATCHED_CHUNKS.isEmpty() && !displayChunks.isEmpty()) {
+		if (!WATCHED_CHUNKS.isEmpty()) {
 			for (Entry<EntityPlayerMP, Map<Integer, List<ChunkPos>>> entry : WATCHED_CHUNKS.entrySet()) {
 				List<DisplayGSI> displays = new ArrayList<>();
 				for (Entry<Integer, List<ChunkPos>> chunks : entry.getValue().entrySet()) {
@@ -128,7 +130,7 @@ public class ChunkViewerHandler {
 			WATCHED_CHUNKS.clear();
 		}
 
-		if (!UNWATCHED_CHUNKS.isEmpty() && !displayChunks.isEmpty()) {
+		if (!UNWATCHED_CHUNKS.isEmpty()) {
 			for (Entry<EntityPlayerMP, Map<Integer, List<ChunkPos>>> entry : UNWATCHED_CHUNKS.entrySet()) {
 				List<DisplayGSI> displays = new ArrayList<>();
 				for (Entry<Integer, List<ChunkPos>> chunks : entry.getValue().entrySet()) {
@@ -155,9 +157,12 @@ public class ChunkViewerHandler {
 
 	public List<DisplayGSI> getDisplaysInChunk(int dim, ChunkPos pos) {
 		List<DisplayGSI> inChunk = new ArrayList<>();
-		for (Entry<DisplayGSI, List<ChunkPos>> chunks : displayChunks.entrySet()) {
+		for (Entry<Integer, List<ChunkPos>> chunks : displayChunks.entrySet()) {
 			if (chunks.getValue().contains(pos)) {
-				inChunk.add(chunks.getKey());
+				DisplayGSI gsi = ServerInfoHandler.instance().getGSI(chunks.getKey());
+				if(gsi != null) {
+					inChunk.add(gsi);
+				}
 			}
 		}
 		return inChunk;
@@ -202,11 +207,11 @@ public class ChunkViewerHandler {
 	}
 
 	public List<ChunkPos> getWatchingChunks(DisplayGSI gsi) {
-		List<ChunkPos> positions = displayChunks.get(gsi);
+		List<ChunkPos> positions = displayChunks.get(gsi.getDisplayGSIIdentity());
 		if (positions == null) {
 			BlockPos pos = gsi.getDisplay().getCoords().getBlockPos();
-			displayChunks.put(gsi, ChunkHelper.getChunksInRadius(pos, CHECK_RADIUS));
-			positions = displayChunks.get(gsi);
+			displayChunks.put(gsi.getDisplayGSIIdentity(), ChunkHelper.getChunksInRadius(pos, CHECK_RADIUS));
+			positions = displayChunks.get(gsi.getDisplayGSIIdentity());
 		}
 		return positions;
 	}

@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.ChunkHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -769,6 +770,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		if (!isValid) {
 			isValid = true;
 			if (!world.isRemote) {
+				PL2.proxy.getServerManager().displays.put(getDisplayGSIIdentity(), this);
 				references.clear();
                 updateInfoReferences();
                 updateCachedInfo();
@@ -776,12 +778,11 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				if (display instanceof ConnectedDisplay) {
 					DisplayHandler.updateWatchers(Lists.newArrayList(), (ConnectedDisplay) display);
 				}
-				PL2.proxy.getServerManager().displays.put(getDisplayGSIIdentity(), this);
 				forEachWatcher(this::sendValidatePacket);
 			} else {
+				PL2.proxy.getClientManager().displays_gsi.put(getDisplayGSIIdentity(), this);
                 updateCachedInfo();
                 updateScaling();
-				PL2.proxy.getClientManager().displays_gsi.put(getDisplayGSIIdentity(), this);
 			}
 			forEachElement(this::validateElement);
 
