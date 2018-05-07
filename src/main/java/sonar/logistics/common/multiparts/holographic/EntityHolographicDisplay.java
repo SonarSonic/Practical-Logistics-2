@@ -11,6 +11,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.PL2Events;
 import sonar.logistics.api.displays.tiles.DisplayScreenLook;
@@ -132,6 +134,8 @@ public class EntityHolographicDisplay extends Entity {
         return false;
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
     public boolean canBeCollidedWith()
     {
         if(this.world.isRemote){
