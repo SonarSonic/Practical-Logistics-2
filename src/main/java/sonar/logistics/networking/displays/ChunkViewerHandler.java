@@ -57,7 +57,7 @@ public class ChunkViewerHandler {
 	@SubscribeEvent
 	public void onChunkWatched(ChunkWatchEvent.Watch event) {
 		EntityPlayerMP player = event.getPlayer();
-		int dimensionID = player.getEntityWorld().provider.getDimension();
+		int dimensionID = event.getChunkInstance().getWorld().provider.getDimension();
 		WATCHED_CHUNKS.computeIfAbsent(player, FunctionHelper.HASH_MAP);
 		WATCHED_CHUNKS.get(player).computeIfAbsent(dimensionID, FunctionHelper.ARRAY);
 		WATCHED_CHUNKS.get(player).get(dimensionID).add(event.getChunk());
@@ -66,7 +66,7 @@ public class ChunkViewerHandler {
 	@SubscribeEvent
 	public void onChunkUnwatched(ChunkWatchEvent.UnWatch event) {
 		EntityPlayerMP player = event.getPlayer();
-		int dimensionID = player.getEntityWorld().provider.getDimension();
+		int dimensionID = event.getChunkInstance().getWorld().provider.getDimension();
 		UNWATCHED_CHUNKS.computeIfAbsent(player, FunctionHelper.HASH_MAP);
 		UNWATCHED_CHUNKS.get(player).computeIfAbsent(dimensionID, FunctionHelper.ARRAY);
 		UNWATCHED_CHUNKS.get(player).get(dimensionID).add(event.getChunk());
@@ -160,7 +160,7 @@ public class ChunkViewerHandler {
 		for (Entry<Integer, List<ChunkPos>> chunks : displayChunks.entrySet()) {
 			if (chunks.getValue().contains(pos)) {
 				DisplayGSI gsi = ServerInfoHandler.instance().getGSI(chunks.getKey());
-				if(gsi != null) {
+				if(gsi != null && gsi.getWorld().provider.getDimension() == dim) {
 					inChunk.add(gsi);
 				}
 			}
