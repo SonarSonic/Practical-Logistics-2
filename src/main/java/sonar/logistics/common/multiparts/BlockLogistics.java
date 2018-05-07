@@ -75,7 +75,7 @@ public abstract class BlockLogistics extends BlockSonarMultipart {
 	@Override
 	public void breakBlock(World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
 		TileEntity tile = world.getTileEntity(pos);
-		if (tile instanceof TileAbstractReader && !world.isRemote) {
+		if (tile instanceof TileLogistics && !world.isRemote) {
 			((TileLogistics)tile).doRemovalEvent(PL2RemovalType.PLAYER_REMOVED);		
 		}
 		super.breakBlock(world, pos, state);

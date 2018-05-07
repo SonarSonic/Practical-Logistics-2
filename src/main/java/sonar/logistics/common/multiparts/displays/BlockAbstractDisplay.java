@@ -84,49 +84,6 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 
 	}
 
-	/**will be removed*/
-	public boolean canPlayerDestroy(IPartInfo part, EntityPlayer player) {
-		boolean canDestroy = canEntityDestroy(part.getState(), part.getActualWorld(), part.getPartPos(), player);
-		if (!canDestroy) {
-			onBlockClicked(part.getPartWorld(), part.getPartPos(), player);
-		}
-		return canDestroy;
-	}
-
-	@Override
-	public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity){
-		if(entity instanceof EntityPlayer){
-			RayTraceResult rayResult = RayTraceHelper.getRayTraceEyes((EntityPlayer) entity);
-			return rayResult == null || state.getValue(SonarProperties.ORIENTATION).getOpposite() == rayResult.sideHit;
-		}
-		return super.canEntityDestroy(state, world, pos, entity);
-	}
-
-	@Override
-	public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
-		if (!canEntityDestroy(state, world, pos, player)) {
-			onBlockClicked(world, pos, player);
-			return false;
-		}
-		return super.removedByPlayer(state, world, pos, player, willHarvest);
-	}
-
-	@Override
-	public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
-		if (PL2Events.coolDownClick == 0) {
-			PL2Events.coolDownClick = 2;
-			RayTraceResult rayResult = RayTraceHelper.getRayTraceEyes(player);
-			TileAbstractDisplay display = (TileAbstractDisplay) world.getTileEntity(pos);
-			float hitX = (float) (rayResult.hitVec.x - (double) pos.getX());
-			float hitY = (float) (rayResult.hitVec.y - (double) pos.getY());
-			float hitZ = (float) (rayResult.hitVec.z - (double) pos.getZ());
-			if (display.getGSI() != null) {
-				display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_LEFT : BlockInteractionType.LEFT, world, pos, world.getBlockState(pos), player, player.getActiveHand(), display.getCableFace(), hitX, hitY, hitZ);
-			}
-		}
-
-	}
-
 	@Nonnull
 	@Override
 	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {

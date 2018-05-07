@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
 import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.common.multiparts.displays.BlockClickableDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.nodes.TileArray;
 import sonar.logistics.networking.ClientInfoHandler;
@@ -79,6 +80,9 @@ public class PL2Events {
 			IDisplay display = CableHelper.getDisplay(world, pos, EnumDisplayFaceSlot.fromFace(event.getFace()));
 			if (display instanceof TileAbstractDisplay) {
 				TileAbstractDisplay tile = (TileAbstractDisplay)display;
+				if(!(tile.getBlockType() instanceof BlockClickableDisplay)){
+					return;
+				}
 				if(block == MCMultiPart.multipart){
 					BlockMultipartContainer container = (BlockMultipartContainer)block;
 					Pair<Vec3d, Vec3d> pair =  RayTraceHelper.getRayTraceVectors(player);

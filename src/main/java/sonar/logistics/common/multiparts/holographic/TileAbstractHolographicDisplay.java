@@ -1,5 +1,6 @@
 package sonar.logistics.common.multiparts.holographic;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -8,6 +9,7 @@ import net.minecraft.util.math.Vec3d;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.tiles.IScaleableDisplay;
@@ -72,7 +74,6 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
         return NBTHelper.SyncType.SAVE;
     }
 
-
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         super.onDataPacket(net, packet);
@@ -80,7 +81,6 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
             this.getHolographicEntity().ifPresent(display -> display.setSizingFromDisplay(this));
         }
     }
-
 
     @Override
     public void onGSIValidate(){
@@ -147,4 +147,5 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
         screenColour.setObject(colour);
     }
 
+    public abstract void sendPropertiesToServer();
 }

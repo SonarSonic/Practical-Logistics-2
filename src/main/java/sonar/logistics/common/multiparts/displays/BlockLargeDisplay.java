@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BlockLargeDisplay extends BlockAbstractDisplay {
+public class BlockLargeDisplay extends BlockClickableDisplay {
 
 	public static final PropertyEnum<DisplayConnections> TYPE = PropertyEnum.create("type", DisplayConnections.class);
 

@@ -10,15 +10,8 @@ public class TileDisplayScreen extends TileAbstractDisplay implements ISmallDisp
 
 	public DisplayGSI container;
 
-	//// IInfoDisplay \\\\
-
 	@Override
 	public DisplayGSI getGSI() {
-		/*
-		if (container == null) {
-			container = new DisplayGSI(this, getWorld(), getInfoContainerID());
-		}
-		*/
 		return container;
 	}
 

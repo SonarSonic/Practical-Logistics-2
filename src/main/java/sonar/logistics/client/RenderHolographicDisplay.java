@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import sonar.logistics.common.multiparts.holographic.EntityHolographicDisplay;
 import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 
 import javax.annotation.Nullable;
 
@@ -46,7 +47,11 @@ public class RenderHolographicDisplay extends RenderEntity {
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         GlStateManager.disableCull();
-        float r = 100F / 255.0F, g=100F / 255.0F, b=200F / 255.0F, a= 100F / 255.0F;
+        float a = (float) (display.getScreenColour() >> 24 & 255) / 255.0F;
+        float r = (float) (display.getScreenColour() >> 16 & 255) / 255.0F;
+        float g = (float) (display.getScreenColour() >> 8 & 255) / 255.0F;
+        float b = (float) (display.getScreenColour() & 255) / 255.0F;
+        //float r = 100F / 255.0F, g=100F / 255.0F, b=200F / 255.0F, a= 100F / 255.0F;
 
         GlStateManager.disableTexture2D();
         Tessellator tessellator = Tessellator.getInstance();

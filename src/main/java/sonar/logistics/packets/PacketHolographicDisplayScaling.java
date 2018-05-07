@@ -23,6 +23,7 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
     private Vec3d screenScale;
     private Vec3d screenRotation;
     private Vec3d screenOffset;
+    private int colour;
 
     public PacketHolographicDisplayScaling() {}
 
@@ -31,6 +32,7 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
         screenScale = display.getScreenScaling();
         screenRotation = display.getScreenRotation();
         screenOffset = display.getScreenOffset();
+        colour = display.getScreenColour();
     }
 
     @Override
@@ -40,6 +42,7 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
         screenScale = TileAdvancedHolographicDisplay.readVec3d("scale", nbt, NBTHelper.SyncType.SAVE);
         screenRotation = TileAdvancedHolographicDisplay.readVec3d("rotate", nbt, NBTHelper.SyncType.SAVE);
         screenOffset = TileAdvancedHolographicDisplay.readVec3d("offset", nbt, NBTHelper.SyncType.SAVE);
+        colour = buf.readInt();
     }
 
     @Override
@@ -50,6 +53,7 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
         TileAdvancedHolographicDisplay.writeVec3d(screenRotation,"rotate", nbt, NBTHelper.SyncType.SAVE);
         TileAdvancedHolographicDisplay.writeVec3d(screenOffset,"offset", nbt, NBTHelper.SyncType.SAVE);
         ByteBufUtils.writeTag(buf, nbt);
+        buf.writeInt(colour);
     }
 
 
@@ -62,6 +66,7 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
                     display.screenScale = message.screenScale;
                     display.screenRotation = message.screenRotation;
                     display.screenOffset = message.screenOffset;
+                    display.screenColour.setObject(message.colour);
                     display.getGSI().updateScaling();
                     display.getGSI().sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
                     display.markDirty();

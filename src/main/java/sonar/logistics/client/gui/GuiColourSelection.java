@@ -14,18 +14,25 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class GuiColourSelection extends GuiLogistics {
 
 	public SonarTextField r, g, b;
 	public SonarScroller r_scroller, g_scroller, b_scroller;
 	public List<GuiHolographicRescaling.HolographicScroller> scrollers;
+	public Consumer<Integer> onClose;
 	public int configured = -1;
 
 	public GuiColourSelection(Container container, IWorldPosition entity) {
+		this(container, entity, getCurrentColour(), i -> setCurrentColourAndSaveLast(i));
+	}
+
+	public GuiColourSelection(Container container, IWorldPosition entity, int current, Consumer<Integer> onClose) {
 		super(container, entity);
-		configured = getCurrentColour();
+		this.configured = current;
 		this.ySize = 64;
+		this.onClose = onClose;
 	}
 
 	@Override
@@ -87,7 +94,7 @@ public class GuiColourSelection extends GuiLogistics {
 	protected void keyTyped(char c, int i) throws IOException {
 		super.keyTyped(c, i);
 		if (isCloseKey(i)) {
-			setCurrentColourAndSaveLast(configured);
+			onClose.accept(configured);
 		}
 	}
 }

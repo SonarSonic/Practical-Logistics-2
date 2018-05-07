@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.logistics.PL2Multiparts;
 
-public class BlockMiniDisplay extends BlockAbstractDisplay {
+public class BlockMiniDisplay extends BlockClickableDisplay {
 
 	public static final double depth = 0.0625, height = depth * 8, width = depth * 8, length = depth * 1;
 	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(width/2, 0, width/2, 1-width/2, length, 1 - width/2);

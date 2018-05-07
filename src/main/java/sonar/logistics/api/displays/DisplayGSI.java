@@ -14,6 +14,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
@@ -40,11 +41,13 @@ import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gsi.GSIOverlays;
+import sonar.logistics.client.gui.GuiColourSelection;
 import sonar.logistics.client.gui.display.GuiEditElementsList;
 import sonar.logistics.client.gui.display.GuiHolographicRescaling;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
 import sonar.logistics.common.multiparts.holographic.TileAdvancedHolographicDisplay;
+import sonar.logistics.common.multiparts.holographic.TileHolographicDisplay;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
@@ -549,6 +552,13 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				if(obj instanceof TileAdvancedHolographicDisplay){
 					TileAdvancedHolographicDisplay holographic = (TileAdvancedHolographicDisplay)obj;
 					return new GuiHolographicRescaling(new ContainerMultipartSync(holographic), holographic);
+				}
+				if(obj instanceof TileHolographicDisplay){
+					TileHolographicDisplay holographic = (TileHolographicDisplay)obj;
+					return new GuiColourSelection(new ContainerMultipartSync(holographic), holographic, holographic.getScreenColour(), i -> {
+						holographic.setScreenColour(i);
+						holographic.sendPropertiesToServer();
+					});
 				}
 				break;
 			}

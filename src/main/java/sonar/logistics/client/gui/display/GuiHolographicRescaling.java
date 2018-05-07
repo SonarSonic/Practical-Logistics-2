@@ -3,10 +3,16 @@ package sonar.logistics.client.gui.display;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Container;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
+import sonar.logistics.PL2Translate;
+import sonar.logistics.client.LogisticsButton;
+import sonar.logistics.client.gui.GuiColourSelection;
 import sonar.logistics.client.gui.GuiLogistics;
+import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
 import sonar.logistics.common.multiparts.holographic.TileAdvancedHolographicDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 
@@ -49,6 +55,13 @@ public class GuiHolographicRescaling extends GuiLogistics {
     public void initGui() {
         super.initGui();
 
+        this.buttonList.add(new CustomColourButton(this, 0, guiLeft + 4, guiTop + 4, "Select Screen Colour") {
+            @Override
+            public boolean isSelected() {
+                return false;
+            }
+        });
+        this.buttonList.add(new LogisticsButton(this, 1, guiLeft + 30, guiTop + 4, 32, 32, "Reset Colour", ""));
         pitchScroller = new HolographicScroller(this.guiLeft + 10, this.guiTop + 30, 12, 180){
 
             @Override
@@ -198,6 +211,8 @@ public class GuiHolographicRescaling extends GuiLogistics {
                 return false;
             }
         };
+
+
         zScroller.setOrientation(ScrollerOrientation.HORIZONTAL);
         scrollers = Lists.newArrayList(pitchScroller, yawScroller, rollScroller, widthScroller, heightScroller, xScroller, yScroller, zScroller);
         setScrollers();
@@ -206,6 +221,19 @@ public class GuiHolographicRescaling extends GuiLogistics {
     @Override
     public void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
+
+        if (button instanceof CustomColourButton) {
+            FMLCommonHandler.instance().showGuiScreen(IGuiOrigin.withOrigin(new GuiColourSelection(inventorySlots, entity, display.getScreenColour(), i -> display.screenColour.setObject(i)), this));
+            return;
+        }
+        if(button instanceof LogisticsButton){
+            switch(button.id){
+                case 1:
+                    display.screenColour.setObject(TileAbstractHolographicDisplay.DEFAULT_COLOUR);
+                    break;
+            }
+        }
+
     }
     @Override
     public void drawGuiContainerForegroundLayer(int x, int y) {
@@ -252,7 +280,7 @@ public class GuiHolographicRescaling extends GuiLogistics {
     @Override
     protected void keyTyped(char c, int i) throws IOException {
         if (isCloseKey(i)) {
-            display.sendScalingToServer();
+            display.sendPropertiesToServer();
         }
         super.keyTyped(c, i);
     }

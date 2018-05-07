@@ -99,7 +99,7 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
         }
     }
 
-    public void sendScalingToServer(){
+    public void sendPropertiesToServer(){
         if(isClient()){
             PL2.network.sendToServer(new PacketHolographicDisplayScaling(this));
         }
