@@ -1,13 +1,13 @@
 package sonar.logistics.packets.sync;
 
-import javax.annotation.Nullable;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
-import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.errors.ErrorMessage;
+import sonar.logistics.api.tiles.INetworkTile;
+
+import javax.annotation.Nullable;
 
 public class SyncTileMessages extends SyncPart {
 

@@ -1,11 +1,8 @@
 package sonar.logistics.client.gui.display;
 
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.displays.elements.types.NetworkFluidElement;
@@ -13,6 +10,8 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.GuiColourSelection;
 import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+
+import java.io.IOException;
 
 public class GuiEditNetworkFluid extends GuiAbstractEditElements {
 

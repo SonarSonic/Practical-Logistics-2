@@ -1,16 +1,7 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -23,10 +14,17 @@ import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.IInfoReferenceElement;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public abstract class StyledTextElement extends AbstractDisplayElement implements IClickableElement, Iterable<StyledStringLine>, IInfoReferenceElement {
 
@@ -37,7 +35,6 @@ public abstract class StyledTextElement extends AbstractDisplayElement implement
 	public int action_id_count = 0;
 	public boolean updateTextScaling = true, updateTextContents = true;
 	public double textScale = 1;
-	public StyledTextRenderStyle render_style = StyledTextRenderStyle.WRAPPED;
 
 	public StyledTextElement() {}
 

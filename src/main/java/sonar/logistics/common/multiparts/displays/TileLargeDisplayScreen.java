@@ -1,7 +1,5 @@
 package sonar.logistics.common.multiparts.displays;
 
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -13,9 +11,11 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.DisplayType;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
+
+import java.util.List;
 
 public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILargeDisplay {
 

@@ -1,11 +1,11 @@
 package sonar.logistics.info.comparators;
 
-import java.util.List;
-
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicComparator;
 import sonar.logistics.api.tiles.signaller.LogicOperator;
 import sonar.logistics.api.tiles.signaller.LogicState;
+
+import java.util.List;
 
 @LogicComparator(handlingClass = Boolean.class, id = BooleanComparator.NAME, modid = PL2Constants.MODID)
 public class BooleanComparator implements ILogicComparator<Boolean> {

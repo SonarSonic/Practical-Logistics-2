@@ -8,8 +8,8 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 	private Iterator<IListReader<M>> readerIterator;
 	private int readersPerTick = 0;
 
-	private List<INetworkListChannels<H>> subChannels; // networks which take connections from this one
-	private List<INetworkListChannels<H>> masterChannels; // networks which give connections to this one
+	private List<INetworkListChannels<H>> subChannels; // networking which take connections from this one
+	private List<INetworkListChannels<H>> masterChannels; // networking which give connections to this one
 
 	private Map<NodeConnection, MonitoredList<M>> globalInfo = new HashMap<>();
 	private Map<NodeConnection, MonitoredList<M>> localInfo = new HashMap<>();

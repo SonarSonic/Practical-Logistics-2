@@ -1,14 +1,13 @@
 package sonar.logistics.client.gui.display;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import java.util.List;
 
 public class GuiAbstractEditElements extends GuiAbstractEditContainer {
 

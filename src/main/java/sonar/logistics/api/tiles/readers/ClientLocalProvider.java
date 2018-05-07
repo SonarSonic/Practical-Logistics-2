@@ -1,10 +1,6 @@
 package sonar.logistics.api.tiles.readers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
@@ -18,6 +14,9 @@ import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.sorters.SortingHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** used when syncing Logic Monitors for display in the Display Screen with the client, since some may not be loaded on client side. */
 public class ClientLocalProvider implements INBTSyncable {

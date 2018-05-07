@@ -1,12 +1,5 @@
 package sonar.logistics.api.displays.storage;
 
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.helpers.ListHelper;
@@ -20,6 +13,13 @@ import sonar.logistics.api.displays.elements.IInfoReferenceElement;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
 @DisplayElementType(id = DisplayElementList.REGISTRY_NAME, modid = PL2Constants.MODID)
 //FIXME make it be able to do grids also.

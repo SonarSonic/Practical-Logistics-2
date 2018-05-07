@@ -1,9 +1,9 @@
 package sonar.logistics.api.tiles.nodes;
 
-import java.util.List;
-
-import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.IPriority;
+
+import java.util.List;
 
 /** implemented by Nodes, provides a list of all the blocks they are connected to, normally just one, but can be more */
 public interface INode extends INetworkTile, IPriority {

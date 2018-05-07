@@ -1,19 +1,17 @@
 package sonar.logistics.api.info.register;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 public interface IMasterInfoRegistry {
 

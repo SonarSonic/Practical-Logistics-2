@@ -1,14 +1,5 @@
 package sonar.logistics.guide;
 
-import static net.minecraft.client.renderer.GlStateManager.color;
-import static net.minecraft.client.renderer.GlStateManager.disableDepth;
-import static net.minecraft.client.renderer.GlStateManager.enableDepth;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
@@ -19,6 +10,13 @@ import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementInfo;
 import sonar.logistics.guide.elements.ElementInfoFormatted;
 import sonar.logistics.guide.elements.ElementLink;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public abstract class BaseInfoPage implements IGuidePage {
 

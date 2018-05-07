@@ -4,6 +4,7 @@ import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
+import sonar.logistics.api.networking.IRedstoneNetwork;
 
 public class EmptyRedstoneNetwork implements IRedstoneNetwork {
 

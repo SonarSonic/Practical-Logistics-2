@@ -1,11 +1,5 @@
 package sonar.logistics.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.lwjgl.opengl.GL11;
-
 import mcmultipart.MCMultiPart;
 import mcmultipart.api.container.IMultipartContainer;
 import mcmultipart.api.event.DrawMultipartHighlightEvent;
@@ -18,11 +12,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTool;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class RenderOperatorOverlay {
 
@@ -30,7 +29,7 @@ public class RenderOperatorOverlay {
 	public static BlockPos lastPos;
 
 	public static void tick(DrawBlockHighlightEvent evt) {
-		if (!Minecraft.getMinecraft().inGameHasFocus || !isUsing) {
+		if (!Minecraft.getMinecraft().inGameHasFocus || !isUsing || evt==null || evt.getTarget() == null) {
 			return;
 		}
 		ItemStack stack = evt.getPlayer().getHeldItemMainhand();
@@ -38,6 +37,9 @@ public class RenderOperatorOverlay {
 			return;
 		}
 		BlockPos pos = evt.getTarget().getBlockPos();
+		if(pos==null){
+			return;
+		}
         boolean requestPacket = !pos.equals(lastPos);
 		lastPos = pos;
 		TileEntity tile = evt.getPlayer().getEntityWorld().getTileEntity(pos);

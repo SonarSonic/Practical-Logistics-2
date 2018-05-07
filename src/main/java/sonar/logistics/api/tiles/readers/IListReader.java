@@ -1,14 +1,14 @@
 package sonar.logistics.api.tiles.readers;
 
-import java.util.List;
-import java.util.Map;
-
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.viewers.ILogicListenable;
+
+import java.util.List;
+import java.util.Map;
 
 public interface IListReader<T extends IInfo> extends ILogicListenable {
 

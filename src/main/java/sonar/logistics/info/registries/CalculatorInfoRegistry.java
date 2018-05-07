@@ -1,7 +1,6 @@
 package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
-
 import sonar.calculator.mod.api.machines.IFlawlessGreenhouse;
 import sonar.calculator.mod.api.machines.IGreenhouse;
 import sonar.calculator.mod.api.machines.ITeleport;
@@ -12,7 +11,7 @@ import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "calculator")
 public class CalculatorInfoRegistry implements IInfoRegistry {

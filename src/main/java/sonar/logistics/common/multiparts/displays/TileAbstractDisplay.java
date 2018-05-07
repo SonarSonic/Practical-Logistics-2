@@ -2,7 +2,7 @@ package sonar.logistics.common.multiparts.displays;
 
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 
 public abstract class TileAbstractDisplay extends TileSidedLogistics implements IDisplay {

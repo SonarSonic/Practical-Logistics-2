@@ -1,9 +1,5 @@
 package sonar.logistics.packets;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -19,6 +15,10 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.networking.ClientInfoHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PacketLocalProviders implements IMessage {
 

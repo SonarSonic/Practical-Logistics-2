@@ -1,14 +1,11 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
@@ -16,6 +13,8 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+
+import static net.minecraft.client.renderer.GlStateManager.scale;
 
 @DisplayElementType(id = ItemStackElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class ItemStackElement extends AbstractDisplayElement {

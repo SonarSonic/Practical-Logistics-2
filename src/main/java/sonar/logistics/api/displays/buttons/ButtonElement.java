@@ -1,25 +1,22 @@
 package sonar.logistics.api.displays.buttons;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractDisplayElement;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.ILookableElement;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.LogisticsColours;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 @DisplayElementType(id = ButtonElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 //only works for square buttons atm
@@ -85,17 +82,6 @@ public class ButtonElement extends AbstractDisplayElement implements IClickableE
 	@Override
 	public String getRepresentiveString() {
 		return hoverString.isEmpty() ? "BUTTON" : hoverString;
-	}
-
-	@Override
-	public void readData(NBTTagCompound nbt, SyncType type) {
-		super.readData(nbt, type);
-	}
-
-	@Override
-	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
-		super.writeData(nbt, type);
-		return nbt;
 	}
 
 	@Override

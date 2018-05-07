@@ -1,9 +1,8 @@
 package sonar.logistics.guide;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import org.lwjgl.opengl.GL11;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.gui.GuiGuide;
 

@@ -1,9 +1,5 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,18 +11,18 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
+import sonar.logistics.api.networking.IRedstoneNetwork;
 import sonar.logistics.api.tiles.signaller.SignallerModes;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
 import sonar.logistics.api.wireless.IRedstoneReceiver;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.client.gui.GuiRedstoneReceiver;
 import sonar.logistics.common.multiparts.cables.TileRedstoneCable;
-import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
-import sonar.logistics.networking.cabling.IRedstoneNetwork;
-import sonar.logistics.networking.cabling.RedstoneCableHelper;
-import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
-import sonar.logistics.networking.cabling.RedstoneNetwork;
-import sonar.logistics.networking.cabling.WirelessRedstoneManager;
+import sonar.logistics.networking.cabling.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 public class TileRedstoneReceiver extends TileAbstractReceiver<IRedstoneEmitter, IRedstoneReceiver> implements IRedstoneReceiver, IRedstoneConnectable {
 

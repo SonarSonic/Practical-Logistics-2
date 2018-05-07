@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2Properties;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.PL2Properties;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.common.multiparts.BlockLogisticsSided;
 
 import javax.annotation.Nonnull;

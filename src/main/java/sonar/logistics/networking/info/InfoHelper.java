@@ -1,7 +1,5 @@
 package sonar.logistics.networking.info;
 
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import sonar.core.helpers.NBTHelper;
@@ -12,6 +10,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.lists.EnumListChange;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
+
+import java.util.List;
 
 public class InfoHelper {
 

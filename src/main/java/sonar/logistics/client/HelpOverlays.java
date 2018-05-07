@@ -1,10 +1,10 @@
 package sonar.logistics.client;
 
-import java.awt.Color;
-
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.HelpOverlay;
 import sonar.logistics.client.gui.GuiInfoReader;
+
+import java.awt.*;
 
 public class HelpOverlays {
 

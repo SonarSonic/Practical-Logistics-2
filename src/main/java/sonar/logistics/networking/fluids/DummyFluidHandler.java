@@ -6,7 +6,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 
 /**a dummy Fluid Handler to make use of the FluidUtil handling methods*/

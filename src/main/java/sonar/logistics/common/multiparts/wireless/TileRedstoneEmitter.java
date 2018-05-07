@@ -4,13 +4,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.PL2;
-import sonar.logistics.api.PL2Properties;
+import sonar.logistics.PL2Properties;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.networking.IRedstoneNetwork;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
-import sonar.logistics.networking.cabling.IRedstoneNetwork;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 

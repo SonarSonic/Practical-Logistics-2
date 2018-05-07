@@ -9,8 +9,7 @@ import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.slots.SlotLimiter;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.PL2API;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
@@ -48,7 +47,7 @@ public class ContainerStorageViewer extends Container {
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = (Slot) this.inventorySlots.get(id);
+		Slot slot = this.inventorySlots.get(id);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();

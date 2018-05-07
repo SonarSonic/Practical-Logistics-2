@@ -1,15 +1,6 @@
 package sonar.logistics.client.gui.generic;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -28,6 +19,8 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -39,14 +32,7 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
-import sonar.logistics.api.filters.BaseFilter;
-import sonar.logistics.api.filters.FilterList;
-import sonar.logistics.api.filters.FluidFilter;
-import sonar.logistics.api.filters.IFilteredTile;
-import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.filters.ITransferFilteredTile;
-import sonar.logistics.api.filters.ItemFilter;
-import sonar.logistics.api.filters.OreDictFilter;
+import sonar.logistics.api.filters.*;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.nodes.TransferType;
 import sonar.logistics.api.utils.ListPacket;
@@ -54,6 +40,11 @@ import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.common.containers.ContainerFilterList;
 import sonar.logistics.packets.PacketNodeFilter;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiFilterList extends GuiSelectionList {
 

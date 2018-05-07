@@ -5,21 +5,14 @@ import sonar.core.translate.Localisation;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
 import sonar.logistics.common.multiparts.cables.TileRedstoneCable;
 import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
-import sonar.logistics.common.multiparts.displays.TileHolographicDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.common.multiparts.displays.TileMiniDisplay;
+import sonar.logistics.common.multiparts.holographic.TileAdvancedHolographicDisplay;
+import sonar.logistics.common.multiparts.holographic.TileHolographicDisplay;
 import sonar.logistics.common.multiparts.misc.TileClock;
 import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
-import sonar.logistics.common.multiparts.nodes.TileArray;
-import sonar.logistics.common.multiparts.nodes.TileEntityNode;
-import sonar.logistics.common.multiparts.nodes.TileNode;
-import sonar.logistics.common.multiparts.nodes.TileRedstoneNode;
-import sonar.logistics.common.multiparts.nodes.TileTransferNode;
-import sonar.logistics.common.multiparts.readers.TileEnergyReader;
-import sonar.logistics.common.multiparts.readers.TileFluidReader;
-import sonar.logistics.common.multiparts.readers.TileInfoReader;
-import sonar.logistics.common.multiparts.readers.TileInventoryReader;
-import sonar.logistics.common.multiparts.readers.TileNetworkReader;
+import sonar.logistics.common.multiparts.nodes.*;
+import sonar.logistics.common.multiparts.readers.*;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
 import sonar.logistics.common.multiparts.wireless.TileRedstoneEmitter;
@@ -47,6 +40,7 @@ public enum PL2Multiparts {
 
 	DISPLAY_SCREEN(0, 0, 0, "DisplayScreen", TileDisplayScreen.class, PL2Translate.DISPLAY_SCREEN), //
 	MINI_DISPLAY(0, 0, 0, "MiniDisplay", TileMiniDisplay.class, PL2Translate.MINI_DISPLAY), //
+	ADVANCED_HOLOGRAPHIC_DISPLAY(6 * 0.0625, 0.0625 * 2, 0.0625 * 4, "AdvancedHolographicDisplay", TileAdvancedHolographicDisplay.class, PL2Translate.ADVANCED_HOLOGRAPHIC_DISPLAY), //
 	HOLOGRAPHIC_DISPLAY(0, 0, 0, "HolographicDisplay", TileHolographicDisplay.class, PL2Translate.HOLOGRAPHIC_DISPLAY), //
 	LARGE_DISPLAY_SCREEN(0, 0, 0, "LargeDisplayScreen", TileLargeDisplayScreen.class, PL2Translate.LARGE_DISPLAY_SCREEN); // //
 	public double width, heightMin, heightMax;

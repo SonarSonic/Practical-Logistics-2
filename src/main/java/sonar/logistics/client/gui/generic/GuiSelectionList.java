@@ -1,14 +1,6 @@
 package sonar.logistics.client.gui.generic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Container;
@@ -17,11 +9,17 @@ import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.SonarButtons.ImageButton;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class GuiSelectionList<T> extends GuiLogistics {
 

@@ -1,8 +1,5 @@
 package sonar.logistics.packets.sync;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -18,6 +15,9 @@ import sonar.logistics.api.filters.IItemFilter;
 import sonar.logistics.api.filters.INodeFilter;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.networking.info.InfoHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SyncFilterList extends SyncPart {
 

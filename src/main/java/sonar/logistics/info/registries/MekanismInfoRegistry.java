@@ -12,7 +12,7 @@ import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "Mekanism")
 public class MekanismInfoRegistry implements IInfoRegistry {

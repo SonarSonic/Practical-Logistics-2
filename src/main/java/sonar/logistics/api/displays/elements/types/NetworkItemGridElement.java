@@ -1,12 +1,5 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.depthMask;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -14,14 +7,18 @@ import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkItemlist;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
+
+import javax.annotation.Nullable;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 @DisplayElementType(id = NetworkItemGridElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStack> {

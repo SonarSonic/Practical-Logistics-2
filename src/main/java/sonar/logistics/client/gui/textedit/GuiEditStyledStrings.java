@@ -1,32 +1,22 @@
 package sonar.logistics.client.gui.textedit;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import com.google.common.collect.Lists;
-
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.ScrollerOrientation;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.actions.ClickHyperlink;
-import sonar.logistics.api.displays.elements.text.StyledInfo;
-import sonar.logistics.api.displays.elements.text.StyledStringEditor;
-import sonar.logistics.api.displays.elements.text.StyledStringLine;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
-import sonar.logistics.api.displays.elements.text.TextSelection;
+import sonar.logistics.api.displays.elements.text.*;
 import sonar.logistics.api.displays.references.InfoReference;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.GuiColourSelection;
@@ -43,6 +33,10 @@ import sonar.logistics.client.gui.generic.info.InfoReferenceRequest;
 import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
 import sonar.logistics.client.gui.textedit.hotkeys.HotKeyFunctions;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class GuiEditStyledStrings extends GuiStyledStringFunctions implements IInfoReferenceRequirementGui, IHyperlinkRequirementGui {
 	public long lastCursorClick = -1;

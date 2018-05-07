@@ -1,13 +1,10 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.List;
-
 import sonar.logistics.PL2;
-import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.api.wireless.IDataReceiver;
-import sonar.logistics.api.wireless.IRedstoneEmitter;
-import sonar.logistics.api.wireless.IRedstoneReceiver;
-import sonar.logistics.api.wireless.WirelessConnectionType;
+import sonar.logistics.api.networking.IRedstoneNetwork;
+import sonar.logistics.api.wireless.*;
+
+import java.util.List;
 
 public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNetwork, IRedstoneEmitter, IRedstoneReceiver> {
 
@@ -31,7 +28,7 @@ public class WirelessRedstoneManager extends AbstractWirelessManager<IRedstoneNe
 		}
 	}
 
-	/** disconnects two {@link IRedstoneNetwork}'s so the {@link IDataReceiver}'s network can no longer read the {@link IDataEmitter}'s network, however if multiple receivers/emitters between the two networks exist the networks will remain connected
+	/** disconnects two {@link IRedstoneNetwork}'s so the {@link IDataReceiver}'s network can no longer read the {@link IDataEmitter}'s network, however if multiple receivers/emitters between the two networking exist the networking will remain connected
 	 * @param watcher the {@link IDataReceiver}'s Network (which watches the emitters network)
 	 * @param connected the {@link IDataEmitter}'s Network (which is connected to by the receivers network) */
 	public void disconnectNetworks(IRedstoneNetwork watcher, IRedstoneNetwork connected) {

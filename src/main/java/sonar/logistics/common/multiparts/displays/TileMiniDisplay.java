@@ -1,6 +1,6 @@
 package sonar.logistics.common.multiparts.displays;
 
-import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.displays.tiles.DisplayType;
 
 public class TileMiniDisplay extends TileDisplayScreen {
 

@@ -1,7 +1,7 @@
 package sonar.logistics.api.cabling;
 
 import net.minecraft.util.EnumFacing;
-import sonar.logistics.api.render.ICableRenderer;
+import sonar.logistics.api.tiles.INetworkTile;
 
 /** implemented on Tile Entities and Forge Multipart parts which are cables */
 public interface IRedstoneCable extends ICableRenderer, ICable {

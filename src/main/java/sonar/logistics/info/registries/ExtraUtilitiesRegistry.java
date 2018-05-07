@@ -8,7 +8,7 @@ import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "extrautils2")
 public class ExtraUtilitiesRegistry implements IInfoRegistry {

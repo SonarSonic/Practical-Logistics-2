@@ -1,11 +1,5 @@
 package sonar.logistics.common.multiparts.misc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,9 +16,9 @@ import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.signaller.EmitterStatement;
 import sonar.logistics.api.tiles.signaller.ILogisticsTile;
 import sonar.logistics.api.tiles.signaller.SignallerModes;
@@ -33,6 +27,12 @@ import sonar.logistics.client.gui.generic.GuiStatementList;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.ServerInfoHandler;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public class TileRedstoneSignaller extends TileSidedLogistics implements ILogisticsTile, IByteBufTile, IFlexibleGui {
 

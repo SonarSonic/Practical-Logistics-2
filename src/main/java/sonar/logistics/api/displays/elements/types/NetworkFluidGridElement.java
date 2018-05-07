@@ -1,24 +1,18 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
-
-import javax.annotation.Nullable;
-
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkFluidlist;
@@ -27,6 +21,11 @@ import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredFluidStack;
+
+import javax.annotation.Nullable;
+
+import static net.minecraft.client.renderer.GlStateManager.disableLighting;
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
 @DisplayElementType(id = NetworkFluidGridElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkFluidGridElement extends NetworkGridElement<MonitoredFluidStack> {

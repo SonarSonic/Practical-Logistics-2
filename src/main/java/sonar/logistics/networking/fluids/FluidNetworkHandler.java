@@ -1,8 +1,5 @@
 package sonar.logistics.networking.fluids;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.SonarCore;
 import sonar.core.api.StorageSize;
@@ -10,14 +7,17 @@ import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.lists.types.FluidChangeableList;
-import sonar.logistics.api.networks.INetworkListChannels;
-import sonar.logistics.api.networks.ITileMonitorHandler;
+import sonar.logistics.api.networking.INetworkListChannels;
+import sonar.logistics.api.networking.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.networking.common.ListNetworkHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FluidNetworkHandler extends ListNetworkHandler<MonitoredFluidStack, FluidChangeableList> implements ITileMonitorHandler<MonitoredFluidStack, FluidChangeableList,INetworkListChannels> {
 	

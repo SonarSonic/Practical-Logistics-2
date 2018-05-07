@@ -1,18 +1,16 @@
 package sonar.logistics.api.tiles.signaller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.reflect.FieldUtils;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants.NBT;
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ComparableObjectHandlers {
 

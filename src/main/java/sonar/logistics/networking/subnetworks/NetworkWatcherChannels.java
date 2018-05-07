@@ -1,17 +1,17 @@
 package sonar.logistics.networking.subnetworks;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.common.DefaultNetworkChannels;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class NetworkWatcherChannels extends DefaultNetworkChannels {
 

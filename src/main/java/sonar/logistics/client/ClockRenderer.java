@@ -1,12 +1,5 @@
 package sonar.logistics.client;
 
-import static net.minecraft.client.renderer.GlStateManager.depthMask;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.enableLighting;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.rotate;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -21,8 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.PL2Properties;
+import sonar.logistics.PL2Properties;
 import sonar.logistics.common.multiparts.misc.TileClock;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class ClockRenderer extends TileEntitySpecialRenderer<TileClock> {
 

@@ -1,7 +1,5 @@
 package sonar.logistics.common.items;
 
-import java.util.Optional;
-
 import mcmultipart.api.item.ItemBlockMultipart;
 import mcmultipart.api.multipart.IMultipart;
 import mcmultipart.api.multipart.IMultipartTile;
@@ -17,10 +15,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sonar.logistics.api.cabling.ICable;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.common.multiparts.readers.BlockAbstractReader;
 import sonar.logistics.networking.displays.DisplayHelper;
+
+import java.util.Optional;
 
 /** for multiparts which are placed onto cables, this automatically flips them so they face the most logical direction depending on the block clicked BEHAVIOUR: CLICK A CABLE: Placed on the side of the cable. CLICKED ON A BLOCK: Placed on the clicked blocks side. */
 public class PL2ItemConnectableMultipart extends ItemBlockMultipart {

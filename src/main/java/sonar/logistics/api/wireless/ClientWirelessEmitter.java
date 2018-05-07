@@ -1,10 +1,6 @@
 package sonar.logistics.api.wireless;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.api.utils.BlockCoords;
@@ -13,6 +9,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncTagType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** used when syncing Data Emitters for display in the Data Receiver with the client, since some may not be loaded on client side. */
 public class ClientWirelessEmitter implements INBTSyncable {

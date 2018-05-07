@@ -1,9 +1,5 @@
 package sonar.logistics.api.filters;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -16,6 +12,10 @@ import sonar.core.network.sync.SyncTagTypeList;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.tiles.nodes.TransferType;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NodeFilter(id = OreDictFilter.id, modid = PL2Constants.MODID)
 public class OreDictFilter extends BaseFilter implements IItemFilter {

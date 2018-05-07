@@ -1,7 +1,6 @@
 package sonar.logistics.client.gui;
 
 import com.google.common.collect.Lists;
-
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.PL2Translate;
 import sonar.logistics.client.LogisticsColours;

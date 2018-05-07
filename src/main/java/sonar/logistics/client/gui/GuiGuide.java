@@ -1,14 +1,9 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.PL2Translate;
@@ -19,6 +14,10 @@ import sonar.logistics.common.containers.ContainerGuide;
 import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.guide.IGuidePage;
 import sonar.logistics.guide.elements.Element3DRenderer;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiGuide extends GuiSelectionList<IGuidePage> {
 

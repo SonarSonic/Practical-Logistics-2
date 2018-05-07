@@ -1,10 +1,10 @@
 package sonar.logistics.api.errors;
 
-import java.util.List;
-
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+
+import java.util.List;
 
 public interface IInfoError extends INBTSyncable {
 

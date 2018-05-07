@@ -1,7 +1,5 @@
 package sonar.logistics.info.providers;
 
-import java.util.List;
-
 import appeng.api.AEApi;
 import appeng.api.features.IGrinderRecipe;
 import appeng.tile.grindstone.TileGrinder;
@@ -16,8 +14,10 @@ import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
+
+import java.util.List;
 
 @TileInfoProvider(handlerID = "ae2-grinder", modid = "appliedenergistics2")
 public class AE2GrinderProvider implements ITileInfoProvider {

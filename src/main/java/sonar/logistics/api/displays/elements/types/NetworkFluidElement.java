@@ -1,7 +1,5 @@
 package sonar.logistics.api.displays.elements.types;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -9,6 +7,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
@@ -16,9 +15,9 @@ import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkFluid;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;

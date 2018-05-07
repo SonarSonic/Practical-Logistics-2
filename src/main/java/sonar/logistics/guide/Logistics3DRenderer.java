@@ -1,16 +1,5 @@
 package sonar.logistics.guide;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.vecmath.Vector3d;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import sonar.core.client.gui.GuiBlockRenderer3D;
@@ -20,6 +9,14 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
+
+import javax.vecmath.Vector3d;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class Logistics3DRenderer extends GuiBlockRenderer3D {
 

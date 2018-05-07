@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.readers;
 
-import java.util.List;
-import java.util.Map;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -18,15 +15,15 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.filters.IFilteredTile;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -50,6 +47,9 @@ import sonar.logistics.networking.items.ItemNetworkChannels;
 import sonar.logistics.networking.items.ItemNetworkHandler;
 import sonar.logistics.networking.sorters.InventorySorter;
 import sonar.logistics.packets.sync.SyncFilterList;
+
+import java.util.List;
+import java.util.Map;
 
 public class TileInventoryReader extends TileAbstractListReader<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
 

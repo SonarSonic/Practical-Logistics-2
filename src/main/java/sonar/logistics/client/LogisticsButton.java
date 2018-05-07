@@ -1,9 +1,6 @@
 package sonar.logistics.client;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,6 +12,8 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.SonarHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.PL2Translate;
+
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class LogisticsButton extends AnimatedButton {

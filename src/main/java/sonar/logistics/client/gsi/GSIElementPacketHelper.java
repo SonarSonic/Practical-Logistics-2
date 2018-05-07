@@ -1,8 +1,5 @@
 package sonar.logistics.client.gsi;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -26,6 +23,9 @@ import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.gsi.PacketGSIElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GSIElementPacketHelper {
 

@@ -1,8 +1,8 @@
 package sonar.logistics.networking.displays;
 
-import java.util.List;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
 
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import java.util.List;
 
 public enum ConnectedDisplayChange {
 	SUB_DISPLAY_CHANGED(DisplayHandler::updateLargeDisplays), // LARGE DISPLAY ADDED/DISCONNECTED

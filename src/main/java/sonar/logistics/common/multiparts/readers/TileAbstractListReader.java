@@ -12,7 +12,7 @@ import sonar.core.network.sync.ISyncPart;
 import sonar.logistics.PL2;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.INetworkChannels;
+import sonar.logistics.api.networking.INetworkChannels;
 import sonar.logistics.api.tiles.readers.IReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.networking.common.ListNetworkChannels;

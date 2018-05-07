@@ -1,8 +1,7 @@
 package sonar.logistics.integration;
 
-import com.google.common.collect.Lists;
-
 import appeng.api.recipes.IIngredient;
+import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;

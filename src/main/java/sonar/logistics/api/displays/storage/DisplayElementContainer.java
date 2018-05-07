@@ -1,16 +1,8 @@
 package sonar.logistics.api.displays.storage;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
-import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -25,13 +17,18 @@ import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
+
 public class DisplayElementContainer implements IElementStorageHolder, INBTSyncable {
 
 	public static final int WIDTH = 0, HEIGHT = 1, SCALE = 2;
 	public ElementStorage elements = new ElementStorage(this);
 	public double[] createdTranslation = new double[] { 0, 0, 0 }; // in the form of values of up to 100 for the position.
 	public double[] createdScaling = new double[] { 0, 0, 0 };
-	public boolean locked = false; // if this is true the translation and max scaling will remain the same, even when new displays added.
+	public boolean locked = false; // if this is true the translation and max scaling will remain the same, even when new tiles added.
 
 	public double[] translation;
 	private double[] actualContainerScaling; // only for aligning purposes.
@@ -274,12 +271,6 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	public final int getDefaultColour() {
 		return defaultColour;
 	}
-
-	public void doDefaultRender(IDisplayElement element) {
-		FontHelper.text(element.getRepresentiveString(), 0, 0, getDefaultColour());
-	}
-
-	public void onInfoUUIDChanged(InfoUUID id) {}
 
 	public void lock() {
 		// when the display is locked we store the exact scale of the element

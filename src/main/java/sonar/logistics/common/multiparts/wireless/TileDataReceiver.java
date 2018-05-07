@@ -1,19 +1,19 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.api.wireless.IWirelessEmitter;
 import sonar.logistics.api.wireless.IWirelessManager;
 import sonar.logistics.client.gui.GuiDataReceiver;
 import sonar.logistics.networking.cabling.WirelessDataManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileDataReceiver extends TileAbstractReceiver implements IDataReceiver, IFlexibleGui, IByteBufTile {
 
@@ -34,7 +34,7 @@ public class TileDataReceiver extends TileAbstractReceiver implements IDataRecei
 		return networks;
 	}
 
-	/** make sure you also notify the network itself of the change, after updating the networks */
+	/** make sure you also notify the network itself of the change, after updating the networking */
 	public void refreshConnectedNetworks() {
 		networks = getNetworks();
 		updateStates();

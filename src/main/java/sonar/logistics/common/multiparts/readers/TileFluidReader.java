@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.readers;
 
-import java.util.List;
-import java.util.Map;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,14 +12,14 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.FluidChangeableList;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.FluidReader;
 import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
@@ -42,6 +39,9 @@ import sonar.logistics.networking.fluids.FluidNetworkChannels;
 import sonar.logistics.networking.fluids.FluidNetworkHandler;
 import sonar.logistics.networking.sorters.FluidSorter;
 import sonar.logistics.packets.sync.SyncMonitoredType;
+
+import java.util.List;
+import java.util.Map;
 
 public class TileFluidReader extends TileAbstractListReader<MonitoredFluidStack> implements IByteBufTile {
 

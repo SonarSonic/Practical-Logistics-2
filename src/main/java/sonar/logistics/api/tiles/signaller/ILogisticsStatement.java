@@ -1,10 +1,10 @@
 package sonar.logistics.api.tiles.signaller;
 
-import java.util.List;
-import java.util.Map;
-
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ILogisticsStatement {
 

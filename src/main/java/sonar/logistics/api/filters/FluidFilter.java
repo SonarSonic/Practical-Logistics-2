@@ -1,9 +1,5 @@
 package sonar.logistics.api.filters;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,6 +11,10 @@ import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.NodeFilter;
 import sonar.logistics.api.tiles.nodes.TransferType;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NodeFilter(id = FluidFilter.id, modid = PL2Constants.MODID)
 public class FluidFilter extends BaseFilter implements IFluidFilter {

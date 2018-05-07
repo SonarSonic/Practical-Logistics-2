@@ -1,17 +1,8 @@
 package sonar.logistics.common.multiparts.readers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import io.netty.buffer.ByteBuf;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -28,17 +19,17 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.networking.INetworkChannels;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
-import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.INetworkReader;
+import sonar.logistics.api.utils.ChannelList;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
@@ -46,6 +37,13 @@ import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.networking.PL2ListenerList;
 import sonar.logistics.packets.sync.SyncMonitoredType;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogistics implements INetworkReader<T>, IByteBufTile, IFlexibleGui {
 

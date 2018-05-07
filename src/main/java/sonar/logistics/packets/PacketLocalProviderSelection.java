@@ -11,8 +11,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.IDisplay;
 
 public class PacketLocalProviderSelection extends PacketMultipart {
 

@@ -1,11 +1,5 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,13 +9,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IValidate;
-import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorTool;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.INode;
@@ -34,6 +28,8 @@ import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.ServerInfoHandler;
 
+import java.util.*;
+
 public class LogisticsHelper {
 
 	public static boolean isPlayerUsingOperator(EntityPlayer player) {
@@ -41,7 +37,7 @@ public class LogisticsHelper {
 		return player.getHeldItemMainhand().getItem() instanceof IOperatorTool;
 	}
 
-	/** gets a list of all valid networks from the provided network ids */
+	/** gets a list of all valid networking from the provided network ids */
 	public static List<ILogisticsNetwork> getNetworks(List<Integer> ids) {
 		List<ILogisticsNetwork> networks = new ArrayList<>();
 		ids.forEach(id -> {

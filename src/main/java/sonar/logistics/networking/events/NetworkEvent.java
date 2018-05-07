@@ -1,8 +1,8 @@
 package sonar.logistics.networking.events;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
-import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 
 /**server side only*/

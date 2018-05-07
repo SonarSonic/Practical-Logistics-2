@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
@@ -16,6 +14,8 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.packets.sync.SyncMonitoredType;
+
+import java.util.List;
 
 @LogicInfoType(id = MonitoredEnergyStack.id, modid = PL2Constants.MODID)
 public class MonitoredEnergyStack extends BaseInfo<MonitoredEnergyStack> implements IJoinableInfo<MonitoredEnergyStack>, INameableInfo<MonitoredEnergyStack>, IComparableInfo<MonitoredEnergyStack> {

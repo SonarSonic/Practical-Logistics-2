@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.helpers.FontHelper;
@@ -13,15 +11,13 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.types.NetworkFluidElement;
-import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.IJoinableInfo;
-import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.*;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.FluidCount;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+
+import java.util.List;
 
 @LogicInfoType(id = MonitoredFluidStack.id, modid = PL2Constants.MODID)
 public class MonitoredFluidStack extends BaseInfo<MonitoredFluidStack> implements IJoinableInfo<MonitoredFluidStack>, INameableInfo<MonitoredFluidStack>, IComparableInfo<MonitoredFluidStack>, IMonitoredValueInfo<MonitoredFluidStack> {

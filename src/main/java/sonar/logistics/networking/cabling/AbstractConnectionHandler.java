@@ -1,12 +1,6 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,6 +11,11 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICable;
 import sonar.logistics.networking.LogisticsNetworkHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractConnectionHandler<T extends ICable> {
 

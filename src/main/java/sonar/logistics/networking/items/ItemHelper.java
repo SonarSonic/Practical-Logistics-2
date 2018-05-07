@@ -1,12 +1,6 @@
 package sonar.logistics.networking.items;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.BiPredicate;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,7 +25,7 @@ import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
@@ -42,6 +36,11 @@ import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.NetworkHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.BiPredicate;
 
 public class ItemHelper {
 

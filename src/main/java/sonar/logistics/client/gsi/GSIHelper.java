@@ -2,7 +2,7 @@ package sonar.logistics.client.gsi;
 
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 public class GSIHelper {

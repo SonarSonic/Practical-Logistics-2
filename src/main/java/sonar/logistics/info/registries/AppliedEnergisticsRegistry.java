@@ -1,15 +1,14 @@
 package sonar.logistics.info.registries;
 
-import com.google.common.collect.Lists;
-
 import appeng.helpers.IPriorityHost;
 import appeng.tile.grindstone.TileGrinder;
 import appeng.tile.misc.TileInscriber;
+import com.google.common.collect.Lists;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "appliedenergistics2")
 public class AppliedEnergisticsRegistry implements IInfoRegistry {

@@ -1,13 +1,13 @@
 package sonar.logistics.api.lists.types;
 
-import javax.annotation.Nullable;
-
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.StorageSize;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.values.FluidCount;
 import sonar.logistics.info.types.MonitoredFluidStack;
+
+import javax.annotation.Nullable;
 
 public class FluidChangeableList extends AbstractChangeableList<MonitoredFluidStack> {
 

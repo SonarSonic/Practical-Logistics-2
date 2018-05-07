@@ -1,18 +1,18 @@
 package sonar.logistics.client.gui.display;
 
-import java.io.IOException;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import java.io.IOException;
 
 public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 
@@ -50,9 +50,11 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 	}
 
 	public void onDisplayElementClicked(IDisplayElement e, DisplayScreenClick fakeClick, double[] subClick) {
-		// if (e instanceof IClickableElement) {
-		// ((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
-		// }
+		/* could be uncommented and used for display clicking within a gui
+		if (e instanceof IClickableElement) {
+			((IClickableElement) e).onGSIClicked(fakeClick, mc.player, subClick[0], subClick[1]);
+		}
+		*/
 	}
 
 	@Override
@@ -129,11 +131,6 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 			setSpacingScroller(value / 100F);
 			spacing_field.setText(String.valueOf(value));
 		}
-	}
-
-	@Override
-	public void onTextFieldFocused(SonarTextField field) {
-		super.onTextFieldFocused(field);
 	}
 
 	@Override

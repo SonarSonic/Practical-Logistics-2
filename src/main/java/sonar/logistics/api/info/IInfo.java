@@ -1,10 +1,6 @@
 package sonar.logistics.api.info;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
@@ -13,7 +9,10 @@ import sonar.logistics.api.displays.elements.text.StyledInfo;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.references.ReferenceType;
-import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.info.register.LogicPath;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** for your info to be registered you must use {@link LogicInfoType} implement this for all types of info */
 public interface IInfo<T extends IInfo> extends INBTSyncable {

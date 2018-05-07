@@ -7,14 +7,10 @@ import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
-import sonar.logistics.api.cabling.CableConnectionType;
-import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.IRedstoneConnectable;
-import sonar.logistics.api.cabling.IRedstonePowerProvider;
+import sonar.logistics.api.cabling.*;
+import sonar.logistics.api.networking.IRedstoneNetwork;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.EmptyRedstoneNetwork;
-import sonar.logistics.networking.cabling.IRedstoneNetwork;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 
 public class TileRedstoneNode extends TileSonarMultipart implements IRedstoneConnectable, IRedstonePowerProvider {
@@ -27,19 +23,6 @@ public class TileRedstoneNode extends TileSonarMultipart implements IRedstoneCon
 
 	{
 		syncList.addParts(identity, power);
-	}
-
-	@Override
-	public void onFirstTick() {
-		super.onFirstTick();
-		// if (this.isServer())
-		// PL2.getRedstoneManager().queueConnectorAddition(this);
-	}
-
-	public void invalidate() {
-		super.invalidate();
-		// if (this.isServer())
-		// PL2.getRedstoneManager().queueConnectorRemoval(this);
 	}
 
 	public EnumFacing getCableFace() {

@@ -1,6 +1,6 @@
 package sonar.logistics.api.displays.elements;
 
-import sonar.logistics.api.tiles.displays.DisplayScreenLook;
+import sonar.logistics.api.displays.tiles.DisplayScreenLook;
 import sonar.logistics.client.gsi.GSIOverlays;
 
 /**Implementing this on an IDisplayElement doesn't require any additional methods,

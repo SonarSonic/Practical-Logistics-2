@@ -8,8 +8,7 @@
      },
     "variants": {
         "normal":[],
-        "inventory": [{    
-            "x": 90, "y": 0,
+        "inventory": [{
             "model":"practicallogistics2:DisplayScreen"
         }],        
         "facing=up,rotation=west":  {"x": 180, "y": 270},

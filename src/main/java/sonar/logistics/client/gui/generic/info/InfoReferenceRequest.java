@@ -1,11 +1,11 @@
 package sonar.logistics.client.gui.generic.info;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.gui.GuiScreen;
 import sonar.logistics.api.displays.elements.IInfoReferenceRequirement;
 import sonar.logistics.api.displays.references.InfoReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InfoReferenceRequest implements IInfoReferenceRequirement {
 

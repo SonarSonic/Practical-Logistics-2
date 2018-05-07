@@ -1,44 +1,30 @@
 package sonar.logistics.client.gui.textedit;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.translate;
+import com.google.common.collect.Lists;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.Tuple;
+import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import sonar.core.client.gui.SonarTextField;
+import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.RenderHelper;
+import sonar.logistics.api.displays.WidthAlignment;
+import sonar.logistics.api.displays.elements.text.*;
+import sonar.logistics.client.gui.GuiLogistics;
+import sonar.logistics.client.gui.display.GuiAbstractEditElements;
+import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 
+import javax.xml.ws.Holder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.xml.ws.Holder;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
-
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.text.TextFormatting;
-import sonar.core.client.gui.SonarTextField;
-import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.RenderHelper;
-import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.text.IStyledString;
-import sonar.logistics.api.displays.elements.text.SonarStyling;
-import sonar.logistics.api.displays.elements.text.StyledInfo;
-import sonar.logistics.api.displays.elements.text.StyledString;
-import sonar.logistics.api.displays.elements.text.StyledStringEditor;
-import sonar.logistics.api.displays.elements.text.StyledStringFormatter;
-import sonar.logistics.api.displays.elements.text.StyledStringHelper;
-import sonar.logistics.api.displays.elements.text.StyledStringLine;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
-import sonar.logistics.api.displays.elements.text.TextSelection;
-import sonar.logistics.client.gui.GuiLogistics;
-import sonar.logistics.client.gui.display.GuiAbstractEditElements;
-import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.DisplayElementHelper;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 
@@ -277,7 +263,7 @@ public abstract class GuiStyledStringFunctions extends GuiAbstractEditElements {
 			// GlStateManager.disableBlend();
 			GlStateManager.disableLighting();
 			GlStateManager.color(1F, 1F, 1F, 1F);
-			s.render(text.render_style);
+			s.render();
 			if (i == cursorPosition.y) {
 				renderCursor(s);
 			}

@@ -9,9 +9,7 @@
      },
     "variants": {
         "normal":[],
-        "inventory": [{    
-            "x": 180
-        }],
+        "inventory": [{}],
         "active":{
             "true":{"textures": {"0":"practicallogistics2:model/redstoneEmitter_on"}},
             "false":{"textures": {"0":"practicallogistics2:model/redstoneEmitter_off"}}

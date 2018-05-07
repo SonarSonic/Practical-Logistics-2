@@ -1,11 +1,6 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.List;
-
-import javax.xml.ws.Holder;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
@@ -16,6 +11,9 @@ import sonar.logistics.api.asm.StyledStringType;
 import sonar.logistics.api.displays.references.ReferenceType;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.networking.ClientInfoHandler;
+
+import javax.xml.ws.Holder;
+import java.util.List;
 
 @StyledStringType(id = StyledInfo.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledInfo implements IStyledString, INBTSyncable {

@@ -1,7 +1,5 @@
 package sonar.logistics.packets;
 
-import java.util.ArrayList;
-
 import io.netty.buffer.ByteBuf;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,7 +12,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
+
+import java.util.ArrayList;
 
 public class PacketDisplayTextEdit extends PacketMultipart {
 

@@ -1,8 +1,8 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
 import sonar.logistics.api.displays.references.InfoReference;
+
+import java.util.List;
 
 public interface IInfoReferenceRequirement {
 	

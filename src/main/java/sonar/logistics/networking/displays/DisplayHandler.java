@@ -1,12 +1,6 @@
 package sonar.logistics.networking.displays;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -21,12 +15,13 @@ import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.ISmallDisplay;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
-import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
+import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.AbstractConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
@@ -34,6 +29,10 @@ import sonar.logistics.packets.PacketConnectedDisplayUpdate;
 import sonar.logistics.worlddata.GSIData;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 
@@ -41,14 +40,16 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 		return PL2.proxy.server_display_manager;
 	}
 
-	public List<Integer> rebuild = Lists.newArrayList();
 	public final Map<Integer, List<ConnectedDisplayChange>> display_updates = new HashMap<>();
+	public final Map<Integer, TileAbstractHolographicDisplay> holographic_displays = new HashMap<>();
+	public List<Integer> rebuild = Lists.newArrayList();
 
 	@Override
 	public void removeAll(){
 		super.removeAll();
 		rebuild.clear();
 		display_updates.clear();
+		holographic_displays.clear();
 	}
 
 	public void updateConnectedDisplays() {
@@ -74,14 +75,15 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 	}
 
 	public void addDisplay(IDisplay display, PL2AdditionType type){
-	    if(display instanceof TileDisplayScreen) {
-            TileDisplayScreen screen = (TileDisplayScreen) display;
-            screen.container = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID());
+	    if(display instanceof ISmallDisplay) {
+			ISmallDisplay screen = (ISmallDisplay) display;
+			screen.setGSI(new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID()));
             NBTTagCompound tag = GSIData.unloadedGSI.get(display.getInfoContainerID());
             if(tag != null){
-                screen.container.readData(tag, NBTHelper.SyncType.SAVE);
+                screen.getGSI().readData(tag, NBTHelper.SyncType.SAVE);
             }
         }
+
         DisplayGSI gsi = display.getGSI();
         if (gsi != null && gsi.getDisplay() != null && !ServerInfoHandler.instance().displays.containsValue(gsi)) {
             validateGSI(display, gsi);
@@ -89,8 +91,8 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
     }
 
     public void removeDisplay(IDisplay display, PL2RemovalType type){
-        if(display instanceof TileDisplayScreen) {
-            TileDisplayScreen screen = (TileDisplayScreen) display;
+        if(display instanceof ISmallDisplay) {
+			ISmallDisplay screen = (ISmallDisplay) display;
             if(type == PL2RemovalType.PLAYER_REMOVED){
                 GSIData.unloadedGSI.remove(display.getInfoContainerID());
             }else{
@@ -169,7 +171,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 			DisplayHandler.instance().markConnectedDisplayChanged(display.getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED, ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 			return true;
 		}
-		// FIXME - no displays are loaded, therefore, we either mark as being UNLOADED, OR WE DELETE ...
+		// FIXME - no tiles are loaded, therefore, we either mark as being UNLOADED, OR WE DELETE ...
 
 		return false; // if the count = 0 don't continue updates.
 

@@ -1,10 +1,6 @@
 package sonar.logistics.guide.elements;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import sonar.core.SonarCore;
@@ -12,6 +8,9 @@ import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.GuidePageRegistry;
 import sonar.logistics.guide.IGuidePage;
 import sonar.logistics.guide.IGuidePageElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ElementRecipe<R> implements IGuidePageElement {
 
@@ -89,7 +88,6 @@ public abstract class ElementRecipe<R> implements IGuidePageElement {
 		ItemStack stack = getStack(getSlot(x, y, mouseX, mouseY));
 		if (stack != null)
 			gui.drawNormalToolTip(stack, gui.getGuiLeft() + mouseX, gui.getGuiTop() + mouseY);
-		return;
 	}
 
 	@Override

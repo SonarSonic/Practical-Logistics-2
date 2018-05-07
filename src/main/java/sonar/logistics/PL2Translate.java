@@ -1,11 +1,11 @@
 package sonar.logistics;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import sonar.core.translate.Localisation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PL2Translate {
 	public static final List<Localisation> locals = new ArrayList<>();
@@ -45,6 +45,7 @@ public class PL2Translate {
 	public static final Localisation DISPLAY_SCREEN = t("tile.DisplayScreen.name"); 
 	public static final Localisation LARGE_DISPLAY_SCREEN = t("tile.LargeDisplayScreen.name"); 
 	public static final Localisation HOLOGRAPHIC_DISPLAY = t("tile.HolographicDisplay.name");
+	public static final Localisation ADVANCED_HOLOGRAPHIC_DISPLAY = t("tile.AdvancedHolographicDisplay.name");
 	// BLOCKS
 	public static final Localisation HAMMER = b(PL2Blocks.hammer);
 	public static final Localisation HAMMER_AIR = b(PL2Blocks.hammer_air);

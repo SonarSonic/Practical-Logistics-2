@@ -1,11 +1,11 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
+
+import java.util.List;
 
 public interface IInfoReferenceElement extends IDisplayElement {
 

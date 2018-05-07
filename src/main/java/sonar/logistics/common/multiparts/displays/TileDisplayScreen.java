@@ -1,13 +1,12 @@
 package sonar.logistics.common.multiparts.displays;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.DisplayType;
+import sonar.logistics.api.displays.tiles.DisplayType;
+import sonar.logistics.api.displays.tiles.ISmallDisplay;
 
-public class TileDisplayScreen extends TileAbstractDisplay {
+public class TileDisplayScreen extends TileAbstractDisplay implements ISmallDisplay {
 
 	public DisplayGSI container;
 

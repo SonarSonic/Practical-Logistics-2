@@ -1,20 +1,19 @@
 package sonar.logistics.networking;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import sonar.logistics.api.filters.ITransferFilteredTile;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.INetworkChannels;
+import sonar.logistics.api.networking.INetworkHandler;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.api.tiles.nodes.IEntityNode;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.api.wireless.IDataReceiver;
 import sonar.logistics.networking.transfers.TransferNetworkChannels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class CacheHandler<T> {
 
@@ -72,7 +71,7 @@ public abstract class CacheHandler<T> {
 
 	public static final CacheHandler<IEntityNode> ENTITY_NODES = new CacheHandler<IEntityNode>(IEntityNode.class){};
 
-	public static final ArrayList<CacheHandler> handlers = Lists.newArrayList(RECEIVERS, EMITTERS, READER, TILE, NODES, ENTITY_NODES, TRANSFER_NODES);// RECEIVERS and EMITTERS should always come first so connected networks are considered by NODEs and TRANSFER NODEs
+	public static final ArrayList<CacheHandler> handlers = Lists.newArrayList(RECEIVERS, EMITTERS, READER, TILE, NODES, ENTITY_NODES, TRANSFER_NODES);// RECEIVERS and EMITTERS should always come first so connected networking are considered by NODEs and TRANSFER NODEs
 
 	public Class<T> clazz;
 

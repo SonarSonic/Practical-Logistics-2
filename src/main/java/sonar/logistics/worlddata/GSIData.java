@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class GSIData extends WorldSavedData {
 
-    public static final String IDENTIFIER = "sonar.logistics.networks.gsi";
+    public static final String IDENTIFIER = "sonar.logistics.networking.gsi";
     public static final Map<Integer, NBTTagCompound> unloadedGSI = new HashMap<>();
 
     public GSIData(String name) {

@@ -1,12 +1,12 @@
 package sonar.logistics.api.displays;
 
-import javax.annotation.Nullable;
-
-import sonar.logistics.api.displays.buttons.EmptyInfoElement;
+import sonar.logistics.api.displays.buttons.ButtonEmptyInfo;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.elements.text.StyledWrappedTextElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
+
+import javax.annotation.Nullable;
 
 public enum CreateInfoType {
 	INFO(CreateInfoType::createInfo), TITLE(CreateInfoType::createTitle), WRAPPED_TEXT(CreateInfoType::createWrappedText), IMAGE(CreateInfoType::createInfo), BUTTON(CreateInfoType::createButton);
@@ -22,7 +22,7 @@ public enum CreateInfoType {
 	}
 
 	public static IDisplayElement createInfo(DisplayElementContainer c) {
-		EmptyInfoElement e = new EmptyInfoElement();
+		ButtonEmptyInfo e = new ButtonEmptyInfo();
 		c.getElements().addElement(e);
 		return e;
 	}

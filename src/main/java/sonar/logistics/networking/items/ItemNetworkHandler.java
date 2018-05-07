@@ -1,8 +1,5 @@
 package sonar.logistics.networking.items;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -13,9 +10,9 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.inventory.GenericInventoryHandler;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.networks.IEntityMonitorHandler;
-import sonar.logistics.api.networks.INetworkListChannels;
-import sonar.logistics.api.networks.ITileMonitorHandler;
+import sonar.logistics.api.networking.IEntityMonitorHandler;
+import sonar.logistics.api.networking.INetworkListChannels;
+import sonar.logistics.api.networking.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
@@ -23,6 +20,9 @@ import sonar.logistics.api.wireless.IDataEmitter;
 import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.common.ListNetworkHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack, ItemChangeableList> implements ITileMonitorHandler<MonitoredItemStack, ItemChangeableList, ItemNetworkChannels>, IEntityMonitorHandler<MonitoredItemStack, ItemChangeableList, ItemNetworkChannels> {
 

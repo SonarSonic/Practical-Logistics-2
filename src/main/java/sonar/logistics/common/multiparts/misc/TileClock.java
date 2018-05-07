@@ -1,7 +1,5 @@
 package sonar.logistics.common.multiparts.misc;
 
-import java.text.SimpleDateFormat;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,9 +16,9 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.CableRenderType;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.states.ErrorMessage;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gui.GuiClock;
@@ -28,6 +26,8 @@ import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.info.types.ClockInfo;
 import sonar.logistics.networking.PL2ListenerList;
 import sonar.logistics.networking.ServerInfoHandler;
+
+import java.text.SimpleDateFormat;
 
 public class TileClock extends TileSidedLogistics implements IInfoProvider, IByteBufTile, IFlexibleGui {
 
@@ -39,7 +39,6 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 
 	public long lastMillis;// when the movement was started
 	public long currentMillis;// the current millis
-	public long offset = 0;
 
 	public float rotation;// 0-360 indicating rotation of the clock hand.
 	public boolean isSet;

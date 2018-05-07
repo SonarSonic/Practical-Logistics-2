@@ -1,7 +1,5 @@
 package sonar.logistics.guide.general;
 
-import java.util.List;
-
 import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.LogisticsButton;
@@ -13,6 +11,8 @@ import sonar.logistics.guide.ExampleConfigurations.InventoryExample;
 import sonar.logistics.guide.IGuidePageElement;
 import sonar.logistics.guide.elements.Element3DRenderer;
 import sonar.logistics.guide.elements.ElementInfo;
+
+import java.util.List;
 
 public class ExamplesPages extends BaseInfoPage {
 

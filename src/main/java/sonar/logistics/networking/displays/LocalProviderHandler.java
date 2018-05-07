@@ -1,18 +1,13 @@
 package sonar.logistics.networking.displays;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
-import sonar.logistics.api.errors.DestroyedError;
-import sonar.logistics.api.errors.DisconnectedError;
 import sonar.logistics.api.errors.ErrorHelper;
+import sonar.logistics.api.errors.types.ErrorDestroyed;
+import sonar.logistics.api.errors.types.ErrorDisconnected;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
@@ -20,6 +15,11 @@ import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.networking.ServerInfoHandler;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class LocalProviderHandler {
 
@@ -56,7 +56,7 @@ public class LocalProviderHandler {
 		UUIDS: for (InfoUUID uuid : uuids) {
 			for (ILogicListenable tile : logicTiles) {
 				if (tile.getIdentity() == uuid.getIdentity()) {
-					ErrorHelper.removeError(gsi, new DisconnectedError(uuid, tile));
+					ErrorHelper.removeError(gsi, new ErrorDisconnected(uuid, tile));
 					doLocalProviderConnect(gsi, tile, uuid);
 					continue UUIDS;
 				}
@@ -64,7 +64,7 @@ public class LocalProviderHandler {
 			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
 			if (listen != null) {
 				doLocalProviderDisconnect(gsi, listen, uuid);
-				ErrorHelper.addError(gsi, new DisconnectedError(uuid, listen));
+				ErrorHelper.addError(gsi, new ErrorDisconnected(uuid, listen));
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class LocalProviderHandler {
 			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
 			if (listen != null) {
 				doLocalProviderDisconnect(gsi, listen, uuid);
-				ErrorHelper.removeError(gsi, new DisconnectedError(uuid, listen));
+				ErrorHelper.removeError(gsi, new ErrorDisconnected(uuid, listen));
 			}
 		}
 	}
@@ -107,13 +107,13 @@ public class LocalProviderHandler {
 					break;
 				case TILE_DESTROYED:
 					affected.forEach((GSI, UUIDS) -> {
-						ErrorHelper.removeError(GSI, new DisconnectedError(UUIDS, update.getKey()));
-						ErrorHelper.addError(GSI, new DestroyedError(UUIDS, update.getKey()));
+						ErrorHelper.removeError(GSI, new ErrorDisconnected(UUIDS, update.getKey()));
+						ErrorHelper.addError(GSI, new ErrorDestroyed(UUIDS, update.getKey()));
 					});
 					break;
 				case TILE_UNLOADED:
 					affected.forEach((GSI, UUIDS) -> {
-						DisconnectedError error = new DisconnectedError(UUIDS, update.getKey());
+						ErrorDisconnected error = new ErrorDisconnected(UUIDS, update.getKey());
 						error.chunkUnload = true;
 						ErrorHelper.addError(GSI, error);
 					});

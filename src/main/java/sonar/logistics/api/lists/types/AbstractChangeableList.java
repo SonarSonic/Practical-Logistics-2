@@ -1,17 +1,14 @@
 package sonar.logistics.api.lists.types;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AbstractChangeableList<T> {
 
-	public static final Consumer<? super IMonitoredValue> saveState = IMonitoredValue::resetChange;
 	public List<IMonitoredValue<T>> values = new ArrayList<>();
 	public boolean wasLastListNull = false;
 

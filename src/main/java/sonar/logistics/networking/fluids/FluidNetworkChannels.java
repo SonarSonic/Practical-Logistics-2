@@ -1,19 +1,19 @@
 package sonar.logistics.networking.fluids;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.FluidChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.networking.common.ListNetworkChannels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FluidNetworkChannels extends ListNetworkChannels<MonitoredFluidStack, FluidNetworkHandler> {
 

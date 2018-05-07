@@ -3,11 +3,7 @@ package sonar.logistics;
 import net.minecraft.item.Item;
 import sonar.core.SonarRegister;
 import sonar.core.registries.SonarRegistryItem;
-import sonar.logistics.common.items.ItemGuide;
-import sonar.logistics.common.items.ItemOperator;
-import sonar.logistics.common.items.WirelessEntityTransceiver;
-import sonar.logistics.common.items.WirelessItemTransceiver;
-import sonar.logistics.common.items.WirelessStorageReader;
+import sonar.logistics.common.items.*;
 
 public class PL2Items extends PL2 {
 

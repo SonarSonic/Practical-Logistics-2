@@ -14,9 +14,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ISmallDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.networking.ClientInfoHandler;
 
 public class PacketGSIStandardDisplayValidate extends PacketMultipart {
@@ -50,12 +50,12 @@ public class PacketGSIStandardDisplayValidate extends PacketMultipart {
 
 		@Override
 		public IMessage processMessage(PacketGSIStandardDisplayValidate message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
-			if (ctx.side == Side.CLIENT && part instanceof TileDisplayScreen) {
+			if (ctx.side == Side.CLIENT && part instanceof ISmallDisplay) {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					TileDisplayScreen display = (TileDisplayScreen) part;
+					ISmallDisplay display = (ISmallDisplay) part;
 					DisplayGSI gsi = display.getGSI();
 					if(gsi == null){
-						gsi = display.container = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID());
+						display.setGSI(gsi = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID()));
 					}
 					gsi.readData(message.SAVE_TAG, SyncType.SAVE);
 					gsi.validate();

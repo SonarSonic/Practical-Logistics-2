@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.nodes;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import mcmultipart.api.slot.EnumFaceSlot;
 import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.block.state.BlockStateContainer;
@@ -15,9 +12,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2Properties;
+import sonar.logistics.PL2Properties;
 import sonar.logistics.common.multiparts.BlockLogisticsSided;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockRedstoneNode extends BlockLogisticsSided {
 

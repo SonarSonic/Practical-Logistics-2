@@ -1,9 +1,9 @@
 package sonar.logistics;
 
-import java.io.File;
-
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
+import java.io.File;
 
 public class PL2Config extends PL2 {
 

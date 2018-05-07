@@ -4,7 +4,7 @@ import net.minecraft.util.Tuple;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 

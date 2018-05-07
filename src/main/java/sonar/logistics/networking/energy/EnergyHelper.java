@@ -1,11 +1,11 @@
 package sonar.logistics.networking.energy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import sonar.core.SonarCore;
 import sonar.core.api.energy.EnergyType;
 import sonar.core.api.energy.ISonarEnergyHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EnergyHelper {
 

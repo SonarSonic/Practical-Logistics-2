@@ -1,22 +1,6 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.color;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.disableRescaleNormal;
-import static net.minecraft.client.renderer.GlStateManager.enableLighting;
-import static net.minecraft.client.renderer.GlStateManager.enableRescaleNormal;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,13 +11,19 @@ import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.ElementFillType;
 import sonar.logistics.api.displays.elements.IClickableElement;
 import sonar.logistics.api.displays.elements.ILookableElement;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.LogicInfoList;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInfoList> implements IClickableElement, ILookableElement {
 

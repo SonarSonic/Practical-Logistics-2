@@ -1,9 +1,9 @@
 package sonar.logistics.api.errors;
 
-import java.util.List;
-
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
+
+import java.util.List;
 
 public class ErrorHelper {
 

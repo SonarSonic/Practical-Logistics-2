@@ -1,7 +1,5 @@
 package sonar.logistics.packets;
 
-import java.util.Collections;
-
 import io.netty.buffer.ByteBuf;
 import mcmultipart.api.multipart.IMultipartTile;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +18,8 @@ import sonar.core.network.sync.SyncNBTAbstractList;
 import sonar.logistics.api.tiles.signaller.EmitterStatement;
 import sonar.logistics.api.tiles.signaller.ILogisticsTile;
 import sonar.logistics.api.utils.ListPacket;
+
+import java.util.Collections;
 
 /** called when the player clicks an item in the inventory reader */
 public class PacketEmitterStatement extends PacketMultipart {

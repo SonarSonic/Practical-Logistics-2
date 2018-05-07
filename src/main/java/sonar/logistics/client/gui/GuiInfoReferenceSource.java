@@ -1,12 +1,6 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Container;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -26,6 +20,11 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.client.gui.generic.info.InfoReferenceRequest;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.networking.ClientInfoHandler;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 

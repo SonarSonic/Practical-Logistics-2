@@ -1,15 +1,11 @@
 package sonar.logistics.networking.transfers;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import sonar.core.helpers.InventoryHelper.DefaultTransferOverride;
 import sonar.logistics.api.filters.ITransferFilteredTile;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkHandler;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
@@ -19,6 +15,10 @@ import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.common.DefaultNetworkChannels;
 import sonar.logistics.networking.fluids.FluidHelper;
 import sonar.logistics.networking.items.ItemHelper;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 //TODO make it possible to have one without a handler that is linked some other wayy
 public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler> extends DefaultNetworkChannels {

@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
 import sonar.logistics.networking.items.ItemHelper;
 

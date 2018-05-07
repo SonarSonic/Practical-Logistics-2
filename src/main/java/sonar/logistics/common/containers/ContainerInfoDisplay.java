@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.inventory.ContainerMultipartSync;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
 
 public class ContainerInfoDisplay extends ContainerMultipartSync {
 

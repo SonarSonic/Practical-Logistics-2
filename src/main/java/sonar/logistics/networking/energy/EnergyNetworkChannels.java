@@ -1,6 +1,6 @@
 package sonar.logistics.networking.energy;
 
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.networking.common.ListNetworkChannels;
 

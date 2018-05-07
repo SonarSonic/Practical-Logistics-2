@@ -1,12 +1,5 @@
 package sonar.logistics.networking.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -14,11 +7,11 @@ import sonar.core.helpers.ListHelper;
 import sonar.core.utils.IWorldTile;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.cabling.INetworkTile;
 import sonar.logistics.api.cabling.IRedstoneCable;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.nodes.IEntityNode;
 import sonar.logistics.api.tiles.nodes.INode;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
@@ -40,6 +33,9 @@ import sonar.logistics.networking.displays.ConnectedDisplayChange;
 import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler.UpdateCause;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class LogisticsEventHandler {
 

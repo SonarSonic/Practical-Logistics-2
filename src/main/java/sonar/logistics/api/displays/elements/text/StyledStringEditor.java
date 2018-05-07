@@ -1,10 +1,9 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import sonar.logistics.client.gui.textedit.CursorPosition;
+
+import java.util.List;
 
 public class StyledStringEditor {
 	

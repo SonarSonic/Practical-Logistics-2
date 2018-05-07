@@ -1,11 +1,5 @@
 package sonar.logistics.common.multiparts.cables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.slot.EnumCenterSlot;
 import mcmultipart.api.slot.IPartSlot;
@@ -27,13 +21,18 @@ import net.minecraft.world.World;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2Properties;
-import sonar.logistics.api.PL2Properties.PropertyCableFace;
+import sonar.logistics.PL2Properties;
+import sonar.logistics.PL2Properties.PropertyCableFace;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.IDataCable;
 import sonar.logistics.common.multiparts.BlockLogistics;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockDataCable extends BlockLogistics {
 	

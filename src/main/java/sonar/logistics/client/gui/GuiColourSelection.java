@@ -1,19 +1,25 @@
 package sonar.logistics.client.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Container;
+import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.SonarTextField;
+import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.helpers.FontHelper;
 import sonar.core.utils.CustomColour;
 import sonar.core.utils.IWorldPosition;
+import sonar.logistics.client.gui.display.GuiHolographicRescaling;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiColourSelection extends GuiLogistics {
 
 	public SonarTextField r, g, b;
+	public SonarScroller r_scroller, g_scroller, b_scroller;
+	public List<GuiHolographicRescaling.HolographicScroller> scrollers;
 	public int configured = -1;
 
 	public GuiColourSelection(Container container, IWorldPosition entity) {
@@ -44,6 +50,25 @@ public class GuiColourSelection extends GuiLogistics {
 		b.setText(String.valueOf(colour.blue));
 		b.setDigitsOnly(true);
 		fieldList.add(b);
+
+		scrollers = new ArrayList<>();
+
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) throws IOException{
+		super.actionPerformed(button);
+	}
+
+	@Override
+	public void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
+		super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
+		scrollers.forEach(s -> renderScroller(s));
+	}
+
+	public void drawScreen(int x, int y, float var) {
+		super.drawScreen(x, y, var);
+		scrollers.forEach(s -> s.drawScreen(x, y, true));
 	}
 
 	@Override
@@ -56,7 +81,6 @@ public class GuiColourSelection extends GuiLogistics {
 	public void onTextFieldChanged(SonarTextField field) {
 		super.onTextFieldChanged(field);
 		configured = FontHelper.getIntFromColor(r.getIntegerFromText(), g.getIntegerFromText(), b.getIntegerFromText());
-		//reset();
 	}
 
 	@Override

@@ -1,14 +1,12 @@
 package sonar.logistics.common.multiparts.readers;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiInfoReader;
@@ -17,6 +15,8 @@ import sonar.logistics.common.containers.ContainerChannelSelection;
 import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.networking.info.InfoNetworkHandler;
 import sonar.logistics.networking.sorters.InfoSorter;
+
+import java.util.List;
 
 public class TileInfoReader extends TileAbstractLogicReader<IProvidableInfo> {
 

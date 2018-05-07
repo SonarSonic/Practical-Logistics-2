@@ -1,18 +1,12 @@
 package sonar.logistics.client.gui.generic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
@@ -42,6 +36,10 @@ import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.packets.PacketEmitterStatement;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiStatementList extends GuiSelectionList<Object> {
 

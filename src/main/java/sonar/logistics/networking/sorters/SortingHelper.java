@@ -1,34 +1,33 @@
 package sonar.logistics.networking.sorters;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import sonar.core.SonarCore;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.helpers.SonarHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.tiles.readers.ILogicListSorter;
-import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.EnergyReader;
 import sonar.logistics.api.tiles.readers.FluidReader.SortingType;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
+import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.info.types.MonitoredFluidStack;
 import sonar.logistics.info.types.MonitoredItemStack;
+
+import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class SortingHelper {
 

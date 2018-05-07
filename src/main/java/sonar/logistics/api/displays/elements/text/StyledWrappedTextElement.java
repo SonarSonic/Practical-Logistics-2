@@ -1,10 +1,5 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.xml.ws.Holder;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Tuple;
@@ -15,10 +10,14 @@ import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
 import sonar.logistics.api.displays.elements.text.StyledStringRenderer.StyledStringRenderHandler;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.gui.textedit.GuiEditWrappedStyledString;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import javax.annotation.Nullable;
+import javax.xml.ws.Holder;
+import java.util.List;
 
 @DisplayElementType(id = StyledWrappedTextElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledWrappedTextElement extends StyledTextElement {

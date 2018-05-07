@@ -1,21 +1,20 @@
 package sonar.logistics.networking;
 
+import sonar.logistics.PL2;
+import sonar.logistics.api.networking.EmptyLogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkListener;
+import sonar.logistics.api.utils.CacheType;
+import sonar.logistics.networking.events.LogisticsEventHandler;
+import sonar.logistics.networking.events.NetworkChanges;
+
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.Nonnull;
-
-import sonar.logistics.PL2;
-import sonar.logistics.api.networks.EmptyLogisticsNetwork;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListener;
-import sonar.logistics.api.utils.CacheType;
-import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.networking.events.NetworkChanges;
 
 public class LogisticsNetworkHandler {
 

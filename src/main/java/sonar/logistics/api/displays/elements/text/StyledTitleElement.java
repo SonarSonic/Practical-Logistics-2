@@ -1,28 +1,26 @@
 package sonar.logistics.api.displays.elements.text;
 
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.xml.ws.Holder;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.gui.textedit.GuiEditTitleStyledString;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import javax.annotation.Nullable;
+import javax.xml.ws.Holder;
+import java.util.List;
+
+import static net.minecraft.client.renderer.GlStateManager.translate;
 
 @DisplayElementType(id = StyledTitleElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledTitleElement extends StyledTextElement{
@@ -61,7 +59,7 @@ public class StyledTitleElement extends StyledTextElement{
 			if (s.getAlign() == WidthAlignment.RIGHT)
 				translate(max_width - element, 0, 0);
 			GlStateManager.scale(scaling[2], scaling[2], 1);
-			s.render(render_style);
+			s.render();
 			GlStateManager.scale(1 / scaling[2], 1 / scaling[2], 1);
 			GlStateManager.popMatrix();
 			GL11.glTranslated(0, (s.getStringHeight() + spacing) * scaling[2], 0);

@@ -1,24 +1,18 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.wireless.ClientWirelessEmitter;
-import sonar.logistics.api.wireless.IDataEmitter;
-import sonar.logistics.api.wireless.IDataReceiver;
-import sonar.logistics.api.wireless.IWirelessEmitter;
-import sonar.logistics.api.wireless.IWirelessManager;
-import sonar.logistics.api.wireless.IWirelessReceiver;
-import sonar.logistics.api.wireless.WirelessSecurity;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.wireless.*;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.CacheHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public abstract class AbstractWirelessManager<N, E extends IWirelessEmitter, R extends IWirelessReceiver> implements IWirelessManager<E, R> {
 

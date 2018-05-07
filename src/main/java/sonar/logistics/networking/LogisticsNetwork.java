@@ -1,12 +1,6 @@
 package sonar.logistics.networking;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,9 +9,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ListenableList;
 import sonar.logistics.PL2;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkChannels;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.utils.CacheType;
@@ -28,6 +22,11 @@ import sonar.logistics.networking.displays.LocalProviderHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler.UpdateCause;
 import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LogisticsNetwork implements ILogisticsNetwork {
 
@@ -259,15 +258,6 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	/// SUB NETWORKS \\\
-
-	public void notifyWatchingNetworks() {
-		///getAllNetworks(ILogisticsNetwork.WATCHING_NETWORK).forEach(network -> network.onConnectedNetworkCacheChanged(this));
-	}
-
-	@Override
-	public void onConnectedNetworkCacheChanged(ILogisticsNetwork network) {
-		onCacheChanged(CacheHandler.RECEIVERS);
-	}
 
 	@Override
 	public ListenableList<ILogisticsNetwork> getListenerList() {

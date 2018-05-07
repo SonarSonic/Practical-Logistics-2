@@ -1,8 +1,5 @@
 package sonar.logistics.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -13,6 +10,8 @@ import sonar.logistics.PL2;
 import sonar.logistics.info.LogicInfoRegistry;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandResetInfoRegistry implements ICommand {
 
@@ -55,8 +54,6 @@ public class CommandResetInfoRegistry implements ICommand {
 			PL2.logger.info("Reset Logic Info Registry");
 		}
 		sender.sendMessage(new TextComponentTranslation("Reset Logic Info Registry"));
-
-
 	}
 
 	@Override

@@ -1,32 +1,30 @@
 package sonar.logistics;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
 import sonar.logistics.commands.CommandResetInfoRegistry;
+import sonar.logistics.common.multiparts.holographic.EntityHolographicDisplay;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.integration.MineTweakerIntegration;
 import sonar.logistics.worlddata.ConnectedDisplayData;
@@ -34,6 +32,7 @@ import sonar.logistics.worlddata.GSIData;
 import sonar.logistics.worlddata.IdentityCountData;
 import sonar.logistics.worldgen.SapphireOreGen;
 
+@Mod.EventBusSubscriber
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
 public class PL2 {
 
@@ -130,6 +129,21 @@ public class PL2 {
 		if(storage.getOrLoadData(GSIData.class, GSIData.IDENTIFIER) == null) {
 			storage.setData(GSIData.IDENTIFIER, new GSIData());
 		}
+	}
+
+	@SubscribeEvent
+	public static void registerEntities(RegistryEvent.Register<EntityEntry> e) {
+		EntityEntry holographic_display = new EntityEntry(EntityHolographicDisplay.class, "pl2_holographic_display"){
+
+			@Override
+			public EntityList.EntityEggInfo getEgg(){ return null; }
+
+			@Override
+			public void setEgg(EntityList.EntityEggInfo egg){}
+
+		};
+
+		e.getRegistry().register(holographic_display.setRegistryName(PL2Constants.MODID, "pl2_holographic_display"));
 	}
 
 	@EventHandler

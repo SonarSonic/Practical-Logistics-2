@@ -9,8 +9,7 @@
      },
     "variants": {
         "normal":[],
-        "inventory": [{   
-            "x": 90, "y": 0,
+        "inventory": [{
             "model":"practicallogistics2:LargeDisplayScreen"            
         }],
         "facing":{  

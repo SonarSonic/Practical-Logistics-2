@@ -1,8 +1,5 @@
 package sonar.logistics.packets;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -14,14 +11,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.displays.DisplayHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PacketConnectedDisplayUpdate implements IMessage {
 

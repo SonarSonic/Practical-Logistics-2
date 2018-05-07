@@ -1,15 +1,14 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.ws.Holder;
-
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
+
+import javax.xml.ws.Holder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**a styled string contains a String to be displayed and it's specific style*/
 public interface IStyledString extends INBTSyncable {

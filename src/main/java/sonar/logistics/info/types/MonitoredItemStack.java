@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.inventories.StoredItemStack;
@@ -13,18 +11,15 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.types.NetworkItemElement;
-import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.IJoinableInfo;
-import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.*;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.ItemCount;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+
+import java.util.List;
 
 @LogicInfoType(id = MonitoredItemStack.id, modid = PL2Constants.MODID)
 public class MonitoredItemStack extends BaseInfo<MonitoredItemStack> implements IProvidableInfo<MonitoredItemStack>, IJoinableInfo<MonitoredItemStack>, INameableInfo<MonitoredItemStack>, IComparableInfo<MonitoredItemStack>, IMonitoredValueInfo<MonitoredItemStack> {

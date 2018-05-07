@@ -1,20 +1,20 @@
 package sonar.logistics.networking.energy;
 
-import java.util.List;
-
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.SonarCore;
 import sonar.core.api.energy.ISonarEnergyHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.networks.INetworkListChannels;
-import sonar.logistics.api.networks.ITileMonitorHandler;
+import sonar.logistics.api.networking.INetworkListChannels;
+import sonar.logistics.api.networking.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.networking.common.ListNetworkHandler;
+
+import java.util.List;
 
 public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNetworkHandler<MonitoredEnergyStack, InfoChangeableList> implements ITileMonitorHandler<MonitoredEnergyStack, InfoChangeableList, INetworkListChannels> {
 

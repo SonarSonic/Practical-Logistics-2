@@ -1,62 +1,61 @@
 {
-    "display": {
-        "gui": {
-            "rotation": [ 30, 225, 0 ],
-            "translation": [ 0, -6, 0],
-            "scale":[ 1.25, 1.25, 1.25 ]
-        },
-        "ground": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, 0, 0],
-            "scale":[ 0.5, 0.5, 0.5 ]
-        },
-        "fixed": {
-            "rotation": [ 0, 0, 0 ],
-            "translation": [ 0, -7, 0],
-            "scale":[ 1.25, 1.25, 1.25 ]
-        },
-        "thirdperson_righthand": {
-            "rotation": [ 75, 45, 0 ],
-            "translation": [ 0, 2.5, 0],
-            "scale": [ 0.625, 0.625, 0.625 ]
-        },
-        "firstperson_righthand": {
-            "rotation": [ 0, 45, 0 ],
-            "translation": [ 0, -5, 0 ],
-            "scale": [ 0.625, 0.625, 0.625 ]
-        },
-        "firstperson_lefthand": {
-            "rotation": [ 0, 225, 0 ],
-            "translation": [ 0, -5, 0 ],
-            "scale": [ 0.625, 0.625, 0.625 ]
-        }
-    },
-    "elements": [
-        {
-            "name": "Support",
-            "from": [ 6.5, 4.5, 6.5 ], 
-            "to": [ 9.5, 5.5, 9.5 ], 
-            "faces": {
-                "north": { "texture": "#0", "uv": [ 0.0, 15.0, 3.0, 16.0 ] },
-                "east": { "texture": "#0", "uv": [ 0.0, 15.0, 3.0, 16.0 ] },
-                "south": { "texture": "#0", "uv": [ 0.0, 15.0, 3.0, 16.0 ] },
-                "west": { "texture": "#0", "uv": [ 0.0, 15.0, 3.0, 16.0 ] },
-                "up": { "texture": "#0", "uv": [ 0.0, 12.0, 3.0, 15.0 ] },
-                "down": { "texture": "#0", "uv": [ 0.0, 12.0, 3.0, 15.0 ] }
-            }
-        },
-        {
-            "name": "Signaller",
-            "from": [ 7.0, 1.0, 7.0 ], 
-            "to": [ 9.0, 6.0, 9.0 ], 
-            "faces": {
-                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 5.0 ], "rotation": 180 },
-                "east": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 5.0 ], "rotation": 180 },
-                "south": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 5.0 ], "rotation": 180 },
-                "west": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 5.0 ], "rotation": 180 },
-                "up": { "texture": "#0", "uv": [ 0.0, 13.0, 2.0, 15.0 ] },
-                "down": { "texture": "#0", "uv": [ 0.0, 0.0, 2.0, 2.0 ], "rotation": 90 }
-            }
-        }
-    ]
+	"elements": [ 	 
+		{
+			"__comment": "Element",
+			"from": [ 6.5, 4.5, 6.5 ],
+			"to": [ 9.5, 5.5, 9.5 ],
+			"faces": {
+				"down": { "uv": [ 0, 13, 2, 15 ], "texture": "#0" },
+				"up": { "uv": [ 0, 13, 2, 15 ], "texture": "#0" },
+				"north": { "uv": [ 0, 15, 3, 16 ], "texture": "#0" },
+				"south": { "uv": [ 0, 15, 3, 16 ], "texture": "#0" },
+				"west": { "uv": [ 0, 15, 3, 16 ], "texture": "#0" },
+				"east": { "uv": [ 0, 15, 3, 16 ], "texture": "#0" }
+			}
+		},
+		{
+			"__comment": "Element",
+			"from": [ 7, 1, 7 ],
+			"to": [ 9, 6, 9 ],
+			"faces": {
+				"down": { "uv": [ 0, 0, 2, 2 ], "texture": "#0", "rotation": 90 },
+				"up": { "uv": [ 0, 13, 2, 15 ], "texture": "#0" },
+				"north": { "uv": [ 0, 0, 2, 5 ], "texture": "#0", "rotation": 180 },
+				"south": { "uv": [ 0, 0, 2, 5 ], "texture": "#0", "rotation": 180 },
+				"west": { "uv": [ 0, 0, 2, 5 ], "texture": "#0", "rotation": 180 },
+				"east": { "uv": [ 0, 0, 2, 5 ], "texture": "#0", "rotation": 180 }
+			}
+		}
+	],
+	"display": {
+		"firstperson_righthand": {
+			"rotation":  [ 180, 225, 0 ],
+			"translation":  [ 0, -0.695, 0 ],
+			"scale":  [ 0.8, 0.8, 0.8 ]
+		},
+		"firstperson_lefthand": {
+			"rotation":  [ 180, 225, 0 ],
+			"translation":  [ 0, -0.695, 0 ],
+			"scale":  [ 0.8, 0.8, 0.8 ]
+		},
+		"gui": {
+			"rotation":  [ -150, 225, 0 ],
+			"translation":  [ 0, -7.391, 0 ],
+			"scale":  [ 1.8, 1.8, 1.8 ]
+		},
+		"head": {
+			"rotation":  [ 180, 0, 0 ],
+			"translation":  [ 0, 4.5, 0 ]
+		},
+		"ground": {
+			"rotation":  [ 180, 0, 0 ],
+			"translation":  [ 0, -2.086, 0 ],
+			"scale":  [ 0.5, 0.5, 0.5 ]
+		},
+		"fixed": {
+			"rotation":  [ 180, 0, 0 ],
+			"translation":  [ 0, -7, 0 ],
+			"scale":  [ 1.25, 1.25, 1.25 ]
+		}
+	}
 }

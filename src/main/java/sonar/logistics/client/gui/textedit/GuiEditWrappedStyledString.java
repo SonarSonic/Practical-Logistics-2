@@ -1,34 +1,20 @@
 package sonar.logistics.client.gui.textedit;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.Tuple;
+import sonar.core.helpers.RenderHelper;
+import sonar.logistics.api.displays.elements.IDisplayElement;
+import sonar.logistics.api.displays.elements.text.*;
+import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
+import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.helpers.DisplayElementHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.Tuple;
-import sonar.core.helpers.RenderHelper;
-import sonar.core.utils.Pair;
-import sonar.logistics.api.displays.WidthAlignment;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.text.IStyledString;
-import sonar.logistics.api.displays.elements.text.StyledString;
-import sonar.logistics.api.displays.elements.text.StyledStringHelper;
-import sonar.logistics.api.displays.elements.text.StyledStringLine;
-import sonar.logistics.api.displays.elements.text.StyledStringRenderer;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
-import sonar.logistics.api.displays.elements.text.StyledWrappedTextElement;
-import sonar.logistics.api.displays.elements.text.TextSelection;
-import sonar.logistics.api.displays.elements.text.StyledStringRenderer.SimpleIndex;
-import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
-import sonar.logistics.helpers.DisplayElementHelper;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class GuiEditWrappedStyledString extends GuiEditStyledStrings {
 

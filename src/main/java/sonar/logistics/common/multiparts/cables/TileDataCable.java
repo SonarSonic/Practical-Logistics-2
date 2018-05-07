@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.cables;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,7 +21,7 @@ import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
@@ -34,6 +31,9 @@ import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.events.LogisticsEventHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileDataCable extends TileSonarMultipart implements IDataCable, IOperatorTile, IOperatorProvider {
 
@@ -160,7 +160,7 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 					CableConnectionHandler.instance().addConnection(adjCable);
 					CableConnectionHandler.instance().addConnection(this);
 					
-					//update networks
+					//update networking
 
 					ILogisticsNetwork thisNet = LogisticsNetworkHandler.instance().getOrCreateNetwork(getRegistryID());
 					ILogisticsNetwork adjNetNet = LogisticsNetworkHandler.instance().getOrCreateNetwork(adjCable.getRegistryID());

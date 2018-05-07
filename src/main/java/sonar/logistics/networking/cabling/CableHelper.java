@@ -1,11 +1,5 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import mcmultipart.api.container.IMultipartContainer;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
@@ -19,19 +13,19 @@ import net.minecraft.world.World;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.Pair;
 import sonar.core.utils.SonarValidation;
-import sonar.logistics.api.cabling.CableConnectionType;
-import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.ICable;
-import sonar.logistics.api.cabling.ICableConnectable;
-import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.cabling.*;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class CableHelper {
 

@@ -1,8 +1,5 @@
 package sonar.logistics.networking.items;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
@@ -10,13 +7,16 @@ import sonar.core.utils.Pair;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListHandler;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkListHandler;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.common.ListNetworkChannels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemNetworkChannels extends ListNetworkChannels<MonitoredItemStack, INetworkListHandler<MonitoredItemStack, ItemChangeableList>> {
 

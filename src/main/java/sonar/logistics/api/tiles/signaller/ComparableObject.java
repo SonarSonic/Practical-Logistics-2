@@ -1,8 +1,8 @@
 package sonar.logistics.api.tiles.signaller;
 
-import java.util.List;
-
 import sonar.logistics.api.info.IInfo;
+
+import java.util.List;
 
 public class ComparableObject {
 

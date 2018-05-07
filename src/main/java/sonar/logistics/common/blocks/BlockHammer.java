@@ -1,7 +1,5 @@
 package sonar.logistics.common.blocks;
 
-import java.util.function.Consumer;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -19,6 +17,7 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
 import javax.annotation.Nonnull;
+import java.util.function.Consumer;
 
 public class BlockHammer extends SonarMachineBlock {
 

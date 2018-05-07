@@ -17,6 +17,7 @@ public class PL2Crafting extends PL2 {
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.display_screen, 1), PL2Items.stone_plate, "dustSapphire", PL2Blocks.data_cable);
 		SonarCrafting.addShapelessOre(PL2Constants.MODID, new ItemStack(PL2Blocks.large_display_screen, 1), PL2Items.stone_plate, "dustSapphire", PL2Blocks.display_screen);
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.holographic_display, 1), "   ", "PDP", " C ", 'P', PL2Items.stone_plate, 'D', PL2Blocks.display_screen, 'C', PL2Blocks.data_cable);
+		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.advanced_holographic_display, 1), "SSS", "REW", "DDD", 'D', PL2Blocks.mini_display, 'S', "dustSapphire", 'R', PL2Items.signalling_plate, 'E', PL2Items.etched_plate, 'W', PL2Items.wireless_plate);
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.redstone_signaller, 1), " T ", " R ", "PCP", 'P', PL2Items.stone_plate, 'R', PL2Items.signalling_plate, 'T', Blocks.REDSTONE_TORCH, 'C', PL2Blocks.data_cable);
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.data_emitter, 1), "DPD", "PCP", "DDD", 'P', PL2Items.sapphire_dust, 'D', PL2Items.stone_plate, 'C', PL2Items.wireless_plate);
 		SonarCrafting.addShapedOre(PL2Constants.MODID, new ItemStack(PL2Blocks.data_receiver, 1), "DPD", "PCP", "DDD", 'P', PL2Items.sapphire_dust, 'D', PL2Items.stone_plate, 'C', PL2Blocks.info_reader);

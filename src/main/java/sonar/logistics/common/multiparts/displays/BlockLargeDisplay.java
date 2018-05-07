@@ -1,9 +1,5 @@
 package sonar.logistics.common.multiparts.displays;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
 import net.minecraft.block.properties.PropertyEnum;
@@ -21,12 +17,11 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayConnections;
-import sonar.logistics.api.tiles.displays.DisplayType;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class BlockLargeDisplay extends BlockAbstractDisplay {
 

@@ -1,10 +1,5 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,6 +9,12 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
+import sonar.logistics.api.networking.IRedstoneNetwork;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedstoneCable> {
 
@@ -56,7 +57,7 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 		if (!forUpdate.isEmpty()) {
 			networks.values().forEach(IRedstoneNetwork::updateLocalPower);
 			networks.values().forEach(IRedstoneNetwork::updateGlobalPower);
-			// networks.values().forEach(network -> network.notifyWatchingNetworksOfChange());
+			// networking.values().forEach(network -> network.notifyWatchingNetworksOfChange());
 			networks.values().forEach(IRedstoneNetwork::updateActualPower);
 			// L//ist<Integer> update = Lists.newArrayList(forUpdate);
 			// update.forEach(registryID -> updatePower(registryID));

@@ -1,13 +1,10 @@
 package sonar.logistics.guide.elements;
 
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.recipes.ISonarRecipe;
@@ -17,6 +14,8 @@ import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.common.hammer.HammerRecipes;
 import sonar.logistics.guide.IGuidePageElement;
+
+import java.util.List;
 
 public class ElementHammerRecipe extends ElementRecipe<ISonarRecipe> implements IGuidePageElement {
 

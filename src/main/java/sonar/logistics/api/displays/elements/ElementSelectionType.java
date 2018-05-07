@@ -1,10 +1,10 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
+
+import java.util.List;
 
 public enum ElementSelectionType {
 	DELETE(), RESIZE, EDIT;

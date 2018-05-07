@@ -1,13 +1,5 @@
 package sonar.logistics.api.displays.storage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -21,6 +13,9 @@ import sonar.logistics.api.displays.elements.ILookableElement;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 public class ElementStorage implements INBTSyncable, Iterable<IDisplayElement> {
 

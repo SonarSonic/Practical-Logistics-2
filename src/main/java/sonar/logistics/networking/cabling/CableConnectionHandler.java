@@ -1,10 +1,5 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,12 +9,17 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.cabling.ConnectableType;
 import sonar.logistics.api.cabling.IDataCable;
-import sonar.logistics.api.cabling.INetworkTile;
-import sonar.logistics.api.networks.EmptyLogisticsNetwork;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.EmptyLogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.events.NetworkEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable> {
 

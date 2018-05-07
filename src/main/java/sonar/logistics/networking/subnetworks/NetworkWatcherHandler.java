@@ -1,18 +1,15 @@
 package sonar.logistics.networking.subnetworks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2Events;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkChannels;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
@@ -23,6 +20,9 @@ import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.networking.CacheHandler;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.cabling.CableConnectionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkWatcherHandler implements INetworkHandler {
 

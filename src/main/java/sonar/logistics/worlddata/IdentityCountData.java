@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 public class IdentityCountData extends WorldSavedData {
 
-	public static final String IDENTIFIER = "sonar.logistics.networks.identitycount";
+	public static final String IDENTIFIER = "sonar.logistics.networking.identitycount";
 	public int IDENTITY_COUNT = -1;
 	public int NETWORK_COUNT = -1;
     public int REDSTONE_NETWORK_COUNT = -1;

@@ -2,7 +2,7 @@ package sonar.logistics.api.displays;
 
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.api.nbt.INBTSyncable;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 
 public interface IDisplayAction extends INBTSyncable {
 

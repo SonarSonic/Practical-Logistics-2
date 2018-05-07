@@ -1,11 +1,6 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.text.TextFormatting;
@@ -25,6 +20,10 @@ import sonar.logistics.client.gui.generic.GuiSelectionList;
 import sonar.logistics.client.gui.generic.info.InfoUUIDRequest;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.networking.ClientInfoHandler;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiInfoSource extends GuiSelectionList<Object> {
 

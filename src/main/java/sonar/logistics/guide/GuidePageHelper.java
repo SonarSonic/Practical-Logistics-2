@@ -1,11 +1,6 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
@@ -16,6 +11,10 @@ import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.guide.elements.ElementInfo;
 import sonar.logistics.guide.elements.ElementLink;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class GuidePageHelper {
 

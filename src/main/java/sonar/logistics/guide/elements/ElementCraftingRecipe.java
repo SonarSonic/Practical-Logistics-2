@@ -1,16 +1,12 @@
 package sonar.logistics.guide.elements;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.recipes.RecipeUtils;
@@ -18,6 +14,9 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.IGuidePageElement;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class ElementCraftingRecipe extends ElementRecipe<IRecipe> implements IGuidePageElement {
 

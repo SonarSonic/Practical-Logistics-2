@@ -1,16 +1,16 @@
 package sonar.logistics.networking;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-
 import net.minecraft.tileentity.TileEntity;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.viewers.ILogicListenable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class NetworkHelper {
 

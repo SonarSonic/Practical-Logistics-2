@@ -1,7 +1,5 @@
 package sonar.logistics.api.displays.actions;
 
-import java.net.URI;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -10,7 +8,9 @@ import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayActionType;
 import sonar.logistics.api.displays.IDisplayAction;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
+
+import java.net.URI;
 
 @DisplayActionType(id = ClickHyperlink.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class ClickHyperlink implements IDisplayAction {

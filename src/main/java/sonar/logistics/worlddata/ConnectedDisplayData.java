@@ -1,22 +1,21 @@
 package sonar.logistics.worlddata;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
 import sonar.logistics.networking.ServerInfoHandler;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ConnectedDisplayData extends WorldSavedData {
 
-	public static final String IDENTIFIER = "sonar.logistics.networks.displays";
+	public static final String IDENTIFIER = "sonar.logistics.networking.displays";
 	public static final Map<Integer, NBTTagCompound> unloadedDisplays = new HashMap<>();
 	
 	public ConnectedDisplayData(String name) {
@@ -29,7 +28,7 @@ public class ConnectedDisplayData extends WorldSavedData {
 
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbt) {
-		NBTTagList tag = nbt.getTagList("displays", NBT.TAG_COMPOUND);
+		NBTTagList tag = nbt.getTagList("tiles", NBT.TAG_COMPOUND);
 		
 		for (int t = 0; t < tag.tagCount(); t++) {
 			NBTTagCompound screenTag = tag.getCompoundTagAt(t);
@@ -65,7 +64,7 @@ public class ConnectedDisplayData extends WorldSavedData {
 			list.appendTag(screenTag);
 		}
 		
-		compound.setTag("displays", list);
+		compound.setTag("tiles", list);
 		//unloadedDisplays.clear();
 		return compound;
 	}

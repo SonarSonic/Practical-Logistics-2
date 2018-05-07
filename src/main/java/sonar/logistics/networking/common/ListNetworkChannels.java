@@ -1,14 +1,6 @@
 package sonar.logistics.networking.common;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
@@ -16,19 +8,22 @@ import sonar.core.utils.Pair;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListChannels;
-import sonar.logistics.api.networks.INetworkListHandler;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkListChannels;
+import sonar.logistics.api.networking.INetworkListHandler;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.viewers.ListenerType.UpdateType;
-import sonar.logistics.api.viewers.UpdateListenerList;
 import sonar.logistics.helpers.PacketHelper;
 import sonar.logistics.networking.CacheHandler;
+import sonar.logistics.networking.UpdateListenerList;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public abstract class ListNetworkChannels<M extends IInfo, H extends INetworkListHandler> extends DefaultNetworkChannels implements INetworkListChannels<H> {
 

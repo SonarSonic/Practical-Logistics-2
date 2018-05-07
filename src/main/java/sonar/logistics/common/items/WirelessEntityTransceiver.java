@@ -1,8 +1,5 @@
 package sonar.logistics.common.items;
 
-import java.util.List;
-import java.util.UUID;
-
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,6 +18,8 @@ import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.wireless.IEntityTransceiver;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.UUID;
 
 public class WirelessEntityTransceiver extends SonarItem implements IEntityTransceiver {
 

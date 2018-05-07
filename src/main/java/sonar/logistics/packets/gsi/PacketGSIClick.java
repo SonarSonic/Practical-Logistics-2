@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import sonar.core.SonarCore;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.networking.ServerInfoHandler;
 

@@ -21,8 +21,9 @@ import sonar.core.common.block.properties.SonarProperties;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.PL2Events;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
 import sonar.logistics.common.multiparts.BlockLogisticsSided;
+import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
 import sonar.logistics.networking.displays.DisplayHelper;
 
 import javax.annotation.Nonnull;
@@ -70,6 +71,12 @@ public class BlockAbstractDisplay extends BlockLogisticsSided {
 					display.openFlexibleGui(player, 0);
 				}
 			} else {
+				if(display instanceof TileAbstractHolographicDisplay){
+					///holographic scaling gui
+					display.openFlexibleGui(player, 2);
+					return true;
+				}
+
 				return display.getGSI().onClicked(display, player.isSneaking() ? BlockInteractionType.SHIFT_RIGHT : BlockInteractionType.RIGHT, world, pos, state, player, hand, facing, hitX, hitY, hitZ);
 			}
 		}

@@ -1,7 +1,7 @@
 package sonar.logistics.api.tiles;
 
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.tiles.readers.ChannelList;
+import sonar.logistics.api.utils.ChannelList;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ILogicListenable;
 

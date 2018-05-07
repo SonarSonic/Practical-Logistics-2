@@ -9,7 +9,7 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.tiles.readers.InventoryReader;
 import sonar.logistics.api.tiles.readers.InventoryReader.Modes;

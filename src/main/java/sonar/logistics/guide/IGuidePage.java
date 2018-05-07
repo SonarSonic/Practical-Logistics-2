@@ -1,9 +1,9 @@
 package sonar.logistics.guide;
 
-import java.util.List;
-
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementInfo;
+
+import java.util.List;
 
 public interface IGuidePage {
 	

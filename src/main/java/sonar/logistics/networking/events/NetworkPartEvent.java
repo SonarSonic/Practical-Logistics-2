@@ -2,7 +2,7 @@ package sonar.logistics.networking.events;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 

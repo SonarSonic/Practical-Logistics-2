@@ -1,11 +1,6 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import sonar.core.api.IFlexibleGui;
@@ -16,8 +11,8 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkHandler;
+import sonar.logistics.api.networking.INetworkChannels;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.api.wireless.IDataEmitter;
@@ -29,6 +24,10 @@ import sonar.logistics.networking.cabling.WirelessDataManager;
 import sonar.logistics.networking.common.ListNetworkChannels;
 import sonar.logistics.networking.fluids.FluidNetworkHandler;
 import sonar.logistics.networking.items.ItemNetworkHandler;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter, IFlexibleGui, IByteBufTile {
 

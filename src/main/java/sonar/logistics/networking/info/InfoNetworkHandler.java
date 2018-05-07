@@ -1,8 +1,5 @@
 package sonar.logistics.networking.info;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -14,16 +11,19 @@ import sonar.logistics.PL2Config;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
+import sonar.logistics.api.info.register.LogicPath;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.networks.IEntityMonitorHandler;
-import sonar.logistics.api.networks.INetworkListChannels;
-import sonar.logistics.api.networks.ITileMonitorHandler;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.TileHandlerMethod;
+import sonar.logistics.api.networking.IEntityMonitorHandler;
+import sonar.logistics.api.networking.INetworkListChannels;
+import sonar.logistics.api.networking.ITileMonitorHandler;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.info.LogicInfoRegistry;
+import sonar.logistics.info.paths.TileHandlerMethod;
 import sonar.logistics.networking.common.ListNetworkHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InfoNetworkHandler<I extends IProvidableInfo<I>, L extends InfoChangeableList<I>, C extends InfoNetworkChannels> extends ListNetworkHandler<I,L> implements ITileMonitorHandler<I, L, C>, IEntityMonitorHandler<I, L, C> {
 	

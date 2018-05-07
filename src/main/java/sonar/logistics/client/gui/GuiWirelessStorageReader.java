@@ -1,14 +1,6 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -21,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.fluids.StoredFluidStack;
@@ -51,6 +45,10 @@ import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.sorters.SortingHelper;
 import sonar.logistics.packets.PacketWirelessStorage;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 

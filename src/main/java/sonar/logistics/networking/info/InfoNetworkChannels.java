@@ -1,21 +1,19 @@
 package sonar.logistics.networking.info;
 
-import javax.annotation.Nullable;
-
-import sonar.core.listener.ListenableList;
-import sonar.core.listener.ListenerList;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
-import sonar.logistics.api.tiles.readers.ChannelList;
 import sonar.logistics.api.tiles.readers.IListReader;
 import sonar.logistics.api.tiles.readers.INetworkReader;
+import sonar.logistics.api.utils.ChannelList;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.api.viewers.ListenerType.UpdateType;
 import sonar.logistics.networking.common.ListNetworkChannels;
+
+import javax.annotation.Nullable;
 
 public class InfoNetworkChannels extends ListNetworkChannels<IProvidableInfo, InfoNetworkHandler> {
 

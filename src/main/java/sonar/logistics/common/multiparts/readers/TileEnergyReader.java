@@ -1,7 +1,5 @@
 package sonar.logistics.common.multiparts.readers;
 
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,16 +14,16 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.utils.SortingDirection;
 import sonar.logistics.PL2Blocks;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.networks.INetworkHandler;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.networking.INetworkHandler;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.api.tiles.readers.EnergyReader;
-import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.tiles.readers.EnergyReader.SortingType;
+import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.api.utils.ChannelType;
 import sonar.logistics.client.gui.GuiEnergyReader;
 import sonar.logistics.common.containers.ContainerEnergyReader;
@@ -35,6 +33,8 @@ import sonar.logistics.info.types.MonitoredEnergyStack;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.energy.EnergyNetworkHandler;
 import sonar.logistics.networking.sorters.EnergySorter;
+
+import java.util.List;
 
 public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStack> implements IByteBufTile {
 

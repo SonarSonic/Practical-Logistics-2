@@ -1,9 +1,5 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
 import mcmultipart.api.slot.EnumCenterSlot;
@@ -15,13 +11,17 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.logistics.PL2Blocks;
-import sonar.logistics.api.PL2Properties;
+import sonar.logistics.PL2Properties;
 import sonar.logistics.api.cabling.CableConnectionType;
 import sonar.logistics.api.cabling.ICableConnectable;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.common.multiparts.cables.BlockRedstoneCable;
 import sonar.logistics.common.multiparts.cables.TileRedstoneCable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class RedstoneCableHelper {
 

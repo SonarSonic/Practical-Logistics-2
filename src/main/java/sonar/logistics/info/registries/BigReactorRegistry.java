@@ -8,7 +8,7 @@ import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorP
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "bigreactors")
 public class BigReactorRegistry extends IInfoRegistry {

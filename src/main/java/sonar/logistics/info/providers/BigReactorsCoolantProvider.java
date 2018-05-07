@@ -16,7 +16,7 @@ import sonar.logistics.api.asm.CustomTileHandler;
 import sonar.logistics.api.info.ICustomTileHandler;
 import sonar.logistics.api.info.ILogicInfoRegistry;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.info.register.LogicPath;
 import sonar.logistics.connections.monitoring.MonitoredFluidStack;
 
 @CustomTileHandler(handlerID = "bigreactors-coolant", modid = "bigreactors")

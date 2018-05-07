@@ -1,10 +1,6 @@
 package sonar.logistics.info.registries;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.entity.Entity;
@@ -29,7 +25,10 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @InfoRegistry(modid = PL2Constants.MODID)
 public class VanillaInfoRegistry implements IInfoRegistry {

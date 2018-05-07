@@ -1,10 +1,5 @@
 package sonar.logistics.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,6 +9,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.opengl.GL11;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
@@ -27,6 +23,9 @@ import sonar.logistics.client.gui.generic.GuiSelectionGrid;
 import sonar.logistics.common.containers.ContainerFluidReader;
 import sonar.logistics.common.multiparts.readers.TileFluidReader;
 import sonar.logistics.info.types.MonitoredFluidStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiFluidReader extends GuiSelectionGrid<MonitoredFluidStack> {
 

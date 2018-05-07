@@ -1,11 +1,11 @@
 package sonar.logistics.networking.common;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkChannels;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkChannels;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.networking.CacheHandler;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class DefaultNetworkChannels implements INetworkChannels {
 

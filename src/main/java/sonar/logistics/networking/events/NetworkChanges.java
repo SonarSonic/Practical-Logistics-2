@@ -1,8 +1,8 @@
 package sonar.logistics.networking.events;
 
-import java.util.List;
-
 import sonar.logistics.networking.LogisticsNetwork;
+
+import java.util.List;
 
 /**it is recommended to always use the LOCAL changes, as these will trigger global changes anyway.*/
 public enum NetworkChanges {

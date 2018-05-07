@@ -1,10 +1,6 @@
 package sonar.logistics.guide;
 
-import java.util.List;
-
 import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockLever;
-import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -15,31 +11,30 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Items;
-import sonar.logistics.api.PL2Properties;
+import sonar.logistics.PL2Properties;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.types.NetworkItemElement;
 import sonar.logistics.api.displays.elements.types.NetworkItemGridElement;
 import sonar.logistics.api.displays.elements.types.ProgressBarElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.tiles.DisplayConnections;
 import sonar.logistics.api.info.InfoUUID;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.lists.types.ItemChangeableList;
-import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.tiles.displays.DisplayConnections;
 import sonar.logistics.common.multiparts.cables.TileDataCable;
 import sonar.logistics.common.multiparts.displays.BlockLargeDisplay;
 import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
-import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
 import sonar.logistics.common.multiparts.nodes.TileNode;
 import sonar.logistics.common.multiparts.readers.TileInfoReader;
 import sonar.logistics.common.multiparts.readers.TileInventoryReader;
-import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
-import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.info.types.LogicInfoList;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.info.types.ProgressInfo;
+
+import java.util.List;
 
 public class ExampleConfigurations {
 

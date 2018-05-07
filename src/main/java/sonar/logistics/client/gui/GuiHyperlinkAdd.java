@@ -1,18 +1,17 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-
 import net.minecraft.client.gui.GuiTextField;
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.inventory.Container;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IHyperlinkRequirement;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.generic.info.HyperlinkRequest;
+
+import java.io.IOException;
 
 public class GuiHyperlinkAdd extends GuiLogistics {
 

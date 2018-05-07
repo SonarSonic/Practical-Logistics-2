@@ -1,76 +1,50 @@
 package sonar.logistics.api.displays;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants.NBT;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockInteractionType;
-import sonar.core.helpers.ChunkHelper;
 import sonar.core.helpers.ListHelper;
-import sonar.core.helpers.NBTHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.core.listener.ISonarListener;
-import sonar.core.network.sync.DirtyPart;
-import sonar.core.network.sync.IDirtyPart;
-import sonar.core.network.sync.ISyncPart;
-import sonar.core.network.sync.ISyncableListener;
-import sonar.core.network.sync.SyncTagType;
+import sonar.core.network.sync.*;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.core.network.sync.SyncableList;
 import sonar.logistics.PL2;
-import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.IInfoManager;
-import sonar.logistics.api.displays.buttons.EmptyInfoElement;
-import sonar.logistics.api.displays.elements.IClickableElement;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.IElementStorageHolder;
-import sonar.logistics.api.displays.elements.IInfoReferenceElement;
-import sonar.logistics.api.displays.elements.ILookableElement;
+import sonar.logistics.api.displays.buttons.ButtonEmptyInfo;
+import sonar.logistics.api.displays.elements.*;
 import sonar.logistics.api.displays.elements.text.StyledTextElement;
 import sonar.logistics.api.displays.elements.text.StyledTitleElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler.DisplayGSISavedData;
 import sonar.logistics.api.displays.storage.EditContainer;
+import sonar.logistics.api.displays.tiles.*;
 import sonar.logistics.api.errors.IInfoError;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.DisplayScreenLook;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.IScaleableDisplay;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gsi.GSIOverlays;
 import sonar.logistics.client.gui.display.GuiEditElementsList;
+import sonar.logistics.client.gui.display.GuiHolographicRescaling;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
+import sonar.logistics.common.multiparts.holographic.TileAdvancedHolographicDisplay;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.helpers.PacketHelper;
@@ -78,8 +52,15 @@ import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.displays.LocalProviderHandler;
-import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.packets.gsi.*;
+import sonar.logistics.packets.gsi.PacketGSIConnectedDisplayValidate;
+import sonar.logistics.packets.gsi.PacketGSIInvalidate;
+import sonar.logistics.packets.gsi.PacketGSISavedDataPacket;
+import sonar.logistics.packets.gsi.PacketGSIStandardDisplayValidate;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListener, IFlexibleGui<IDisplay>, ISonarListener {
 
@@ -161,7 +142,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				} else {
 					if (clickedElement != null && this.edit_mode.getObject()) {
 						//// NO-SHIFT: OPENS GUI EDIT SCREEN, SHIFT: STARTS RESIZE MODE FOR THE CLICKED ELEMENT \\\\
-						if (!isEditContainer(clickedElement.getFirst().getHolder().getContainer()) && !(clickedElement.getFirst() instanceof EmptyInfoElement)) {
+						if (!isEditContainer(clickedElement.getFirst().getHolder().getContainer()) && !(clickedElement.getFirst() instanceof ButtonEmptyInfo)) {
 							if (!player.isSneaking()) {
 								NBTTagCompound guiTag = new NBTTagCompound();
 								guiTag.setInteger("clicked", clickedElement.getFirst().getElementIdentity());
@@ -514,6 +495,9 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				TileAbstractDisplay display = (TileAbstractDisplay) obj.getActualDisplay();
 				PacketHelper.sendLocalProvidersFromScreen(display, world, display.getPos(), player);
 				break;
+			case 2:
+
+				break;
 			}
 		} else {
 			IFlexibleGui guiHandler = getElementFromGuiPacket(obj, containerID, elementID, world, player, tag);
@@ -532,6 +516,12 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			case 1:
 				TileAbstractDisplay display = (TileAbstractDisplay) obj.getActualDisplay();
 				return new ContainerMultipartSync(display);
+			case 2:
+				if(obj instanceof TileAbstractHolographicDisplay) {
+					TileAbstractHolographicDisplay holographic = (TileAbstractHolographicDisplay) obj;
+					return new ContainerMultipartSync(holographic);
+				}
+				break;
 			}
 		} else {
 			IFlexibleGui guiHandler = getElementFromGuiPacket(obj, containerID, elementID, world, player, tag);
@@ -555,6 +545,12 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				int element_id = tag.getInteger("clicked");
 				IDisplayElement element = getElementFromIdentity(element_id);
 				return element.getClientEditGui(display, null, world, player);
+			case 2:
+				if(obj instanceof TileAdvancedHolographicDisplay){
+					TileAdvancedHolographicDisplay holographic = (TileAdvancedHolographicDisplay)obj;
+					return new GuiHolographicRescaling(new ContainerMultipartSync(holographic), holographic);
+				}
+				break;
 			}
 		} else {
 			IFlexibleGui guiHandler = getElementFromGuiPacket(obj, containerID, elementID, world, player, tag);

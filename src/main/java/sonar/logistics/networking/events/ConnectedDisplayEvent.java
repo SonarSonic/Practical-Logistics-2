@@ -2,7 +2,7 @@ package sonar.logistics.networking.events;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
 
 public class ConnectedDisplayEvent extends Event {
 

@@ -1,12 +1,12 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import net.minecraftforge.fml.client.config.GuiUtils;
 import sonar.core.utils.CustomColour;
 import sonar.core.utils.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class StyledStringHelper {
 

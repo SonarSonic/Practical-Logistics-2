@@ -1,8 +1,5 @@
 package sonar.logistics.packets;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -17,6 +14,9 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.api.wireless.WirelessConnectionType;
 import sonar.logistics.networking.ClientInfoHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PacketClientEmitters implements IMessage {
 

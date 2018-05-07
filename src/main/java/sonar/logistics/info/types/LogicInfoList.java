@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncTagType;
@@ -18,6 +16,8 @@ import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.networking.sorters.SortingHelper;
+
+import java.util.List;
 
 @LogicInfoType(id = LogicInfoList.id, modid = PL2Constants.MODID)
 public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableInfo<LogicInfoList> {
@@ -52,7 +52,7 @@ public class LogicInfoList extends BaseInfo<LogicInfoList> implements INameableI
 
 	@Override
 	public boolean isMatchingInfo(LogicInfoList info) {
-		return infoID.getObject().equals(info.infoID.getObject()) && networkID.getObject() == info.networkID.getObject();
+		return infoID.getObject().equals(info.infoID.getObject()) && networkID.getObject().equals(info.networkID.getObject()) ;
 	}
 
 	@Override

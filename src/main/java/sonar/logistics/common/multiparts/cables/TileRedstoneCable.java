@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.cables;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,13 +18,8 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.utils.LabelledAxisAlignedBB;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2Properties;
-import sonar.logistics.api.cabling.CableConnectionType;
-import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.cabling.ConnectableType;
-import sonar.logistics.api.cabling.ICableConnectable;
-import sonar.logistics.api.cabling.IRedstoneCable;
-import sonar.logistics.api.cabling.IRedstonePowerProvider;
+import sonar.logistics.PL2Properties;
+import sonar.logistics.api.cabling.*;
 import sonar.logistics.api.operator.IOperatorProvider;
 import sonar.logistics.api.operator.IOperatorTile;
 import sonar.logistics.api.operator.OperatorMode;
@@ -37,6 +29,9 @@ import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCable, IOperatorTile, IOperatorProvider {
 
@@ -152,7 +147,7 @@ public class TileRedstoneCable extends TileSonarMultipart implements IRedstoneCa
 					RedstoneConnectionHandler.instance().addConnection(adjCable);
 					RedstoneConnectionHandler.instance().addConnection(this);
 
-					// update networks
+					// update networking
 					/* FIXME probably not needed for redstone cable
 					ILogisticsNetwork thisNet = PL2.getNetworkManager().getOrCreateNetwork(getRegistryID());
 					ILogisticsNetwork adjNetNet = PL2.getNetworkManager().getOrCreateNetwork(adjCable.getRegistryID());

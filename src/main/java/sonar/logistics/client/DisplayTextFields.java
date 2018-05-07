@@ -1,14 +1,13 @@
 package sonar.logistics.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import org.lwjgl.input.Keyboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DisplayTextFields extends Gui {
 

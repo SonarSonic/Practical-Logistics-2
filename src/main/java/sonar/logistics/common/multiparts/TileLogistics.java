@@ -1,7 +1,5 @@
 package sonar.logistics.common.multiparts;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -21,13 +19,13 @@ import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.cabling.INetworkTile;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.networks.EmptyLogisticsNetwork;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.networks.INetworkListener;
+import sonar.logistics.api.networking.EmptyLogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.api.networking.INetworkListener;
 import sonar.logistics.api.operator.IOperatorProvider;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.tiles.INetworkTile;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
@@ -41,6 +39,8 @@ import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.packets.PacketChannels;
 import sonar.logistics.packets.sync.SyncTileMessages;
 
+import java.util.List;
+
 public abstract class TileLogistics extends TileSonarMultipart implements INetworkTile, INetworkListener, IOperatorProvider {
 
 	//very important, used for identifying this tile within the network, don't alter unless you know what you're doing
@@ -53,10 +53,6 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	{
 		syncList.addParts(networkID, states);
 		states.markAllMessages(true);
-	}
-
-	public TileLogistics() {
-		super();
 	}
 
 	public abstract EnumFacing getCableFace();
@@ -139,7 +135,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	}
 
 	@Override
-	public final void invalidate() {
+	public void invalidate() {
 		super.invalidate();
 		if (getIdentity() != -1) {
 			doChunkUnloadEvent();
@@ -150,8 +146,8 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	}
 
 	@Override
-	public void handlePartUpdateTag(NBTTagCompound tag) {
-		super.handlePartUpdateTag(tag);
+	public void handleUpdateTag(NBTTagCompound tag){
+		super.handleUpdateTag(tag);
 		if (isClient()) {
 			doChunkLoadEvent();
 		}

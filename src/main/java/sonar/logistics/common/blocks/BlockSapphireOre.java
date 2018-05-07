@@ -1,7 +1,5 @@
 package sonar.logistics.common.blocks;
 
-import java.util.Random;
-
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
@@ -11,6 +9,7 @@ import sonar.core.SonarCore;
 import sonar.logistics.PL2Items;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
 
 public class BlockSapphireOre extends BlockOre {
 

@@ -1,16 +1,6 @@
 package sonar.logistics.info;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -30,19 +20,28 @@ import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.InfoChangeableList;
-import sonar.logistics.api.register.CapabilityMethod;
-import sonar.logistics.api.register.InvField;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
-import sonar.logistics.api.register.TileHandlerMethod;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.NodeConnection;
+import sonar.logistics.info.paths.CapabilityMethod;
+import sonar.logistics.info.paths.InventoryField;
+import sonar.logistics.info.paths.TileHandlerMethod;
 import sonar.logistics.info.types.LogicInfo;
 import sonar.logistics.networking.info.InfoNetworkHandler;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /** where all the registering for LogicInfo happens */
 public class LogicInfoRegistry implements IMasterInfoRegistry {
@@ -390,7 +389,7 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 					if (fields != null && !fields.isEmpty()) {
 						fields.forEach((key, value) -> {
                             LogicPath invPath = currentPath.dupe();
-                            invPath.addObject(new InvField(key, value, type));
+                            invPath.addObject(new InventoryField(key, value, type));
                             invPath.setRegistryType(type);
                             infoList.add(LogicInfo.buildDirectInfo(argClass.getSimpleName() + "." + key, type, ((IInventory) arg).getField(value)).setPath(invPath));
                         });
@@ -535,8 +534,8 @@ public class LogicInfoRegistry implements IMasterInfoRegistry {
 					return null;
 				}
 			}
-			if (arg instanceof InvField && returned instanceof IInventory) {
-				InvField field = ((InvField) arg);
+			if (arg instanceof InventoryField && returned instanceof IInventory) {
+				InventoryField field = ((InventoryField) arg);
 				info.setFromReturn(logicPath, ((IInventory) returned).getField(field.value));
 				return info;
 			}

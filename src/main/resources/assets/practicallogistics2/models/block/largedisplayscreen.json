@@ -1,6 +1,6 @@
 {
     "textures": {
-        "front": "practicallogistics2:model/large_display_screen_front",
+        "front": "practicallogistics2:model/large_screen/large_display_none",
         "0": "practicallogistics2:model/large_display_screen_front",
         "back": "practicallogistics2:model/large_screen_back/large_display_none"
     },
@@ -18,5 +18,38 @@
                 "down": { "texture": "#front", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
             }
         }
-    ]
+    ],
+    "display": {
+        "thirdperson_righthand": {
+            "scale":  [ 0.5, 0.5, 0.5 ]
+        },
+        "thirdperson_lefthand": {
+            "scale":  [ 0.5, 0.5, 0.5 ]
+        },
+        "firstperson_righthand": {
+            "rotation":  [ -90, 0, -20 ],
+            "translation":  [ -0.695, 4.1734, 1.2 ],
+            "scale":  [ 0.5, 0.5, 0.5 ]
+        },
+        "firstperson_lefthand": {
+            "rotation":  [ -90, 0, -20 ],
+            "translation":  [ -0.695, 4.1734, 1.2 ],
+            "scale":  [ 0.5, 0.5, 0.5 ]
+        },
+        "gui": {
+            "rotation":  [ -90, 0, 0 ],
+            "scale":  [ 0.9, 0.9, 0.9 ]
+        },
+        "head": {
+            "rotation":  [ 180, 0, 0 ]
+        },
+        "ground": {
+            "rotation":  [ 180, 0, 0 ],
+            "translation":  [ 0, -6, 0 ]
+        },
+        "fixed": {
+            "rotation":  [ 90, 0, 0 ],
+            "translation":  [ 0, 0, 8 ]
+        }
+    }
 }

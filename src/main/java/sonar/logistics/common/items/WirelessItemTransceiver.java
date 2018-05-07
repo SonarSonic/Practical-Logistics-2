@@ -1,7 +1,5 @@
 package sonar.logistics.common.items;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -22,6 +20,7 @@ import sonar.core.helpers.FontHelper;
 import sonar.logistics.api.wireless.ITileTransceiver;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class WirelessItemTransceiver extends SonarItem implements ITileTransceiver {
 

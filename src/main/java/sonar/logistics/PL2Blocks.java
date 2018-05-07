@@ -15,16 +15,13 @@ import sonar.logistics.common.multiparts.BlockLogistics;
 import sonar.logistics.common.multiparts.cables.BlockDataCable;
 import sonar.logistics.common.multiparts.cables.BlockRedstoneCable;
 import sonar.logistics.common.multiparts.displays.BlockDisplayScreen;
-import sonar.logistics.common.multiparts.displays.BlockHolographicDisplay;
 import sonar.logistics.common.multiparts.displays.BlockLargeDisplay;
 import sonar.logistics.common.multiparts.displays.BlockMiniDisplay;
+import sonar.logistics.common.multiparts.holographic.BlockAdvancedHolographicDisplay;
+import sonar.logistics.common.multiparts.holographic.BlockHolographicDisplay;
 import sonar.logistics.common.multiparts.misc.BlockClock;
 import sonar.logistics.common.multiparts.misc.BlockRedstoneSignaller;
-import sonar.logistics.common.multiparts.nodes.BlockArray;
-import sonar.logistics.common.multiparts.nodes.BlockEntityNode;
-import sonar.logistics.common.multiparts.nodes.BlockNode;
-import sonar.logistics.common.multiparts.nodes.BlockRedstoneNode;
-import sonar.logistics.common.multiparts.nodes.BlockTransferNode;
+import sonar.logistics.common.multiparts.nodes.*;
 import sonar.logistics.common.multiparts.readers.BlockAbstractReader;
 import sonar.logistics.common.multiparts.wireless.BlockDataEmitter;
 import sonar.logistics.common.multiparts.wireless.BlockDataReceiver;
@@ -36,7 +33,7 @@ public class PL2Blocks extends PL2 {
 	public static Block sapphire_ore, hammer, hammer_air;
 	public static Block info_reader, fluid_reader, energy_reader, inventory_reader, network_reader, data_cable, redstone_cable, node, data_emitter, data_receiver, redstone_emitter, redstone_receiver;
 	public static Block array, entity_node, transfer_node, redstone_node, redstone_signaller, clock;
-	public static Block display_screen, mini_display, large_display_screen, holographic_display;
+	public static Block display_screen, mini_display, large_display_screen, holographic_display, advanced_holographic_display;
 
 	public static void registerBlocks() {
 		hammer = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new SonarRegistryBlock(new BlockHammer(), "Hammer", TileEntityHammer.class).setProperties());
@@ -62,6 +59,7 @@ public class PL2Blocks extends PL2 {
 		display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDisplayScreen()));
 		large_display_screen = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockLargeDisplay()));
 		holographic_display = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockHolographicDisplay()));
+		advanced_holographic_display = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockAdvancedHolographicDisplay()));
 		
 		data_cable = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockDataCable()));
 		redstone_cable = SonarRegister.addBlock(PL2Constants.MODID, PL2.creativeTab, new LogisticsRegistryMultipart(new BlockRedstoneCable()));

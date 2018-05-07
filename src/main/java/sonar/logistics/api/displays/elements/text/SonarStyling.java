@@ -1,11 +1,11 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
+
+import java.util.List;
 
 public class SonarStyling implements INBTSyncable {
 

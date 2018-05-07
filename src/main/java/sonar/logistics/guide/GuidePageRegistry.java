@@ -1,17 +1,13 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.item.ItemStack;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Items;
 import sonar.logistics.guide.general.ExamplesPages;
-import sonar.logistics.guide.pages.EnergyReaderPage;
-import sonar.logistics.guide.pages.FluidReaderPage;
-import sonar.logistics.guide.pages.InfoReaderPage;
-import sonar.logistics.guide.pages.InventoryReaderPage;
-import sonar.logistics.guide.pages.TransferNodePage;
+import sonar.logistics.guide.pages.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuidePageRegistry {
 

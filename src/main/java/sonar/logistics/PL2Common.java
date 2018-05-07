@@ -16,21 +16,7 @@ import sonar.logistics.networking.cabling.WirelessRedstoneManager;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 import sonar.logistics.networking.displays.DisplayHandler;
 import sonar.logistics.networking.events.LogisticsEventHandler;
-import sonar.logistics.packets.PacketAddListener;
-import sonar.logistics.packets.PacketChannels;
-import sonar.logistics.packets.PacketClientEmitters;
-import sonar.logistics.packets.PacketConnectedDisplayRemove;
-import sonar.logistics.packets.PacketConnectedDisplayUpdate;
-import sonar.logistics.packets.PacketDisplayTextEdit;
-import sonar.logistics.packets.PacketEmitterStatement;
-import sonar.logistics.packets.PacketInfoUpdates;
-import sonar.logistics.packets.PacketInventoryReader;
-import sonar.logistics.packets.PacketItemInteractionText;
-import sonar.logistics.packets.PacketLocalProviderSelection;
-import sonar.logistics.packets.PacketLocalProviders;
-import sonar.logistics.packets.PacketMonitoredList;
-import sonar.logistics.packets.PacketNodeFilter;
-import sonar.logistics.packets.PacketWirelessStorage;
+import sonar.logistics.packets.*;
 import sonar.logistics.packets.gsi.*;
 
 public class PL2Common {
@@ -69,6 +55,7 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketGSIConnectedDisplayValidate.Handler.class, PacketGSIConnectedDisplayValidate.class, 18, Side.CLIENT);
 		PL2.network.registerMessage(PacketGSIStandardDisplayValidate.Handler.class, PacketGSIStandardDisplayValidate.class, 19, Side.CLIENT);
 		PL2.network.registerMessage(PacketGSIInvalidate.Handler.class, PacketGSIInvalidate.class, 20, Side.CLIENT);
+		PL2.network.registerMessage(PacketHolographicDisplayScaling.Handler.class, PacketHolographicDisplayScaling.class, 21, Side.SERVER);
 	}
 
 	public ClientInfoHandler getClientManager() {

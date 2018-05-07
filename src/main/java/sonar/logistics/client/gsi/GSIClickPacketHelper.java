@@ -2,6 +2,8 @@ package sonar.logistics.client.gsi;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import sonar.core.SonarCore;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper;
@@ -10,10 +12,10 @@ import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.InteractionHelper;
 import sonar.logistics.packets.gsi.PacketGSIClick;
@@ -71,7 +73,10 @@ public class GSIClickPacketHelper {
 	public static void doItemPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		StoredItemStack clicked = NBTHelper.instanceNBTSyncable(StoredItemStack.class, clickTag);
 		int networkID = clickTag.getInteger("networkID");
-		InteractionHelper.screenItemStackClicked(networkID, clicked.item.isEmpty() ? null : clicked, click, player, clickTag);
+
+		SonarCore.proxy.getThreadListener(Side.SERVER).addScheduledTask(() -> {
+			InteractionHelper.screenItemStackClicked(networkID, clicked.item.isEmpty() ? null : clicked, click, player, clickTag);
+		});
 		
 	}
 

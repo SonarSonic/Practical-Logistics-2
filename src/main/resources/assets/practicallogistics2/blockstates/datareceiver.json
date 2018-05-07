@@ -10,8 +10,7 @@
      },
     "variants": {
         "inventory": [{    
-            "model":"practicallogistics2:DataReceiver",            
-            "up":{"x": 180}
+            "model":"practicallogistics2:DataReceiver"
         }],
         "facing":{  
             "north":{"x": 90, "y": 180},            

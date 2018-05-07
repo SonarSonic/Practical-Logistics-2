@@ -1,10 +1,10 @@
 package sonar.logistics.guide;
 
-import java.util.List;
-
 import sonar.core.helpers.FontHelper;
 import sonar.logistics.client.gui.GuiGuide;
 import sonar.logistics.guide.elements.ElementInfo;
+
+import java.util.List;
 
 public class GeneralPage extends BaseInfoPage {
 	public String displayKey;

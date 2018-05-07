@@ -1,16 +1,9 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.collect.Lists;
 import com.ibm.icu.text.ArabicShaping;
 import com.ibm.icu.text.ArabicShapingException;
 import com.ibm.icu.text.Bidi;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -18,6 +11,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /** lots of copying from FontRenderer, with changes to enable StyledString renders ... Justify, Line wrapping, multiple page text renders. */
 public class StyledStringRenderer extends FontRenderer {
@@ -77,10 +76,6 @@ public class StyledStringRenderer extends FontRenderer {
 
 		public StyledStringRenderHandler(StyledTextElement text) {
 			this.text = text;
-		}
-
-		public void finishedStyledStringLine() {
-
 		}
 
 		public void incrementX(double increment) {
@@ -257,10 +252,6 @@ public class StyledStringRenderer extends FontRenderer {
 				}
 			}
 		}
-	}
-	
-	public void renderTitle(){
-		
 	}
 
 	public static final String TEXT_FORMATTING_IDENTIFIERS = "0123456789abcdefklmnor";

@@ -1,11 +1,11 @@
 package sonar.logistics.api.wireless;
 
-import java.util.UUID;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+
+import java.util.UUID;
 
 /** implemented on Items which can provide Channels for a network when placed in a Array */
 public interface IEntityTransceiver extends ITransceiver {

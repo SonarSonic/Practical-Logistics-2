@@ -1,14 +1,13 @@
 package sonar.logistics.client.gui;
 
-import java.text.SimpleDateFormat;
-
+import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-
-import net.minecraft.client.gui.GuiButton;
 import sonar.core.helpers.FontHelper;
 import sonar.core.inventory.ContainerMultipartSync;
 import sonar.logistics.common.multiparts.misc.TileClock;
+
+import java.text.SimpleDateFormat;
 
 public class GuiClock extends GuiLogistics {
 

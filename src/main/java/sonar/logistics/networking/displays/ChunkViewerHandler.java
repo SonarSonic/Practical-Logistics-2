@@ -1,11 +1,5 @@
 package sonar.logistics.networking.displays;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -18,9 +12,15 @@ import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
 import sonar.logistics.networking.ServerInfoHandler;
 import sonar.logistics.packets.PacketConnectedDisplayUpdate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /** caches display viewers, via accessing chunk PlayerMap */
 public class ChunkViewerHandler {

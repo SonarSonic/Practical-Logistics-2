@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.nodes;
 
-import java.util.List;
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
@@ -23,7 +20,7 @@ import sonar.core.network.sync.SyncTagType.INT;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.states.ErrorMessage;
+import sonar.logistics.api.errors.ErrorMessage;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.nodes.EntityTarget;
 import sonar.logistics.api.tiles.nodes.INode;
@@ -31,6 +28,9 @@ import sonar.logistics.api.tiles.nodes.NodeConnection;
 import sonar.logistics.client.gui.GuiEntityNode;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.networking.CacheHandler;
+
+import java.util.List;
+import java.util.UUID;
 
 public class TileEntityNode extends TileSidedLogistics implements INode, IByteBufTile, IFlexibleGui {
 

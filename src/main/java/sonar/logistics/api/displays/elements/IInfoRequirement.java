@@ -1,10 +1,10 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.info.InfoUUID;
+
+import java.util.List;
 
 public interface IInfoRequirement {
 	

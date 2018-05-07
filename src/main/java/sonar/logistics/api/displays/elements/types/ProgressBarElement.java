@@ -1,11 +1,9 @@
 package sonar.logistics.api.displays.elements.types;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Constants;
@@ -19,9 +17,6 @@ import sonar.logistics.client.gui.display.GuiEditProgressBar;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.info.types.ProgressInfo;
-
-import static net.minecraft.client.renderer.GlStateManager.*;
-import static net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate;
 
 @DisplayElementType(id = ProgressBarElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class ProgressBarElement extends AbstractInfoElement<ProgressInfo> {

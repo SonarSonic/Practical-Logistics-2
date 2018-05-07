@@ -1,9 +1,5 @@
 package sonar.logistics.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -47,7 +43,13 @@ import sonar.logistics.packets.PacketInfoUpdates;
 import sonar.logistics.packets.PacketLocalProviders;
 import sonar.logistics.packets.PacketMonitoredList;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class PacketHelper {
+
+	//// LOCAL PROVIDERS \\\\
 
 	public static void sendLocalProvidersFromScreen(TileAbstractDisplay part, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		List<ILogicListenable> providers = DisplayHelper.getLocalProviders(part, world, pos);
@@ -69,6 +71,8 @@ public class PacketHelper {
 		});
 		PL2.network.sendTo(new PacketLocalProviders(clientProviders, identity), (EntityPlayerMP) player);
 	}
+
+	//// INFO UPDATES \\\\
 
 	public static void createInfoUpdatesForListeners(Map<EntityPlayerMP, NBTTagList> listenerPackets, List<PlayerListener> players, NBTTagCompound updateTag, NBTTagCompound saveTag, boolean fullPacket) {
 		players.forEach(player -> addPlayerUpdatesToList(listenerPackets, player.player, updateTag, saveTag, fullPacket));
@@ -136,6 +140,8 @@ public class PacketHelper {
 		listeners.forEach(listener -> PL2.network.sendTo(new PacketMonitoredList(monitor.getIdentity(), uuid, monitor.getNetworkID(), saveTag, SyncType.SAVE, monitor.getSorter()), listener.player));
 	}
 
+	//// RAPID UPDATES \\\\
+
 	public static void createRapidFluidUpdate(List<FluidStack> toUpdate, int networkID) {
 		FluidNetworkChannels channels = NetworkHelper.getNetwork(networkID).getNetworkChannels(FluidNetworkChannels.class);
 		if (channels != null) {
@@ -167,6 +173,8 @@ public class PacketHelper {
 		}
 		sendStandardListenerPacket(reader, list, listUUID);
 	}
+
+	//// MONITORED LIST LISTENERS \\\\
 
 	public static boolean sendStandardListenerPacket(ILogicListenable reader, AbstractChangeableList updateList, InfoUUID listUUID) {
 		NBTTagCompound tag = InfoHelper.writeMonitoredList(new NBTTagCompound(), updateList, SyncType.DEFAULT_SYNC);

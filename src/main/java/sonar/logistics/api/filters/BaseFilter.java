@@ -1,11 +1,11 @@
 package sonar.logistics.api.filters;
 
-import java.util.UUID;
-
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+
+import java.util.UUID;
 
 public abstract class BaseFilter extends BaseSyncListPart implements INodeFilter {
 

@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import appeng.api.storage.ICellInventory;
 import appeng.api.storage.ICellInventoryHandler;
 import appeng.api.storage.IMEInventoryHandler;
@@ -11,9 +9,11 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+
+import java.util.List;
 
 @LogicInfoType(id = AE2DriveInfo.id, modid = "appliedenergistics2")
 public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableInfo<AE2DriveInfo>,INameableInfo<AE2DriveInfo>, IComparableInfo<AE2DriveInfo> {

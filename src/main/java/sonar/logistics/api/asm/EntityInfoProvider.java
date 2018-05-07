@@ -1,11 +1,11 @@
 package sonar.logistics.api.asm;
 
+import sonar.logistics.api.info.handlers.IEntityInfoProvider;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import sonar.logistics.api.info.handlers.IEntityInfoProvider;
 
 /**use this with {@link IEntityInfoProvider}*/
 @Retention(RetentionPolicy.RUNTIME)

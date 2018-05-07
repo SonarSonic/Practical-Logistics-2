@@ -1,7 +1,5 @@
 package sonar.logistics.info.providers;
 
-import java.util.List;
-
 import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.crafting.TileCraftingMonitorTile;
 import net.minecraft.block.Block;
@@ -18,8 +16,10 @@ import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.info.register.LogicPath;
 import sonar.logistics.info.types.MonitoredItemStack;
+
+import java.util.List;
 
 @TileInfoProvider(handlerID = "ae2-drive", modid = "appliedenergistics2")
 public class AE2CraftingProvider implements ITileInfoProvider {

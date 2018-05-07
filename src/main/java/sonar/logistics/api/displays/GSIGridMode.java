@@ -7,7 +7,7 @@ import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gsi.GSIHelper;
 import sonar.logistics.helpers.DisplayElementHelper;

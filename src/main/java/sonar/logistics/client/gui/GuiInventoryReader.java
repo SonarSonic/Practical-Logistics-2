@@ -1,11 +1,5 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -14,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.input.Keyboard;
 import sonar.core.SonarCore;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiHelpOverlay;
@@ -33,6 +28,10 @@ import sonar.logistics.common.multiparts.readers.TileInventoryReader;
 import sonar.logistics.info.types.MonitoredItemStack;
 import sonar.logistics.packets.PacketInventoryReader;
 import sonar.logistics.packets.PacketNodeFilter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 

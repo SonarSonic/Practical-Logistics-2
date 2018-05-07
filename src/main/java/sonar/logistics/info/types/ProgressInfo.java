@@ -1,8 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -11,14 +8,13 @@ import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.IElementStorageHolder;
 import sonar.logistics.api.displays.elements.types.ProgressBarElement;
-import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.ISuffixable;
-import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.info.*;
+import sonar.logistics.api.info.register.LogicPath;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.networking.info.InfoHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @LogicInfoType(id = ProgressInfo.id, modid = PL2Constants.MODID)
 public class ProgressInfo implements IInfo<ProgressInfo>, INBTSyncable, INameableInfo<ProgressInfo>, ISuffixable, IComparableInfo<ProgressInfo> {

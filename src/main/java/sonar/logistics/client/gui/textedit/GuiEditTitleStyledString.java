@@ -2,11 +2,7 @@ package sonar.logistics.client.gui.textedit;
 
 import net.minecraft.util.Tuple;
 import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.text.IStyledString;
-import sonar.logistics.api.displays.elements.text.StyledString;
-import sonar.logistics.api.displays.elements.text.StyledStringLine;
-import sonar.logistics.api.displays.elements.text.StyledTextElement;
-import sonar.logistics.api.displays.elements.text.StyledTitleElement;
+import sonar.logistics.api.displays.elements.text.*;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 
 public class GuiEditTitleStyledString extends GuiEditStyledStrings {
@@ -14,7 +10,6 @@ public class GuiEditTitleStyledString extends GuiEditStyledStrings {
 	
 	public GuiEditTitleStyledString(StyledTextElement text, TileAbstractDisplay display) {
 		super(text, display);
-		// TODO Auto-generated constructor stub
 	}
 
 	public int[] getDragPositionFromContainerXY(double clickX, double clickY) {

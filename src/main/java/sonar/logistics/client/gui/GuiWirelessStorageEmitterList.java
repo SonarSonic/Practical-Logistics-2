@@ -1,9 +1,6 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-
 import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +21,8 @@ import sonar.logistics.common.items.WirelessStorageReader;
 import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.packets.PacketWirelessStorage;
+
+import java.io.IOException;
 
 public class GuiWirelessStorageEmitterList extends GuiSelectionList<ClientWirelessEmitter> {
 

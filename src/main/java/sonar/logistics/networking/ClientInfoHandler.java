@@ -1,35 +1,30 @@
 package sonar.logistics.networking;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.helpers.NBTHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.InfoChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
 import sonar.logistics.api.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
 import sonar.logistics.api.wireless.ClientWirelessEmitter;
 import sonar.logistics.networking.events.NetworkPartEvent;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientInfoHandler implements IInfoManager {
 

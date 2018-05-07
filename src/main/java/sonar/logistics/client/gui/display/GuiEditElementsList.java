@@ -1,16 +1,10 @@
 package sonar.logistics.client.gui.display;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.IGridGui;
 import sonar.core.client.gui.SelectionGrid;
 import sonar.core.client.gui.widgets.SonarScroller;
@@ -20,12 +14,16 @@ import sonar.logistics.PL2Translate;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.storage.DisplayElementContainer;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui {
 

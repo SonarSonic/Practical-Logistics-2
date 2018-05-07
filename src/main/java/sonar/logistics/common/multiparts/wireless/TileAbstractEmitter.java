@@ -1,7 +1,5 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,12 +14,10 @@ import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.STRING;
 import sonar.core.network.utils.IByteBufTile;
-import sonar.logistics.api.wireless.EnumConnected;
-import sonar.logistics.api.wireless.IWirelessEmitter;
-import sonar.logistics.api.wireless.IWirelessManager;
-import sonar.logistics.api.wireless.IWirelessReceiver;
-import sonar.logistics.api.wireless.WirelessSecurity;
+import sonar.logistics.api.wireless.*;
 import sonar.logistics.client.gui.GuiWirelessEmitter;
+
+import java.util.UUID;
 
 public abstract class TileAbstractEmitter<E extends IWirelessEmitter, R extends IWirelessReceiver> extends TileAbstractWireless implements IWirelessEmitter, IFlexibleGui, IByteBufTile {
 

@@ -1,8 +1,5 @@
 package sonar.logistics.common.items;
 
-import java.util.List;
-import java.util.Optional;
-
 import mcmultipart.api.container.IMultipartContainer;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
@@ -40,6 +37,8 @@ import sonar.logistics.networking.ClientInfoHandler;
 import sonar.logistics.networking.ServerInfoHandler;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Optional;
 
 public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleGui<ItemStack> {
 

@@ -1,7 +1,6 @@
 package sonar.logistics.guide.elements;
 
 import org.lwjgl.opengl.GL11;
-
 import sonar.core.client.gui.GuiSonar;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiGuide;

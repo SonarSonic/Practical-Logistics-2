@@ -1,12 +1,8 @@
 package sonar.logistics.guide;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.gui.GuiGuide;
@@ -14,6 +10,9 @@ import sonar.logistics.guide.elements.ElementCraftingRecipe;
 import sonar.logistics.guide.elements.ElementHammerRecipe;
 import sonar.logistics.guide.elements.ElementItem;
 import sonar.logistics.guide.elements.ElementLink;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BaseItemPage extends GeneralPage implements IGuidePage {
 

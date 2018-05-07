@@ -1,7 +1,6 @@
 package sonar.logistics.info.registries;
 
 import com.google.common.collect.Lists;
-
 import sonar.flux.api.AccessType;
 import sonar.flux.api.network.EnergyStats;
 import sonar.flux.api.network.IFluxCommon;
@@ -12,7 +11,7 @@ import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "FluxNetworks")
 public class FluxNetworksRegistry implements IInfoRegistry {

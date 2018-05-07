@@ -1,9 +1,8 @@
 package sonar.logistics.guide.elements;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.client.LogisticsColours;

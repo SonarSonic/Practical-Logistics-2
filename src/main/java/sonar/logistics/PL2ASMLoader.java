@@ -1,13 +1,5 @@
 package sonar.logistics;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -18,17 +10,7 @@ import sonar.core.api.nbt.INBTSyncable;
 import sonar.core.helpers.ASMLoader;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
-import sonar.logistics.api.asm.DisplayActionType;
-import sonar.logistics.api.asm.DisplayElementType;
-import sonar.logistics.api.asm.EntityInfoProvider;
-import sonar.logistics.api.asm.InfoErrorType;
-import sonar.logistics.api.asm.InfoRegistry;
-import sonar.logistics.api.asm.LogicComparator;
-import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.asm.LogicListSorter;
-import sonar.logistics.api.asm.NodeFilter;
-import sonar.logistics.api.asm.StyledStringType;
-import sonar.logistics.api.asm.TileInfoProvider;
+import sonar.logistics.api.asm.*;
 import sonar.logistics.api.displays.IDisplayAction;
 import sonar.logistics.api.displays.elements.IDisplayElement;
 import sonar.logistics.api.displays.elements.text.IStyledString;
@@ -41,6 +23,9 @@ import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.tiles.readers.ILogicListSorter;
 import sonar.logistics.info.LogicInfoRegistry;
 import sonar.logistics.info.comparators.ILogicComparator;
+
+import javax.annotation.Nonnull;
+import java.util.*;
 
 public class PL2ASMLoader {
 

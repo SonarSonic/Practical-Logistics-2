@@ -1,16 +1,5 @@
 package sonar.logistics.client;
 
-import static net.minecraft.client.renderer.GlStateManager.alphaFunc;
-import static net.minecraft.client.renderer.GlStateManager.color;
-import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.disableRescaleNormal;
-import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
-import static net.minecraft.client.renderer.GlStateManager.enableLighting;
-import static net.minecraft.client.renderer.GlStateManager.enableRescaleNormal;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -19,6 +8,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 //TODO W.I.P
 public class RenderInteractionOverlay {

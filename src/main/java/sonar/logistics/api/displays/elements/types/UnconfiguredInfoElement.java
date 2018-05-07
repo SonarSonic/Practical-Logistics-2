@@ -1,14 +1,6 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -24,15 +16,20 @@ import sonar.logistics.api.displays.HeightAlignment;
 import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.displays.elements.*;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gui.GuiInfoSource;
 import sonar.logistics.client.gui.display.GuiUnconfiguredInfoElement;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InfoRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 @DisplayElementType(id = UnconfiguredInfoElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class UnconfiguredInfoElement extends AbstractDisplayElement implements ILookableElement, IClickableElement, IInfoReferenceElement, IInfoRequirement, IFlexibleGui {

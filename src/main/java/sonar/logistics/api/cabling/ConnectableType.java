@@ -1,5 +1,7 @@
 package sonar.logistics.api.cabling;
 
+import sonar.logistics.api.tiles.INetworkTile;
+
 /** used to distinguish the different types of Cable Connections, used on server side. */
 public enum ConnectableType {
 	/** for standard Data Cables which are limited to one channel */

@@ -1,8 +1,5 @@
 package sonar.logistics.client.gui.generic;
 
-import java.awt.Color;
-import java.io.IOException;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.SonarCore;
@@ -22,6 +19,9 @@ import sonar.logistics.helpers.InfoRenderer;
 import sonar.logistics.info.types.MonitoredBlockCoords;
 import sonar.logistics.info.types.MonitoredEntity;
 import sonar.logistics.networking.ClientInfoHandler;
+
+import java.awt.*;
+import java.io.IOException;
 
 public class GuiChannelSelection extends GuiSelectionList<IInfo> {
 

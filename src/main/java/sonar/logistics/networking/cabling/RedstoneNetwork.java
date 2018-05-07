@@ -1,17 +1,17 @@
 package sonar.logistics.networking.cabling;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import sonar.core.helpers.ListHelper;
 import sonar.core.listener.ListenableList;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
 import sonar.logistics.api.cabling.IRedstonePowerProvider;
+import sonar.logistics.api.networking.IRedstoneNetwork;
 import sonar.logistics.api.wireless.IRedstoneEmitter;
 import sonar.logistics.api.wireless.IRedstoneReceiver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RedstoneNetwork implements IRedstoneNetwork {
 

@@ -1,7 +1,5 @@
 package sonar.logistics.info.providers;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -17,8 +15,10 @@ import sonar.logistics.api.asm.TileInfoProvider;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
+
+import java.util.List;
 
 @TileInfoProvider(handlerID = "normal-fluids", modid = PL2Constants.MODID)
 public class NormalFluidProvider implements ITileInfoProvider {

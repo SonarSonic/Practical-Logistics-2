@@ -1,39 +1,12 @@
 package sonar.logistics.helpers;
 
-import static net.minecraft.client.renderer.GlStateManager.alphaFunc;
-import static net.minecraft.client.renderer.GlStateManager.blendFunc;
-import static net.minecraft.client.renderer.GlStateManager.color;
-import static net.minecraft.client.renderer.GlStateManager.depthMask;
-import static net.minecraft.client.renderer.GlStateManager.disableAlpha;
-import static net.minecraft.client.renderer.GlStateManager.disableBlend;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.disableRescaleNormal;
-import static net.minecraft.client.renderer.GlStateManager.enableAlpha;
-import static net.minecraft.client.renderer.GlStateManager.enableBlend;
-import static net.minecraft.client.renderer.GlStateManager.enableRescaleNormal;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.rotate;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.ForgeHooksClient;
-import sonar.core.client.BlockModelsCache;
+import org.lwjgl.opengl.GL11;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.displays.HeightAlignment;
@@ -41,13 +14,12 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.info.types.LogicInfo;
-import sonar.logistics.info.types.MonitoredBlockCoords;
-import sonar.logistics.info.types.MonitoredItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InfoRenderer {
 
-	public static final double zLevel = 0, barOffset = 0.001;
-	
 
 	public static void renderCenteredStringsWithAdaptiveScaling(double width, double height, double maxScale, int spacing, double percentageFill, int colour, List<String> toDisplay) {
 		double maxIndividualHeight = height / toDisplay.size();
@@ -122,8 +94,6 @@ public class InfoRenderer {
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.popMatrix();
-		
-		
 	}
 
 	public static int getMaxWidth(List<String> toDisplay) {
@@ -157,50 +127,7 @@ public class InfoRenderer {
 		return RenderHelper.fontRenderer.FONT_HEIGHT;
 	}
 
-	public static int getStartX(int maxWidth) {
-
-		return 0;
-	}
-
-	public static void renderBox(double width, double height) {
-		//GlStateManager.depthMask(true);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-
-		double minX = -barOffset + 0.0625, minY = -barOffset + 0.0625 * 1, maxX = width + barOffset + 0.0625 * 1, maxY = height + barOffset + 0.0625 * 1;
-		double barWidth = (maxX - minX);
-		double divide = Math.max((maxX - minX), (maxY - minY));
-		double minU = 0, minV = 0, maxU = 1, maxV = 1;
-
-		double widthnew = (minU + (barWidth * (maxU - minU) / 1));
-		double heightnew = (minV + ((maxY - minY) * (maxV - minV) / 1));
-		vertexbuffer.pos(minX + 0, maxY, zLevel).tex(minU, heightnew).endVertex();
-		vertexbuffer.pos(minX + barWidth, maxY, zLevel).tex(widthnew, heightnew).endVertex();
-		vertexbuffer.pos(minX + barWidth, minY + 0, zLevel).tex(widthnew, minV).endVertex();
-		vertexbuffer.pos(minX + 0, minY + 0, zLevel).tex(minU, minV).endVertex();
-		tessellator.draw();
-	}
-
-	public static void renderProgressBar(double width, double height, double d, double e) {
-		//GlStateManager.depthMask(true);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder vertexbuffer = tessellator.getBuffer();
-		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-
-		double minX = -barOffset, minY = -barOffset, maxX = width + barOffset, maxY = height + barOffset;
-		double barWidth = d * (maxX - minX) / e;
-		double divide = Math.max((maxX - minX), (maxY - minY));
-		double minU = 0, minV = 0, maxU = 1, maxV = 1;
-
-		double widthnew = (minU + (barWidth * (maxU - minU) / 1));
-		double heightnew = (minV + ((maxY - minY) * (maxV - minV) / 1));
-		vertexbuffer.pos(minX + 0, maxY, zLevel).tex(minU, heightnew).endVertex();
-		vertexbuffer.pos(minX + barWidth, maxY, zLevel).tex(widthnew, heightnew).endVertex();
-		vertexbuffer.pos(minX + barWidth, minY + 0, zLevel).tex(widthnew, minV).endVertex();
-		vertexbuffer.pos(minX + 0, minY + 0, zLevel).tex(minU, minV).endVertex();
-		tessellator.draw();
-	}
+	public static final double zLevel = 0, barOffset = 0.001;
 
 	public static void renderProgressBarWithSprite(TextureAtlasSprite sprite, double width, double height, double progress, double maxProgress) {
 		Tessellator tessellator = Tessellator.getInstance();
@@ -283,76 +210,5 @@ public class InfoRenderer {
 		FontHelper.text(middle, middle_offset, yPos, colour);
 		FontHelper.text(right, right_offset, yPos, colour);
 	}
-	
-	public static final double ITEM_SPACING = 22.7;
-	public static final double FLUID_DIMENSION = (14 * 0.0625);
 
-	public static void renderInventory(List<MonitoredItemStack> cachedList, int start, int stop, int xSlots, int ySlots) {
-		pushMatrix();
-		color(1.0F, 1.0F, 1.0F, 1.0F);
-		translate(-1 + (0.0625 * 1.3), -1 + 0.0625 * 5, 0.00);
-		rotate(180, 0, 1, 0);
-		scale(-0.022, 0.022, 0.01);
-		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
-		blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		enableRescaleNormal();
-		enableAlpha();
-		alphaFunc(516, 0.1F);
-		enableBlend();
-		pushMatrix();
-		for (int i = start; i < stop; i++) {
-			MonitoredItemStack stack = cachedList.get(i);
-			int current = i - start;
-			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
-			int yLevel = (int) (Math.floor((current / xSlots)));
-			pushMatrix();
-			GL11.glTranslated(xLevel * ITEM_SPACING, yLevel * ITEM_SPACING, 0);
-			scale(1, 1, 0.04);
-			disableLighting();
-			renderItemModelIntoGUI(stack.getItemStack(), 0, 0);
-			popMatrix();
-		}
-		popMatrix();
-		disableAlpha();
-		disableRescaleNormal();
-		disableLighting();
-		disableBlend();
-		RenderHelper.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
-
-		translate(0, 0, 1);
-		depthMask(false);
-		pushMatrix();
-		final float scaleFactor = 0.5F;
-		final float inverseScaleFactor = 1.0f / scaleFactor;
-		scale(scaleFactor, scaleFactor, scaleFactor);
-
-		for (int i = start; i < stop; i++) {
-			MonitoredItemStack stack = cachedList.get(i);
-			int current = i - start;
-			int xLevel = (int) (current - ((Math.floor((current / xSlots))) * xSlots));
-			int yLevel = (int) (Math.floor((current / xSlots)));
-			pushMatrix();
-			translate((xLevel * ITEM_SPACING) * inverseScaleFactor, (yLevel * ITEM_SPACING) * inverseScaleFactor, 0);
-			String s = "" + stack.getStored();
-			final int X = (int) (((float) 0 + 15.0f - RenderHelper.fontRenderer.getStringWidth(s) * scaleFactor) * inverseScaleFactor);
-			final int Y = (int) (((float) 0 + 15.0f - 7.0f * scaleFactor) * inverseScaleFactor);
-			RenderHelper.fontRenderer.drawStringWithShadow(s, X, Y, 16777215);
-			popMatrix();
-		}
-
-		popMatrix();
-		depthMask(true);
-		popMatrix();
-	}
-
-	public static void renderItemModelIntoGUI(ItemStack stack, int x, int y) {
-		renderItemModelIntoGUI(stack, x, y, BlockModelsCache.INSTANCE.getOrLoadModel(stack));
-	}
-
-	public static void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel) {
-		RenderHelper.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		RenderHelper.setupGuiTransform(x, y, bakedmodel.isGui3d());
-		bakedmodel = ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
-		RenderHelper.itemRender.renderItem(stack, bakedmodel);
-	}
 }

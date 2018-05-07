@@ -1,8 +1,7 @@
 package sonar.logistics.client.gui;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.gui.GuiButton;
+import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
 import sonar.core.inventory.ContainerMultipartSync;

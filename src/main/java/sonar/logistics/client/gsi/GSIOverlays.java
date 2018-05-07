@@ -1,9 +1,5 @@
 package sonar.logistics.client.gsi;
 
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.multipart.MultipartHelper;
 import mcmultipart.api.slot.IPartSlot;
@@ -12,12 +8,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayScreenLook;
-import sonar.logistics.api.tiles.displays.EnumDisplayFaceSlot;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.DisplayScreenLook;
+import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
 import sonar.logistics.helpers.InteractionHelper;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class GSIOverlays {
 
@@ -27,6 +26,14 @@ public class GSIOverlays {
 	@Nullable
 	public static DisplayScreenLook getCurrentLook(DisplayGSI container) {
 		if (currentLook != null && currentLook.identity == container.getDisplayGSIIdentity()) {
+			return currentLook;
+		}
+		return null;
+	}
+
+	@Nullable
+	public static DisplayScreenLook getCurrentLook(int identity) {
+		if (currentLook != null && currentLook.identity == identity) {
 			return currentLook;
 		}
 		return null;

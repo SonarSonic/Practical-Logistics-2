@@ -1,13 +1,12 @@
 package sonar.logistics.client.gui.textedit;
 
+import sonar.logistics.api.displays.elements.text.StyledStringLine;
+
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.List;
-
-import sonar.logistics.api.displays.elements.text.StyledStringLine;
-
-import javax.annotation.Nonnull;
 
 //W.I.P
 public class TransferableStyledStrings implements Transferable  {

@@ -1,8 +1,8 @@
 package sonar.logistics.api.wireless;
 
-import java.util.List;
-
 import sonar.logistics.api.cabling.IRedstoneConnectable;
+
+import java.util.List;
 
 public interface IRedstoneReceiver extends IWirelessReceiver<IRedstoneEmitter>, IWirelessRedstoneTile, IRedstoneConnectable {
 

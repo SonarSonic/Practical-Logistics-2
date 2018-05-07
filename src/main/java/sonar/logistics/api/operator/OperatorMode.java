@@ -5,7 +5,7 @@ public enum OperatorMode {
 
 	DEFAULT,/**performs the action specied with IOperatorTile*/	
 	ROTATE,/**rotates the block*/	
-	INFO,/**displays all the info provided by IOperatorProvider*/	
+	INFO,/**tiles all the info provided by IOperatorProvider*/
 	CHANNELS,/***/
 	ANALYSE /***/
 

@@ -1,16 +1,5 @@
 package sonar.logistics.helpers;
 
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,8 +7,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.SonarCore;
-import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.FontHelper;
+import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2ASMLoader;
 import sonar.logistics.api.displays.HeightAlignment;
@@ -33,117 +22,13 @@ import sonar.logistics.api.displays.elements.text.StyledString;
 import sonar.logistics.api.displays.elements.text.StyledStringLine;
 import sonar.logistics.api.errors.IInfoError;
 
+import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
+
 public class DisplayElementHelper {
-
-	public static int getRegisteredID(IDisplayElement info) {
-		if (info == null || info.getRegisteredName() == null) {
-			return -1;
-		}
-		Integer id = PL2ASMLoader.elementIDs.get(info.getRegisteredName());
-		return id == null ? -1 : id;
-	}
-
-	public static Class<? extends IDisplayElement> getElementClass(int id) {
-		return PL2ASMLoader.elementIClasses.get(id);
-	}
-
-	public static NBTTagCompound saveElement(NBTTagCompound tag, IDisplayElement info, SyncType type) {
-		tag.setInteger("EiD", getRegisteredID(info));
-		return info.writeData(tag, type);
-	}
-
-	public static IDisplayElement loadElement(NBTTagCompound tag, IElementStorageHolder holder) {
-		int elementID = tag.getInteger("EiD");
-		return instanceDisplayElement(getElementClass(elementID), holder, tag);
-	}
-
-	@Nullable
-	public static <T extends IDisplayElement> T instanceDisplayElement(Class<T> classType, IElementStorageHolder holder, NBTTagCompound tag) {
-		T obj = null;
-		try {
-			if (classType != null) {
-				obj = classType.getConstructor().newInstance();
-			}
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
-		}
-		if (obj != null) {
-			obj.setHolder(holder);
-			obj.readData(tag, SyncType.SAVE);
-			return obj;
-		}
-		return null;
-	}
-
-	public static int getRegisteredID(IStyledString info) {
-		return PL2ASMLoader.sstringIDs.get(info.getRegisteredName());
-	}
-
-	public static Class<? extends IStyledString> getStyledStringClass(int id) {
-		return PL2ASMLoader.sstringIClasses.get(id);
-	}
-
-	public static NBTTagCompound saveStyledString(NBTTagCompound tag, IStyledString string, SyncType type) {
-		if (!(string instanceof StyledString)) {
-			tag.setInteger("SSiD", getRegisteredID(string));
-		}
-		return string.writeData(tag, type);
-	}
-
-	public static IStyledString loadStyledString(StyledStringLine line, NBTTagCompound tag) {
-		int elementID = tag.getInteger("SSiD");
-		Class<? extends IStyledString> clazz = elementID == 0 ? StyledString.class : getStyledStringClass(elementID);
-		return instanceStyledString(clazz, line, tag);
-	}
-
-	@Nullable
-	public static <T extends IStyledString> T instanceStyledString(Class<T> classType, StyledStringLine line, NBTTagCompound tag) {
-		T obj = null;
-		try {
-			obj = classType.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
-		}
-		if (obj != null) {
-			obj.setLine(line);
-			obj.readData(tag, SyncType.SAVE);
-			return obj;
-		}
-		return null;
-	}
-
-	public static int getRegisteredID(IDisplayAction info) {
-		return PL2ASMLoader.displayActionIDs.get(info.getRegisteredName());
-	}
-
-	public static Class<? extends IDisplayAction> getDisplayActionClass(int id) {
-		return PL2ASMLoader.displayActionIClasses.get(id);
-	}
-
-	public static NBTTagCompound saveDisplayAction(NBTTagCompound tag, IDisplayAction info, SyncType type) {
-		tag.setInteger("AiD", getRegisteredID(info));
-		return info.writeData(tag, type);
-	}
-
-	public static IDisplayAction loadDisplayAction(NBTTagCompound tag) {
-		int elementID = tag.getInteger("AiD");
-		return instanceDisplayAction(getDisplayActionClass(elementID), tag);
-	}
-
-	@Nullable
-	public static <T extends IDisplayAction> T instanceDisplayAction(Class<T> classType, NBTTagCompound tag) {
-		T obj = null;
-		try {
-			obj = classType.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
-		}
-		if (obj != null) {
-			obj.readData(tag, SyncType.SAVE);
-			return obj;
-		}
-		return null;
-	}
 
 	public static double[] scaleFromPercentage(double[] percentage, double[] toFit) {
 		double[] scale = new double[percentage.length];
@@ -378,6 +263,7 @@ public class DisplayElementHelper {
 		FontHelper.text(pageText, 0, 0, -1);
 	}
 
+	/**used by grid/list elements to increment the page count when buttons are clicked*/
 	public static int doPageClick(double subClickX, double subClickY, double[] scaling, int page, int pageCount) {
 		if (subClickY > scaling[HEIGHT] - (scaling[HEIGHT] / 8)) {
 			if (subClickX < scaling[WIDTH] / 2) {
@@ -393,4 +279,121 @@ public class DisplayElementHelper {
 		}
 		return page;
 	}
+
+	//// READ/WRITE ELEMENTS \\\\
+
+	public static int getRegisteredID(IDisplayElement info) {
+		if (info == null || info.getRegisteredName() == null) {
+			return -1;
+		}
+		Integer id = PL2ASMLoader.elementIDs.get(info.getRegisteredName());
+		return id == null ? -1 : id;
+	}
+
+	public static Class<? extends IDisplayElement> getElementClass(int id) {
+		return PL2ASMLoader.elementIClasses.get(id);
+	}
+
+	public static NBTTagCompound saveElement(NBTTagCompound tag, IDisplayElement info, SyncType type) {
+		tag.setInteger("EiD", getRegisteredID(info));
+		return info.writeData(tag, type);
+	}
+
+	public static IDisplayElement loadElement(NBTTagCompound tag, IElementStorageHolder holder) {
+		int elementID = tag.getInteger("EiD");
+		return instanceDisplayElement(getElementClass(elementID), holder, tag);
+	}
+
+	@Nullable
+	public static <T extends IDisplayElement> T instanceDisplayElement(Class<T> classType, IElementStorageHolder holder, NBTTagCompound tag) {
+		T obj = null;
+		try {
+			if (classType != null) {
+				obj = classType.getConstructor().newInstance();
+			}
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
+		}
+		if (obj != null) {
+			obj.setHolder(holder);
+			obj.readData(tag, SyncType.SAVE);
+			return obj;
+		}
+		return null;
+	}
+
+	//// READ/WRITE STYLED STRINGS \\\\
+
+	public static int getRegisteredID(IStyledString info) {
+		return PL2ASMLoader.sstringIDs.get(info.getRegisteredName());
+	}
+
+	public static Class<? extends IStyledString> getStyledStringClass(int id) {
+		return PL2ASMLoader.sstringIClasses.get(id);
+	}
+
+	public static NBTTagCompound saveStyledString(NBTTagCompound tag, IStyledString string, SyncType type) {
+		if (!(string instanceof StyledString)) {
+			tag.setInteger("SSiD", getRegisteredID(string));
+		}
+		return string.writeData(tag, type);
+	}
+
+	public static IStyledString loadStyledString(StyledStringLine line, NBTTagCompound tag) {
+		int elementID = tag.getInteger("SSiD");
+		Class<? extends IStyledString> clazz = elementID == 0 ? StyledString.class : getStyledStringClass(elementID);
+		return instanceStyledString(clazz, line, tag);
+	}
+
+	@Nullable
+	public static <T extends IStyledString> T instanceStyledString(Class<T> classType, StyledStringLine line, NBTTagCompound tag) {
+		T obj = null;
+		try {
+			obj = classType.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
+		}
+		if (obj != null) {
+			obj.setLine(line);
+			obj.readData(tag, SyncType.SAVE);
+			return obj;
+		}
+		return null;
+	}
+
+	//// READ/WRITE DISPLAY ACTIONS \\\\
+
+	public static int getRegisteredID(IDisplayAction info) {
+		return PL2ASMLoader.displayActionIDs.get(info.getRegisteredName());
+	}
+
+	public static Class<? extends IDisplayAction> getDisplayActionClass(int id) {
+		return PL2ASMLoader.displayActionIClasses.get(id);
+	}
+
+	public static NBTTagCompound saveDisplayAction(NBTTagCompound tag, IDisplayAction info, SyncType type) {
+		tag.setInteger("AiD", getRegisteredID(info));
+		return info.writeData(tag, type);
+	}
+
+	public static IDisplayAction loadDisplayAction(NBTTagCompound tag) {
+		int elementID = tag.getInteger("AiD");
+		return instanceDisplayAction(getDisplayActionClass(elementID), tag);
+	}
+
+	@Nullable
+	public static <T extends IDisplayAction> T instanceDisplayAction(Class<T> classType, NBTTagCompound tag) {
+		T obj = null;
+		try {
+			obj = classType.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			SonarCore.logger.error("FAILED TO CREATE NEW INSTANCE OF " + classType.getSimpleName());
+		}
+		if (obj != null) {
+			obj.readData(tag, SyncType.SAVE);
+			return obj;
+		}
+		return null;
+	}
+
 }

@@ -1,9 +1,5 @@
 package sonar.logistics.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import sonar.core.client.gui.GuiHelpOverlay;
@@ -19,6 +15,10 @@ import sonar.logistics.common.containers.ContainerInfoReader;
 import sonar.logistics.common.multiparts.readers.TileAbstractLogicReader;
 import sonar.logistics.common.multiparts.readers.TileNetworkReader;
 import sonar.logistics.helpers.InfoRenderer;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiInfoReader extends GuiSelectionList<IProvidableInfo> {
 

@@ -1,11 +1,5 @@
 package sonar.logistics.common.multiparts.cables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import mcmultipart.api.container.IPartInfo;
 import mcmultipart.api.slot.EnumCenterSlot;
 import mcmultipart.api.slot.IPartSlot;
@@ -25,8 +19,8 @@ import net.minecraft.world.World;
 import sonar.core.helpers.RayTraceHelper;
 import sonar.logistics.PL2Blocks;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2Properties;
-import sonar.logistics.api.PL2Properties.PropertyCableFace;
+import sonar.logistics.PL2Properties;
+import sonar.logistics.PL2Properties.PropertyCableFace;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.cabling.IRedstoneCable;
 import sonar.logistics.api.cabling.IRedstoneConnectable;
@@ -34,6 +28,11 @@ import sonar.logistics.common.multiparts.BlockLogistics;
 import sonar.logistics.networking.cabling.CableHelper;
 import sonar.logistics.networking.cabling.RedstoneCableHelper;
 import sonar.logistics.networking.cabling.RedstoneConnectionHandler;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockRedstoneCable extends BlockLogistics {
 

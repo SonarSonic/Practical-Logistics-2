@@ -1,13 +1,13 @@
 package sonar.logistics.api.lists.types;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.item.ItemStack;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.values.ItemCount;
 import sonar.logistics.info.types.MonitoredItemStack;
+
+import javax.annotation.Nullable;
 
 public class ItemChangeableList extends AbstractChangeableList<MonitoredItemStack> {
 

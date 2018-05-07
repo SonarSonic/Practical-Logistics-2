@@ -7,7 +7,7 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.register.LogicPath;
+import sonar.logistics.api.info.register.LogicPath;
 
 @LogicInfoType(id = InfoError.id, modid = PL2Constants.MODID)
 public class InfoError implements IInfo<InfoError>, INameableInfo<InfoError> {

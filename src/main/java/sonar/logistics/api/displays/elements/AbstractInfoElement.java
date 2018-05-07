@@ -1,14 +1,13 @@
 package sonar.logistics.api.displays.elements;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.InfoRenderer;
+
+import java.util.List;
 
 public abstract class AbstractInfoElement<T extends IInfo> extends AbstractDisplayElement implements IInfoReferenceElement {
 

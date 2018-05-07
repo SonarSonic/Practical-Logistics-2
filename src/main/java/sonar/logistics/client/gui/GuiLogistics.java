@@ -1,8 +1,5 @@
 package sonar.logistics.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
@@ -12,6 +9,9 @@ import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.utils.IWorldPosition;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.client.LogisticsColours;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiLogistics extends GuiSonarTile {
 

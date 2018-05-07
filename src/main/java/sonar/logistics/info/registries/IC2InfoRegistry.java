@@ -8,7 +8,7 @@ import ic2.core.block.reactor.tileentity.TileEntityNuclearReactorElectric;
 import sonar.logistics.api.asm.InfoRegistry;
 import sonar.logistics.api.info.register.IInfoRegistry;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.RegistryType;
 
 @InfoRegistry(modid = "IC2")
 public class IC2InfoRegistry implements IInfoRegistry {

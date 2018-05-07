@@ -1,9 +1,8 @@
 package sonar.logistics.client.gui.display;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.opengl.GL11;
 import sonar.logistics.client.LogisticsButton;
 import sonar.logistics.client.gui.textedit.GuiStyledStringFunctions;
 

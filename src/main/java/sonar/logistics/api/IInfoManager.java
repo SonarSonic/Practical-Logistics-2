@@ -1,18 +1,17 @@
 package sonar.logistics.api;
 
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import sonar.logistics.api.displays.DisplayGSI;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
+
+import javax.annotation.Nullable;
+import java.util.Map;
 
 public interface IInfoManager {
 

@@ -1,8 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-import java.util.UUID;
-
 import net.minecraft.entity.Entity;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncUUID;
@@ -13,6 +10,9 @@ import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.nodes.EntityConnection;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+
+import java.util.List;
+import java.util.UUID;
 
 @LogicInfoType(id = MonitoredEntity.id, modid = PL2Constants.MODID)
 public class MonitoredEntity extends BaseInfo<MonitoredEntity> implements INameableInfo<MonitoredEntity>, IComparableInfo<MonitoredEntity> {

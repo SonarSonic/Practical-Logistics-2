@@ -1,7 +1,5 @@
 package sonar.logistics.common.blocks;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -19,6 +17,7 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.common.hammer.TileEntityHammer;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
 
 public class BlockHammerAir extends Block {
 

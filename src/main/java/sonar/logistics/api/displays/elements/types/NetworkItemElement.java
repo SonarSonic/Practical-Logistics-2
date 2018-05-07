@@ -1,29 +1,24 @@
 package sonar.logistics.api.displays.elements.types;
 
-import static net.minecraft.client.renderer.GlStateManager.depthMask;
-import static net.minecraft.client.renderer.GlStateManager.disableLighting;
-import static net.minecraft.client.renderer.GlStateManager.enableLighting;
-import static net.minecraft.client.renderer.GlStateManager.rotate;
-import static net.minecraft.client.renderer.GlStateManager.scale;
-import static net.minecraft.client.renderer.GlStateManager.translate;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import sonar.core.helpers.RenderHelper;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
+import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.DisplayElementType;
 import sonar.logistics.api.displays.elements.AbstractInfoElement;
 import sonar.logistics.api.displays.elements.IClickableElement;
+import sonar.logistics.api.displays.tiles.DisplayScreenClick;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
 import sonar.logistics.client.gsi.GSIClickPacketHelper;
 import sonar.logistics.client.gui.display.GuiEditNetworkItem;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.info.types.MonitoredItemStack;
+
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 @DisplayElementType(id = NetworkItemElement.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class NetworkItemElement extends AbstractInfoElement<MonitoredItemStack> implements IClickableElement {

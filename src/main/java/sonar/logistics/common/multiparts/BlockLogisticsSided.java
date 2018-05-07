@@ -12,7 +12,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.PL2Properties;
+import sonar.logistics.PL2Properties;
 
 import javax.annotation.Nonnull;
 

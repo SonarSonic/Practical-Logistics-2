@@ -1,15 +1,10 @@
 package sonar.logistics.client.gui.generic;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import sonar.core.client.gui.GuiGridElement;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.core.utils.IWorldPosition;
@@ -17,6 +12,9 @@ import sonar.logistics.PL2Constants;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.client.LogisticsColours;
 import sonar.logistics.client.gui.GuiLogistics;
+
+import java.io.IOException;
+import java.util.List;
 
 public abstract class GuiSelectionGrid<T extends IInfo> extends GuiLogistics {
 

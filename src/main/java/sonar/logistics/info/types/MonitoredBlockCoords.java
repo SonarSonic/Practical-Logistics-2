@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
@@ -13,6 +11,8 @@ import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.INameableInfo;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
+
+import java.util.List;
 
 @LogicInfoType(id = MonitoredBlockCoords.id, modid = PL2Constants.MODID)
 public class MonitoredBlockCoords extends BaseInfo<MonitoredBlockCoords> implements INameableInfo<MonitoredBlockCoords>, IComparableInfo<MonitoredBlockCoords> {

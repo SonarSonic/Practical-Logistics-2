@@ -1,8 +1,8 @@
 package sonar.logistics.api.wireless;
 
-import java.util.UUID;
+import sonar.logistics.api.tiles.INetworkTile;
 
-import sonar.logistics.api.cabling.INetworkTile;
+import java.util.UUID;
 
 public interface IWirelessReceiver<E extends IWirelessEmitter> extends INetworkTile {
 	

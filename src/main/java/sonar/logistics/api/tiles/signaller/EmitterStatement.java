@@ -1,21 +1,17 @@
 package sonar.logistics.api.tiles.signaller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import sonar.core.network.sync.BaseSyncListPart;
-import sonar.core.network.sync.SyncEnum;
-import sonar.core.network.sync.SyncNBTAbstract;
-import sonar.core.network.sync.SyncTagType;
-import sonar.core.network.sync.SyncUnidentifiedObject;
+import sonar.core.network.sync.*;
 import sonar.logistics.api.info.IComparableInfo;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.helpers.ComparatorHelper;
 import sonar.logistics.info.comparators.ILogicComparator;
 import sonar.logistics.packets.sync.SyncInfoUUID;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class EmitterStatement<T> extends BaseSyncListPart implements ILogisticsStatement {
 

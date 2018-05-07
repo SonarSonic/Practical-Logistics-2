@@ -1,10 +1,10 @@
 package sonar.logistics.api.viewers;
 
-import java.util.List;
-
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.helpers.SonarHelper;
 import sonar.logistics.api.utils.Result;
+
+import java.util.List;
 
 public enum ListenerType {
 

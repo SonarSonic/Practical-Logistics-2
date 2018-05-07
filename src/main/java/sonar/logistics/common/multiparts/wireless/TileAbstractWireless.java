@@ -1,12 +1,12 @@
 package sonar.logistics.common.multiparts.wireless;
 
-import java.util.UUID;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import sonar.core.network.sync.SyncUUID;
 import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.common.multiparts.TileSidedLogistics;
+
+import java.util.UUID;
 
 public class TileAbstractWireless extends TileSidedLogistics {
 	

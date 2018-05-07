@@ -1,8 +1,5 @@
 package sonar.logistics.client.gui.display;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -14,6 +11,9 @@ import sonar.logistics.client.gsi.GSIElementPacketHelper;
 import sonar.logistics.client.gui.GuiLogistics;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** basically passes through the unconfigured element list, into different guis */
 public class GuiUnconfiguredInfoElement extends GuiLogistics {

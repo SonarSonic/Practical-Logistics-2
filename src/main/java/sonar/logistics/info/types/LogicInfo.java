@@ -1,7 +1,5 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import sonar.core.helpers.FontHelper;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.network.sync.SyncEnum;
@@ -12,15 +10,13 @@ import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.LogicInfoType;
-import sonar.logistics.api.info.IComparableInfo;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.INameableInfo;
-import sonar.logistics.api.info.IProvidableInfo;
-import sonar.logistics.api.info.ISuffixable;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.*;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
 import sonar.logistics.api.tiles.signaller.ComparableObject;
 import sonar.logistics.info.LogicInfoRegistry;
+
+import java.util.List;
 
 /** default info type, created by the LogicRegistry */
 @LogicInfoType(id = LogicInfo.id, modid = PL2Constants.MODID)

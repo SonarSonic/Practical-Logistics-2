@@ -1,11 +1,6 @@
 package sonar.logistics.api.displays.elements.text;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.Tuple;
@@ -21,6 +16,9 @@ import sonar.logistics.api.displays.WidthAlignment;
 import sonar.logistics.helpers.DisplayElementHelper;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 
@@ -58,7 +56,7 @@ public class StyledStringLine implements INBTSyncable, Iterable<IStyledString> {
 	}
 	
 	/**returns the amount of */
-	public double render(StyledTextRenderStyle style) {
+	public double render() {
 		
 		int offsetX = 0;
 		int offsetY = 0;

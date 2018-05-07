@@ -1,7 +1,5 @@
 package sonar.logistics.worldgen;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -12,6 +10,8 @@ import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import sonar.logistics.PL2Blocks;
+
+import java.util.Random;
 
 public class SapphireOreGen implements IWorldGenerator {
 

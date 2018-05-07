@@ -1,16 +1,16 @@
 package sonar.logistics.info.types;
 
-import java.util.List;
-
 import sonar.core.network.sync.BaseSyncListPart;
 import sonar.core.network.sync.ICheckableSyncPart;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.api.info.IInfo;
+import sonar.logistics.api.info.register.LogicPath;
 import sonar.logistics.api.lists.IMonitoredValue;
 import sonar.logistics.api.lists.IMonitoredValueInfo;
 import sonar.logistics.api.lists.values.InfoMonitoredValue;
-import sonar.logistics.api.register.LogicPath;
+
+import java.util.List;
 
 /** typical implementation of IMonitorInfo which has a sync parts list for all the Info things it also has the required constructor which required empty constructor */
 public abstract class BaseInfo<T extends IInfo> extends BaseSyncListPart implements IInfo<T>, ISyncableListener, IMonitoredValueInfo<T> {

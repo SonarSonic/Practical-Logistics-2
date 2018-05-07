@@ -1,10 +1,10 @@
 package sonar.logistics.api.displays;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.api.displays.elements.ElementSelectionType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GSISelectionMode {
 

@@ -1,9 +1,9 @@
 package sonar.logistics.api.tiles.signaller;
 
+import sonar.logistics.api.utils.Result;
+
 import java.util.List;
 import java.util.function.Function;
-
-import sonar.logistics.api.utils.Result;
 
 public enum SignallerModes {
 	ONE_TRUE, ONE_FALSE, ALL_TRUE, ALL_FALSE;

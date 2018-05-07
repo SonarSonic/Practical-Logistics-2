@@ -1,8 +1,5 @@
 package sonar.logistics.networking;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
@@ -12,7 +9,10 @@ import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.viewers.ListenerType;
 import sonar.logistics.networking.displays.ChunkViewerHandler;
 
-/**used on Readers for caching the displays connected to their info*/
+import java.util.ArrayList;
+import java.util.List;
+
+/**used on Readers for caching the tiles connected to their info*/
 public class PL2ListenerList extends ListenableList<PlayerListener> {
 	
 	public ListenerList<DisplayGSI> displayListeners = new ListenerList<>(1);

@@ -1,9 +1,5 @@
 package sonar.logistics.networking.displays;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.slot.EnumFaceSlot;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,12 +7,16 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.IDisplay;
-import sonar.logistics.api.tiles.displays.ILargeDisplay;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
+import sonar.logistics.api.displays.tiles.ILargeDisplay;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.readers.IInfoProvider;
 import sonar.logistics.api.viewers.ILogicListenable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class DisplayHelper {
 

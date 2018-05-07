@@ -1,7 +1,5 @@
 package sonar.logistics.api.displays.elements.text;
 
-import javax.xml.ws.Holder;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import sonar.core.api.nbt.INBTSyncable;
@@ -10,6 +8,8 @@ import sonar.core.helpers.RenderHelper;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.StyledStringType;
 import sonar.logistics.helpers.DisplayElementHelper;
+
+import javax.xml.ws.Holder;
 
 @StyledStringType(id = StyledString.REGISTRY_NAME, modid = PL2Constants.MODID)
 public class StyledString implements IStyledString, INBTSyncable {

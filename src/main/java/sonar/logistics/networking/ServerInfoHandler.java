@@ -1,14 +1,5 @@
 package sonar.logistics.networking;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -21,13 +12,13 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.IInfoManager;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.storage.DisplayGSISaveHandler;
+import sonar.logistics.api.displays.tiles.ConnectedDisplay;
+import sonar.logistics.api.displays.tiles.IDisplay;
 import sonar.logistics.api.errors.IInfoError;
 import sonar.logistics.api.info.IInfo;
 import sonar.logistics.api.info.InfoUUID;
 import sonar.logistics.api.lists.types.AbstractChangeableList;
 import sonar.logistics.api.lists.types.UniversalChangeableList;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.IDisplay;
 import sonar.logistics.api.utils.PL2AdditionType;
 import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.api.viewers.ILogicListenable;
@@ -40,10 +31,18 @@ import sonar.logistics.networking.info.InfoHelper;
 import sonar.logistics.worlddata.ConnectedDisplayData;
 import sonar.logistics.worlddata.GSIData;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+
 public class ServerInfoHandler implements IInfoManager {
 
 	// server side
-	private int IDENTITY_COUNT; // gives unique identity to all PL2 Tiles ( which connect to networks), they can then be retrieved via their identity.
+	private int IDENTITY_COUNT; // gives unique identity to all PL2 Tiles ( which connect to networking), they can then be retrieved via their identity.
 	public Map<ILogicListenable, List<Integer>> changedInfo = new HashMap<>(); // in the form of READER IDENTITY and then CHANGED INFO
 	public Map<Integer, DisplayGSI> displays = new HashMap<>();
 	private Map<InfoUUID, IInfo> info = new HashMap<>();

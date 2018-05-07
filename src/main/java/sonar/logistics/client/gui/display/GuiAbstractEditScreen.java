@@ -1,9 +1,5 @@
 package sonar.logistics.client.gui.display;
 
-import static net.minecraft.client.renderer.GlStateManager.scale;
-
-import java.io.IOException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
@@ -17,6 +13,10 @@ import sonar.logistics.client.gui.textedit.hotkeys.GuiActions;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
 import sonar.logistics.helpers.DisplayElementHelper;
 import sonar.logistics.helpers.InteractionHelper;
+
+import java.io.IOException;
+
+import static net.minecraft.client.renderer.GlStateManager.scale;
 
 public abstract class GuiAbstractEditScreen extends GuiLogistics {
 

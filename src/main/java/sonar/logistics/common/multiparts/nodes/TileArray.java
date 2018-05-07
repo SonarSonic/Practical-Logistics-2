@@ -1,8 +1,5 @@
 package sonar.logistics.common.multiparts.nodes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -24,6 +21,9 @@ import sonar.logistics.common.multiparts.TileSidedLogistics;
 import sonar.logistics.helpers.LogisticsHelper;
 import sonar.logistics.networking.events.LogisticsEventHandler;
 import sonar.logistics.networking.events.NetworkChanges;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui {
 

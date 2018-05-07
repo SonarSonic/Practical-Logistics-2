@@ -1,8 +1,8 @@
 package sonar.logistics.client.gui.generic.info;
 
-import java.util.List;
-
 import sonar.logistics.api.info.InfoUUID;
+
+import java.util.List;
 
 public interface IInfoUUIDRequirementGui {
 

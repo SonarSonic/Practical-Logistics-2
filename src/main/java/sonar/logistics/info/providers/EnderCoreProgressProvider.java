@@ -15,8 +15,8 @@ import sonar.logistics.api.info.ClientNameConstants;
 import sonar.logistics.api.info.IProvidableInfo;
 import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.register.LogicPath;
-import sonar.logistics.api.register.RegistryType;
+import sonar.logistics.api.info.register.LogicPath;
+import sonar.logistics.api.info.register.RegistryType;
 
 @TileInfoProvider(handlerID = "endercore-progress", modid = "endercore")
 public class EnderCoreProgressProvider implements ITileInfoProvider {

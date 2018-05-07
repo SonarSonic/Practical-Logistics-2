@@ -1,7 +1,6 @@
 package sonar.logistics.helpers;
 
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -22,12 +21,9 @@ import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.displays.DisplayGSI;
-import sonar.logistics.api.networks.ILogisticsNetwork;
-import sonar.logistics.api.tiles.displays.ConnectedDisplay;
-import sonar.logistics.api.tiles.displays.DisplayLayout;
-import sonar.logistics.api.tiles.displays.DisplayScreenClick;
-import sonar.logistics.api.tiles.displays.DisplayScreenLook;
-import sonar.logistics.api.tiles.displays.IDisplay;
+import sonar.logistics.api.displays.tiles.*;
+import sonar.logistics.api.networking.ILogisticsNetwork;
+import sonar.logistics.common.multiparts.holographic.TileAbstractHolographicDisplay;
 import sonar.logistics.networking.LogisticsNetworkHandler;
 import sonar.logistics.networking.fluids.DummyFluidHandler;
 import sonar.logistics.networking.items.ItemHelper;
@@ -69,6 +65,7 @@ public class InteractionHelper {
 					}
 					if (changed > 0) {
 						long itemCount = ItemHelper.getItemCount(stack, network);
+
 						PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
 						PacketHelper.createRapidItemUpdate(Lists.newArrayList(stack), networkID);
 					}
@@ -82,8 +79,9 @@ public class InteractionHelper {
 						long r = extract.stored;
 						double[] coords = click.getCoordinates();
 						SonarAPI.getItemHelper().spawnStoredItemStackDouble(extract, player.getEntityWorld(), coords[0], coords[1], coords[2], facing);
-
+	
 						long itemCount = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
+
 						PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
 						PacketHelper.createRapidItemUpdate(Lists.newArrayList(storedItemStack.getItemStack()), networkID);
 					}
@@ -121,6 +119,10 @@ public class InteractionHelper {
 	}
 
 	public static double[] getDisplayPositionFromXY(DisplayGSI container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
+		if(container.getDisplay() instanceof TileAbstractHolographicDisplay){
+			return new double[]{hitX,hitY};
+		}
+
 		double[] clickPosition = getClickPosition(face, hitX, hitY, hitZ);
 		if (container.getDisplay() instanceof ConnectedDisplay) {
 			ConnectedDisplay connected = (ConnectedDisplay) container.getDisplay();
@@ -239,7 +241,7 @@ public class InteractionHelper {
 		double trueZ = face != EnumFacing.WEST ? 1 - hitZ : hitZ;
 		switch (face) {
 		case DOWN:
-			return new double[] { trueX, 1 - trueZ };// this is only really for the way displays are shown upside down
+			return new double[] { trueX, 1 - trueZ };// this is only really for the way tiles are shown upside down
 		case EAST:
 			return new double[] { trueZ, trueY };
 		case UP:

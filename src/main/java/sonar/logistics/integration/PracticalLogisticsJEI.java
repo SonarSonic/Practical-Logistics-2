@@ -1,12 +1,6 @@
 package sonar.logistics.integration;
 
-import java.util.List;
-
-import mezz.jei.api.BlankModPlugin;
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.*;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.item.ItemStack;
 import sonar.core.helpers.ItemStackHelper;
@@ -20,6 +14,8 @@ import sonar.logistics.PL2Blocks;
 import sonar.logistics.client.gui.GuiHammer;
 import sonar.logistics.common.containers.ContainerHammer;
 import sonar.logistics.common.hammer.HammerRecipes;
+
+import java.util.List;
 
 @JEIPlugin
 public class PracticalLogisticsJEI extends BlankModPlugin {

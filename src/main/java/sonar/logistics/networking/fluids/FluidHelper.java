@@ -1,8 +1,5 @@
 package sonar.logistics.networking.fluids;
 
-import java.util.List;
-import java.util.function.BiPredicate;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.SonarCore;
@@ -11,12 +8,15 @@ import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
 import sonar.core.helpers.FluidHelper.ITankFilter;
-import sonar.logistics.api.networks.ILogisticsNetwork;
+import sonar.logistics.api.networking.ILogisticsNetwork;
 import sonar.logistics.api.tiles.nodes.BlockConnection;
 import sonar.logistics.api.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.utils.CacheType;
 import sonar.logistics.networking.NetworkHelper;
 import sonar.logistics.networking.items.ItemHelper.ConnectionFilters;
+
+import java.util.List;
+import java.util.function.BiPredicate;
 
 public class FluidHelper {
 
