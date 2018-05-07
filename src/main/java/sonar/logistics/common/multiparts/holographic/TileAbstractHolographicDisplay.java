@@ -12,9 +12,9 @@ import sonar.logistics.api.cabling.CableRenderType;
 import sonar.logistics.api.displays.DisplayGSI;
 import sonar.logistics.api.displays.tiles.IScaleableDisplay;
 import sonar.logistics.api.displays.tiles.ISmallDisplay;
-import sonar.logistics.api.utils.PL2AdditionType;
-import sonar.logistics.api.utils.PL2RemovalType;
 import sonar.logistics.common.multiparts.displays.TileAbstractDisplay;
+
+import java.util.Optional;
 
 public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay implements ISmallDisplay, IScaleableDisplay {
 
@@ -28,8 +28,8 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
     }
     //// IInfoDisplay \\\\
 
-    public EntityHolographicDisplay getHolographicEntity(){
-        if(entity == null || entity.isDead){
+    public Optional<EntityHolographicDisplay> getHolographicEntity(){
+        if((entity == null || entity.isDead) && this.identity != -1){
            Entity entity = holographic_display_entity_id== -1 ? null : world.getEntityByID(holographic_display_entity_id);
            if(entity instanceof EntityHolographicDisplay){
                this.entity = (EntityHolographicDisplay) entity;
@@ -37,7 +37,7 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
                this.entity = spawnDisplayScreen();
            }
         }
-        return entity;
+        return Optional.ofNullable(entity);
     }
 
     public EntityHolographicDisplay spawnDisplayScreen(){
@@ -46,38 +46,6 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
             holographic_display_entity_id = display.getEntityId();
         }
         return display;
-    }
-
-    @Override
-    public void doAdditionEvent(PL2AdditionType type) {
-        super.doAdditionEvent(type);
-        if(this.getActualWorld().isRemote){
-            this.getHolographicEntity();
-        }
-    }
-
-    @Override
-    public void doRemovalEvent(PL2RemovalType type) {
-        super.doRemovalEvent(type);
-        if(this.getActualWorld().isRemote){
-            this.getHolographicEntity().setDead();
-        }
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-        if(this.isClient()){
-            getHolographicEntity();
-        }
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        if(this.getActualWorld().isRemote){
-            this.getHolographicEntity().setDead();
-        }
     }
 
     @Override
@@ -109,7 +77,24 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         super.onDataPacket(net, packet);
         if(isClient()){
-            getHolographicEntity().setSizingFromDisplay(this);
+            this.getHolographicEntity().ifPresent(display -> display.setSizingFromDisplay(this));
+        }
+    }
+
+
+    @Override
+    public void onGSIValidate(){
+        super.onGSIValidate();
+        if(this.getActualWorld().isRemote){
+            this.getHolographicEntity().ifPresent(display -> display.setSizingFromDisplay(this));
+        }
+    }
+
+    @Override
+    public void onGSIInvalidate(){
+        super.onGSIInvalidate();
+        if(this.getActualWorld().isRemote){
+            this.getHolographicEntity().ifPresent(display -> display.setDead());
         }
     }
 
@@ -161,4 +146,5 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
     public void setScreenColour(int colour){
         screenColour.setObject(colour);
     }
+
 }

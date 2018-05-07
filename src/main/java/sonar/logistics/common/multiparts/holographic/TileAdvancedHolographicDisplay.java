@@ -15,6 +15,7 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
     public Vec3d screenScale = new Vec3d( 1, 1, 0.001);
     public Vec3d screenRotation = new Vec3d(0,0,0);
     public Vec3d screenOffset = new Vec3d(0,0,0);
+    public boolean defaults_set = false;
 
     public static Vec3d readVec3d(String tagName, NBTTagCompound nbt, NBTHelper.SyncType type) {
         NBTTagCompound vecTag = nbt.getCompoundTag(tagName);
@@ -34,11 +35,12 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
     public void readData(NBTTagCompound nbt, NBTHelper.SyncType type) {
         super.readData(nbt, type);
         if(type.isType(NBTHelper.SyncType.SAVE)) {
+            defaults_set = nbt.getBoolean("defs");
             screenScale = readVec3d("scale", nbt, type);
             screenRotation = readVec3d("rotate", nbt, type);
             screenOffset = readVec3d("offset", nbt, type);
             if (isClient() && getWorld() != null) {
-                //getHolographicEntity().setSizingFromDisplay(this);
+                getHolographicEntity().ifPresent(entity -> entity.setSizingFromDisplay(this));
             }
         }
     }
@@ -46,6 +48,8 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
     @Override
     public NBTTagCompound writeData(NBTTagCompound nbt, NBTHelper.SyncType type) {
         if(type.isType(NBTHelper.SyncType.SAVE)) {
+            this.updateDefaultScaling();
+            nbt.setBoolean("defs", defaults_set);
             writeVec3d(screenScale, "scale", nbt, type);
             writeVec3d(screenRotation, "rotate", nbt, type);
             writeVec3d(screenOffset, "offset", nbt, type);
@@ -82,12 +86,17 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
 
     @Override
     public void doAdditionEvent(PL2AdditionType type) {
-        if(this.isServer() && type == PL2AdditionType.PLAYER_ADDED){
+        super.doAdditionEvent(type);
+        updateDefaultScaling();
+    }
+
+    public void updateDefaultScaling(){
+        if(this.isServer() && !defaults_set) {
             screenOffset = HolographicVectorHelper.getScreenOffset(getCableFace());
             screenRotation = HolographicVectorHelper.getScreenRotation(getCableFace());
+            defaults_set = true;
+            markDirty();
         }
-        super.doAdditionEvent(type);
-
     }
 
     public void sendScalingToServer(){

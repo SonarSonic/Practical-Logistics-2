@@ -245,7 +245,7 @@ public class GuiHolographicRescaling extends GuiLogistics {
             }
         });
         if(shouldUpdate.value){
-            display.getHolographicEntity().setSizingFromDisplay(display);
+            display.getHolographicEntity().ifPresent(entity -> entity.setSizingFromDisplay(display));
         }
     }
 

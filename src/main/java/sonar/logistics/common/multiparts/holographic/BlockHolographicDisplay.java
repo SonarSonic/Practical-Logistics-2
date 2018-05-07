@@ -6,10 +6,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import sonar.logistics.PL2Multiparts;
+import sonar.logistics.common.multiparts.displays.BlockAbstractDisplay;
 
 import javax.annotation.Nonnull;
 
-public class BlockHolographicDisplay extends BlockAbstractHolographicDisplay {
+public class BlockHolographicDisplay extends BlockAbstractDisplay {
 
 	public static final double depth = 0.0625, height = depth * 16, width = 0, length = depth * 1;
 	public static final AxisAlignedBB DOWN_AXIS = new AxisAlignedBB(0, 0, 0, 1, depth, 1);
@@ -24,6 +25,8 @@ public class BlockHolographicDisplay extends BlockAbstractHolographicDisplay {
 		super(PL2Multiparts.HOLOGRAPHIC_DISPLAY);
 	}
 
+	@Nonnull
+	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return AXIS[getOrientation(state).ordinal()];
 	}
@@ -31,6 +34,6 @@ public class BlockHolographicDisplay extends BlockAbstractHolographicDisplay {
 	@Nonnull
 	@Override
 	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.SOLID;
 	}
 }
