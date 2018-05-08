@@ -6,27 +6,31 @@ import net.minecraft.item.Item;
 import sonar.core.SonarRegister;
 import sonar.core.registries.SonarRegistryBlock;
 import sonar.core.registries.SonarRegistryMultipart;
-import sonar.logistics.common.blocks.BlockHammer;
-import sonar.logistics.common.blocks.BlockHammerAir;
-import sonar.logistics.common.blocks.BlockSapphireOre;
-import sonar.logistics.common.hammer.TileEntityHammer;
-import sonar.logistics.common.items.PL2ItemConnectableMultipart;
-import sonar.logistics.common.multiparts.BlockLogistics;
-import sonar.logistics.common.multiparts.cables.BlockDataCable;
-import sonar.logistics.common.multiparts.cables.BlockRedstoneCable;
-import sonar.logistics.common.multiparts.displays.BlockDisplayScreen;
-import sonar.logistics.common.multiparts.displays.BlockLargeDisplay;
-import sonar.logistics.common.multiparts.displays.BlockMiniDisplay;
-import sonar.logistics.common.multiparts.holographic.BlockAdvancedHolographicDisplay;
-import sonar.logistics.common.multiparts.holographic.BlockHolographicDisplay;
-import sonar.logistics.common.multiparts.misc.BlockClock;
-import sonar.logistics.common.multiparts.misc.BlockRedstoneSignaller;
-import sonar.logistics.common.multiparts.nodes.*;
-import sonar.logistics.common.multiparts.readers.BlockAbstractReader;
-import sonar.logistics.common.multiparts.wireless.BlockDataEmitter;
-import sonar.logistics.common.multiparts.wireless.BlockDataReceiver;
-import sonar.logistics.common.multiparts.wireless.BlockRedstoneEmitter;
-import sonar.logistics.common.multiparts.wireless.BlockRedstoneReceiver;
+import sonar.logistics.core.blocks.BlockSapphireOre;
+import sonar.logistics.core.items.ItemConnectableMultipart;
+import sonar.logistics.core.tiles.base.BlockLogistics;
+import sonar.logistics.core.tiles.connections.data.tiles.BlockDataCable;
+import sonar.logistics.core.tiles.connections.redstone.tiles.BlockRedstoneCable;
+import sonar.logistics.core.tiles.displays.tiles.connected.BlockLargeDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.BlockAdvancedHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.BlockHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.small.BlockDisplayScreen;
+import sonar.logistics.core.tiles.displays.tiles.small.BlockMiniDisplay;
+import sonar.logistics.core.tiles.misc.clock.BlockClock;
+import sonar.logistics.core.tiles.misc.hammer.BlockHammer;
+import sonar.logistics.core.tiles.misc.hammer.BlockHammerAir;
+import sonar.logistics.core.tiles.misc.hammer.TileEntityHammer;
+import sonar.logistics.core.tiles.misc.signaller.BlockRedstoneSignaller;
+import sonar.logistics.core.tiles.nodes.BlockRedstoneNode;
+import sonar.logistics.core.tiles.nodes.array.BlockArray;
+import sonar.logistics.core.tiles.nodes.entity.BlockEntityNode;
+import sonar.logistics.core.tiles.nodes.node.BlockNode;
+import sonar.logistics.core.tiles.nodes.transfer.BlockTransferNode;
+import sonar.logistics.core.tiles.readers.base.BlockAbstractReader;
+import sonar.logistics.core.tiles.wireless.emitters.BlockDataEmitter;
+import sonar.logistics.core.tiles.wireless.emitters.BlockRedstoneEmitter;
+import sonar.logistics.core.tiles.wireless.receivers.BlockDataReceiver;
+import sonar.logistics.core.tiles.wireless.receivers.BlockRedstoneReceiver;
 
 public class PL2Blocks extends PL2 {
 
@@ -83,7 +87,7 @@ public class PL2Blocks extends PL2 {
 
 		@Override
 		public Item getItemBlock() {
-			return new PL2ItemConnectableMultipart(value);
+			return new ItemConnectableMultipart(value);
 		}
 	}
 
