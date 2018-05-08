@@ -11,18 +11,18 @@ import sonar.core.helpers.ASMLoader;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.utils.Pair;
 import sonar.logistics.api.asm.*;
-import sonar.logistics.api.displays.IDisplayAction;
-import sonar.logistics.api.displays.elements.IDisplayElement;
-import sonar.logistics.api.displays.elements.text.IStyledString;
-import sonar.logistics.api.errors.IInfoError;
-import sonar.logistics.api.filters.INodeFilter;
-import sonar.logistics.api.info.IInfo;
-import sonar.logistics.api.info.handlers.IEntityInfoProvider;
-import sonar.logistics.api.info.handlers.ITileInfoProvider;
-import sonar.logistics.api.info.register.IInfoRegistry;
-import sonar.logistics.api.tiles.readers.ILogicListSorter;
-import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.info.comparators.ILogicComparator;
+import sonar.logistics.api.core.tiles.displays.info.IInfo;
+import sonar.logistics.api.core.tiles.displays.info.handlers.IEntityInfoProvider;
+import sonar.logistics.api.core.tiles.displays.info.handlers.ITileInfoProvider;
+import sonar.logistics.api.core.tiles.displays.info.register.IInfoRegistry;
+import sonar.logistics.api.core.tiles.readers.ILogicListSorter;
+import sonar.logistics.base.filters.INodeFilter;
+import sonar.logistics.base.guidance.errors.IInfoError;
+import sonar.logistics.base.statements.comparators.ILogicComparator;
+import sonar.logistics.core.tiles.displays.gsi.interaction.actions.IDisplayAction;
+import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
+import sonar.logistics.core.tiles.displays.info.elements.base.IDisplayElement;
+import sonar.logistics.core.tiles.displays.info.types.text.styling.IStyledString;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -70,26 +70,26 @@ public class PL2ASMLoader {
 		PL2ASMLoader.loadLogicListSorters(asmDataTable);
 		PL2ASMLoader.loadComparatorTypes(asmDataTable);
 		PL2ASMLoader.loadNodeFilters(asmDataTable);
-		LogicInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
-		LogicInfoRegistry.INSTANCE.tileProviders.addAll(PL2ASMLoader.getTileProviders(asmDataTable));
-		LogicInfoRegistry.INSTANCE.entityProviders.addAll(PL2ASMLoader.getEntityProviders(asmDataTable));
-		PL2ASMLoader.loadASMLoadable(asmDataTable, IInfoError.class, InfoErrorType.class, "IEuiD", true);
+		MasterInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
+		MasterInfoRegistry.INSTANCE.tileProviders.addAll(PL2ASMLoader.getTileProviders(asmDataTable));
+		MasterInfoRegistry.INSTANCE.entityProviders.addAll(PL2ASMLoader.getEntityProviders(asmDataTable));
+		PL2ASMLoader.loadASMLoadable(asmDataTable, IInfoError.class, ASMInfoError.class, "IEuiD", true);
 	}
 
 	public static List<IInfoRegistry> getInfoRegistries(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(PL2.logger, asmDataTable, InfoRegistry.class, IInfoRegistry.class, true, false);
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, ASMInfoRegistry.class, IInfoRegistry.class, true, false);
 	}
 
 	public static List<ITileInfoProvider> getTileProviders(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(PL2.logger, asmDataTable, TileInfoProvider.class, ITileInfoProvider.class, true, false);
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, ASMTileInfoProvider.class, ITileInfoProvider.class, true, false);
 	}
 
 	public static List<IEntityInfoProvider> getEntityProviders(@Nonnull ASMDataTable asmDataTable) {
-		return ASMLoader.getInstances(PL2.logger, asmDataTable, EntityInfoProvider.class, IEntityInfoProvider.class, true, false);
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, ASMEntityInfoProvider.class, IEntityInfoProvider.class, true, false);
 	}
 
 	public static void loadComparatorTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, LogicComparator.class, ILogicComparator.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMInfoComparator.class, ILogicComparator.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends ILogicComparator>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -105,7 +105,7 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadInfoTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, LogicInfoType.class, IInfo.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IInfo>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMInfo.class, IInfo.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IInfo>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -117,7 +117,7 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadDisplayElementTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayElement>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, DisplayElementType.class, IDisplayElement.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayElement>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMDisplayElement.class, IDisplayElement.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IDisplayElement>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -130,7 +130,7 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadStyledStringTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IStyledString>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, StyledStringType.class, IStyledString.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IStyledString>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMStyledString.class, IStyledString.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IStyledString>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -143,7 +143,7 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadDisplayActionTypes(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayAction>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, DisplayActionType.class, IDisplayAction.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends IDisplayAction>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMDisplayAction.class, IDisplayAction.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends IDisplayAction>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -156,7 +156,7 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadLogicListSorters(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicListSorter>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, LogicListSorter.class, ILogicListSorter.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends ILogicListSorter>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMListSorter.class, ILogicListSorter.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends ILogicListSorter>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			int hashCode = name.hashCode();
@@ -169,7 +169,7 @@ public class PL2ASMLoader {
 	}
 
 	public static void loadNodeFilters(@Nonnull ASMDataTable asmDataTable) {
-		List<Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, NodeFilter.class, INodeFilter.class, true);
+		List<Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>>> infoTypes = ASMLoader.getClasses(PL2.logger, asmDataTable, ASMFilter.class, INodeFilter.class, true);
 		for (Pair<ASMDataTable.ASMData, Class<? extends INodeFilter>> info : infoTypes) {
 			String name = (String) info.a.getAnnotationInfo().get("id");
 			filterClasses.put(name, info.b);

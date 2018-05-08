@@ -22,21 +22,23 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sonar.logistics.api.displays.tiles.EnumDisplayFaceSlot;
-import sonar.logistics.commands.CommandResetInfoRegistry;
-import sonar.logistics.common.multiparts.holographic.EntityHolographicDisplay;
-import sonar.logistics.info.LogicInfoRegistry;
-import sonar.logistics.integration.MineTweakerIntegration;
-import sonar.logistics.worlddata.ConnectedDisplayData;
-import sonar.logistics.worlddata.GSIData;
-import sonar.logistics.worlddata.IdentityCountData;
-import sonar.logistics.worldgen.SapphireOreGen;
+import sonar.logistics.base.events.PL2Events;
+import sonar.logistics.base.utils.commands.CommandResetInfoRegistry;
+import sonar.logistics.base.utils.slots.EnumDisplayFaceSlot;
+import sonar.logistics.base.utils.worlddata.ConnectedDisplayData;
+import sonar.logistics.base.utils.worlddata.GSIData;
+import sonar.logistics.base.utils.worlddata.IdentityCountData;
+import sonar.logistics.base.utils.worldgen.SapphireOreGen;
+import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
+import sonar.logistics.core.tiles.displays.tiles.holographic.EntityHolographicDisplay;
+import sonar.logistics.integration.minetweaker.MineTweakerIntegration;
+import sonar.logistics.network.PL2Common;
 
 @Mod.EventBusSubscriber
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
 public class PL2 {
 
-	@SidedProxy(clientSide = "sonar.logistics.PL2Client", serverSide = "sonar.logistics.PL2Common")
+	@SidedProxy(clientSide = "sonar.logistics.handling.PL2Client", serverSide = "sonar.logistics.handling.PL2Common")
 	public static PL2Common proxy;
 
 	public static SimpleNetworkWrapper network;
@@ -83,7 +85,7 @@ public class PL2 {
 			logger.info("Sapphire Ore Generation is disabled in the config");
 
 		PL2ASMLoader.init(event);
-		LogicInfoRegistry.INSTANCE.init();
+		MasterInfoRegistry.INSTANCE.init();
 		proxy.preInit(event);
 	}
 

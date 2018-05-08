@@ -6,8 +6,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import sonar.core.helpers.SonarHelper;
 import sonar.core.utils.LabelledAxisAlignedBB;
-import sonar.logistics.api.cabling.CableRenderType;
-import sonar.logistics.api.tiles.nodes.NodeTransferMode;
+import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
+import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 
 import java.util.Collection;
 
@@ -30,20 +30,20 @@ public class PL2Properties {
 	public static double p = 0.0625;
 	public static LabelledAxisAlignedBB cableBox = new LabelledAxisAlignedBB(6 * p, 6 * p, 6 * p, 1 - 6 * p, 1 - 6 * p, 1 - 6 * p).labelAxis("c");
 	
-	public static class PropertyCableFace extends PropertyEnum<CableRenderType> {
+	public static class PropertyCableFace extends PropertyEnum<EnumCableRenderSize> {
 		public EnumFacing face;
 
-		protected PropertyCableFace(EnumFacing face, Collection<CableRenderType> allowedValues) {
-			super(face.name().toLowerCase(), CableRenderType.class, allowedValues);
+		protected PropertyCableFace(EnumFacing face, Collection<EnumCableRenderSize> allowedValues) {
+			super(face.name().toLowerCase(), EnumCableRenderSize.class, allowedValues);
 			this.face = face;
 		}
 
 		public static PropertyCableFace create(EnumFacing face) {
-			return new PropertyCableFace(face, SonarHelper.convertArray(CableRenderType.values()));
+			return new PropertyCableFace(face, SonarHelper.convertArray(EnumCableRenderSize.values()));
 		}
 	}
 	
-	public static AxisAlignedBB getCableBox(CableRenderType connect, EnumFacing face) {
+	public static AxisAlignedBB getCableBox(EnumCableRenderSize connect, EnumFacing face) {
 		double p = 0.0625;
 		double w = (1 - 2 * p) / 2;
 		double heightMin = connect.offsetBounds();
