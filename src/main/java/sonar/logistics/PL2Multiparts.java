@@ -2,21 +2,29 @@ package sonar.logistics;
 
 import net.minecraft.tileentity.TileEntity;
 import sonar.core.translate.Localisation;
-import sonar.logistics.common.multiparts.cables.TileDataCable;
-import sonar.logistics.common.multiparts.cables.TileRedstoneCable;
-import sonar.logistics.common.multiparts.displays.TileDisplayScreen;
-import sonar.logistics.common.multiparts.displays.TileLargeDisplayScreen;
-import sonar.logistics.common.multiparts.displays.TileMiniDisplay;
-import sonar.logistics.common.multiparts.holographic.TileAdvancedHolographicDisplay;
-import sonar.logistics.common.multiparts.holographic.TileHolographicDisplay;
-import sonar.logistics.common.multiparts.misc.TileClock;
-import sonar.logistics.common.multiparts.misc.TileRedstoneSignaller;
-import sonar.logistics.common.multiparts.nodes.*;
-import sonar.logistics.common.multiparts.readers.*;
-import sonar.logistics.common.multiparts.wireless.TileDataEmitter;
-import sonar.logistics.common.multiparts.wireless.TileDataReceiver;
-import sonar.logistics.common.multiparts.wireless.TileRedstoneEmitter;
-import sonar.logistics.common.multiparts.wireless.TileRedstoneReceiver;
+import sonar.logistics.core.tiles.connections.data.tiles.TileDataCable;
+import sonar.logistics.core.tiles.connections.redstone.tiles.TileRedstoneCable;
+import sonar.logistics.core.tiles.displays.tiles.connected.TileLargeDisplayScreen;
+import sonar.logistics.core.tiles.displays.tiles.holographic.TileAdvancedHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.TileHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.small.TileDisplayScreen;
+import sonar.logistics.core.tiles.displays.tiles.small.TileMiniDisplay;
+import sonar.logistics.core.tiles.misc.clock.TileClock;
+import sonar.logistics.core.tiles.misc.signaller.TileRedstoneSignaller;
+import sonar.logistics.core.tiles.nodes.TileRedstoneNode;
+import sonar.logistics.core.tiles.nodes.array.TileArray;
+import sonar.logistics.core.tiles.nodes.entity.TileEntityNode;
+import sonar.logistics.core.tiles.nodes.node.TileNode;
+import sonar.logistics.core.tiles.nodes.transfer.TileTransferNode;
+import sonar.logistics.core.tiles.readers.energy.TileEnergyReader;
+import sonar.logistics.core.tiles.readers.fluids.TileFluidReader;
+import sonar.logistics.core.tiles.readers.info.TileInfoReader;
+import sonar.logistics.core.tiles.readers.items.TileInventoryReader;
+import sonar.logistics.core.tiles.readers.network.TileNetworkReader;
+import sonar.logistics.core.tiles.wireless.emitters.TileDataEmitter;
+import sonar.logistics.core.tiles.wireless.emitters.TileRedstoneEmitter;
+import sonar.logistics.core.tiles.wireless.receivers.TileDataReceiver;
+import sonar.logistics.core.tiles.wireless.receivers.TileRedstoneReceiver;
 
 public enum PL2Multiparts {
 	NODE(0.875, 0, 0.0625, "Node", TileNode.class, PL2Translate.NODE), //
