@@ -9,9 +9,5 @@
   "authors": ["Ollie Lansdell"],
   "credits": "Ollie Lansdell - Ideas, Coding, Textures, Models, SkullyGamingMC - Forging Hammer Model",
   "logoFile": "/banner.png",
-  "screenshots": [],
-  "requiredMods": [ "forge", "sonarcore", "mcmultipart" ],
-  "dependencies": [],
-  "useDependencyInformation": "true"
 }
 ]
