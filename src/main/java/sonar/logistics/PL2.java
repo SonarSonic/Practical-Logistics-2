@@ -38,7 +38,7 @@ import sonar.logistics.network.PL2Common;
 @Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
 public class PL2 {
 
-	@SidedProxy(clientSide = "sonar.logistics.handling.PL2Client", serverSide = "sonar.logistics.handling.PL2Common")
+	@SidedProxy(clientSide = "sonar.logistics.network.PL2Client", serverSide = "sonar.logistics.network.PL2Common")
 	public static PL2Common proxy;
 
 	public static SimpleNetworkWrapper network;
