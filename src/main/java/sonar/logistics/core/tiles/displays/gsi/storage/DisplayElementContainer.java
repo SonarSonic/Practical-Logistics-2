@@ -74,7 +74,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 	}
 
 	public boolean canRender() {
-		return isWithinScreenBounds && !gsi.isGridSelectionMode;
+		return isWithinScreenBounds && gsi.mode.renderElements();
 	}
 
 	public void render() {
@@ -87,7 +87,7 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 			DisplayElementHelper.renderElementStorageHolder(this);
 			if (!gsi.isEditContainer(this)) {
 				translate(0, 0, -0.02);
-				if (gsi.isElementSelectionMode) {
+				if (gsi.mode == gsi.selection_mode) {
 					if (gsi.selection_mode.selected_identities.contains(getContainerIdentity())) {
 						DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], gsi.selection_mode.selectionType.getTypeColour());
 					}

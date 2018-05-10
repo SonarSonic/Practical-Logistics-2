@@ -42,7 +42,9 @@ import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
 import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSIGridMode;
+import sonar.logistics.core.tiles.displays.gsi.modes.GSIModeDefault;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSISelectionMode;
+import sonar.logistics.core.tiles.displays.gsi.modes.IGSIMode;
 import sonar.logistics.core.tiles.displays.gsi.packets.GSIElementPacketHelper;
 import sonar.logistics.core.tiles.displays.gsi.render.GSIOverlays;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
@@ -94,10 +96,11 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public double[] currentScaling;
 
-	public boolean isElementSelectionMode = false;
-	public boolean isGridSelectionMode = false;
+	public GSIModeDefault default_mode = new GSIModeDefault(this);
 	public GSIGridMode grid_mode = new GSIGridMode(this);
 	public GSISelectionMode selection_mode = new GSISelectionMode(this);
+
+	public IGSIMode mode = default_mode;
 
 	{
 		syncParts.addParts(container_identity, edit_mode);// , width, height, scale);
@@ -117,68 +120,68 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	//// MAIN ACTIONS \\\\
 
 	public boolean onClicked(TileAbstractDisplay part, BlockInteractionType type, World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (display instanceof ConnectedDisplay && !((ConnectedDisplay) display).canBeRendered.getObject()) {
-			if (world.isRemote) { // left click is client only.
-				player.sendMessage(new TextComponentTranslation("THE DISPLAY IS INCOMPLETE"));
-			}
+		if (!world.isRemote) {
+			// only clicks on client side, like a GUI, positioning may not be the same on server
 			return true;
 		}
-		if (world.isRemote) { // only clicks on client side, like a GUI, positioning may not be the same on server
-
-			if (!isGridSelectionMode && (type == BlockInteractionType.SHIFT_RIGHT) || LogisticsHelper.isPlayerUsingOperator(player)) {
-				GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditModePacket(!edit_mode.getObject()), -1, this);
-				player.sendMessage(new TextComponentTranslation("Edit Mode: " + !edit_mode.getObject()));
+		if (display instanceof ConnectedDisplay && !((ConnectedDisplay) display).canBeRendered.getObject()) {
+			player.sendMessage(new TextComponentTranslation("THE DISPLAY IS INCOMPLETE"));
+			return true;
+		}
+		if (mode != grid_mode && (type == BlockInteractionType.SHIFT_RIGHT) || LogisticsHelper.isPlayerUsingOperator(player)) {
+			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditModePacket(!edit_mode.getObject()), -1, this);
+			player.sendMessage(new TextComponentTranslation("Edit Mode: " + !edit_mode.getObject()));
+			return true;
+		}
+		DisplayScreenClick click = getClientClick(HolographicVectorHelper.createClick(player, display, type));
+		if(click != null) {
+			click.doubleClick = wasDoubleClick(world, player);
+			if(mode.renderEditContainer() && isEditContainer(click.clickedContainer) && click.clickedElement != null){
+				doDefaultElementClick(part, pos, click, type, player);
 				return true;
 			}
-			DisplayScreenClick click = HolographicVectorHelper.createClick(player, display, type);
-			if(click == null){
-				return false;
-			}
-			click.doubleClick = wasDoubleClick(world, player);
-			if (this.isGridSelectionMode) {
-				grid_mode.onClicked(type, click);
-			} else {
-				Tuple<IDisplayElement, double[]> clickedElement = getElementFromXY(click.clickX, click.clickY);
-				if ((clickedElement == null || clickedElement.getFirst() == null || !isEditContainer(clickedElement.getFirst().getHolder().getContainer())) && isElementSelectionMode) {
-					//// COMPLETES ELEMENT SELECTION MODE \\\\
-					for (DisplayElementContainer container : containers.values()) {
-						if (!isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
-							selection_mode.onElementSelected(container.getContainerIdentity(), type);
-							break;
-						}
-					}
-				} else {
-					if (clickedElement != null && this.edit_mode.getObject()) {
-						//// NO-SHIFT: OPENS GUI EDIT SCREEN, SHIFT: STARTS RESIZE MODE FOR THE CLICKED ELEMENT \\\\
-						if (!isEditContainer(clickedElement.getFirst().getHolder().getContainer()) && !(clickedElement.getFirst() instanceof ButtonEmptyInfo)) {
-							if (!player.isSneaking()) {
-								NBTTagCompound guiTag = new NBTTagCompound();
-								guiTag.setInteger("clicked", clickedElement.getFirst().getElementIdentity());
-								requestGui(part, world, pos, player, -1, 1, guiTag);
-							} else {
-								grid_mode.startResizeSelectionMode(clickedElement.getFirst().getHolder().getContainer().getContainerIdentity());
-							}
-							return true;
-						}
-					}
-					//// PERFORM ELEMENT GSI CLICK \\\\
-					if (clickedElement != null && clickedElement.getFirst() instanceof IClickableElement) {
-						List<IInfoError> errors = getErrors(clickedElement.getFirst());
-						if (errors != null && !errors.isEmpty()) {
-							player.sendMessage(new TextComponentTranslation(errors.get(0).getDisplayMessage().get(0)));
-							return true;
-						}
-						int gui = ((IClickableElement) clickedElement.getFirst()).onGSIClicked(click, player, clickedElement.getSecond()[0], clickedElement.getSecond()[1]);
-						if (gui != -1) {
-							requestGui(part, world, pos, player, clickedElement.getFirst().getElementIdentity(), gui, new NBTTagCompound());
-						}
-					}
+			if(!mode.onClicked(part, pos, click, type, player) && mode.renderElements() && click.clickedElement != null){
+				List<IInfoError> errors = getErrors(click.clickedElement);
+				if (errors != null && !errors.isEmpty()) {
+					player.sendMessage(new TextComponentTranslation(errors.get(0).getDisplayMessage().get(0)));
+					return true;
+				}else{
+					doDefaultElementClick(part, pos, click, type, player);
 				}
 			}
 		}
+		return true; //prevents double clicks?
+	}
 
-		return true; // FIXME
+	public boolean doDefaultElementClick(TileAbstractDisplay part, BlockPos pos, DisplayScreenClick click, BlockInteractionType type, EntityPlayer player) {
+		if(click.clickedElement instanceof IClickableElement) {
+			int gui = ((IClickableElement) click.clickedElement).onGSIClicked(click, player, click.subClickX, click.subClickY);
+			if (gui != -1) {
+				requestGui(part, world, pos, player, click.clickedElement.getElementIdentity(), gui, new NBTTagCompound());
+			}
+			return true;
+		}
+		return false;
+	}
 
+	@Nullable
+	public DisplayScreenClick getClientClick(@Nullable DisplayScreenClick click){
+		if(click == null){
+			return null;
+		}
+		for (DisplayElementContainer container : containers.values()) {
+			if (container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
+				click.clickedContainer = container;
+				Tuple<IDisplayElement, double[]> e = container.getElementFromXY(click.clickX, click.clickY);
+				if (e != null) {
+					click.clickedElement = e.getFirst();
+					click.subClickX = e.getSecond()[0];
+					click.subClickY = e.getSecond()[1];
+					return click;
+				}
+			}
+		}
+		return click;
 	}
 
 	/** gets the Element at the given XY, used to know element clicked/hovered */
@@ -206,14 +209,17 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void updateLookElement() {
-		DisplayScreenLook look = GSIOverlays.getCurrentLook(this);
-		lookElement = null;
-		if (look != null) {
-			Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX, look.lookY);
-			if (e != null && e.getFirst() instanceof ILookableElement) {
-				lookElement = e.getFirst();
-				lookX = e.getSecond()[0];
-				lookY = e.getSecond()[1];
+		if (lastLookElementUpdate == 0 || (System.currentTimeMillis() - lastLookElementUpdate) > 50) {
+			lastLookElementUpdate = System.currentTimeMillis();
+			DisplayScreenLook look = GSIOverlays.getCurrentLook(this);
+			lookElement = null;
+			if (look != null) {
+				Tuple<IDisplayElement, double[]> e = getElementFromXY(look.lookX, look.lookY);
+				if (e != null && e.getFirst() instanceof ILookableElement) {
+					lookElement = e.getFirst();
+					lookX = e.getSecond()[0];
+					lookY = e.getSecond()[1];
+				}
 			}
 		}
 	}
@@ -221,14 +227,10 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void render() {
 		//fixes brightness issues when transparent blocks are nearby.
 		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		if (lastLookElementUpdate == 0 || (System.currentTimeMillis() - lastLookElementUpdate) > 50) {
-			lastLookElementUpdate = System.currentTimeMillis();
-			updateLookElement();
-		}
-		// renders viewable the display element containers
-		if (isGridSelectionMode) {
-			grid_mode.renderSelectionMode();
-		} else {
+
+		updateLookElement();
+		mode.renderMode();
+		if(mode.renderElements()){
 			getViewableContainers().forEach(DisplayElementContainer::render);
 		}
 	}
@@ -580,7 +582,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public boolean isEditContainer(DisplayElementContainer c) {
-		return c.getContainerIdentity() == EDIT_CONTAINER_ID;
+		return c != null && c.getContainerIdentity() == EDIT_CONTAINER_ID;
 	}
 
 	/** creates a new Element Container with the given properties */
@@ -670,10 +672,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			queuedUpdates.clear();
         }
     }
-
-	//public void sendInfoContainerPacket(EntityPlayerMP player, DisplayGSISavedData type) {
-	//	PL2.handling.sendTo(new PacketGSISavedDataPacket(this, type), player);
-	//}
 
 	public void sendValidatePacket(EntityPlayerMP player) {
 		if (display instanceof ConnectedDisplay) {

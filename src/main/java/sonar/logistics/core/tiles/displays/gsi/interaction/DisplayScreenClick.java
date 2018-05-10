@@ -3,9 +3,13 @@ package sonar.logistics.core.tiles.displays.gsi.interaction;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.NBTHelper;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
+import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
+import sonar.logistics.core.tiles.displays.info.elements.base.IDisplayElement;
 import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 public class DisplayScreenClick {
@@ -17,6 +21,13 @@ public class DisplayScreenClick {
 	public int identity;
 	public boolean doubleClick = false;
 	public boolean fakeGuiClick = false;
+
+	@SideOnly(Side.CLIENT)
+	public IDisplayElement clickedElement = null;
+	@SideOnly(Side.CLIENT)
+	public double subClickX = 0, subClickY = 0;
+	@SideOnly(Side.CLIENT)
+	public DisplayElementContainer clickedContainer = null;
 	
 	public DisplayScreenClick setClickPosition(double[] clickPosition){
 		this.clickX = clickPosition[0];

@@ -1,12 +1,17 @@
 package sonar.logistics.core.tiles.displays.gsi.modes;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
+import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
+import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
+import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GSISelectionMode {
+public class GSISelectionMode implements IGSIMode {
 
 	public DisplayGSI gsi;
 
@@ -23,7 +28,7 @@ public class GSISelectionMode {
 	public void startElementSelectionMode(GSIElementSelection type) {
 		selectionType = type;
 		selected_identities = new ArrayList<>();
-		gsi.isElementSelectionMode = true;
+		gsi.mode = gsi.selection_mode;
 	}
 
 	public void onElementSelected(int containerID, BlockInteractionType type) {
@@ -50,6 +55,30 @@ public class GSISelectionMode {
 			selectionType.finishSelection(gsi, selected_identities);
 		selectionType = null;
 		selected_identities = new ArrayList<>();
-		gsi.isElementSelectionMode = false;
+		gsi.mode = gsi.default_mode;
+	}
+
+	@Override
+	public boolean onClicked(TileAbstractDisplay part, BlockPos pos, DisplayScreenClick click, BlockInteractionType type, EntityPlayer player) {
+		for (DisplayElementContainer container : gsi.containers.values()) {
+			if (!gsi.isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
+				gsi.selection_mode.onElementSelected(container.getContainerIdentity(), type);
+				break;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void renderMode() {}
+
+	@Override
+	public boolean renderElements() {
+		return true;
+	}
+
+	@Override
+	public boolean renderEditContainer() {
+		return true;
 	}
 }

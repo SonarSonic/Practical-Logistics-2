@@ -37,11 +37,17 @@ public class GSIInteractionHelper {
     //// GRID SELECTION MODE \\\\\
 
     public static double getGridXScale(DisplayGSI gsi) {
-        return Math.max(gsi.getDisplayScaling()[0] / 8, gsi.display.getWidth() / 4);
+    	if(gsi.display.getWidth()<0.5){
+    		return gsi.display.getWidth() / 4;
+		}
+        return gsi.display.getWidth() / 8;
     }
 
     public static double getGridYScale(DisplayGSI gsi) {
-        return Math.max(gsi.getDisplayScaling()[1] / 8, gsi.display.getHeight() / 4);
+		if(gsi.display.getHeight()<0.5){
+			return gsi.display.getHeight() / 4;
+		}
+		return gsi.display.getHeight() / 8;
     }
 
     public static double getGridXPosition(DisplayGSI gsi, double x) {

@@ -2,6 +2,8 @@ package sonar.logistics.core.tiles.displays.gsi.modes;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import sonar.core.api.utils.BlockInteractionType;
@@ -12,8 +14,9 @@ import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
 import sonar.logistics.core.tiles.displays.gsi.packets.GSIElementPacketHelper;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
 import sonar.logistics.core.tiles.displays.info.elements.DisplayElementHelper;
+import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 
-public class GSIGridMode {
+public class GSIGridMode implements IGSIMode {
 
 	public DisplayGSI gsi;
 	public double[] clickPosition1;
@@ -27,7 +30,8 @@ public class GSIGridMode {
 		this.gsi = gsi;
 	}
 
-	public void onClicked(BlockInteractionType type, DisplayScreenClick click) {
+	@Override
+	public boolean onClicked(TileAbstractDisplay part, BlockPos pos, DisplayScreenClick click, BlockInteractionType type, EntityPlayer player) {
 		if (type.isShifting()) {
 			if (type.isLeft() || clickPosition1 == null) {
 				exitGridSelectionMode();
@@ -47,9 +51,10 @@ public class GSIGridMode {
 				clickPosition2 = newPosition;
 			}
 		}
+		return true;
 	}
 
-	public void renderSelectionMode() {
+	public void renderMode() {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0, 0, -0.01);
 
@@ -84,12 +89,21 @@ public class GSIGridMode {
 		GlStateManager.popMatrix();
 	}
 
+	@Override
+	public boolean renderElements() {
+		return false;
+	}
+
+	@Override
+	public boolean renderEditContainer() {
+		return false;
+	}
 
 	public void startResizeSelectionMode(int containerID) {
 		DisplayElementContainer c = gsi.getContainer(containerID);
 		if (c != null) {
 			createInfo = null;
-			gsi.isGridSelectionMode = true;
+			gsi.mode = gsi.grid_mode;
 			containerResizing = c.getContainerIdentity();
 			clickPosition1 = c.getTranslation();
 			clickPosition2 = new double[] { c.getTranslation()[0] + c.getContainerMaxScaling()[0] - 0.0625, c.getTranslation()[1] + c.getContainerMaxScaling()[1] - 0.0625, 0 };
@@ -104,7 +118,7 @@ public class GSIGridMode {
 
 	public void startGridSelectionMode(GSICreateInfo type) {
 		createInfo = type;
-		gsi.isGridSelectionMode = true;
+		gsi.mode = gsi.grid_mode;
 		clickPosition1 = null;
 		clickPosition2 = null;
 
@@ -115,8 +129,7 @@ public class GSIGridMode {
 	}
 
 	public void exitGridSelectionMode() {
-		gsi.isElementSelectionMode = false;
-		gsi.isGridSelectionMode = false;
+		gsi.mode = gsi.default_mode;
 		clickPosition1 = null;
 		clickPosition2 = null;
 	}
