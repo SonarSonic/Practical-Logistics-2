@@ -5,13 +5,12 @@ import net.minecraft.util.Tuple;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.client.gui.widgets.SonarScroller;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
-import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
 import sonar.logistics.core.tiles.displays.gsi.packets.GSIElementPacketHelper;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
 import sonar.logistics.core.tiles.displays.info.elements.DisplayElementHelper;
 import sonar.logistics.core.tiles.displays.info.elements.base.IDisplayElement;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 import java.io.IOException;
 
@@ -43,7 +42,7 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {
 		Tuple<IDisplayElement, double[]> click = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY); // remove adjustment
 		if (click != null) {
-			DisplayScreenClick fakeClick = HolographicVectorHelper.createFakeClick(gsi, c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
+			DisplayScreenClick fakeClick = DisplayVectorHelper.createFakeClick(gsi, c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
 			onDisplayElementClicked(click.getFirst(), fakeClick, click.getSecond());
 			return true;
 		}

@@ -19,6 +19,7 @@ import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.events.PL2Events;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
 import sonar.logistics.core.tiles.displays.gsi.render.GSIOverlays;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 
 public class EntityHolographicDisplay extends Entity {
 
@@ -55,12 +56,12 @@ public class EntityHolographicDisplay extends Entity {
         double zMin = posZ, zMax = posZ;
         Vec3d screenV = getLookVec();
         Vec3d origin = getPositionVector();
-        Vec3d[] vectors = HolographicVectorHelper.getScreenVectors(this.getHolographicDisplay(), screenV);
+        Vec3d[] vectors = DisplayVectorHelper.getScreenVectors(this.getHolographicDisplay(), screenV);
 
-        Vec3d topLeft = HolographicVectorHelper.getTopLeft(origin, vectors[0], vectors[1], width, height);
-        Vec3d topRight = HolographicVectorHelper.getTopRight(origin, vectors[0], vectors[1], width, height);
-        Vec3d bottomLeft = HolographicVectorHelper.getBottomLeft(origin, vectors[0], vectors[1], width, height);
-        Vec3d bottomRight = HolographicVectorHelper.getBottomRight(origin, vectors[0], vectors[1], width, height);
+        Vec3d topLeft = DisplayVectorHelper.getTopLeft(origin, vectors[0], vectors[1], width, height);
+        Vec3d topRight = DisplayVectorHelper.getTopRight(origin, vectors[0], vectors[1], width, height);
+        Vec3d bottomLeft = DisplayVectorHelper.getBottomLeft(origin, vectors[0], vectors[1], width, height);
+        Vec3d bottomRight = DisplayVectorHelper.getBottomRight(origin, vectors[0], vectors[1], width, height);
 
         for(Vec3d vec : Lists.newArrayList(topLeft, topRight, bottomLeft, bottomRight)){
             xMin = vec.x < xMin ? vec.x : xMin;
@@ -139,7 +140,7 @@ public class EntityHolographicDisplay extends Entity {
     public boolean canBeCollidedWith()
     {
         if(this.world.isRemote){
-            double[] look = HolographicVectorHelper.getDisplayLook(FMLClientHandler.instance().getClientPlayerEntity(), getHolographicDisplay(), 8);
+            double[] look = DisplayVectorHelper.getDisplayLook(FMLClientHandler.instance().getClientPlayerEntity(), getHolographicDisplay(), 8);
             if(look != null){
                 GSIOverlays.currentLook = new DisplayScreenLook(look, GSI_IDENTITY);
                 return true;

@@ -3,11 +3,10 @@ package sonar.logistics.core.tiles.displays.gsi.gui;
 import net.minecraft.util.Tuple;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
-import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
 import sonar.logistics.core.tiles.displays.info.elements.base.IDisplayElement;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 public class GuiAbstractEditGSI extends GuiAbstractEditScreen {
 
@@ -28,7 +27,7 @@ public class GuiAbstractEditGSI extends GuiAbstractEditScreen {
 	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {
 		Tuple<IDisplayElement, double[]> click = gsi.getElementFromXY(clickX, clickY); // remove adjustment
 		if (click != null) {
-			DisplayScreenClick fakeClick = HolographicVectorHelper.createFakeClick(gsi, clickX, clickY, isDoubleClick(), key);
+			DisplayScreenClick fakeClick = DisplayVectorHelper.createFakeClick(gsi, clickX, clickY, isDoubleClick(), key);
 			onDisplayElementClicked(click.getFirst(), fakeClick, click.getSecond());
 			return true;
 		}

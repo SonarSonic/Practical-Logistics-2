@@ -30,17 +30,16 @@ import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.guidance.errors.IInfoError;
-import sonar.logistics.base.requests.colour.GuiColourSelection;
-import sonar.logistics.base.utils.LogisticsHelper;
 import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.listeners.ListenerType;
+import sonar.logistics.base.requests.colour.GuiColourSelection;
+import sonar.logistics.base.utils.LogisticsHelper;
 import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayInfoReferenceHandler;
 import sonar.logistics.core.tiles.displays.DisplayViewerHandler;
 import sonar.logistics.core.tiles.displays.gsi.gui.GuiEditElementsList;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
-import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSIGridMode;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSIModeDefault;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSISelectionMode;
@@ -53,12 +52,15 @@ import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler.Dis
 import sonar.logistics.core.tiles.displays.gsi.storage.EditContainer;
 import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
 import sonar.logistics.core.tiles.displays.info.elements.base.*;
-import sonar.logistics.core.tiles.displays.info.elements.buttons.ButtonEmptyInfo;
 import sonar.logistics.core.tiles.displays.info.types.text.StyledTextElement;
 import sonar.logistics.core.tiles.displays.info.types.text.StyledTitleElement;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.*;
+import sonar.logistics.core.tiles.displays.tiles.holographic.GuiHolographicRescaling;
+import sonar.logistics.core.tiles.displays.tiles.holographic.TileAbstractHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.TileAdvancedHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.TileHolographicDisplay;
 import sonar.logistics.network.packets.gsi.PacketGSIConnectedDisplayValidate;
 import sonar.logistics.network.packets.gsi.PacketGSIInvalidate;
 import sonar.logistics.network.packets.gsi.PacketGSISavedDataPacket;
@@ -133,7 +135,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			player.sendMessage(new TextComponentTranslation("Edit Mode: " + !edit_mode.getObject()));
 			return true;
 		}
-		DisplayScreenClick click = getClientClick(HolographicVectorHelper.createClick(player, display, type));
+		DisplayScreenClick click = getClientClick(DisplayVectorHelper.createClick(player, display, type));
 		if(click != null) {
 			click.doubleClick = wasDoubleClick(world, player);
 			if(mode.renderEditContainer() && isEditContainer(click.clickedContainer) && click.clickedElement != null){

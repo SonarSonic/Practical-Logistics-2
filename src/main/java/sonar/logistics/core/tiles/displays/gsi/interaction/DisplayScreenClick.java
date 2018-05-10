@@ -1,7 +1,6 @@
 package sonar.logistics.core.tiles.displays.gsi.interaction;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -10,7 +9,7 @@ import sonar.core.helpers.NBTHelper;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
 import sonar.logistics.core.tiles.displays.info.elements.base.IDisplayElement;
-import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 
 public class DisplayScreenClick {
 
@@ -41,7 +40,7 @@ public class DisplayScreenClick {
 		nbt.setInteger("type", click.type.ordinal());
 		nbt.setDouble("clickX", click.clickX);
 		nbt.setDouble("clickY", click.clickY);
-		HolographicVectorHelper.writeVec3d(click.intersect, "intersect", tag, NBTHelper.SyncType.SAVE);
+		DisplayVectorHelper.writeVec3d(click.intersect, "intersect", tag, NBTHelper.SyncType.SAVE);
 		nbt.setBoolean("doubleClick", click.doubleClick);	
 		tag.setTag("displayclick", nbt);
 		return tag;
@@ -55,7 +54,7 @@ public class DisplayScreenClick {
 		click.type = BlockInteractionType.values()[nbt.getInteger("type")];
 		click.clickX = nbt.getDouble("clickX");
 		click.clickY = nbt.getDouble("clickY");
-		click.intersect = HolographicVectorHelper.readVec3d("intersect", tag, NBTHelper.SyncType.SAVE);
+		click.intersect = DisplayVectorHelper.readVec3d("intersect", tag, NBTHelper.SyncType.SAVE);
 		click.doubleClick = nbt.getBoolean("doubleClick");		
 		return click;
 		

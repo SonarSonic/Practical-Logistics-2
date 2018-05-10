@@ -14,9 +14,9 @@ import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.api.core.tiles.readers.ClientLocalProvider;
 import sonar.logistics.api.core.tiles.wireless.emitters.ClientWirelessEmitter;
 import sonar.logistics.base.events.types.NetworkPartEvent;
+import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.utils.PL2AdditionType;
 import sonar.logistics.base.utils.PL2RemovalType;
-import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.info.types.general.InfoChangeableList;
 import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplay;
@@ -116,7 +116,7 @@ public class ClientInfoHandler implements IInfoManager {
 		if (!displays_tile.containsKey(display.getIdentity())) {
 			displays_tile.put(display.getIdentity(), display);
 			if(display instanceof ILargeDisplay){
-				display = ((ILargeDisplay) display).getConnectedDisplay().get();
+				display = ((ILargeDisplay) display).getConnectedDisplay().orElse(null);
 				if(display == null){
 					return;
 				}

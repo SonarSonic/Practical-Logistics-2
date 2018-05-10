@@ -5,8 +5,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
-import org.lwjgl.opengl.GL11;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
@@ -148,48 +146,8 @@ public class InfoRenderHelper {
 		tessellator.draw();
 	}
 
-	public static final int[] rotate = new int[] { 0, 0, 0, 180, 270, 90 };
-	public static final double[][] matrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 1, 0, -1 }, { 1, 0, 0 }, { 0, 0, -1 } };
-	public static final double[][] downMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 0, 0, 0 }, { 1, 1, 0 } };
-	public static final double[][] upMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
 
-	@Deprecated
-	public static void rotateDisplayRendering(EnumFacing face, EnumFacing rotation, double width, double height) {
-		double[] translate = matrix[face.ordinal()];
-		GL11.glRotated(180, 0, 0, 1);
-		switch (face) {
-		case DOWN:
-			GL11.glRotated(270, 1, 0, 0);
-			int ordinal = rotation.ordinal();
-			ordinal = ordinal == 4 ? 5 : ordinal == 5 ? 4 : ordinal;
-			//GL11.glRotated(rotate[ordinal], 0, 0, 1);
-			translate = getDownMatrix(ordinal, Math.max(1D, width), Math.max(1D, height));
-			break;
-		case UP:
-			GL11.glRotated(270, 1, 0, 0);
-			GL11.glRotated(rotate[rotation.ordinal()], 0, 0, 1);
-			translate = getUpMatrix(rotation.ordinal(), width, height);
-			GL11.glTranslated(0, 0, 0);
-			break;
-		default:
-			GL11.glRotated(rotate[face.ordinal()], 0, 1, 0);
-			break;
 
-		}
-		GL11.glTranslated(translate[0], translate[1], translate[2]);
-	}
-
-    @Deprecated
-	public static double[] getDownMatrix(int i, double width, double height) {
-		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, width, 0 }, { height, 0, 0 }, { 0, 0, 0 }, { height, width, 0 } };
-		return newMatrix[i];
-	}
-
-    @Deprecated
-	public static double[] getUpMatrix(int i, double width, double height) {
-		double[][] newMatrix = new double[][] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, -1 }, { 1, 1, -1 }, { 1, 0, -1 }, { 0, 1, -1 } };
-		return newMatrix[i];
-	}
 
 	public static int left_offset = (int) ((1.0 / 0.75) * 10);
 	public static int middle_offset = (int) ((1.0 / 0.75) * (10 + 92));

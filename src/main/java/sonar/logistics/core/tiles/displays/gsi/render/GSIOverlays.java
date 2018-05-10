@@ -5,16 +5,12 @@ import mcmultipart.api.multipart.MultipartHelper;
 import mcmultipart.api.slot.IPartSlot;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.base.utils.slots.EnumDisplayFaceSlot;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
-import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
-import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplay;
-import sonar.logistics.core.tiles.displays.tiles.connected.TileLargeDisplayScreen;
-import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -49,7 +45,7 @@ public class GSIOverlays {
 			if (tile.isPresent() && tile.get() instanceof IDisplay) {
 				IDisplay display = (IDisplay) tile.get();
 				if(display.getGSI() != null) {
-					currentLook = HolographicVectorHelper.createLook(evt.getPlayer(), display);
+					currentLook = DisplayVectorHelper.createLook(evt.getPlayer(), display);
 					return;
 				}
 			}

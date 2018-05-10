@@ -10,7 +10,7 @@ import sonar.core.listener.ISonarListener;
 import sonar.core.network.sync.ISyncableListener;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
-import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 
 import javax.annotation.Nullable;
 
@@ -73,7 +73,7 @@ public interface IDisplay extends INetworkTile, ISyncableListener, ISonarListene
 	/**returns the screens rotational vector in the form PITCH / YAW / ROLL
 	 * by default this is calculated using the screens {@link #getCableFace()}*/
 	default Vec3d getScreenRotation(){
-		return HolographicVectorHelper.getScreenRotation(getCableFace());
+		return DisplayVectorHelper.getScreenRotation(getCableFace());
 	}
 
 	/**returns the screen's pitch, obtained from the x value of {@link #getScreenRotation()}*/
@@ -94,9 +94,9 @@ public interface IDisplay extends INetworkTile, ISyncableListener, ISonarListene
 	/**the screens origin ( the center of the screen / it's point of rotation )
 	 * by default this uses {@link #getCableFace()} to offset the display*/
 	default Vec3d getScreenOrigin(){
-		Vec3d pos = HolographicVectorHelper.convertVector(getCoords().getBlockPos());
+		Vec3d pos = DisplayVectorHelper.convertVector(getCoords().getBlockPos());
 		pos = pos.addVector(0.5, 0.5, 0.5); // place vector in the centre of the block pos
-		pos = pos.add(HolographicVectorHelper.getFaceOffset(getCableFace(), 0.5)); // offset by the direction of the screen
+		pos = pos.add(DisplayVectorHelper.getFaceOffset(getCableFace(), 0.5)); // offset by the direction of the screen
 		return pos;
 	}
 

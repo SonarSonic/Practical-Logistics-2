@@ -7,6 +7,7 @@ import sonar.core.helpers.NBTHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
 import sonar.logistics.base.utils.PL2AdditionType;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 import sonar.logistics.network.packets.PacketHolographicDisplayScaling;
 
 public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDisplay {
@@ -21,9 +22,9 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
         super.readData(nbt, type);
         if(type.isType(NBTHelper.SyncType.SAVE)) {
             defaults_set = nbt.getBoolean("defs");
-            screenScale = HolographicVectorHelper.readVec3d("scale", nbt, type);
-            screenRotation = HolographicVectorHelper.readVec3d("rotate", nbt, type);
-            screenOffset = HolographicVectorHelper.readVec3d("offset", nbt, type);
+            screenScale = DisplayVectorHelper.readVec3d("scale", nbt, type);
+            screenRotation = DisplayVectorHelper.readVec3d("rotate", nbt, type);
+            screenOffset = DisplayVectorHelper.readVec3d("offset", nbt, type);
             if (isClient() && getWorld() != null) {
                 getHolographicEntity().ifPresent(entity -> entity.setSizingFromDisplay(this));
             }
@@ -35,9 +36,9 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
         if(type.isType(NBTHelper.SyncType.SAVE)) {
             this.updateDefaultScaling();
             nbt.setBoolean("defs", defaults_set);
-            HolographicVectorHelper.writeVec3d(screenScale, "scale", nbt, type);
-            HolographicVectorHelper.writeVec3d(screenRotation, "rotate", nbt, type);
-            HolographicVectorHelper.writeVec3d(screenOffset, "offset", nbt, type);
+            DisplayVectorHelper.writeVec3d(screenScale, "scale", nbt, type);
+            DisplayVectorHelper.writeVec3d(screenRotation, "rotate", nbt, type);
+            DisplayVectorHelper.writeVec3d(screenOffset, "offset", nbt, type);
         }
         return super.writeData(nbt, type);
     }
@@ -77,8 +78,8 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
 
     public void updateDefaultScaling(){
         if(this.isServer() && !defaults_set) {
-            screenOffset = HolographicVectorHelper.getFaceOffset(getCableFace(), 0.5);
-            screenRotation = HolographicVectorHelper.getScreenRotation(getCableFace());
+            screenOffset = DisplayVectorHelper.getFaceOffset(getCableFace(), 0.5);
+            screenRotation = DisplayVectorHelper.getScreenRotation(getCableFace());
             defaults_set = true;
             markDirty();
         }

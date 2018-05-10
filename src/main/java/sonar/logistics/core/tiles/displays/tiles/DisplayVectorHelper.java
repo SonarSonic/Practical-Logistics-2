@@ -1,4 +1,4 @@
-package sonar.logistics.core.tiles.displays.tiles.holographic;
+package sonar.logistics.core.tiles.displays.tiles;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +15,7 @@ import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
 
 import javax.annotation.Nullable;
 
-public class HolographicVectorHelper {
+public class DisplayVectorHelper {
 
     public static final Vec3d X_VEC = new Vec3d(1, 0, 0);
     public static final Vec3d Y_VEC = new Vec3d(0, 1, 0);

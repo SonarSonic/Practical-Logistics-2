@@ -41,7 +41,7 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 		}
 
 		public SyncType[] getSyncTypes() {
-			return new SyncType[] { SyncType.SAVE, SyncType.DEFAULT_SYNC };
+			return new SyncType[] { SyncType.SAVE };
 		}
 	};
 
@@ -54,11 +54,17 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 		/* TODO update entities properly if (isServer() && entityChanged) { this.updateConnectionLists(); } */
 	}
 
+	@Override
+	public SyncType getUpdateTagType() {
+		return SyncType.SAVE;
+	}
+
 	public void updateConnectionLists() {
+
 		List<NodeConnection> channels = new ArrayList<>();
 		for (int i = 0; i < 8; i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (stack != null && stack.getItem() instanceof ITransceiver && stack.hasTagCompound()) {
+			if (!stack.isEmpty()&& stack.getItem() instanceof ITransceiver && stack.hasTagCompound()) {
 				NodeConnection connect = LogisticsHelper.getTransceiverNode(this, world, stack);
 				if (!channels.contains(connect)) {
 					channels.add(connect);
@@ -67,6 +73,7 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 		}
 		this.channels = channels;
 		LogisticsEventHandler.instance().queueNetworkChange(network, NetworkChanges.LOCAL_CHANNELS);
+
 	}
 
 	//// IConnectionNode \\\\

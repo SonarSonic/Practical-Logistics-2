@@ -1,6 +1,5 @@
 package sonar.logistics.core.tiles.displays.tiles.connected;
 
-import static sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -22,18 +21,20 @@ import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.base.guidance.errors.ErrorMessage;
+import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.utils.slots.EnumDisplayFaceSlot;
 import sonar.logistics.base.utils.worlddata.ConnectedDisplayData;
-import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.core.tiles.connections.data.handling.CableConnectionHelper;
 import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayHelper;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.storage.EditContainer;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 import java.util.List;
+
+import static sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper.*;
 
 /** used with Large Display Screens so they all have one uniform InfoContainer, Viewer list etc. */
 public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyncableListener {
@@ -127,8 +128,8 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 		///TODO if roll = 90 or 270, switch the width and height
 		this.width.setObject(width += 1 - 0.0625*2);
 		this.height.setObject(height += 1 - 0.0625*2);
-		this.screenOrigin = new Vec3d((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2).add(HolographicVectorHelper.getFaceOffset(getCableFace(), 0.5));
-		this.screenRotation = HolographicVectorHelper.getScreenRotation(this.getCableFace());
+		this.screenOrigin = new Vec3d((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2).add(DisplayVectorHelper.getFaceOffset(getCableFace(), 0.5));
+		this.screenRotation = DisplayVectorHelper.getScreenRotation(this.getCableFace());
 		this.screenScale =  new Vec3d (width, height, 0.001 );
 		if(Math.ceil(width) * Math.ceil(height) != displays.size()){
 			canBeRendered.setObject(false);

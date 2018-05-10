@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.Vec3d;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.network.utils.IByteBufTile;
+import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 
 public class TileHolographicDisplay extends TileAbstractHolographicDisplay implements IByteBufTile {
 
@@ -16,7 +17,7 @@ public class TileHolographicDisplay extends TileAbstractHolographicDisplay imple
 
     @Override
     public Vec3d getScreenRotation() {
-        return HolographicVectorHelper.getScreenRotation(getCableFace());
+        return DisplayVectorHelper.getScreenRotation(getCableFace());
     }
 
     @Override
@@ -25,7 +26,7 @@ public class TileHolographicDisplay extends TileAbstractHolographicDisplay imple
         double y = getCableFace().getAxis().isHorizontal() ? 0.0625*10 : 0;
         double z = getCableFace().getAxis().isVertical() ? 0.0625*10 : 0;
 
-        return new Vec3d(x, y, z).add(HolographicVectorHelper.getFaceOffset(getCableFace(), 0.5));
+        return new Vec3d(x, y, z).add(DisplayVectorHelper.getFaceOffset(getCableFace(), 0.5));
     }
 
     @Override
