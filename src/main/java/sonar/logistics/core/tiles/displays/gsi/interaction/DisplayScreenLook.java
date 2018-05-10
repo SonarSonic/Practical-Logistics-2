@@ -5,6 +5,14 @@ public class DisplayScreenLook {
 	public double lookX, lookY;
 	public int identity;
 
+	public DisplayScreenLook(){}
+
+	public DisplayScreenLook(double[] lookPosition, int identity){
+		this.lookX = lookPosition[0];
+		this.lookY = lookPosition[1];
+		this.identity = identity;
+	}
+
 	public DisplayScreenLook setLookPosition(double[] lookPosition) {
 		this.lookX = lookPosition[0];
 		this.lookY = lookPosition[1];

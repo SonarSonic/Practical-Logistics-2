@@ -151,11 +151,11 @@ public abstract class NetworkListElement<L> extends AbstractInfoElement<LogicInf
 			LogicInfoList list = (LogicInfoList) info;
 			double[] align = this.getHolder().getAlignmentTranslation(this);
 			DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { click.clickX - 0.5, click.clickY });
-			subClick.setContainerIdentity(click.identity);
-			subClick.setDoubleClick(click.doubleClick);
+			subClick.identity = click.identity;
+			subClick.doubleClick = click.doubleClick;
 			subClick.gsi = click.gsi;
 			subClick.type = click.type;
-			subClick.clickPos = click.clickPos;
+			subClick.intersect = click.intersect;
 			L stack = slot < cachedList.size() ? cachedList.get(slot) : null;
 			onGridElementClicked(subClick, list, stack);
 		}

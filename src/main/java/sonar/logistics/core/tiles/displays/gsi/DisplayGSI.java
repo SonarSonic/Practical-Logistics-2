@@ -10,6 +10,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
@@ -55,10 +56,7 @@ import sonar.logistics.core.tiles.displays.info.types.text.StyledTextElement;
 import sonar.logistics.core.tiles.displays.info.types.text.StyledTitleElement;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.GuiHolographicRescaling;
-import sonar.logistics.core.tiles.displays.tiles.holographic.TileAbstractHolographicDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.TileAdvancedHolographicDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.TileHolographicDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.*;
 import sonar.logistics.network.packets.gsi.PacketGSIConnectedDisplayValidate;
 import sonar.logistics.network.packets.gsi.PacketGSIInvalidate;
 import sonar.logistics.network.packets.gsi.PacketGSISavedDataPacket;
@@ -111,8 +109,9 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		this.display = display;
 		this.world = world;
 		container_identity.setObject(id);
-		if (world != null && world.isRemote)
+		if (!(display instanceof ConnectedDisplay) && world.isRemote) {
 			EditContainer.addEditContainer(this);
+		}
 	}
 
 	//// MAIN ACTIONS \\\\
@@ -131,9 +130,11 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				player.sendMessage(new TextComponentTranslation("Edit Mode: " + !edit_mode.getObject()));
 				return true;
 			}
-
-			DisplayScreenClick click = GSIInteractionHelper.getClickPosition(this, pos, type, facing, hitX, hitY, hitZ);
-			click.setDoubleClick(wasDoubleClick(world, player));
+			DisplayScreenClick click = HolographicVectorHelper.createClick(player, display, type);
+			if(click == null){
+				return false;
+			}
+			click.doubleClick = wasDoubleClick(world, player);
 			if (this.isGridSelectionMode) {
 				grid_mode.onClicked(type, click);
 			} else {
@@ -244,7 +245,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	public void updateDisplayScaling() {
-		currentScaling = display.getScaling();
+		Vec3d scale = display.getScreenScaling();
+		currentScaling = new double[]{scale.x, scale.y, scale.z};
 	}
 
 	public double[] getDisplayScaling() {

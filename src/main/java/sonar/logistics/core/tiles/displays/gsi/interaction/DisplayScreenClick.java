@@ -2,15 +2,18 @@ package sonar.logistics.core.tiles.displays.gsi.interaction;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import sonar.core.api.utils.BlockInteractionType;
+import sonar.core.helpers.NBTHelper;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
+import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 public class DisplayScreenClick {
 
 	public DisplayGSI gsi;
 	public BlockInteractionType type;
 	public double clickX, clickY;
-	public BlockPos clickPos;
+	public Vec3d intersect;
 	public int identity;
 	public boolean doubleClick = false;
 	public boolean fakeGuiClick = false;
@@ -21,27 +24,13 @@ public class DisplayScreenClick {
 		return this;
 	}
 	
-	public boolean isFakeGuiClick(){
-		return fakeGuiClick;
-	}
-	
-	public void setDoubleClick(boolean bool){
-		doubleClick=bool;
-	}
-	
-	public void setContainerIdentity(int iden){
-		identity=iden;
-	}
-	
 	public static NBTTagCompound writeClick(DisplayScreenClick click, NBTTagCompound tag){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setInteger("identity", click.identity);
 		nbt.setInteger("type", click.type.ordinal());
 		nbt.setDouble("clickX", click.clickX);
 		nbt.setDouble("clickY", click.clickY);
-		nbt.setInteger("x", click.clickPos.getX());
-		nbt.setInteger("y", click.clickPos.getY());
-		nbt.setInteger("z", click.clickPos.getZ());
+		HolographicVectorHelper.writeVec3d(click.intersect, "intersect", tag, NBTHelper.SyncType.SAVE);
 		nbt.setBoolean("doubleClick", click.doubleClick);	
 		tag.setTag("displayclick", nbt);
 		return tag;
@@ -55,14 +44,10 @@ public class DisplayScreenClick {
 		click.type = BlockInteractionType.values()[nbt.getInteger("type")];
 		click.clickX = nbt.getDouble("clickX");
 		click.clickY = nbt.getDouble("clickY");
-		click.clickPos = new BlockPos(nbt.getInteger("x"), nbt.getInteger("y"), nbt.getInteger("z"));
+		click.intersect = HolographicVectorHelper.readVec3d("intersect", tag, NBTHelper.SyncType.SAVE);
 		click.doubleClick = nbt.getBoolean("doubleClick");		
 		return click;
 		
-	}
-	
-	public double[] getCoordinates(){
-		return GSIInteractionHelper.getClickCoordinates(this);
 	}
 	
 }

@@ -6,7 +6,6 @@ import net.minecraft.util.math.Vec3d;
 import sonar.core.helpers.NBTHelper;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
-import sonar.logistics.api.core.tiles.displays.tiles.EnumDisplayType;
 import sonar.logistics.base.utils.PL2AdditionType;
 import sonar.logistics.network.packets.PacketHolographicDisplayScaling;
 
@@ -17,28 +16,14 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
     public Vec3d screenOffset = new Vec3d(0,0,0);
     public boolean defaults_set = false;
 
-    public static Vec3d readVec3d(String tagName, NBTTagCompound nbt, NBTHelper.SyncType type) {
-        NBTTagCompound vecTag = nbt.getCompoundTag(tagName);
-        return new Vec3d(vecTag.getDouble("x"), vecTag.getDouble("y"), vecTag.getDouble("z"));
-    }
-
-    public static NBTTagCompound writeVec3d(Vec3d vec, String tagName, NBTTagCompound nbt, NBTHelper.SyncType type){
-        NBTTagCompound vecTag = new NBTTagCompound();
-        vecTag.setDouble("x", vec.x);
-        vecTag.setDouble("y", vec.y);
-        vecTag.setDouble("z", vec.z);
-        nbt.setTag(tagName, vecTag);
-        return nbt;
-    }
-
     @Override
     public void readData(NBTTagCompound nbt, NBTHelper.SyncType type) {
         super.readData(nbt, type);
         if(type.isType(NBTHelper.SyncType.SAVE)) {
             defaults_set = nbt.getBoolean("defs");
-            screenScale = readVec3d("scale", nbt, type);
-            screenRotation = readVec3d("rotate", nbt, type);
-            screenOffset = readVec3d("offset", nbt, type);
+            screenScale = HolographicVectorHelper.readVec3d("scale", nbt, type);
+            screenRotation = HolographicVectorHelper.readVec3d("rotate", nbt, type);
+            screenOffset = HolographicVectorHelper.readVec3d("offset", nbt, type);
             if (isClient() && getWorld() != null) {
                 getHolographicEntity().ifPresent(entity -> entity.setSizingFromDisplay(this));
             }
@@ -50,9 +35,9 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
         if(type.isType(NBTHelper.SyncType.SAVE)) {
             this.updateDefaultScaling();
             nbt.setBoolean("defs", defaults_set);
-            writeVec3d(screenScale, "scale", nbt, type);
-            writeVec3d(screenRotation, "rotate", nbt, type);
-            writeVec3d(screenOffset, "offset", nbt, type);
+            HolographicVectorHelper.writeVec3d(screenScale, "scale", nbt, type);
+            HolographicVectorHelper.writeVec3d(screenRotation, "rotate", nbt, type);
+            HolographicVectorHelper.writeVec3d(screenOffset, "offset", nbt, type);
         }
         return super.writeData(nbt, type);
     }
@@ -92,7 +77,7 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
 
     public void updateDefaultScaling(){
         if(this.isServer() && !defaults_set) {
-            screenOffset = HolographicVectorHelper.getScreenOffset(getCableFace());
+            screenOffset = HolographicVectorHelper.getFaceOffset(getCableFace(), 0.5);
             screenRotation = HolographicVectorHelper.getScreenRotation(getCableFace());
             defaults_set = true;
             markDirty();
@@ -103,11 +88,6 @@ public class TileAdvancedHolographicDisplay extends TileAbstractHolographicDispl
         if(isClient()){
             PL2.network.sendToServer(new PacketHolographicDisplayScaling(this));
         }
-    }
-
-    @Override
-    public EnumDisplayType getDisplayType() {
-        return EnumDisplayType.ENTITY_HOLOGRAPHIC;
     }
 
     @Override

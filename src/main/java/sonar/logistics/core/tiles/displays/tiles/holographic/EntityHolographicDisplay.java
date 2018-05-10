@@ -39,8 +39,8 @@ public class EntityHolographicDisplay extends Entity {
 
     public void setSizingFromDisplay(TileAbstractHolographicDisplay display){
         this.display = display;
-        Vec3d screenPosition = display.getScreenPosition();
-        setPosition(screenPosition.x+0.5, screenPosition.y+0.5, screenPosition.z + 0.5);
+        Vec3d screenPosition = display.getScreenOrigin();
+        setPosition(screenPosition.x, screenPosition.y, screenPosition.z);
         rotationYaw = (float)display.getYaw();
         rotationPitch = (float)display.getPitch();
         rotationRoll = (float)display.getRoll();
@@ -55,7 +55,7 @@ public class EntityHolographicDisplay extends Entity {
         double zMin = posZ, zMax = posZ;
         Vec3d screenV = getLookVec();
         Vec3d origin = getPositionVector();
-        Vec3d[] vectors = HolographicVectorHelper.getScreenVectors(this, screenV);
+        Vec3d[] vectors = HolographicVectorHelper.getScreenVectors(this.getHolographicDisplay(), screenV);
 
         Vec3d topLeft = HolographicVectorHelper.getTopLeft(origin, vectors[0], vectors[1], width, height);
         Vec3d topRight = HolographicVectorHelper.getTopRight(origin, vectors[0], vectors[1], width, height);
@@ -139,9 +139,9 @@ public class EntityHolographicDisplay extends Entity {
     public boolean canBeCollidedWith()
     {
         if(this.world.isRemote){
-            double[] look = HolographicVectorHelper.getDisplayLook(FMLClientHandler.instance().getClientPlayerEntity(), this, 8);
+            double[] look = HolographicVectorHelper.getDisplayLook(FMLClientHandler.instance().getClientPlayerEntity(), getHolographicDisplay(), 8);
             if(look != null){
-                GSIOverlays.currentLook = new DisplayScreenLook().setLookPosition(look).setContainerIdentity(GSI_IDENTITY);
+                GSIOverlays.currentLook = new DisplayScreenLook(look, GSI_IDENTITY);
                 return true;
             }else if(GSIOverlays.getCurrentLook(GSI_IDENTITY) != null){
                 GSIOverlays.currentLook = null;

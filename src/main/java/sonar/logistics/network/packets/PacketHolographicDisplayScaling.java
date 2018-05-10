@@ -15,6 +15,7 @@ import sonar.core.helpers.NBTHelper;
 import sonar.core.network.PacketMultipart;
 import sonar.core.network.PacketMultipartHandler;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler;
+import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 import sonar.logistics.core.tiles.displays.tiles.holographic.TileAdvancedHolographicDisplay;
 
 public class PacketHolographicDisplayScaling extends PacketMultipart {
@@ -39,9 +40,9 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
     public void fromBytes(ByteBuf buf) {
         super.fromBytes(buf);
         NBTTagCompound nbt = ByteBufUtils.readTag(buf);
-        screenScale = TileAdvancedHolographicDisplay.readVec3d("scale", nbt, NBTHelper.SyncType.SAVE);
-        screenRotation = TileAdvancedHolographicDisplay.readVec3d("rotate", nbt, NBTHelper.SyncType.SAVE);
-        screenOffset = TileAdvancedHolographicDisplay.readVec3d("offset", nbt, NBTHelper.SyncType.SAVE);
+        screenScale = HolographicVectorHelper.readVec3d("scale", nbt, NBTHelper.SyncType.SAVE);
+        screenRotation = HolographicVectorHelper.readVec3d("rotate", nbt, NBTHelper.SyncType.SAVE);
+        screenOffset = HolographicVectorHelper.readVec3d("offset", nbt, NBTHelper.SyncType.SAVE);
         colour = buf.readInt();
     }
 
@@ -49,9 +50,9 @@ public class PacketHolographicDisplayScaling extends PacketMultipart {
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
         NBTTagCompound nbt = new NBTTagCompound();
-        TileAdvancedHolographicDisplay.writeVec3d(screenScale,"scale", nbt, NBTHelper.SyncType.SAVE);
-        TileAdvancedHolographicDisplay.writeVec3d(screenRotation,"rotate", nbt, NBTHelper.SyncType.SAVE);
-        TileAdvancedHolographicDisplay.writeVec3d(screenOffset,"offset", nbt, NBTHelper.SyncType.SAVE);
+        HolographicVectorHelper.writeVec3d(screenScale,"scale", nbt, NBTHelper.SyncType.SAVE);
+        HolographicVectorHelper.writeVec3d(screenRotation,"rotate", nbt, NBTHelper.SyncType.SAVE);
+        HolographicVectorHelper.writeVec3d(screenOffset,"offset", nbt, NBTHelper.SyncType.SAVE);
         ByteBufUtils.writeTag(buf, nbt);
         buf.writeInt(colour);
     }

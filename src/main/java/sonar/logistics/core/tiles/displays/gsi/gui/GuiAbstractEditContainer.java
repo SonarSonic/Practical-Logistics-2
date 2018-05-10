@@ -11,6 +11,7 @@ import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
 import sonar.logistics.core.tiles.displays.info.elements.DisplayElementHelper;
 import sonar.logistics.core.tiles.displays.info.elements.base.IDisplayElement;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 import java.io.IOException;
 
@@ -42,7 +43,7 @@ public class GuiAbstractEditContainer extends GuiAbstractEditScreen {
 	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {
 		Tuple<IDisplayElement, double[]> click = c.getClickBoxes(new double[] { 0, 0, 0 }, clickX, clickY); // remove adjustment
 		if (click != null) {
-			DisplayScreenClick fakeClick = GSIInteractionHelper.createFakeClick(gsi, c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
+			DisplayScreenClick fakeClick = HolographicVectorHelper.createFakeClick(gsi, c.getTranslation()[0] + clickX, c.getTranslation()[1] + clickY, isDoubleClick(), key);
 			onDisplayElementClicked(click.getFirst(), fakeClick, click.getSecond());
 			return true;
 		}

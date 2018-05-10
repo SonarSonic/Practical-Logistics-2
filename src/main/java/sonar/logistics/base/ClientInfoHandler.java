@@ -116,7 +116,7 @@ public class ClientInfoHandler implements IInfoManager {
 		if (!displays_tile.containsKey(display.getIdentity())) {
 			displays_tile.put(display.getIdentity(), display);
 			if(display instanceof ILargeDisplay){
-				display = ((ILargeDisplay) display).getConnectedDisplay();
+				display = ((ILargeDisplay) display).getConnectedDisplay().get();
 				if(display == null){
 					return;
 				}

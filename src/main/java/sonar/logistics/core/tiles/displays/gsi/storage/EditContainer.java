@@ -3,7 +3,6 @@ package sonar.logistics.core.tiles.displays.gsi.storage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
-import sonar.logistics.api.core.tiles.displays.tiles.EnumDisplayType;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSICreateInfo;
@@ -20,11 +19,7 @@ import static net.minecraft.client.renderer.GlStateManager.translate;
 public class EditContainer extends DisplayElementContainer {
 	
 	public static EditContainer addEditContainer(DisplayGSI gsi) {
-		double[] scaling = new double[] { gsi.display.getDisplayType().width / 4, Math.min(gsi.getDisplayScaling()[1], gsi.display.getDisplayType().height), 1 };
-		if(gsi.display.getDisplayType()==EnumDisplayType.CONNECTED || gsi.display.getDisplayType()==EnumDisplayType.LARGE){
-			scaling[1]=gsi.display.getDisplayType().height/1.5;
-		}
-
+		double[] scaling = new double[] { gsi.display.getWidth() / 4, Math.min(1, gsi.display.getHeight()/2), 1 };
 
 		EditContainer editContainer = new EditContainer(gsi, new double[] { 0, 0, 0 }, scaling, 1, DisplayGSI.EDIT_CONTAINER_ID);
 		gsi.containers.put(DisplayGSI.EDIT_CONTAINER_ID, editContainer);
@@ -87,6 +82,6 @@ public class EditContainer extends DisplayElementContainer {
 		translate(0, 0, 0.002);
 	}
 	public boolean canRender() {
-		return isWithinScreenBounds && gsi.edit_mode.getObject() && !gsi.isGridSelectionMode;
+		return isWithinScreenBounds &&  gsi.edit_mode.getObject() && !gsi.isGridSelectionMode;
 	}
 }

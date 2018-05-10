@@ -84,7 +84,7 @@ public class PacketConnectedDisplayUpdate implements IMessage {
 
 			World world = SonarCore.proxy.getPlayerEntity(ctx).getEntityWorld();
 			if (message.screen == null) {
-				ClientInfoHandler.instance().getConnectedDisplays().putIfAbsent(message.registryID, ConnectedDisplay.loadDisplay(world, message.registryID));
+				ClientInfoHandler.instance().getConnectedDisplays().putIfAbsent(message.registryID, ConnectedDisplay.loadDisplay(world, message.registryID, message.saved));
 				message.screen = ClientInfoHandler.instance().getConnectedDisplays().get(message.registryID);				
 			}
 			message.screen.readData(message.saved, SyncType.SAVE);		

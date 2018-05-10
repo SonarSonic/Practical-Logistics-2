@@ -57,16 +57,6 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
         this.gsi = gsi;
     }
 
-    @Override
-    public int getInfoContainerID() {
-        return getIdentity();
-    }
-
-    @Override
-    public EnumCableRenderSize getCableRenderSize(EnumFacing dir) {
-        return EnumCableRenderSize.INTERNAL;
-    }
-
     public NBTHelper.SyncType getUpdateTagType(){
         return NBTHelper.SyncType.SAVE;
     }
@@ -95,45 +85,10 @@ public abstract class TileAbstractHolographicDisplay extends TileAbstractDisplay
         }
     }
 
-    @Override
-    public double[] getScaling() {
-        return new double[]{this.getWidth(), this.getHeight(), 100};
-    }
-
-    /**width/height depth*/
-    public abstract Vec3d getScreenScaling();
-
-    public double getWidth(){
-        return getScreenScaling().x;
-    }
-
-    public double getHeight(){
-        return getScreenScaling().y;
-    }
-
-    public double getDepth(){
-        return getScreenScaling().z;
-    }
-
-    /**pitch / yaw / roll*/
-    public abstract Vec3d getScreenRotation();
-
-    public double getPitch(){
-        return getScreenRotation().x;
-    }
-
-    public double getYaw(){
-        return getScreenRotation().y;
-    }
-
-    public double getRoll(){
-        return getScreenRotation().z;
-    }
-
     public abstract Vec3d getScreenOffset();
 
-    public Vec3d getScreenPosition(){
-        return new Vec3d(getPos()).add(getScreenOffset());
+    public Vec3d getScreenOrigin(){
+        return new Vec3d(getPos()).addVector(0.5,0.5,0.5).add(getScreenOffset());
     }
 
     public int getScreenColour(){

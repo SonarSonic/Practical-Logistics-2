@@ -137,7 +137,7 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 					break;
 				case HEIGHT: // height
 					listScaling[i] += eValue;
-					// add spacing?
+					listScaling[i] = Math.min(listScaling[i], getContainer().getContainerMaxScaling()[i]);
 					continue;
 				case SCALE: // scale
 					if (minScale > eValue) {
@@ -171,11 +171,13 @@ public class DisplayElementList extends AbstractDisplayElement implements IEleme
 					case HEIGHT: // height
 						uniformScaling[i] += eValue;
 						// add spacing?
+						uniformScaling[i] = Math.min(uniformScaling[i], getContainer().getContainerMaxScaling()[i]);
 						continue;
 					case SCALE: // scale
 						if (minScale > eValue) {
 							minScale = eValue;
 						}
+						uniformScaling[i] = Math.min(uniformScaling[i], getContainer().getContainerMaxScaling()[i]);
 						break;
 					}
 				}

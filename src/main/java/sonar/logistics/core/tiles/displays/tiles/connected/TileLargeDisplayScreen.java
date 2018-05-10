@@ -10,12 +10,13 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnection;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnectionType;
 import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
-import sonar.logistics.api.core.tiles.displays.tiles.EnumDisplayType;
+import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILargeDisplay {
 
@@ -23,37 +24,28 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public ConnectedDisplay overrideDisplay = null;
 	public SyncTagType.BOOLEAN shouldRender = (BOOLEAN) new SyncTagType.BOOLEAN(3); // if this is the top left screen
 	public SyncTagType.INT connected_display_ID = (INT) new SyncTagType.INT(4).setDefault(-1); // id of the connected display.
-	public SyncTagType.BOOLEAN isLocked = (BOOLEAN) new SyncTagType.BOOLEAN(5); // if this screen was locked, must also be stored in screens as sometimes they connect before the connected display is loaded
 
 	{
-		syncList.addParts(shouldRender, connected_display_ID, isLocked);
+		syncList.addParts(shouldRender, connected_display_ID);
 	}
 
 	//// IInfoDisplay \\\\
 
 	@Override
 	public int getInfoContainerID() {
-		ConnectedDisplay display = getConnectedDisplay();
-		return display == null ? -1 : display.getInfoContainerID();
+		Optional<ConnectedDisplay> display = getConnectedDisplay();
+		return display.isPresent() ? display.get().getInfoContainerID() : -1;
 	}
 
 	@Override
 	public DisplayGSI getGSI() {
-		ConnectedDisplay display = getConnectedDisplay();
-		return display == null ? null : getConnectedDisplay().getGSI();
+		Optional<ConnectedDisplay> display = getConnectedDisplay();
+		return display.isPresent() ? display.get().getGSI() : null;
 	}
 
 	@Override
 	public void setGSI(DisplayGSI gsi){
-		ConnectedDisplay display = getConnectedDisplay();
-		if(display != null) {
-			display.setGSI(gsi);
-		}
-	}
-
-	@Override
-	public EnumDisplayType getDisplayType() {
-		return EnumDisplayType.LARGE;
+		getConnectedDisplay().ifPresent(d -> d.setGSI(gsi));
 	}
 
 	@Override
@@ -76,14 +68,14 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	@Override
-	public ConnectedDisplay getConnectedDisplay() {
+	public Optional<ConnectedDisplay> getConnectedDisplay(){
 		if (isClient() && overrideDisplay != null) {
-			return overrideDisplay;
+			return Optional.of(overrideDisplay);
 		}
 		if (this.getRegistryID() != -1) {
-			return PL2.proxy.getInfoManager(isClient()).getConnectedDisplay(getRegistryID());
+			return Optional.ofNullable(PL2.proxy.getInfoManager(isClient()).getConnectedDisplay(getRegistryID()));
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	@Override
@@ -93,7 +85,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 
 	@Override
 	public boolean shouldRender() {
-		return shouldRender.getObject() && getRegistryID() != -1 && getConnectedDisplay() != null;
+		return shouldRender.getObject() && getRegistryID() != -1 && getConnectedDisplay().isPresent();
 	}
 
 	@Override
@@ -109,7 +101,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	public EnumCableConnection canConnect(int registryID, EnumCableConnectionType type, EnumFacing dir, boolean internal) {
 		boolean cableFace = (dir == getCableFace() || dir == getCableFace().getOpposite());
 		boolean cableConnection = (internal && cableFace && type == EnumCableConnectionType.CONNECTABLE);
-		if (cableConnection || (!cableFace && type == this.getConnectableType() && (getRegistryID() == registryID || !(isLocked())))) {
+		if (cableConnection || (!cableFace && type == this.getConnectableType())) {
 			return EnumCableConnection.NETWORK;
 		}
 		return EnumCableConnection.NONE;
@@ -122,9 +114,6 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 		info.add("Should Render " + this.shouldRender.getObject());
 	}
 
-	public boolean isLocked() {
-		return this.isLocked.getObject() || getConnectedDisplay() != null && getConnectedDisplay().isLocked.getObject();
-	}
 	//// PACKETS \\\\
 
 	@Override
@@ -145,17 +134,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 	}
 
 	@Override
-	public EnumCableRenderSize getCableRenderSize(EnumFacing dir) {
-		return EnumCableRenderSize.INTERNAL;
-	}
-
-	@Override
 	public boolean isBlocked(EnumFacing dir) {
 		return false;
-	}
-
-	@Override
-	public void setLocked(boolean locked) {
-		this.isLocked.setObject(locked);
 	}
 }

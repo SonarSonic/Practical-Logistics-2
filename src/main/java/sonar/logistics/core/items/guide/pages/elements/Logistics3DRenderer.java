@@ -47,6 +47,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 		super.doSpecialRender(cache, at);
 		List<DisplayElementContainer> toRender = containers.get(pos);
 		if (toRender != null && !toRender.isEmpty()) {
+			/* FIXME
 			try {
 
 				pushMatrix();
@@ -68,6 +69,7 @@ public class Logistics3DRenderer extends GuiBlockRenderer3D {
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
+			*/
 		}
 	}
 

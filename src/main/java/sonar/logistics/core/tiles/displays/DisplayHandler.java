@@ -6,6 +6,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.utils.Pair;
@@ -84,7 +86,6 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
                 screen.getGSI().readData(tag, NBTHelper.SyncType.SAVE);
             }
         }
-
         DisplayGSI gsi = display.getGSI();
         if (gsi != null && gsi.getDisplay() != null && !ServerInfoHandler.instance().displays.containsValue(gsi)) {
             validateGSI(display, gsi);
@@ -105,6 +106,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
             invalidateGSI(display, gsi);
         }
     }
+
 
     public void validateGSI(IDisplay display, DisplayGSI gsi) {
         if (display == gsi.getDisplay().getActualDisplay()) {
@@ -160,6 +162,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 		List<ConnectedDisplayChange> changes = getChanges(display.getRegistryID());
 		for (ConnectedDisplayChange change : ConnectedDisplayChange.values()) { // keeps order, and allows other changes to be during another
 			if (change.shouldRunChange(changes) && !change.doChange(changes, display)) {
+				changes.remove(change);
 				return;
 			}
 		}
@@ -189,14 +192,6 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 			watchers.forEach(watcher -> PL2.network.sendTo(new PacketConnectedDisplayUpdate(display, display.getRegistryID()), watcher));
 		}
 		return true;
-	}
-
-	public static void setDisplayLocking(int registryID, boolean locked) {
-		ConnectedDisplay display = ServerInfoHandler.instance().getConnectedDisplay(registryID);
-		if (display != null) {
-			display.isLocked.setObject(locked);
-			DisplayHandler.instance().getConnections(registryID).forEach(d -> d.setLocked(locked));
-		}
 	}
 
 	public int getNextAvailableID() {

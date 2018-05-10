@@ -37,11 +37,11 @@ public class GSIInteractionHelper {
     //// GRID SELECTION MODE \\\\\
 
     public static double getGridXScale(DisplayGSI gsi) {
-        return Math.max(gsi.getDisplayScaling()[0] / 8, gsi.display.getDisplayType().width / 4);
+        return Math.max(gsi.getDisplayScaling()[0] / 8, gsi.display.getWidth() / 4);
     }
 
     public static double getGridYScale(DisplayGSI gsi) {
-        return Math.max(gsi.getDisplayScaling()[1] / 8, gsi.display.getDisplayType().height / 4);
+        return Math.max(gsi.getDisplayScaling()[1] / 8, gsi.display.getHeight() / 4);
     }
 
     public static double getGridXPosition(DisplayGSI gsi, double x) {
@@ -52,70 +52,6 @@ public class GSIInteractionHelper {
         return DisplayElementHelper.toNearestMultiple(y, gsi.getDisplayScaling()[1], getGridYScale(gsi));
     }
 
-    public static DisplayScreenClick createFakeClick(DisplayGSI gsi, double clickX, double clickY, boolean doubleClick, int key) {
-        DisplayScreenClick fakeClick = new DisplayScreenClick();
-        fakeClick.gsi = gsi;
-        fakeClick.type = key == 0 ? BlockInteractionType.LEFT : BlockInteractionType.RIGHT;
-        fakeClick.clickX = clickX;
-        fakeClick.clickY = clickY;
-        fakeClick.clickPos = gsi.getDisplay().getActualDisplay().getCoords().getBlockPos();
-        fakeClick.identity = gsi.getDisplayGSIIdentity();
-        fakeClick.doubleClick = false;
-        fakeClick.fakeGuiClick = true;
-        return fakeClick;
-    }
-
-
-	public static double[] getDisplayPositionFromXY(DisplayGSI container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
-		if(container.getDisplay() instanceof TileAbstractHolographicDisplay){
-			return new double[]{hitX,hitY};
-		}
-
-		double[] clickPosition = getClickPosition(face, hitX, hitY, hitZ);
-		if (container.getDisplay() instanceof ConnectedDisplay) {
-			ConnectedDisplay connected = (ConnectedDisplay) container.getDisplay();
-			BlockCoords coords = connected.getCoords();
-			if (coords != null) {
-				BlockPos leftPos = coords.getBlockPos();
-				int x = Math.abs(leftPos.getX() - clickPos.getX());
-				int y = Math.abs(leftPos.getY() - clickPos.getY());
-				int z = Math.abs(leftPos.getZ() - clickPos.getZ());
-				if (container.getFacing().getAxis() != Axis.Y) {
-					clickPosition[0] += x + z;
-					clickPosition[1] += y;
-				} else if (container.getFacing() == EnumFacing.UP) {
-					clickPosition[0] += x;
-					clickPosition[1] += z;
-				} else if (container.getFacing() == EnumFacing.DOWN) {
-					clickPosition[0] += x;
-					clickPosition[1] += z;
-				}
-
-			}
-		}
-		clickPosition[0] = clickPosition[0] - container.getDisplay().getDisplayType().xPos;
-		clickPosition[1] = clickPosition[1] - container.getDisplay().getDisplayType().yPos;
-		return clickPosition;
-	}
-
-	public static DisplayScreenLook getLookPosition(DisplayGSI container, BlockPos clickPos, EnumFacing face, float hitX, float hitY, float hitZ) {
-		DisplayScreenLook position = new DisplayScreenLook();
-		double[] clickPosition = getDisplayPositionFromXY(container, clickPos, face, hitX, hitY, hitZ);
-		position.setContainerIdentity(container.getDisplayGSIIdentity());
-		position.setLookPosition(clickPosition);
-		return position;
-	}
-
-	public static DisplayScreenClick getClickPosition(DisplayGSI displayGSI, BlockPos clickPos, BlockInteractionType type, EnumFacing face, float hitX, float hitY, float hitZ) {
-		DisplayScreenClick position = new DisplayScreenClick();
-		double[] clickPosition = getDisplayPositionFromXY(displayGSI, clickPos, face, hitX, hitY, hitZ);
-		position.setContainerIdentity(displayGSI.getDisplayGSIIdentity());
-		position.setClickPosition(clickPosition);
-		position.gsi = displayGSI;
-		position.type = type;
-		position.clickPos = clickPos;
-		return position;
-	}
 
 	public static boolean withinX(double x, double[] clickBox) {
 		return x >= Math.min(clickBox[0], clickBox[2]) && x <= Math.max(clickBox[0], clickBox[2]);
@@ -125,6 +61,11 @@ public class GSIInteractionHelper {
 		return y >= Math.min(clickBox[1], clickBox[3]) && y <= Math.max(clickBox[1], clickBox[3]);
 	}
 
+	public static boolean checkClick(double x, double y, double[] clickBox) {
+		return withinX(x, clickBox) && withinY(y, clickBox);
+	}
+
+	/*
 	public static boolean overlapX(double x, double[] clickBox) {
 		return x >= Math.min(clickBox[0], clickBox[2]) && x <= Math.max(clickBox[0], clickBox[2]);
 	}
@@ -132,11 +73,6 @@ public class GSIInteractionHelper {
 	public static boolean overlapY(double y, double[] clickBox) {
 		return y >= Math.min(clickBox[1], clickBox[3]) && y <= Math.max(clickBox[1], clickBox[3]);
 	}
-	
-	public static boolean checkClick(double x, double y, double[] clickBox) {
-		return withinX(x, clickBox) && withinY(y, clickBox);
-	}
-
 	public static boolean checkOverlap(double[] elementBox, double[] clickBox) {
 		if (elementBox.length != 4 || clickBox.length != 4) {
 			return false;
@@ -145,67 +81,7 @@ public class GSIInteractionHelper {
 		boolean yOverlap = overlapY(elementBox[1], clickBox) || overlapY(elementBox[3], clickBox) || overlapY(clickBox[1], elementBox) || overlapY(clickBox[3], elementBox);
 		return xOverlap && yOverlap;
 	}
-
-	public static double[] getClickPosition(EnumFacing face, float hitX, float hitY, float hitZ) {
-		double trueX = face != EnumFacing.SOUTH ? 1 - hitX : hitX;
-		double trueY = 1 - hitY;
-		double trueZ = face != EnumFacing.WEST ? 1 - hitZ : hitZ;
-		switch (face) {
-		case DOWN:
-			return new double[] { trueX, 1 - trueZ };// this is only really for the way base are shown upside down
-		case EAST:
-			return new double[] { trueZ, trueY };
-		case UP:
-			return new double[] { trueX, trueZ };
-		case WEST:
-			return new double[] { trueZ, trueY };
-		default:// south and north
-			return new double[] { trueX, trueY };
-		}
-	}
-
-	public static double[] getClickCoordinates(DisplayScreenClick click) {
-		IDisplay d = click.gsi.getDisplay().getActualDisplay();
-		BlockPos dPos = d.getCoords().getBlockPos();
-		double x = dPos.getX() + 0.5;
-		double y = dPos.getY() + 0.5;
-		double z = dPos.getZ() + 0.5;
-		switch (d.getCableFace()) {
-		case DOWN:
-			y -= 1;
-			x -= click.clickX;
-			z += click.clickY;
-			break;
-		case EAST:
-			x += 1;
-			z -= click.clickX;
-			y -= click.clickY;
-			break;
-		case NORTH:
-			z -= 1;
-			x -= click.clickX;
-			y -= click.clickY;
-			break;
-		case SOUTH:
-			z += 1;
-			x += click.clickX;
-			y -= click.clickY;
-			break;
-		case UP:
-			y += 1;
-			x -= click.clickX;
-			z -= click.clickY;
-			break;
-		case WEST:
-			x -= 1;
-			z += click.clickX;
-			y -= click.clickY;
-			break;
-		default:
-			break;
-		}
-		return new double[] { x, y, z };
-	}
+	*/
 
 	/// ITEM & FLUID INTERACTION \\\\
 
@@ -253,10 +129,8 @@ public class GSIInteractionHelper {
 					if (storedItemStack != null) {
 						StoredItemStack extract = ItemHelper.extractItem(network, storedItemStack.copy().setStackSize(toRemove.a));
 						if (extract != null) {
-							BlockPos pos = click.clickPos.offset(facing);
 							long r = extract.stored;
-							double[] coords = click.getCoordinates();
-							SonarAPI.getItemHelper().spawnStoredItemStackDouble(extract, player.getEntityWorld(), coords[0], coords[1], coords[2], facing);
+							SonarAPI.getItemHelper().spawnStoredItemStackDouble(extract, player.getEntityWorld(), click.intersect.x, click.intersect.y, click.intersect.z, facing);
 
 							long itemCount = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
 

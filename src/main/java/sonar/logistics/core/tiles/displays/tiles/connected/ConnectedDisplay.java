@@ -1,10 +1,11 @@
 package sonar.logistics.core.tiles.displays.tiles.connected;
 
+import static sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.api.nbt.INBTSyncable;
@@ -18,7 +19,6 @@ import sonar.logistics.api.core.tiles.connections.EnumCableConnection;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnectionType;
 import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.api.core.tiles.displays.tiles.EnumDisplayType;
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.base.guidance.errors.ErrorMessage;
@@ -29,7 +29,9 @@ import sonar.logistics.core.tiles.connections.data.handling.CableConnectionHelpe
 import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayHelper;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
+import sonar.logistics.core.tiles.displays.gsi.storage.EditContainer;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
+import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 import java.util.List;
 
@@ -41,12 +43,16 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 	public ILargeDisplay topLeftScreen = null;
 	public SyncableList syncParts = new SyncableList(this);
 	public SyncEnum<EnumFacing> face = new SyncEnum(EnumFacing.VALUES, 0);
-	public SyncTagType.INT width = new SyncTagType.INT(2), height = new SyncTagType.INT(3);
+	public SyncTagType.DOUBLE width = new SyncTagType.DOUBLE(2), height = new SyncTagType.DOUBLE(3);
 	public SyncTagType.BOOLEAN canBeRendered = (BOOLEAN) new SyncTagType.BOOLEAN(4).setDefault(true);
 	public DisplayGSI gsi = null;
 	public SyncCoords topLeftCoords = new SyncCoords(5);
 	public SyncTagType.BOOLEAN isLocked = new SyncTagType.BOOLEAN(6);
 	public World world;
+
+	public Vec3d screenScale = new Vec3d(0,0,0);
+	public Vec3d screenRotation = new Vec3d(0,0,0);
+	public Vec3d screenOrigin = new Vec3d(0,0,0);
 
 	// server side
 	{
@@ -57,149 +63,99 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 
 	public static ConnectedDisplay loadDisplay(World world, int registryID) {
 		NBTTagCompound tag = world.isRemote ? null : ConnectedDisplayData.unloadedDisplays.get(registryID);
-		ConnectedDisplay display = new ConnectedDisplay();
-		display.world = world;
-		display.gsi = new DisplayGSI(display, world, registryID);
-		display.registryID = registryID;
-		if (tag != null) {
-			display.readData(tag, SyncType.SAVE);
-			ConnectedDisplayData.unloadedDisplays.remove(registryID);
-		}
-		return display;
+		return loadDisplay(world, registryID, tag);
 	}
+
+	public static ConnectedDisplay loadDisplay(World world, int registryID, NBTTagCompound tag){
+        ConnectedDisplay display = new ConnectedDisplay();
+        display.world = world;
+        display.gsi = new DisplayGSI(display, world, registryID);
+        display.registryID = registryID;
+        if (tag != null) {
+            display.readData(tag, SyncType.SAVE);
+            ConnectedDisplayData.unloadedDisplays.remove(registryID);
+        }
+        if (world.isRemote) {
+            EditContainer.addEditContainer(display.gsi);
+        }
+        return display;
+    }
+
 
 	public void setDisplayScaling() {
 		List<ILargeDisplay> displays = DisplayHandler.instance().getConnections(getRegistryID());
-		displays.forEach(display -> display.setConnectedDisplay(this)); // make sure to read the NBT first so WIDTH and HEIGHT arn't altered
+		if (displays.isEmpty()) {
+			canBeRendered.setObject(false);
+			displays.forEach(d -> d.setShouldRender(false));
+			return;
+		}
+		displays.forEach(display -> display.setConnectedDisplay(this));
+		topLeftScreen = displays.get(0);
+		Vec3d p = convertVector(topLeftScreen.getCoords().getBlockPos()).addVector(0.5, 0.5, 0.5);
+		double minX = p.x, maxX = p.x, minY = p.y, maxY = p.y, minZ = p.z, maxZ = p.z;
 
-		boolean init = false;
-		int minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
-
-		EnumFacing meta = getCableFace();
-		boolean north = meta == EnumFacing.NORTH;
 		for (ILargeDisplay display : displays) {
-			BlockCoords coords = display.getCoords();
-			if (!init) {
-				init = true;
-				minX = maxX = coords.getX();
-				minY = maxY = coords.getY();
-				minZ = maxZ = coords.getZ();
-				continue;
-			}
-			if (coords.getX() > maxX) {
-				maxX = coords.getX();
-			} else if (coords.getX() < minX) {
-				minX = coords.getX();
-			}
-			if (coords.getY() > maxY) {
-				maxY = coords.getY();
-			} else if (coords.getY() < minY) {
-				minY = coords.getY();
-			}
-			if (coords.getZ() > maxZ) {
-				maxZ = coords.getZ();
-			} else if (coords.getZ() < minZ) {
-				minZ = coords.getZ();
-			}
-		}
-		switch (meta.getAxis()) {
-		case X:
-			this.width.setObject(maxZ - minZ);
-			this.height.setObject(maxY - minY);
-			break;
-		case Y:
-			this.width.setObject(maxX - minX);
-			this.height.setObject(maxZ - minZ);
-			if (meta == EnumFacing.UP) {
-				switch (getGSI().getRotation()) {
-				case DOWN:
-					break;
-				case EAST:
-					int newX = maxX;
-					maxX = minX;
-					minX = newX;
-					break;
-				case NORTH:
-					break;
-				case SOUTH:
-					newX = maxX;
-					maxX = minX;
-					minX = newX;
+			Vec3d pos = convertVector(display.getCoords().getBlockPos()).addVector(0.5, 0.5, 0.5);
+			minX = Math.min(pos.x, minX);
+			maxX = Math.max(pos.x, maxX);
 
-					int newZ = maxZ;
-					maxZ = minZ;
-					minZ = newZ;
-					break;
-				case UP:
-					break;
-				case WEST:
-					newZ = maxZ;
-					maxZ = minZ;
-					minZ = newZ;
-					break;
-				default:
-					break;
+			minY = Math.min(pos.y, minY);
+			maxY = Math.max(pos.y, maxY);
 
-				}
-			} else if (meta == EnumFacing.DOWN) {
-				switch (getGSI().getRotation()) {
-				case DOWN:
-					break;
-				case EAST:
-					int newX = maxX;
-					maxX = minX;
-					minX = newX;
-					int newZ = maxZ;
-					maxZ = minZ;
-					minZ = newZ;
-					break;
-				case NORTH:
-					newX = maxX;
-					maxX = minX;
-					minX = newX;
-					break;
-				case SOUTH:
-					newZ = maxZ;
-					maxZ = minZ;
-					minZ = newZ;
-					break;
-				case UP:
-					break;
-				case WEST:
-					break;
-				default:
-					break;
-				}
-			}
-			break;
-		case Z:
-			this.width.setObject(maxX - minX);
-			this.height.setObject(maxY - minY);
-			break;
-		default:
-			break;
+			minZ = Math.min(pos.z, minZ);
+			maxZ = Math.max(pos.z, maxZ);
 		}
 
-		for (int x = Math.min(minX, maxX); x <= Math.max(minX, maxX); x++) {
-			for (int y = Math.min(minY, maxY); y <= Math.max(minY, maxY); y++) {
-				for (int z = Math.min(minZ, maxZ); z <= Math.max(minZ, maxZ); z++) {
-					BlockCoords coords = new BlockCoords(x, y, z);
-					IDisplay display = CableConnectionHelper.getDisplay(world, coords.getBlockPos(), EnumDisplayFaceSlot.fromFace(meta));
-					if (!(display instanceof ILargeDisplay)) {
-						canBeRendered.setObject(false);
-						return;
-					}
-					AxisDirection dir = meta.getAxisDirection();
-					if (meta.getAxis() != Axis.Z) {
-						dir = dir == AxisDirection.POSITIVE ? AxisDirection.NEGATIVE : AxisDirection.POSITIVE;
-					}
-					boolean isTopLeft = (dir == AxisDirection.POSITIVE && x == minX && y == maxY && z == minZ) || (dir == AxisDirection.NEGATIVE && x == maxX && y == maxY && z == maxZ);
-					setTopLeftScreen((ILargeDisplay) display, isTopLeft);
-				}
-			}
+		double width = 0, height = 0;
+		switch (getCableFace().getAxis()) {
+			case X:
+				width = maxZ - minZ;
+				height = maxY - minY;
+				break;
+			case Y:
+				width = maxX - minX;
+				height = maxZ - minZ;
+				break;
+			case Z:
+				width = maxX - minX;
+				height = maxY - minY;
+				break;
+			default:
+				break;
 		}
-		this.canBeRendered.setObject(true);
+
+		///TODO if roll = 90 or 270, switch the width and height
+		this.width.setObject(width += 1 - 0.0625*2);
+		this.height.setObject(height += 1 - 0.0625*2);
+		this.screenOrigin = new Vec3d((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2).add(HolographicVectorHelper.getFaceOffset(getCableFace(), 0.5));
+		this.screenRotation = HolographicVectorHelper.getScreenRotation(this.getCableFace());
+		this.screenScale =  new Vec3d (width, height, 0.001 );
+		if(Math.ceil(width) * Math.ceil(height) != displays.size()){
+			canBeRendered.setObject(false);
+			displays.forEach(d -> d.setShouldRender(false));
+			return;
+		}
+		Vec3d[] vectors = getScreenVectors(this, getLookVector(getPitch(), getYaw()));
+		Vec3i topLeft = convertVector(getTopRight(screenOrigin, vectors[0], vectors[1], width, height));
+		displays.forEach(display -> setTopLeftScreen(display, display.getCoords().getBlockPos().equals(topLeft)));
+		canBeRendered.setObject(true);
 		gsi.updateScaling();
+		return;
+	}
+
+	@Override
+	public Vec3d getScreenScaling() {
+		return screenScale;
+	}
+
+	@Override
+	public Vec3d getScreenOrigin(){
+		return screenOrigin;
+	}
+
+	@Override
+	public Vec3d getScreenRotation(){
+		return screenRotation;
 	}
 
 	public List<ILogicListenable> getLocalProviders(List<ILogicListenable> monitors) {
@@ -212,20 +168,29 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 		return monitors;
 	}
 
-	private void setHasChanged() {
-		DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED);
+	public ILargeDisplay getActualDisplay() {
+		return getTopLeftScreen();
 	}
 
 	public void setTopLeftScreen(ILargeDisplay display, boolean isTopLeft) {
 		if (isTopLeft) {
 			topLeftScreen = display;
-			this.topLeftCoords.setCoords(display.getCoords());
+			topLeftCoords.setCoords(display.getCoords());
 			display.setShouldRender(true);
 			face.setObject(display.getCableFace());
 		} else {
 			display.setShouldRender(false);
 		}
+	}
 
+	public ILargeDisplay getTopLeftScreen() {
+		if (topLeftCoords.getCoords() != null) {
+			IDisplay display = CableConnectionHelper.getDisplay(world, topLeftCoords.getCoords().getBlockPos(), EnumDisplayFaceSlot.fromFace(face.getObject()));
+			if (display instanceof ILargeDisplay) {
+				topLeftScreen = (ILargeDisplay) display;
+			}
+		}
+		return topLeftScreen;
 	}
 
 	@Override
@@ -236,11 +201,6 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 	@Override
 	public void setGSI(DisplayGSI gsi) {
 		this.gsi = gsi;
-	}
-
-	@Override
-	public EnumDisplayType getDisplayType() {
-		return EnumDisplayType.LARGE;
 	}
 
 	@Override
@@ -274,6 +234,9 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 		if (nbt.hasKey(getTagName())) {
 			NBTTagCompound tag = nbt.getCompoundTag(this.getTagName());
 			NBTHelper.readSyncParts(tag, type, this.syncParts);
+			screenScale = readVec3d("scale", nbt, type);
+			screenRotation = readVec3d("rotate", nbt, type);
+			screenOrigin = readVec3d("origin", nbt, type);
 			getGSI().readData(tag, type);
 		}
 	}
@@ -282,30 +245,14 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTHelper.writeSyncParts(tag, type, this.syncParts, true);
+		writeVec3d(screenScale,"scale", nbt, type);
+		writeVec3d(screenRotation,"rotate", nbt, type);
+		writeVec3d(screenOrigin,"origin", nbt, type);
 		getGSI().writeData(tag, type);
 		if (!tag.hasNoTags()) {
 			nbt.setTag(this.getTagName(), tag);
 		}
 		return nbt;
-	}
-
-	public ILargeDisplay getActualDisplay() {
-		return getTopLeftScreen();
-	}
-
-	public ILargeDisplay getTopLeftScreen() {
-		if (topLeftCoords.getCoords() != null) {
-			IDisplay display = CableConnectionHelper.getDisplay(world, topLeftCoords.getCoords().getBlockPos(), EnumDisplayFaceSlot.fromFace(face.getObject()));
-			if (display instanceof ILargeDisplay)
-				this.topLeftScreen = (ILargeDisplay) display;
-		}
-		return topLeftScreen;
-	}
-
-	@Override
-	public double[] getScaling() {
-		double max = Math.min(this.height.getObject() + 1.3, this.width.getObject() + 1);
-		return new double[] { this.getDisplayType().width + this.width.getObject(), this.getDisplayType().height + this.height.getObject(), max / 100 };
 	}
 
 	@Override
@@ -346,7 +293,8 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 	@Override
 	public void markChanged(IDirtyPart part) {
 		syncParts.markSyncPartChanged(part);
-		DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED);
+		if(!this.getActualWorld().isRemote)
+			DisplayHandler.instance().markConnectedDisplayChanged(getRegistryID(), ConnectedDisplayChange.WATCHERS_CHANGED);
 	}
 
 	@Override
@@ -361,7 +309,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 
 	@Override
 	public int getIdentity() {
-		return registryID;// getTopLeftScreen().getIdentity();
+		return registryID;
 	}
 
 	@Override

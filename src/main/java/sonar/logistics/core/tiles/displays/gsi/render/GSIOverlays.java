@@ -14,6 +14,7 @@ import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
 import sonar.logistics.core.tiles.displays.gsi.interaction.GSIInteractionHelper;
 import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplay;
 import sonar.logistics.core.tiles.displays.tiles.connected.TileLargeDisplayScreen;
+import sonar.logistics.core.tiles.displays.tiles.holographic.HolographicVectorHelper;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -47,20 +48,8 @@ public class GSIOverlays {
 			Optional<IMultipartTile> tile = MultipartHelper.getPartTile(evt.getPlayer().getEntityWorld(), clickPos, slot);
 			if (tile.isPresent() && tile.get() instanceof IDisplay) {
 				IDisplay display = (IDisplay) tile.get();
-				if (display instanceof TileLargeDisplayScreen) {
-					ConnectedDisplay connectedDisplay = ((TileLargeDisplayScreen) display).getConnectedDisplay();
-					if (connectedDisplay != null) {
-						display = connectedDisplay.getTopLeftScreen();
-					}else{
-						display = null;
-					}
-				}
-				if (display != null && display.getGSI() != null) {
-					Vec3d vec = evt.getTarget().hitVec;
-					float hitX = (float) (vec.x - (double) clickPos.getX());
-					float hitY = (float) (vec.y - (double) clickPos.getY());
-					float hitZ = (float) (vec.z - (double) clickPos.getZ());
-					currentLook = GSIInteractionHelper.getLookPosition(display.getGSI(), clickPos, face, hitX, hitY, hitZ);
+				if(display.getGSI() != null) {
+					currentLook = HolographicVectorHelper.createLook(evt.getPlayer(), display);
 					return;
 				}
 			}

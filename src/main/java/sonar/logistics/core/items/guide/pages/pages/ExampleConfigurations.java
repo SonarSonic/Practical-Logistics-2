@@ -51,7 +51,7 @@ public class ExampleConfigurations {
 			screen.container = new DisplayGSI(screen, screen.getWorld(), screen.getInfoContainerID());
 			LogicInfo info1 = LogicInfo.buildDirectInfo("TileEntityFurnace.cookTime", RegistryType.TILE, 100);
 			LogicInfo info2 = LogicInfo.buildDirectInfo("TileEntityFurnace.totalCookTime", RegistryType.TILE, 200);
-			double[] displayScaling = new double[] { screen.getDisplayType().width, screen.getDisplayType().height, 1 };
+			double[] displayScaling = new double[] { screen.getWidth(), screen.getHeight(), 1 };
 			screen.getGSI().currentScaling = displayScaling;
 			
 			DisplayElementContainer container = new DisplayElementContainer(screen.getGSI(), new double[] { 0, 0, 0 }, displayScaling, 1, 1);
@@ -80,7 +80,7 @@ public class ExampleConfigurations {
 
 			TileDisplayScreen screen = new TileDisplayScreen();
 			screen.container = new DisplayGSI(screen, screen.getWorld(), screen.getInfoContainerID());
-			double[] displayScaling = new double[] { screen.getDisplayType().width, screen.getDisplayType().height, 1 };
+			double[] displayScaling = new double[] { screen.getWidth(), screen.getHeight(), 1 };
 			screen.getGSI().currentScaling = displayScaling;
 			DisplayElementContainer container = new DisplayElementContainer(screen.getGSI(), new double[] { 0, 0, 0 }, displayScaling, 1, 1);	
 			MonitoredItemStack itemInfo = new MonitoredItemStack(new StoredItemStack(new ItemStack(Blocks.COBBLESTONE), 256), -1);
@@ -105,7 +105,7 @@ public class ExampleConfigurations {
 			double connected_width = 2;
 			double connected_height = 1;
 			double max = Math.min(connected_height + 1.3, connected_width + 1);
-			double[] screenScale = new double[] { screen1.getDisplayType().width + connected_width, screen1.getDisplayType().height + connected_height, max / 100 };
+			double[] screenScale = new double[] { screen1.getWidth() + connected_width, screen1.getHeight() + connected_height, max / 100 };
 			DisplayGSI fakeGSI = new DisplayGSI(screen1, null, 1);
 			fakeGSI.currentScaling = screenScale;
 			DisplayElementContainer container = new DisplayElementContainer(fakeGSI, new double[] { 0, 0, 0 }, screenScale, 1, 1);			

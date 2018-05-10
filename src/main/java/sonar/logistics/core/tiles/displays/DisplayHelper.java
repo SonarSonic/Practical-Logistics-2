@@ -35,8 +35,8 @@ public class DisplayHelper {
 	public static List<ILogicListenable> getLocalProviders(IDisplay part, IBlockAccess world, BlockPos pos) {
 		List<ILogicListenable> providers = new ArrayList<>();
 		if (part instanceof ILargeDisplay) {
-			ConnectedDisplay display = ((ILargeDisplay) part).getConnectedDisplay();
-			providers = display != null ? display.getLocalProviders(providers) : getLocalProvidersFromDisplay(providers, world, pos, part);
+			Optional<ConnectedDisplay> display = ((ILargeDisplay) part).getConnectedDisplay();
+			providers = display.isPresent() ? display.get().getLocalProviders(providers) : getLocalProvidersFromDisplay(providers, world, pos, part);
 		} else if(part instanceof ConnectedDisplay){
 			ConnectedDisplay display = (ConnectedDisplay) part;
 			providers = display.getLocalProviders(providers);			

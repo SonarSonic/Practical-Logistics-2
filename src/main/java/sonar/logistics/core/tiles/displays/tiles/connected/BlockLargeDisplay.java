@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.common.block.properties.SonarProperties;
 import sonar.logistics.PL2Multiparts;
-import sonar.logistics.api.core.tiles.displays.tiles.EnumDisplayType;
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.base.utils.slots.EnumDisplayFaceSlot;
@@ -48,11 +47,11 @@ public class BlockLargeDisplay extends BlockClickableDisplay {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof TileLargeDisplayScreen) {
 			TileLargeDisplayScreen source = ((TileLargeDisplayScreen) tile);
-			ConnectedDisplay connectedDisplay = source.getConnectedDisplay();
-			if(connectedDisplay == null){
+			Optional<ConnectedDisplay> connectedDisplay = source.getConnectedDisplay();
+			if(!connectedDisplay.isPresent()){
 				return false;
 			}
-			TileLargeDisplayScreen display = source.shouldRender.getObject() ? source : (TileLargeDisplayScreen) connectedDisplay.getTopLeftScreen();
+			TileLargeDisplayScreen display = source.shouldRender.getObject() ? source : (TileLargeDisplayScreen) connectedDisplay.get().getTopLeftScreen();
 			if (display != null) {
 				if (facing != state.getValue(SonarProperties.ORIENTATION)) {
 					if (!world.isRemote && canOpenGui(player)) {
@@ -82,7 +81,7 @@ public class BlockLargeDisplay extends BlockClickableDisplay {
 				if (multipartTile.isPresent() && multipartTile.get() instanceof IDisplay) {
 					display = (IDisplay) multipartTile.get();
 				}
-				if (display != null && display.getDisplayType() == EnumDisplayType.LARGE && ((ILargeDisplay) display).getRegistryID() == screen.getRegistryID()) {
+				if (display instanceof ILargeDisplay && ((ILargeDisplay) display).getRegistryID() == screen.getRegistryID()) {
 					switch (display.getCableFace()) {
 					case DOWN:
 						EnumFacing toAdd = face;

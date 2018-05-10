@@ -1,7 +1,9 @@
 package sonar.logistics.core.tiles.displays.tiles;
 
+import net.minecraft.util.EnumFacing;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
+import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.core.tiles.base.TileSidedLogistics;
 
@@ -20,5 +22,10 @@ public abstract class TileAbstractDisplay extends TileSidedLogistics implements 
 	@Override
 	public boolean maxRender() {
 		return true;
+	}
+
+	@Override
+	public EnumCableRenderSize getCableRenderSize(EnumFacing dir) {
+		return EnumCableRenderSize.INTERNAL;
 	}
 }

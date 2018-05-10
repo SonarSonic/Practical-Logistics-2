@@ -37,7 +37,7 @@ public class DisplayElementHelper {
 		for (int i = 0; i < max; i++) {
 			double p = percentage[i];
 			double s = toFit[i];
-			scale[i] = ((s / 100D) * p);
+			scale[i] = (s / 100D) * p;
 		}
 		return scale;
 	}
@@ -46,9 +46,9 @@ public class DisplayElementHelper {
 		double[] percentage = new double[size.length];
 		int max = Math.min(size.length, maximum.length);
 		for (int i = 0; i < max; i++) {
-			double s = size[i];
-			double m = maximum[i];
-			percentage[i] = (Math.min(s, m) / Math.max(s, m)) * 100D;
+			double s = Math.min(size[i], maximum[i]);
+			double m = Math.max(size[i], maximum[i]);
+			percentage[i] = (s / m) * 100D;
 		}
 		return percentage;
 	}
