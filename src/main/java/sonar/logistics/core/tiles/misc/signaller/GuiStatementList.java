@@ -246,7 +246,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			boolean has1 = false, has2 = false;
 
 			if (InfoUUID.valid(uuid1)) {
-				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid1).copy();
+				IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(uuid1).copy();
 				if (monitorInfo instanceof IComparableInfo) {
 					info1 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 					ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>()), currentFilter.key1.getObject());
@@ -258,7 +258,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 			}
 			if (currentFilter.getInputType().usesInfo()) {
 				if (InfoUUID.valid(uuid2)) {
-					IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid2).copy();
+					IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(uuid2).copy();
 					if (monitorInfo instanceof IComparableInfo) {
 						info2 = monitorInfo.getID().toUpperCase() + " - " + monitorInfo.toString();
 						ComparableObject obj = ComparableObject.getComparableObject(((IComparableInfo) monitorInfo).getComparableObjects(new ArrayList<>()), currentFilter.key2.getObject());
@@ -295,7 +295,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			uuid1 = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (InfoUUID.valid(uuid1)) {
-				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid1);
+				IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(uuid1);
 				if (monitorInfo != null) {
 					FontHelper.textCentre("Info Type: " + monitorInfo.getID().toUpperCase(), xSize, 6, PL2Colours.white_text.getRGB());
 					GlStateManager.scale(0.75, 0.75, 0.75);
@@ -389,7 +389,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		switch (state) {
 		case CHANNELS:
 			if (info instanceof InfoUUID) {
-				IInfo monitorInfo = ClientInfoHandler.instance().info.get(info);
+				IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(info);
 				if (monitorInfo != null) {
 					InfoRenderHelper.renderMonitorInfoInGUI(monitorInfo, yPos + 1, PL2Colours.white_text.getRGB());
 				} else {
@@ -458,7 +458,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 
 	public Pair<String, String> getInfoTypeAndObjectStrings(InfoUUID id, String key) {
 		String infoType = "INFO", infoObj = "NULL";
-		IInfo monitorInfo = ClientInfoHandler.instance().info.get(id);
+		IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(id);
 		if (monitorInfo instanceof INameableInfo) {
 			infoType = ((INameableInfo) monitorInfo).getClientIdentifier();
 		} else {
@@ -537,7 +537,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 		case STRING:
 			InfoUUID uuid = (InfoUUID) (infoPos == 0 ? currentFilter.uuid1.getObject() : currentFilter.uuid2.getObject());
 			if (InfoUUID.valid(uuid)) {
-				IInfo monitorInfo = ClientInfoHandler.instance().info.get(uuid);
+				IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(uuid);
 				if (monitorInfo instanceof IComparableInfo) {
 					IComparableInfo comparable = (IComparableInfo) monitorInfo;
 					List objects = new ArrayList<ComparableObject>();

@@ -33,8 +33,8 @@ import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.channels.ContainerChannelSelection;
 import sonar.logistics.base.channels.GuiChannelSelection;
-import sonar.logistics.base.tiles.IChannelledTile;
 import sonar.logistics.base.listeners.ILogicListenable;
+import sonar.logistics.base.tiles.IChannelledTile;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -155,7 +155,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 	public Object getServerElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(tag.getInteger("hash"));
+			ILogicListenable listen = ServerInfoHandler.instance().getNetworkTileMap().get(tag.getInteger("hash"));
 			if (listen instanceof IChannelledTile) {
 				IChannelledTile tile = (IChannelledTile) listen;
 				return new ContainerChannelSelection(tile);
@@ -168,7 +168,7 @@ public class ItemOperator extends SonarItem implements IOperatorTool, IFlexibleG
 	public Object getClientElement(ItemStack obj, int id, World world, EntityPlayer player, NBTTagCompound tag) {
 		switch (id) {
 		case 0:
-			ILogicListenable listen = ClientInfoHandler.instance().getIdentityTile(tag.getInteger("hash"));
+			ILogicListenable listen = ClientInfoHandler.instance().getNetworkTileMap().get(tag.getInteger("hash"));
 			if (listen instanceof IChannelledTile) {
 				IChannelledTile tile = (IChannelledTile) listen;
 				return new GuiChannelSelection(player, tile, 0);

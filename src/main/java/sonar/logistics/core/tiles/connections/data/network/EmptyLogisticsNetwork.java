@@ -8,10 +8,10 @@ import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork
 import sonar.logistics.api.core.tiles.readers.IInfoProvider;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.base.channels.NodeConnection;
+import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
 import sonar.logistics.core.tiles.displays.info.types.general.InfoChangeableList;
-import sonar.logistics.base.tiles.INetworkTile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,11 +95,6 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork {
 	@Override
 	public List<IInfoProvider> getGlobalInfoProviders() {
 		return new ArrayList<>();
-	}
-
-	@Override
-	public IInfoProvider getLocalInfoProvider() {
-		return null;
 	}
 	
 	@Override

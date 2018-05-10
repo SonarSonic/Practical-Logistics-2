@@ -36,8 +36,7 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 	}
 	
 	public AbstractChangeableList<I> getUUIDLatestList(InfoUUID uuid){
-		AbstractChangeableList<I> updateList = ServerInfoHandler.instance().getMonitoredList(uuid);
-		return updateList ==null ? newChangeableList() : updateList;
+		return ServerInfoHandler.instance().getChangeableListMap().getOrDefault(uuid, newChangeableList());
 	}
 
 	public boolean canHandleTiles() {
@@ -102,7 +101,7 @@ public abstract class ListNetworkHandler<I extends IInfo, L extends AbstractChan
 			if (reader instanceof INetworkReader) {
 				((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels, uuid);
 			}
-			ServerInfoHandler.instance().monitoredLists.put(uuid, updateList);
+			ServerInfoHandler.instance().getChangeableListMap().put(uuid, updateList);
 			if (send && (!updateList.wasLastListNull || updateList.wasLastListNull != updateList.getList().isEmpty()))
 				InfoPacketHelper.sendReaderToListeners(reader, updateList, uuid);
 			return new Pair(uuid, updateList);

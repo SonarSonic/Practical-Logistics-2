@@ -23,6 +23,7 @@ import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
 import sonar.logistics.api.core.tiles.displays.info.lists.IMonitoredValue;
+import sonar.logistics.api.core.tiles.displays.info.lists.UniversalChangeableList;
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.readers.INetworkReader;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
@@ -30,9 +31,9 @@ import sonar.logistics.api.core.tiles.readers.channels.INetworkHandler;
 import sonar.logistics.base.channels.ChannelList;
 import sonar.logistics.base.channels.ChannelType;
 import sonar.logistics.base.channels.NodeConnection;
-import sonar.logistics.base.utils.slots.EnumDisplayFaceSlot;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.base.listeners.PL2ListenerList;
+import sonar.logistics.base.utils.slots.EnumDisplayFaceSlot;
 import sonar.logistics.core.tiles.base.TileSidedLogistics;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredEntity;
@@ -123,7 +124,7 @@ public abstract class TileAbstractReader<T extends IInfo> extends TileSidedLogis
 	@Nullable
 	public AbstractChangeableList<T> getMonitoredList() {
 		InfoUUID id = new InfoUUID(getIdentity(), 0);
-		return PL2.proxy.getInfoManager(isClient()).getMonitoredList(id);
+		return PL2.proxy.getInfoManager(isClient()).getChangeableListMap().getOrDefault(id, UniversalChangeableList.newChangeableList());
 	}
 
 	//// IChannelledTile \\\\

@@ -33,6 +33,7 @@ import sonar.logistics.PL2Translate;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
+import sonar.logistics.api.core.tiles.displays.info.lists.UniversalChangeableList;
 import sonar.logistics.api.core.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.gui.GuiSelectionGrid;
@@ -167,7 +168,7 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 	public List<IInfo> getGridList() {
 		String search = searchField.getText();
 		if (items) {
-			AbstractChangeableList<MonitoredItemStack> currentList = ClientInfoHandler.instance().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
+			AbstractChangeableList<MonitoredItemStack> currentList = ClientInfoHandler.instance().getChangeableListMap().get(new InfoUUID(identity, TileDataEmitter.STATIC_ITEM_ID));
 			if (currentList == null) {
 				return new ArrayList<>();
 			}
@@ -186,7 +187,8 @@ public class GuiWirelessStorageReader extends GuiSelectionGrid<IInfo> {
 				return searchlist;
 			}
 		} else {
-			return ClientInfoHandler.instance().getMonitoredList(new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID)).createSaveableList();
+			InfoUUID fluidUUID = new InfoUUID(identity, TileDataEmitter.STATIC_FLUID_ID);
+			return ClientInfoHandler.instance().getChangeableListMap().getOrDefault(fluidUUID, UniversalChangeableList.newChangeableList()).createSaveableList();
 		}
 	}
 

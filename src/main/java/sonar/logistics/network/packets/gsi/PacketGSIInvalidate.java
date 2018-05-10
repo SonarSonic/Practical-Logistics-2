@@ -38,7 +38,7 @@ public class PacketGSIInvalidate implements IMessage {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 					if (player != null) {
-						DisplayGSI gsi = ClientInfoHandler.instance().getGSI(message.GSI_IDENTITY);
+						DisplayGSI gsi = ClientInfoHandler.instance().getGSIMap().get(message.GSI_IDENTITY);
 						if (gsi != null) {
 							gsi.invalidate();
 						}

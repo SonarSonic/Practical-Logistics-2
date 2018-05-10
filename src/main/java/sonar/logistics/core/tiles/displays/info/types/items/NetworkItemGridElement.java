@@ -39,14 +39,14 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 	}
 
 	public void renderGridElement(MonitoredItemStack stack, int index) {
-		scale((width / 16) * grid_fill_percentage, (height / 16) * grid_fill_percentage, 0.001);
+		scale((width / 16) * grid_fill_percentage, (height / 16) * grid_fill_percentage, 0.02);
 		disableLighting();
 		RenderHelper.renderItemIntoGUI(stack.getItemStack(), 0, 0);
-		translate(0, 0, 2);
+		translate(0, 0, 0.8);
 		depthMask(false);
 		RenderHelper.renderStoredItemStackOverlay(stack.getItemStack(), 0, 0, 0, text_colour, "" + stack.getStored(), false);
-		depthMask(true);
 		GlStateManager.color(1, 1, 1, 1);
+		depthMask(true);
 	}
 
 	public void onChangeableListChanged(InfoUUID uuid, AbstractChangeableList list) {

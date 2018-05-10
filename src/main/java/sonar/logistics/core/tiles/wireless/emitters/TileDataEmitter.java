@@ -11,6 +11,7 @@ import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
 import sonar.logistics.api.core.tiles.displays.info.lists.IMonitoredValue;
+import sonar.logistics.api.core.tiles.displays.info.lists.UniversalChangeableList;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkHandler;
 import sonar.logistics.api.core.tiles.wireless.IWirelessManager;
@@ -45,12 +46,12 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 	
 	@Override
 	public AbstractChangeableList<MonitoredItemStack> getServerItems() {
-		return PL2.proxy.getInfoManager(isClient()).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_ITEM_ID));
+		return PL2.proxy.getInfoManager(isClient()).getChangeableListMap().getOrDefault(new InfoUUID(this.getIdentity(), STATIC_ITEM_ID), UniversalChangeableList.newChangeableList());
 	}
 
 	@Override
 	public AbstractChangeableList<InfoNetworkFluid> getServerFluids() {
-		return PL2.proxy.getInfoManager(isClient()).getMonitoredList(new InfoUUID(this.getIdentity(), STATIC_FLUID_ID));
+		return PL2.proxy.getInfoManager(isClient()).getChangeableListMap().getOrDefault(new InfoUUID(this.getIdentity(), STATIC_FLUID_ID), UniversalChangeableList.newChangeableList());
 	}
 
 	//// LIST READER \\\\

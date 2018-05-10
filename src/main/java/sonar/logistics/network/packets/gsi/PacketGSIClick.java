@@ -49,7 +49,7 @@ public class PacketGSIClick implements IMessage {
 			if (ctx.side == Side.SERVER) {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
-					DisplayGSI gsi = ServerInfoHandler.instance().getGSI(message.click.identity);
+					DisplayGSI gsi = ServerInfoHandler.instance().getGSIMap().get(message.click.identity);
 					if (gsi != null) {
 						message.click.gsi = gsi;
 						GSIClickPacketHelper.handler.runGSIClickPacket(gsi, message.click, player, message.clickTag);

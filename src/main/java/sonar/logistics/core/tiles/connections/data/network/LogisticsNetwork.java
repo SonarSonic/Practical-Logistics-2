@@ -19,6 +19,7 @@ import sonar.logistics.api.core.tiles.wireless.receivers.IDataReceiver;
 import sonar.logistics.base.channels.NodeConnection;
 import sonar.logistics.base.channels.PacketChannels;
 import sonar.logistics.base.filters.ITransferFilteredTile;
+import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.base.utils.LogisticsHelper;
 import sonar.logistics.core.tiles.displays.DisplayInfoReferenceHandler;
@@ -27,7 +28,6 @@ import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
 import sonar.logistics.core.tiles.displays.info.types.general.InfoChangeableList;
 import sonar.logistics.core.tiles.readers.info.handling.InfoHelper;
-import sonar.logistics.base.tiles.INetworkTile;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -149,7 +149,6 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		}
 	}
 
-	// FIXME - make this event driven.
 	public void createLocalChannels() {
 		List<NodeConnection> channels = new ArrayList<>();
 		LogisticsHelper.sortNodeConnections(channels, getCachedTiles(CacheHandler.NODES, CacheType.LOCAL));
@@ -203,11 +202,6 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	@Override
-	public IInfoProvider getLocalInfoProvider() {
-		return !localProviders.isEmpty() ? localProviders.get(0) : null;
-	}
-
-	@Override
 	public int getNetworkID() {
 		return networkID;
 	}
@@ -217,15 +211,12 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		return isValid;
 	}
 
-	/// SUB NETWORKS \\\
-
 	@Override
 	public ListenableList<ILogisticsNetwork> getListenerList() {
 		return subNetworks;
 	}
 
-	//// MONITORING \\\\
-
+	@Override
 	public long getNetworkTickTime() {
 		return updateTick;
 	}

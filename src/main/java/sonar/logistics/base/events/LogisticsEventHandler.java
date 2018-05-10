@@ -19,15 +19,17 @@ import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkHandler;
 import sonar.logistics.api.core.tiles.wireless.emitters.IDataEmitter;
 import sonar.logistics.api.core.tiles.wireless.receivers.IDataReceiver;
+import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.ServerInfoHandler;
+import sonar.logistics.base.events.types.InfoEvent;
 import sonar.logistics.base.events.types.NetworkCableEvent;
 import sonar.logistics.base.events.types.NetworkEvent;
 import sonar.logistics.base.events.types.NetworkPartEvent;
 import sonar.logistics.base.filters.ITransferFilteredTile;
+import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.PL2AdditionType;
 import sonar.logistics.base.utils.PL2RemovalType;
-import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.core.tiles.connections.data.handling.CableConnectionHandler;
 import sonar.logistics.core.tiles.connections.data.network.LogisticsNetwork;
 import sonar.logistics.core.tiles.connections.data.network.LogisticsNetworkHandler;
@@ -37,6 +39,7 @@ import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayInfoReferenceHandler;
 import sonar.logistics.core.tiles.displays.DisplayInfoReferenceHandler.UpdateCause;
 import sonar.logistics.core.tiles.displays.DisplayViewerHandler;
+import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplayChange;
 import sonar.logistics.core.tiles.nodes.transfer.handling.TransferNetworkChannels;
 import sonar.logistics.core.tiles.wireless.handling.WirelessDataManager;
@@ -93,7 +96,6 @@ public class LogisticsEventHandler {
 		doNetworkChanges();
 		RedstoneConnectionHandler.instance().tick();
 		LogisticsNetworkHandler.instance().tick();
-		
 		CONSTRUCTING.flushEvents();
 	}
 
@@ -101,7 +103,6 @@ public class LogisticsEventHandler {
 		DisplayInfoReferenceHandler.updateLocalProviderConnections();
 		DisplayHandler.instance().updateConnectedDisplays();
 		DisplayViewerHandler.instance().updateDisplayViewers();
-		
 		UPDATING.flushEvents();
 	}
 
@@ -111,7 +112,7 @@ public class LogisticsEventHandler {
 		ServerInfoHandler.instance().sendErrors();
 		WirelessDataManager.instance().sendDataEmittersToListeners();
 		WirelessRedstoneManager.instance().sendDataEmittersToListeners();
-		ServerInfoHandler.instance().sendGSIUpdates();
+		ServerInfoHandler.instance().getGSIMap().values().forEach(DisplayGSI::doQueuedUpdates);
 		NOTIFYING.flushEvents();
 	}
 
@@ -176,8 +177,8 @@ public class LogisticsEventHandler {
 
 	public void flushDisplays(Map<IDisplay, PL2AdditionType> added, Map<IDisplay, PL2RemovalType> removed) {
 		if (!added.isEmpty() || !removed.isEmpty()) {
-			added.forEach((display, type) -> ServerInfoHandler.instance().addDisplay(display, type));
-			removed.forEach((display, type) -> ServerInfoHandler.instance().removeDisplay(display, type));
+			added.forEach((display, type) -> DisplayHandler.instance().addDisplay(display, type));
+			removed.forEach((display, type) -> DisplayHandler.instance().removeDisplay(display, type));
 		}
 	}
 
@@ -241,7 +242,12 @@ public class LogisticsEventHandler {
 			if (event.type == PL2AdditionType.PLAYER_ADDED) {
 				event.tile.onTileAddition();
 			}
+		}else{
+			if (event.tile instanceof IDisplay) {
+				DisplayHandler.instance().addClientDisplay((IDisplay) event.tile, event.type);
+			}
 		}
+
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -258,6 +264,10 @@ public class LogisticsEventHandler {
 			}
 			if (event.type == PL2RemovalType.PLAYER_REMOVED) {
 				event.tile.onTileRemoval();
+			}
+		}else{
+			if (event.tile instanceof IDisplay && event.world.isRemote) {
+				DisplayHandler.instance().removeClientDisplay((IDisplay) event.tile, event.type);
 			}
 		}
 	}
@@ -386,6 +396,27 @@ public class LogisticsEventHandler {
 				RedstoneConnectionHandler.instance().removeConnectionFromNetwork((IRedstoneCable) event.tile);
 			}
 		}
+	}
 
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onInfoChanged(InfoEvent.InfoChanged event) {
+		if(event.isRemote){
+			for (DisplayGSI display : ClientInfoHandler.instance().gsiMap.values()) {
+				if (display.isDisplayingUUID(event.uuid)) {
+					display.onInfoChanged(event.uuid, event.newInfo);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onListChanged(InfoEvent.ListChanged event) {
+		if(event.isRemote){
+			for (DisplayGSI display : ClientInfoHandler.instance().gsiMap.values()) {
+				if (display.isDisplayingUUID(event.uuid)) {
+					display.onMonitoredListChanged(event.uuid, event.newList);
+				}
+			}
+		}
 	}
 }

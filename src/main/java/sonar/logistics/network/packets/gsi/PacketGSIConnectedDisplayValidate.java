@@ -50,7 +50,7 @@ public class PacketGSIConnectedDisplayValidate implements IMessage {
 				EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 				if (player != null) {
 					SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-						IDisplay display = ClientInfoHandler.instance().getConnectedDisplay(message.DISPLAY_ID);
+						IDisplay display = ClientInfoHandler.instance().getConnectedDisplays().get(message.DISPLAY_ID);
 						DisplayGSI gsi = display == null? null : display.getGSI();
 						if(display == null || gsi == null){
 							ClientInfoHandler.instance().invalid_gsi.put(message.GSI_IDENTITY, message.SAVE_TAG);

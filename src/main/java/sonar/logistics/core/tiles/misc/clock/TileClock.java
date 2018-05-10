@@ -86,7 +86,7 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 
 		if (info != null) {
 			InfoUUID id = new InfoUUID(getIdentity(), 0);
-			IInfo oldInfo = ServerInfoHandler.instance().getInfoFromUUID(id);
+			IInfo oldInfo = ServerInfoHandler.instance().getInfoMap().get(id);
 			if (oldInfo == null || !oldInfo.isMatchingType(info) || !oldInfo.isMatchingInfo(info) || !oldInfo.isIdenticalInfo(info)) {
 				ServerInfoHandler.instance().changeInfo(this, id, info);
 			}
@@ -97,7 +97,7 @@ public class TileClock extends TileSidedLogistics implements IInfoProvider, IByt
 
 	@Override
 	public IInfo getMonitorInfo(int pos) {
-		return PL2.proxy.getInfoManager(isClient()).getInfoFromUUID(new InfoUUID(getIdentity(), 0));
+		return PL2.proxy.getInfoManager(isClient()).getInfoMap().get(new InfoUUID(getIdentity(), 0));
 	}
 
 	@Override

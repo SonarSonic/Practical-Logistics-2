@@ -123,13 +123,13 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 	public List<L> getCachedList(LogicInfoList info, InfoUUID id) {
 		if (cachedList == null || info.listChanged) {
 			info.listChanged = false;
-			AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
+			AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getChangeableListMap().get(id);
 			cachedList = list != null ? (ArrayList<L>) list.createSaveableList(info.listSorter) : new ArrayList<>();
 			if (cachedList.size() < perPage * pageCount - 1) {
 				pageCount = 0;
 			}
 		}
-		AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getMonitoredList(id);
+		AbstractChangeableList<?> list = PL2.proxy.getInfoManager(true).getChangeableListMap().get(id);
 		cachedList = list != null ? (ArrayList<L>) list.createSaveableList(info.listSorter) : new ArrayList<>();
 		return cachedList;
 	}

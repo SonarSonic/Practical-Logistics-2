@@ -16,7 +16,7 @@ import sonar.logistics.base.events.PL2Events;
 
 import javax.annotation.Nonnull;
 
-/**for displays which can be left clicked*/
+/**for gsiMap which can be left clicked*/
 public class BlockClickableDisplay extends BlockAbstractDisplay {
 
 

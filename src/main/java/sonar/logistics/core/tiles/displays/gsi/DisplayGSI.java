@@ -52,6 +52,7 @@ import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler.Dis
 import sonar.logistics.core.tiles.displays.gsi.storage.EditContainer;
 import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
 import sonar.logistics.core.tiles.displays.info.elements.base.*;
+import sonar.logistics.core.tiles.displays.info.types.InfoError;
 import sonar.logistics.core.tiles.displays.info.types.text.StyledTextElement;
 import sonar.logistics.core.tiles.displays.info.types.text.StyledTitleElement;
 import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
@@ -447,8 +448,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	
 	public void sendConnectedInfo(EntityPlayer player){
 		references.forEach(ref -> {
-			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(ref.identity);
-			if(listen!=null){
+			ILogicListenable listen = ServerInfoHandler.instance().getNetworkTileMap().get(ref.identity);
+			if(listen != null){
 				listen.getListenerList().addListener(player, ListenerType.TEMPORARY_LISTENER);
 			}
 		});
@@ -459,7 +460,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void updateCachedInfo() {
 		IInfoManager manager = PL2.proxy.getInfoManager(world.isRemote);
 		Map<InfoUUID, IInfo> newCache = new HashMap<>();
-		references.forEach(ref -> newCache.put(ref, manager.getInfoFromUUID(ref)));
+		references.forEach(ref -> newCache.put(ref, manager.getInfoMap().getOrDefault(ref, InfoError.noData)));
 		cachedInfo = newCache;
 	}
 
@@ -778,7 +779,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		if (!isValid) {
 			isValid = true;
 			if (!world.isRemote) {
-				PL2.proxy.getServerManager().displays.put(getDisplayGSIIdentity(), this);
+				PL2.proxy.getServerManager().gsiMap.put(getDisplayGSIIdentity(), this);
 				references.clear();
                 updateInfoReferences();
                 updateCachedInfo();
@@ -788,7 +789,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				}
 				forEachWatcher(this::sendValidatePacket);
 			} else {
-				PL2.proxy.getClientManager().displays_gsi.put(getDisplayGSIIdentity(), this);
+				PL2.proxy.getClientManager().getGSIMap().put(getDisplayGSIIdentity(), this);
                 updateCachedInfo();
                 updateScaling();
 			}
@@ -803,11 +804,11 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		if (isValid) {
 			isValid = false;
 			if (!world.isRemote) {
-				PL2.proxy.getServerManager().displays.remove(getDisplayGSIIdentity());
+				PL2.proxy.getServerManager().gsiMap.remove(getDisplayGSIIdentity());
                 DisplayInfoReferenceHandler.doInfoReferenceDisconnect(this, references);
 				forEachWatcher(this::sendInvalidatePacket);
 			} else {
-				PL2.proxy.getClientManager().displays_gsi.remove(getDisplayGSIIdentity());
+				PL2.proxy.getClientManager().getGSIMap().remove(getDisplayGSIIdentity());
 			}
 			forEachElement(this::invalidateElement);
 

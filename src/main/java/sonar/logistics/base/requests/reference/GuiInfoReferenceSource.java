@@ -98,7 +98,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			last = ClientInfoHandler.instance().info.get(info);
+			last = ClientInfoHandler.instance().getInfoMap().get(info);
 			if (last != null) {
 				InfoRenderHelper.renderMonitorInfoInGUI(last, yPos + 1, PL2Colours.white_text.getRGB());
 			} else {
@@ -155,7 +155,7 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 			while (it.hasNext()) {
 				Object next = it.next();
 				if (next instanceof InfoUUID && expanded.contains(next)) {
-					IInfo monitorInfo = ClientInfoHandler.instance().info.get(next);
+					IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(next);
 					for (ReferenceType type : ReferenceType.values()) {
 						it.add(new InfoReference((InfoUUID) next, type, monitorInfo.getID().hashCode()));
 					}

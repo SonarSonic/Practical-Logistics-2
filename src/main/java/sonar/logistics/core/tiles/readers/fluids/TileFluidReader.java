@@ -126,7 +126,6 @@ public class TileFluidReader extends TileAbstractListReader<InfoNetworkFluid> im
 			break;
 		}
 		ServerInfoHandler.instance().changeInfo(this, uuid, info);
-
 		if (sorting_changed) {
 			ServerInfoHandler.instance().markChanged(this, uuid);
 			sorting_changed = false;

@@ -9,8 +9,6 @@ import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnection;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnectionType;
-import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
-import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
@@ -73,7 +71,7 @@ public class TileLargeDisplayScreen extends TileAbstractDisplay implements ILarg
 			return Optional.of(overrideDisplay);
 		}
 		if (this.getRegistryID() != -1) {
-			return Optional.ofNullable(PL2.proxy.getInfoManager(isClient()).getConnectedDisplay(getRegistryID()));
+			return Optional.ofNullable(PL2.proxy.getInfoManager(isClient()).getConnectedDisplays().get(getRegistryID()));
 		}
 		return Optional.empty();
 	}

@@ -7,11 +7,11 @@ import sonar.logistics.api.core.tiles.connections.data.IDataCable;
 import sonar.logistics.api.core.tiles.readers.IInfoProvider;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.base.channels.NodeConnection;
+import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.core.tiles.connections.data.network.CacheHandler;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
 import sonar.logistics.core.tiles.displays.info.types.general.InfoChangeableList;
-import sonar.logistics.base.tiles.INetworkTile;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -83,9 +83,6 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	List<IInfoProvider> getLocalInfoProviders();
 
 	List<IInfoProvider> getGlobalInfoProviders();
-
-	/**gets the first local info provider from the stored list provided in {@link #getLocalInfoProvider()}*/
-	IInfoProvider getLocalInfoProvider();
 	
 	//// MONITORING \\\\
 	/**returns the connections last tick time in nanoseconds*/

@@ -74,18 +74,16 @@ public class NetworkWatcherHandler implements INetworkHandler {
 		InfoUUID uuid = getReaderUUID(reader);
 		if (network.validateTile(reader)) {
 			List<NodeConnection> usedChannels = new ArrayList<>();
-			AbstractChangeableList<IProvidableInfo> currentList = ServerInfoHandler.instance().getMonitoredList(uuid);
-			
-			final AbstractChangeableList<IProvidableInfo> updateList = currentList == null ? newChangeableList() : currentList;
-			updateList.saveStates();
-			networkList.createSaveableList().forEach(updateList::add);
+			AbstractChangeableList<IProvidableInfo> currentList = ServerInfoHandler.instance().getChangeableListMap().getOrDefault(uuid, newChangeableList());
+			currentList.saveStates();
+			networkList.createSaveableList().forEach(currentList::add);
 			if (reader instanceof INetworkReader) {
-				((INetworkReader) reader).setMonitoredInfo(updateList, usedChannels, uuid);
+				((INetworkReader) reader).setMonitoredInfo(currentList, usedChannels, uuid);
 			}
-			ServerInfoHandler.instance().monitoredLists.put(uuid, updateList);
-			if (send && (!updateList.wasLastListNull || updateList.wasLastListNull != updateList.getList().isEmpty()))
-				InfoPacketHelper.sendReaderToListeners(reader, updateList, uuid);
-			return new Pair(uuid, updateList);
+			ServerInfoHandler.instance().getChangeableListMap().put(uuid, currentList);
+			if (send && (!currentList.wasLastListNull || currentList.wasLastListNull != currentList.getList().isEmpty()))
+				InfoPacketHelper.sendReaderToListeners(reader, currentList, uuid);
+			return new Pair(uuid, currentList);
 		}
 		return new Pair(uuid, newChangeableList());
 	}

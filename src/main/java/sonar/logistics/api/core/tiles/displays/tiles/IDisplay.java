@@ -22,27 +22,27 @@ public interface IDisplay extends INetworkTile, ISyncableListener, ISonarListene
 		return this.getIdentity();
 	}
 
-	/**gets the displays {@link DisplayGSI}, or Guided Screen Interface*/
+	/**gets the gsiMap {@link DisplayGSI}, or Guided Screen Interface*/
 	@Nullable
 	DisplayGSI getGSI();
 
-	/**sets the displays {@link DisplayGSI}, this occurs once the GSI has been created & validated*/
+	/**sets the gsiMap {@link DisplayGSI}, this occurs once the GSI has been created & validated*/
 	void setGSI(DisplayGSI gsi);
 
 	/**this represents the side of the cable this screen is connected to
 	 * and hence the direction it is facing*/
 	EnumFacing getCableFace();
 
-	/**called when this displays {@link DisplayGSI} sends a container packet to all watchers
+	/**called when this gsiMap {@link DisplayGSI} sends a container packet to all watchers
 	 * in effect when the GSI has changed
 	 * called on server only*/
 	default void onInfoContainerPacket(){}
 
-	/**called when this displays {@link DisplayGSI} is validated
+	/**called when this gsiMap {@link DisplayGSI} is validated
 	 * called on server and client*/
 	default void onGSIValidate(){}
 
-	/**called when this displays {@link DisplayGSI} is invalidated
+	/**called when this gsiMap {@link DisplayGSI} is invalidated
 	 * called on server and client*/
 	default void onGSIInvalidate(){}
 

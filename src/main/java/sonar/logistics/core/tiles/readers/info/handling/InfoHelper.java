@@ -100,7 +100,7 @@ public class InfoHelper {
 		return stacks;
 	}
 
-		public static boolean hasInfoChanged(IInfo info, IInfo newInfo) {
+	public static boolean hasInfoChanged(IInfo info, IInfo newInfo) {
 		if (info == null && newInfo == null) {
 			return false;
 		} else if (info == null && newInfo != null || newInfo == null) {

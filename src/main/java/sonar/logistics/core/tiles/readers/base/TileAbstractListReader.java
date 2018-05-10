@@ -21,7 +21,7 @@ public abstract class TileAbstractListReader<T extends IInfo> extends TileAbstra
 
 	@Override
 	public IInfo getMonitorInfo(int pos) {
-		return PL2.proxy.getInfoManager(isClient()).getInfoList().get(new InfoUUID(getIdentity(), pos));
+		return PL2.proxy.getInfoManager(isClient()).getInfoMap().get(new InfoUUID(getIdentity(), pos));
 	}
 
 	//// PACKETS \\\\

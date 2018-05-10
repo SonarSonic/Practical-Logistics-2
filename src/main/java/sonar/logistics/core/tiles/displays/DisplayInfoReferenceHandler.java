@@ -1,5 +1,6 @@
 package sonar.logistics.core.tiles.displays;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FunctionHelper;
 import sonar.core.helpers.ListHelper;
@@ -9,17 +10,19 @@ import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.guidance.errors.ErrorDestroyed;
 import sonar.logistics.base.guidance.errors.ErrorDisconnected;
 import sonar.logistics.base.guidance.errors.ErrorHelper;
-import sonar.logistics.base.utils.PL2AdditionType;
-import sonar.logistics.base.utils.PL2RemovalType;
 import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.listeners.ListenerType;
+import sonar.logistics.base.utils.PL2AdditionType;
+import sonar.logistics.base.utils.PL2RemovalType;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 public class DisplayInfoReferenceHandler {
 
@@ -37,7 +40,7 @@ public class DisplayInfoReferenceHandler {
 			IInfoProvider provider = (IInfoProvider) logicTile;
 			for (int i = 0; i < provider.getMaxInfo(); i++) {
 				InfoUUID uuid = new InfoUUID(provider.getIdentity(), i);
-				ServerInfoHandler.instance().forEachGSIDisplayingUUID(uuid, gsi -> {
+				forEachGSIDisplayingUUID(uuid, gsi -> {
 					connected.computeIfAbsent(gsi, FunctionHelper.ARRAY);
 					ListHelper.addWithCheck(connected.get(gsi), uuid);
 				});
@@ -61,7 +64,7 @@ public class DisplayInfoReferenceHandler {
 					continue UUIDS;
 				}
 			}
-			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
+			ILogicListenable listen = ServerInfoHandler.instance().getNetworkTileMap().get(uuid.identity);
 			if (listen != null) {
 				doLocalProviderDisconnect(gsi, listen, uuid);
 				ErrorHelper.addError(gsi, new ErrorDisconnected(uuid, listen));
@@ -74,7 +77,7 @@ public class DisplayInfoReferenceHandler {
 			return;
 		}
 		for (InfoUUID uuid : uuids) {
-			ILogicListenable listen = ServerInfoHandler.instance().getIdentityTile(uuid.identity);
+			ILogicListenable listen = ServerInfoHandler.instance().getNetworkTileMap().get(uuid.identity);
 			if (listen != null) {
 				doLocalProviderDisconnect(gsi, listen, uuid);
 				ErrorHelper.removeError(gsi, new ErrorDisconnected(uuid, listen));
@@ -124,6 +127,25 @@ public class DisplayInfoReferenceHandler {
 			}
 			updates.clear();
 		}
+	}
+
+
+	public static List<EntityPlayerMP> getPlayersWatchingUUID(InfoUUID uuid) {
+		List<EntityPlayerMP> players = new ArrayList<>();
+		ServerInfoHandler.instance().getGSIMap().values().forEach(gsi -> {
+			if (gsi.isDisplayingUUID(uuid)) {
+				ListHelper.addWithCheck(players, DisplayViewerHandler.instance().getWatchingPlayers(gsi));
+			}
+		});
+		return players;
+	}
+
+	public static void forEachGSIDisplayingUUID(InfoUUID uuid, Consumer<DisplayGSI> action) {
+		ServerInfoHandler.instance().getGSIMap().values().forEach(gsi -> {
+			if (gsi.isDisplayingUUID(uuid)) {
+				action.accept(gsi);
+			}
+		});
 	}
 
 	public enum UpdateCause {

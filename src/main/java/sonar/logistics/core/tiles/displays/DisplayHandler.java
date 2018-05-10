@@ -18,6 +18,7 @@ import sonar.logistics.api.core.tiles.connections.ICableConnectable;
 import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.api.core.tiles.displays.tiles.ISmallDisplay;
+import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.utils.PL2AdditionType;
 import sonar.logistics.base.utils.PL2RemovalType;
@@ -87,7 +88,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
             }
         }
         DisplayGSI gsi = display.getGSI();
-        if (gsi != null && gsi.getDisplay() != null && !ServerInfoHandler.instance().displays.containsValue(gsi)) {
+        if (gsi != null && gsi.getDisplay() != null && !ServerInfoHandler.instance().gsiMap.containsValue(gsi)) {
             validateGSI(display, gsi);
         }
     }
@@ -107,6 +108,33 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
         }
     }
 
+    public static void addClientDisplay(IDisplay display, PL2AdditionType type){
+		if (!ClientInfoHandler.instance().displays_tile.containsKey(display.getIdentity())) {
+			ClientInfoHandler.instance().displays_tile.put(display.getIdentity(), display);
+			if(display instanceof ILargeDisplay){
+				display = ((ILargeDisplay) display).getConnectedDisplay().orElse(null);
+				if(display == null){
+					return;
+				}
+			}
+			DisplayGSI gsi = display.getGSI();
+			if(gsi == null){
+				gsi = new DisplayGSI(display, display.getActualWorld(), display.getInfoContainerID());
+				display.setGSI(gsi);
+			}
+			NBTTagCompound tag = ClientInfoHandler.instance().invalid_gsi.get(display.getInfoContainerID());
+			if(tag != null){
+				gsi.readData(tag, NBTHelper.SyncType.SAVE);
+				gsi.validate();
+				ClientInfoHandler.instance().invalid_gsi.remove(display.getInfoContainerID());
+			}
+		}
+	}
+
+
+	public static void removeClientDisplay(IDisplay display, PL2RemovalType type) {
+		ClientInfoHandler.instance().displays_tile.remove(display.getIdentity());
+	}
 
     public void validateGSI(IDisplay display, DisplayGSI gsi) {
         if (display == gsi.getDisplay().getActualDisplay()) {

@@ -159,7 +159,7 @@ public class DisplayViewerHandler {
 		List<DisplayGSI> inChunk = new ArrayList<>();
 		for (Entry<Integer, List<ChunkPos>> chunks : displayChunks.entrySet()) {
 			if (chunks.getValue().contains(pos)) {
-				DisplayGSI gsi = ServerInfoHandler.instance().getGSI(chunks.getKey());
+				DisplayGSI gsi = ServerInfoHandler.instance().getGSIMap().get(chunks.getKey());
 				if(gsi != null && gsi.getWorld().provider.getDimension() == dim) {
 					inChunk.add(gsi);
 				}

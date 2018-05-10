@@ -21,11 +21,8 @@ public class DisplayScreenClick {
 	public boolean doubleClick = false;
 	public boolean fakeGuiClick = false;
 
-	@SideOnly(Side.CLIENT)
 	public IDisplayElement clickedElement = null;
-	@SideOnly(Side.CLIENT)
 	public double subClickX = 0, subClickY = 0;
-	@SideOnly(Side.CLIENT)
 	public DisplayElementContainer clickedContainer = null;
 	
 	public DisplayScreenClick setClickPosition(double[] clickPosition){

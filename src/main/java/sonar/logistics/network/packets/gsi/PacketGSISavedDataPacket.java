@@ -50,7 +50,7 @@ public class PacketGSISavedDataPacket implements IMessage {
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
 					EntityPlayer player = SonarCore.proxy.getPlayerEntity(ctx);
 					if (player != null) {
-						DisplayGSI gsi = ClientInfoHandler.instance().getGSI(message.GSI_IDENTITY);
+						DisplayGSI gsi = ClientInfoHandler.instance().getGSIMap().get(message.GSI_IDENTITY);
 						if (gsi != null) {
 							DisplayGSISaveHandler.readGSIData(gsi, message.SAVE_TAG, SyncType.SAVE, message.saveType);
 							gsi.validate();

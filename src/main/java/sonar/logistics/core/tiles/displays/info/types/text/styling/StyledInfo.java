@@ -82,7 +82,7 @@ public class StyledInfo implements IStyledString, INBTSyncable {
 	@Override
 	public String getFormattedString() {
 		if(cachedFormattedString == null){
-			cachedFormattedString = getTextFormattingStyle() + refType.getRefString(ClientInfoHandler.instance().getInfoFromUUID(uuid));
+			cachedFormattedString = getTextFormattingStyle() + refType.getRefString(ClientInfoHandler.instance().getInfoMap().get(uuid));
 		}
 		return cachedFormattedString;
 	}

@@ -41,7 +41,7 @@ public class GSIData extends WorldSavedData {
     @Override
     public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         NBTTagList list = new NBTTagList();
-        for (Map.Entry<Integer, DisplayGSI> display : ServerInfoHandler.instance().displays.entrySet()) {
+        for (Map.Entry<Integer, DisplayGSI> display : ServerInfoHandler.instance().gsiMap.entrySet()) {
             if (display.getValue() != null) {
                 NBTTagCompound screenTag = new NBTTagCompound();
                 screenTag.setInteger("registryID", display.getKey());

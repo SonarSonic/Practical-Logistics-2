@@ -11,29 +11,21 @@ import sonar.core.api.utils.BlockCoords;
 import sonar.core.utils.IValidate;
 import sonar.logistics.api.core.items.operator.IOperatorTool;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.api.core.tiles.displays.info.IInfo;
-import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
-import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.api.core.tiles.nodes.INode;
-import sonar.logistics.api.core.tiles.readers.IInfoProvider;
 import sonar.logistics.api.core.tiles.wireless.transceivers.IEntityTransceiver;
 import sonar.logistics.api.core.tiles.wireless.transceivers.ITileTransceiver;
-import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.EntityConnection;
 import sonar.logistics.base.channels.NodeConnection;
 import sonar.logistics.base.tiles.INetworkTile;
-import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.core.tiles.connections.data.network.CacheHandler;
 import sonar.logistics.core.tiles.connections.data.network.LogisticsNetworkHandler;
-import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 
 import java.util.*;
 
 public class LogisticsHelper {
 
 	public static boolean isPlayerUsingOperator(EntityPlayer player) {
-		player.getHeldItemMainhand();
 		return player.getHeldItemMainhand().getItem() instanceof IOperatorTool;
 	}
 
@@ -84,31 +76,6 @@ public class LogisticsHelper {
 		}
 		return null;
 
-	}
-
-	public List<InfoUUID> getConnectedUUIDS(List<IDisplay> displays) {
-		ArrayList<InfoUUID> ids = new ArrayList<>();
-		for (IDisplay display : displays) {
-			DisplayGSI container = display.getGSI();
-			container.forEachValidUUID(id -> {
-				if (InfoUUID.valid(id) && !ids.contains(id))
-					ids.add(id);
-			});
-		}
-		return ids;
-	}
-
-	public List<IInfo> getInfoFromUUIDs(List<InfoUUID> ids) {
-		List<IInfo> infoList = new ArrayList<>();
-		for (InfoUUID id : ids) {
-			ILogicListenable monitor = ServerInfoHandler.instance().getIdentityTile(id.getIdentity());
-			if (monitor instanceof IInfoProvider) {
-				IInfo info = ((IInfoProvider) monitor).getMonitorInfo(id.channelID);
-				if (info != null)
-					infoList.add(info);
-			}
-		}
-		return infoList;
 	}
 
 	public static List<NodeConnection> sortNodeConnections(List<NodeConnection> channels, List<INode> nodes) {

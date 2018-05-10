@@ -2,6 +2,7 @@ package sonar.logistics.network.packets;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -10,8 +11,10 @@ import sonar.core.SonarCore;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
+import sonar.logistics.api.core.tiles.displays.info.lists.UniversalChangeableList;
 import sonar.logistics.api.core.tiles.readers.ILogicListSorter;
 import sonar.logistics.base.ClientInfoHandler;
+import sonar.logistics.base.events.types.InfoEvent;
 import sonar.logistics.core.tiles.readers.info.handling.InfoHelper;
 
 public class PacketMonitoredList implements IMessage {
@@ -59,12 +62,10 @@ public class PacketMonitoredList implements IMessage {
 		@Override
 		public IMessage onMessage(PacketMonitoredList message, MessageContext ctx) {
 			if (message.listTag != null) {
-				// ILogicListenable viewable = ClientInfoHandler.instance().identityTiles.get(message.identity);
 				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
-					AbstractChangeableList list = InfoHelper.readMonitoredList(message.listTag, ClientInfoHandler.instance().getMonitoredList(message.id), message.type);
-					// list = viewable instanceof IListReader ? ((IListReader) viewable).sortMonitoredList(list, message.id.channelID) : list;
-					ClientInfoHandler.instance().changeableLists.put(message.id, list);
-					ClientInfoHandler.instance().onMonitoredListChanged(message.id, list);
+					AbstractChangeableList list = InfoHelper.readMonitoredList(message.listTag, ClientInfoHandler.instance().getChangeableListMap().getOrDefault(message.id, UniversalChangeableList.newChangeableList()), message.type);
+					ClientInfoHandler.instance().getChangeableListMap().put(message.id, list);
+					MinecraftForge.EVENT_BUS.post(new InfoEvent.ListChanged(list, message.id, ctx.side.isClient()));
 				});
 			}
 			return null;

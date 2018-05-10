@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 
 public class ConnectedDisplayData extends WorldSavedData {
 
-	public static final String IDENTIFIER = "sonar.logistics.base.connections.displays";
+	public static final String IDENTIFIER = "sonar.logistics.base.connections.gsiMap";
 	public static final Map<Integer, NBTTagCompound> unloadedDisplays = new HashMap<>();
 	
 	public ConnectedDisplayData(String name) {

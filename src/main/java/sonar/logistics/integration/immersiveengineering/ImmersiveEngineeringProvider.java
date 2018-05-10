@@ -16,7 +16,7 @@ import sonar.logistics.api.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.info.register.IMasterInfoRegistry;
 import sonar.logistics.api.info.register.LogicPath;
 import sonar.logistics.api.info.register.RegistryType;
-import sonar.logistics.core.base.displays.info.types.info.LogicInfo;
+import sonar.logistics.core.base.gsiMap.info.types.info.LogicInfo;
 
 @ASMTileInfoProvider(handlerID = "immersiveengineering-progress", modid = "immersiveengineering")
 public class ImmersiveEngineeringProvider implements ITileInfoProvider {

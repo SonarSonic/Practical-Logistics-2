@@ -83,7 +83,7 @@ public class GuiInfoSource extends GuiSelectionList<Object> {
 	@Override
 	public void renderInfo(Object info, int yPos) {
 		if (info instanceof InfoUUID) {
-			IInfo monitorInfo = ClientInfoHandler.instance().info.get(info);
+			IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(info);
 			if (monitorInfo != null) {
 				InfoRenderHelper.renderMonitorInfoInGUI(monitorInfo, yPos + 1, PL2Colours.white_text.getRGB());
 			} else {

@@ -70,7 +70,7 @@ public class ClientLocalProvider implements INBTSyncable {
 	}
 
 	public ILogicListenable getViewable() {
-		return ClientInfoHandler.instance().getIdentityTile(identity.getObject());
+		return ClientInfoHandler.instance().getNetworkTileMap().get(identity.getObject());
 	}
 
 	public boolean equals(Object obj) {

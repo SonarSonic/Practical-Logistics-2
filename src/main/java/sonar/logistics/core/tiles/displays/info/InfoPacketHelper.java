@@ -107,16 +107,16 @@ public class InfoPacketHelper {
 			NBTTagCompound infoTag = packetList.getCompoundTagAt(i);
 			InfoUUID id = NBTHelper.instanceNBTSyncable(InfoUUID.class, infoTag);
 			if (save) {
-				IInfo currentInfo = ClientInfoHandler.instance().getInfoFromUUID(id);
+				IInfo currentInfo = ClientInfoHandler.instance().getInfoMap().get(id);
 				IInfo newInfo = InfoHelper.readInfoFromNBT(infoTag);
 				if (currentInfo == null || !currentInfo.isMatchingType(newInfo)) {
 					ClientInfoHandler.instance().setInfo(id, newInfo);
 				}else{
 					currentInfo.readData(infoTag, type);
-					ClientInfoHandler.instance().onInfoChanged(id, currentInfo);
+					ClientInfoHandler.instance().setInfo(id, currentInfo);
 				}
 			} else {
-				IInfo currentInfo = ClientInfoHandler.instance().getInfoFromUUID(id);
+				IInfo currentInfo = ClientInfoHandler.instance().getInfoMap().get(id);
 				if (currentInfo != null) {
 					currentInfo.readData(infoTag, type);
 					ClientInfoHandler.instance().setInfo(id, currentInfo);
@@ -221,7 +221,7 @@ public class InfoPacketHelper {
 					INetworkReader r = (INetworkReader) reader;
 					for (int i = 0; i < r.getMaxInfo(); i++) {
 						InfoUUID infoID = new InfoUUID(reader.getIdentity(), i);
-						IInfo info = ServerInfoHandler.instance().getInfoFromUUID(infoID);
+						IInfo info = ServerInfoHandler.instance().getInfoMap().get(infoID);
 						if (info != null) {
 							NBTTagCompound nbt = InfoHelper.writeInfoToNBT(new NBTTagCompound(), info, SyncType.SAVE);
 							nbt = infoID.writeData(nbt, SyncType.SAVE);

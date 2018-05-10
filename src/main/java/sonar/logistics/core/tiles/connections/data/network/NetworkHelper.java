@@ -2,11 +2,9 @@ package sonar.logistics.core.tiles.connections.data.network;
 
 import net.minecraft.tileentity.TileEntity;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.NodeConnection;
 import sonar.logistics.base.utils.CacheType;
-import sonar.logistics.base.listeners.ILogicListenable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +50,5 @@ public class NetworkHelper {
 
 	public static ILogisticsNetwork getNetwork(int networkID){
 		return LogisticsNetworkHandler.instance().getNetwork(networkID);
-	}
-
-	public static ILogicListenable getIdentityTile(int identity){
-		return ServerInfoHandler.instance().getIdentityTile(identity);
 	}
 }

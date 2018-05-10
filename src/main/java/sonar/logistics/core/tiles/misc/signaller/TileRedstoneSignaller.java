@@ -61,9 +61,9 @@ public class TileRedstoneSignaller extends TileSidedLogistics implements IRedsto
 		Map<InfoUUID, IInfo> infoList = new HashMap<>();
 		for (InfoUUID id : ids) {
 			if (!infoList.containsKey(id)) {
-				ILogicListenable monitor = ServerInfoHandler.instance().getIdentityTile(id.getIdentity());
+				ILogicListenable monitor = ServerInfoHandler.instance().getNetworkTileMap().get(id.getIdentity());
 				if (monitor != null && this.network.getGlobalInfoProviders().contains(monitor)) {
-					IInfo monitorInfo = ServerInfoHandler.instance().getInfoFromUUID(id);
+					IInfo monitorInfo = ServerInfoHandler.instance().getInfoMap().get(id);
 					if (monitorInfo != null)
 						infoList.put(id, monitorInfo);
 				}
