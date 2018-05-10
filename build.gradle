@@ -52,7 +52,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "${minecraft_version}-${mod_version}"
 group= "sonar.logistics"
-archivesBaseName = "practicallogistics2"
+archivesBaseName = "logistics"
 sourceCompatibility = targetCompatibility = "1.8"
 compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
@@ -61,6 +61,11 @@ compileJava {
 minecraft {
     version = "${forge_version}"
     runDir = "run"
+    replace "@VERSION@", "${mod_version}"
+    replace "@MC_VERSION@", "${minecraft_version}"
+    replace "@SONAR_VERSION@", "${sonar_core_version}"
+    replace "@MCMP_VERSION@", "${mcmp_version}"
+
     mappings = "snapshot_20171003"
     makeObfSourceJar = false
 }
@@ -68,11 +73,21 @@ minecraft {
 task deobfJar(type: Jar) { // Generate deobfuscated
     from sourceSets.main.output
     classifier = 'deobf'
+    archiveName = "practicallogistics2-${minecraft_version}-${mod_version}-deobf.jar"
 }
 tasks.build.dependsOn('deobfJar')
 artifacts {
     archives deobfJar
     archives jar
+}
+
+jar {
+    archiveName = "practicallogistics2-${minecraft_version}-${mod_version}.jar"
+}
+
+def sonarcore_local = false
+if (project.allprojects.findAll({it.name == "Sonar-Core"}).size() > 0) {
+    sonarcore_local = true
 }
 
 dependencies {
@@ -94,6 +109,11 @@ dependencies {
     deobfCompile "mcp.mobius.waila:Hwyla:${waila_version}"
     compileOnly "mcjtylib:mcjtylib:${mcjtylib_version}"
     deobfCompile "MCMultiPart2:MCMultiPart:${mcmp_version}"
+    if (!sonarcore_local) {
+        //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
+    } else {
+        compile project(':Sonar-Core')
+    }
 }
 
 processResources
