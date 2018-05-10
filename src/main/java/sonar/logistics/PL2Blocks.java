@@ -102,6 +102,10 @@ public class PL2Blocks extends PL2 {
 			super(block, multipart.getRegistryName(), multipart.getTileClass());
 			setProperties(0.5F, 25F);
 		}
+		@Override
+		public String getTileEntityRegistryName() {
+			return "pl2_" + super.getRegistryName();
+		}
 	}
 
 }
