@@ -35,7 +35,7 @@ import sonar.logistics.integration.minetweaker.MineTweakerIntegration;
 import sonar.logistics.network.PL2Common;
 
 @Mod.EventBusSubscriber
-@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = "required-after:sonarcore@[" + PL2Constants.SONAR_CORE + ",);" + "required-after:mcmultipart@[" + PL2Constants.MCMULTIPART + ",);", version = PL2Constants.VERSION)
+@Mod(modid = PL2Constants.MODID, name = PL2Constants.NAME, dependencies = PL2Constants.DEPENDENCIES, version = PL2Constants.VERSION)
 public class PL2 {
 
 	@SidedProxy(clientSide = "sonar.logistics.network.PL2Client", serverSide = "sonar.logistics.network.PL2Common")
