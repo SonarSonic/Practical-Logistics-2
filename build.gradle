@@ -32,7 +32,7 @@ repositories {
     }
     maven {
         name = "Refined Storage"
-        url = "https://dl.bintray.com/raoulvdberge/dev/"
+        url = "https://repo.raoulvdberge.com/"
     }
     maven {
         name = "HWYLA"
@@ -93,9 +93,9 @@ dependencies {
     compileOnly "tesla:Tesla:${tesla_version}"
     deobfCompile "cofh:RedstoneFlux:${redstoneflux_version}"
     // compile against the JEI API but do not include it at runtime
-    deobfProvided "mezz.jei:jei_${jei_version}:api"
+    deobfProvided "mezz.jei:jei_${minecraft_version}:${jei_version}:api"
     // at runtime, use the full JEI jar
-    runtime "mezz.jei:jei_${jei_version}"
+    runtime "mezz.jei:jei_${minecraft_version}:${jei_version}"
     compileOnly "crafttweaker:CraftTweaker2:${crafttweaker_version}"
     compileOnly "storage-drawers:StorageDrawers:${storagedrawers_version}"
     compileOnly "deep-resonance:deepresonance:${deep_resonance_version}"
@@ -107,7 +107,7 @@ dependencies {
     compile group: "net.industrial-craft", name: "industrialcraft-2", version: "2.8.75-ex112", classifier: "dev"
     deobfCompile "mcp.mobius.waila:Hwyla:${waila_version}"
     compileOnly "mcjtylib:mcjtylib:${mcjtylib_version}"
-    deobfCompile "MCMultiPart2:MCMultiPart:${mcmp_version}"
+    deobfCompile "MCMultiPart:MCMultiPart:${mcmp_version}"
     if (!sonarcore_local) {
         //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
     } else {
