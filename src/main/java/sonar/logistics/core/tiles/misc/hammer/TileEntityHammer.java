@@ -11,7 +11,6 @@ import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.tileentity.TileEntityInventory;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.inventory.SonarInventory;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.core.recipes.ISonarRecipe;
@@ -26,8 +25,8 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	public static int speed = 100;
 
 	public TileEntityHammer() {
-		super.inv = new SonarInventory(this, 2);
-		syncList.addParts(progress, coolDown, inv);
+		super.inv.setSize(2);
+		syncList.addParts(progress, coolDown);
 	}
 	
 	public SyncType getUpdateTagType(){

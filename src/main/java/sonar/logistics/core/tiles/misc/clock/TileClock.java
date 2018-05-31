@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.listener.ListenerTally;
 import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;

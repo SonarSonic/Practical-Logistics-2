@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.logistics.base.tiles.IChannelledTile;
 
 public class ContainerChannelSelection extends ContainerMultipartSync {

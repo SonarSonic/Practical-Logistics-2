@@ -15,7 +15,6 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
-import sonar.core.helpers.InventoryHelper.IInventoryFilter;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnum;
@@ -35,17 +34,18 @@ import sonar.logistics.base.filters.ContainerFilterList;
 import sonar.logistics.base.filters.GuiFilterList;
 import sonar.logistics.base.filters.ITransferFilteredTile;
 import sonar.logistics.base.guidance.errors.ErrorMessage;
-import sonar.logistics.base.tiles.IChannelledTile;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.base.listeners.PL2ListenerList;
+import sonar.logistics.base.tiles.IChannelledTile;
 import sonar.logistics.core.tiles.base.TileSidedLogistics;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredEntity;
 import sonar.logistics.network.sync.SyncFilterList;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-public class TileTransferNode extends TileSidedLogistics implements INode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IInventoryFilter, IChannelledTile, IByteBufTile {
+public class TileTransferNode extends TileSidedLogistics implements INode, IOperatorTile, ITransferFilteredTile, IFlexibleGui, IChannelledTile, IByteBufTile {
 
 	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK };
 
@@ -80,8 +80,8 @@ public class TileTransferNode extends TileSidedLogistics implements INode, IOper
 	}
 
 	@Override
-	public boolean allowed(ItemStack stack) {
-		return filters.matches(new StoredItemStack(stack), transferMode.getObject());
+	public Predicate<ItemStack> getFilter() {
+		return s -> filters.matches(new StoredItemStack(s), transferMode.getObject());
 	}
 
 	@Override

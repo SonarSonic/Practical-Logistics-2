@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.logistics.base.gui.GuiLogistics;
 import sonar.logistics.core.tiles.displays.gsi.packets.GSIElementPacketHelper;
 import sonar.logistics.core.tiles.displays.info.elements.DisplayElementHelper;

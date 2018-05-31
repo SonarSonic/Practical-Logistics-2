@@ -71,7 +71,6 @@ public class GuiFluidReader extends GuiSelectionGrid<InfoNetworkFluid> {
 
 	public void initButtons() {
 		super.initButtons();
-
 		int start = 8;
 		this.buttonList.add(new LogisticsButton.CHANNELS(this, 2, guiLeft + 8, guiTop + 9));
 		this.buttonList.add(new LogisticsButton.HELP(this, 3, guiLeft + start + 18, guiTop + 9));

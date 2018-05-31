@@ -1,7 +1,7 @@
 package sonar.logistics.core.tiles.wireless.receivers;
 
 import net.minecraft.entity.player.EntityPlayer;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 
 public class ContainerAbstractReceiver extends ContainerMultipartSync {
 	public TileAbstractReceiver receiver;

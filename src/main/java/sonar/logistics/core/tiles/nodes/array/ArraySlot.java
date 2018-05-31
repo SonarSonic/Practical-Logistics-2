@@ -8,11 +8,11 @@ public class ArraySlot extends Slot {
 	TileArray part;
 
 	public ArraySlot(TileArray tileArray, int index, int x, int y) {
-		super(tileArray.inventory, index, x, y);
+		super(tileArray.inventory.getWrapperInventory(), index, x, y);
 		this.part = tileArray;
 	}
 
 	public boolean isItemValid(ItemStack stack) {
-		return part.inventory.isItemValidForSlot(this.getSlotIndex(), stack);
+		return inventory.isItemValidForSlot(this.getSlotIndex(), stack);
 	}
 }

@@ -26,7 +26,7 @@ public class RenderArray extends TileEntitySpecialRenderer<TileArray> {
 		GlStateManager.rotate((float)rVec.z, 0, 0, 1);
 		rotate(90, -1, 0, 0);
 		//translate(-9, -8.0, 0.45);
-		for (int i = 0; i < te.inventory.getSizeInventory(); i++) {
+		for (int i = 0; i < te.inventory.getSlots(); i++) {
 			ItemStack stack = te.inventory.getStackInSlot(i).copy();
 			if (!stack.isEmpty()) {
 				pushMatrix();

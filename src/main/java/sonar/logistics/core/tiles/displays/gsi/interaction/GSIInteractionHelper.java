@@ -6,28 +6,22 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import sonar.core.api.SonarAPI;
+import net.minecraftforge.items.ItemHandlerHelper;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.utils.BlockCoords;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.api.core.tiles.displays.tiles.IDisplay;
 import sonar.logistics.core.tiles.connections.data.network.LogisticsNetworkHandler;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
 import sonar.logistics.core.tiles.displays.info.elements.DisplayElementHelper;
-import sonar.logistics.core.tiles.displays.tiles.connected.ConnectedDisplay;
-import sonar.logistics.core.tiles.displays.tiles.holographic.TileAbstractHolographicDisplay;
 import sonar.logistics.core.tiles.readers.fluids.handling.DummyFluidHandler;
 import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
 import sonar.logistics.network.packets.PacketItemInteractionText;
@@ -119,9 +113,11 @@ public class GSIInteractionHelper {
 					if (!stack.isEmpty()) {
 						long changed = 0;
 						if (!click.doubleClick) {
-							changed = ItemHelper.insertItemFromPlayer(player, network, player.inventory.currentItem);
+							changed = ItemHelper.insertItemStack(network, player.inventory.getCurrentItem(), 64).getCount();
 						} else {
-							changed = ItemHelper.insertInventoryFromPlayer(player, network, player.inventory.currentItem);
+							ItemStack toTransfer = player.inventory.getCurrentItem().copy();
+							ItemHelper.transferPlayerInventoryToNetwork(player, network, IS -> StoredItemStack.isEqualStack(IS, toTransfer), Integer.MAX_VALUE);
+							//FIXME - HOW TO GET THE CHANGE
 						}
 						if (changed > 0) {
 							long itemCount = ItemHelper.getItemCount(stack, network);
@@ -133,11 +129,10 @@ public class GSIInteractionHelper {
 					break;
 				case REMOVE:
 					if (storedItemStack != null) {
-						StoredItemStack extract = ItemHelper.extractItem(network, storedItemStack.copy().setStackSize(toRemove.a));
-						if (extract != null) {
-							long r = extract.stored;
-							SonarAPI.getItemHelper().spawnStoredItemStackDouble(extract, player.getEntityWorld(), click.intersect.x, click.intersect.y, click.intersect.z, facing);
-
+						ItemStack extract = ItemHelper.extractItemStack(network, IS -> storedItemStack.equalStack(IS), toRemove.a);
+						if (!extract.isEmpty()) {
+							long r = extract.getCount();
+							ItemHandlerHelper.giveItemToPlayer(player, extract, player.inventory.currentItem);
 							long itemCount = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
 
 							PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);

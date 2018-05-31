@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.network.sync.ISyncPart;
 import sonar.core.network.sync.SyncEnum;
 import sonar.core.network.sync.SyncTagType;

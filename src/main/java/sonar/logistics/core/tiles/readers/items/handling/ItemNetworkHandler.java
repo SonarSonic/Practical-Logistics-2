@@ -7,7 +7,7 @@ import sonar.core.SonarCore;
 import sonar.core.api.StorageSize;
 import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.inventory.GenericInventoryHandler;
+import sonar.core.inventory.handling.ItemTransferHelper;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.core.tiles.readers.IListReader;
 import sonar.logistics.api.core.tiles.readers.channels.IEntityMonitorHandler;
@@ -67,7 +67,7 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack, I
 		Entity entity = connection.entity;
 		if (entity instanceof EntityPlayer) {
 			List<StoredItemStack> info = new ArrayList<>();
-			StorageSize size = GenericInventoryHandler.getItems(info, ((EntityPlayer) entity).inventory, null);
+			StorageSize size = ItemTransferHelper.addInventoryToList(info, ((EntityPlayer) entity).inventory);
 			itemList.sizing.add(size);
 			for (StoredItemStack item : info) {
 				itemList.add(item);

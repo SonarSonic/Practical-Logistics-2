@@ -13,7 +13,6 @@ import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.core.tiles.connections.data.network.NetworkHelper;
-import sonar.logistics.core.tiles.readers.items.handling.ItemHelper.ConnectionFilters;
 
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -116,6 +115,7 @@ public class FluidHelper {
 		}
 	}
 	*/
+	/*
 	public static void transferFluids(NodeTransferMode mode, BlockConnection filter, BlockConnection connection) {
 		TileEntity filterTile = filter.coords.getTileEntity();
 		TileEntity netTile = connection.coords.getTileEntity();
@@ -129,5 +129,5 @@ public class FluidHelper {
 			SonarAPI.getFluidHelper().transferFluids(from, to, dirFrom.getOpposite(), dirTo.getOpposite(), filters);
 		}
 	}
-
+	*/
 }

@@ -10,7 +10,7 @@ import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.GuiHelpOverlay;
 import sonar.core.client.gui.SonarTextField;
 import sonar.core.helpers.FontHelper;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
@@ -574,7 +574,7 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) throws IOException {
+	public void keyTyped(char c, int i) throws IOException {
 		if (this.getFocusedField() == null && state != GuiState.LIST && (i == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(i))) {
 			if (state == GuiState.CHANNELS || state == GuiState.STRING) {
 				changeState(GuiState.STATEMENT);

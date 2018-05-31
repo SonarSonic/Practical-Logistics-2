@@ -3,7 +3,7 @@ package sonar.logistics.base.filters;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import sonar.core.integration.multipart.TileSonarMultipart;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 
 public class ContainerFilterList extends ContainerMultipartSync {
 

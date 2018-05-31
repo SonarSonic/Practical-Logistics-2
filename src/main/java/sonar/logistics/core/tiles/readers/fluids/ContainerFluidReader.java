@@ -8,7 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.core.tiles.displays.info.types.fluids.InfoNetworkFluid;

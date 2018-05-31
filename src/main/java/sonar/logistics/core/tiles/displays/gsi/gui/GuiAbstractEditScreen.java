@@ -3,7 +3,7 @@ package sonar.logistics.core.tiles.displays.gsi.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.utils.CustomColour;
 import sonar.logistics.base.gui.GuiLogistics;
 import sonar.logistics.base.gui.PL2Colours;

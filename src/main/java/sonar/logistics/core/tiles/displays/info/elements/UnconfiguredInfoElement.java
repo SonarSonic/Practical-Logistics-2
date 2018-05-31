@@ -8,7 +8,7 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.client.gui.IGuiOrigin;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.integration.multipart.TileSonarMultipart;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.ASMDisplayElement;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;

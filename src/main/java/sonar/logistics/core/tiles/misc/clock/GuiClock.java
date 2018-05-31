@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import sonar.core.helpers.FontHelper;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.logistics.base.gui.GuiLogistics;
 
 import java.text.SimpleDateFormat;

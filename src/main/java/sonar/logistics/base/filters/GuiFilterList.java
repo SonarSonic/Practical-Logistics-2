@@ -147,7 +147,7 @@ public class GuiFilterList extends GuiSelectionList {
 	protected void renderToolTip(ItemStack stack, int x, int y) {
 		List<String> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		List<String> newList = new ArrayList<>();
-		boolean matches = tile.allowed(stack);
+		boolean matches = tile.getFilter().test(stack);
 		for (int i = 0; i < list.size(); ++i) {
 			if (i == 0) {
 				newList.add(stack.getRarity().rarityColor + list.get(i));

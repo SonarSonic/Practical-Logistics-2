@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import sonar.core.api.IFlexibleContainer;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.inventory.slots.SlotList;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
@@ -49,7 +49,7 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 			this.addSlotToContainer(new Slot(player.inventory, i, 41 + i * 18, 232));
 		}
 		if (stackMode)
-			addSlotToContainer(new SlotList(part.inventory, 0, 63, 9));
+			addSlotToContainer(new SlotList(part.inventory.getWrapperInventory(), 0, 63, 9));
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int id) {

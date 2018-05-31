@@ -85,9 +85,13 @@ jar {
 }
 
 def sonarcore_local = false
-if (project.allprojects.findAll({it.name == "Sonar-Core"}).size() > 0) {
-    sonarcore_local = true
-}
+if (project.allprojects.findAll({it.name == "Sonar-Core"}).size() > 0) { sonarcore_local = true }
+
+def fluxnetworks_local = false
+if (project.allprojects.findAll({it.name == "Flux-Networks"}).size() > 0) { fluxnetworks_local = true }
+
+def calculator_local = false
+if (project.allprojects.findAll({it.name == "Calculator"}).size() > 0) { calculator_local = true }
 
 dependencies {
     compileOnly "tesla:Tesla:${tesla_version}"
@@ -112,6 +116,16 @@ dependencies {
         //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
     } else {
         compile project(':Sonar-Core')
+    }
+    if (!fluxnetworks_local) {
+        //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
+    } else {
+        compile project(':Flux-Networks')
+    }
+    if (!calculator_local) {
+        //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
+    } else {
+        compile project(':Calculator')
     }
 }
 

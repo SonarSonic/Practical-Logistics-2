@@ -3,7 +3,7 @@ package sonar.logistics.core.tiles.misc.hammer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.core.inventory.ContainerSync;
+import sonar.core.inventory.containers.ContainerSync;
 import sonar.core.inventory.TransferSlotsManager;
 import sonar.core.inventory.slots.SlotBlockedInventory;
 

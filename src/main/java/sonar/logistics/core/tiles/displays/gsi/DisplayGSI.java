@@ -17,7 +17,7 @@ import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockInteractionType;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.listener.ISonarListener;
 import sonar.core.network.sync.*;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;

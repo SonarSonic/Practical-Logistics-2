@@ -29,10 +29,11 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 	public List<NodeConnection> channels = new ArrayList<>();
 
 	public SyncTagType.INT priority = new SyncTagType.INT(1);
-	public SonarInventory inventory = new SonarInventory(this, 8) {
+	public SonarInventory inventory = new SonarInventory(8) {
+
 		@Override
-		public void markDirty() {
-			super.markDirty();
+		protected void onContentsChanged(int slot){
+			super.onContentsChanged(slot);
 			updateConnectionLists();
 		}
 

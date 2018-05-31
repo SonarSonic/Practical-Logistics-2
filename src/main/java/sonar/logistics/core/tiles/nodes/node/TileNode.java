@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.integration.multipart.SonarMultipartHelper;
-import sonar.core.inventory.ContainerMultipartSync;
+import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
 import sonar.logistics.PL2Multiparts;

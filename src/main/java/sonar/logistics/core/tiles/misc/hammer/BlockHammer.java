@@ -13,6 +13,7 @@ import sonar.core.SonarCore;
 import sonar.core.api.utils.BlockInteraction;
 import sonar.core.common.block.SonarMachineBlock;
 import sonar.core.common.block.SonarMaterials;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Blocks;
 
 import javax.annotation.Nonnull;
@@ -28,7 +29,7 @@ public class BlockHammer extends SonarMachineBlock {
 	public boolean operateBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, BlockInteraction interact) {
 		TileEntity tile = world.getTileEntity(pos);
 		if (!world.isRemote && tile != null) {
-			SonarCore.instance.guiHandler.openBasicTile(false, tile, player, world, pos, 0);
+			FlexibleGuiHandler.instance().openBasicTile(player, world, pos, 0);
 			return true;
 		}
 		return false;

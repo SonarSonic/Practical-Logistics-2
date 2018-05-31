@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import sonar.core.SonarCore;
+import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Blocks;
 
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ public class BlockHammerAir extends Block {
 			BlockPos adj = pos.offset(EnumFacing.DOWN, i);
 			TileEntity tile = world.getTileEntity(adj);
 			if (tile instanceof TileEntityHammer) {
-				SonarCore.instance.guiHandler.openBasicTile(false, tile, player, world, adj, 0);
+				FlexibleGuiHandler.instance().openBasicTile(player, world, adj, 0);
 				return true;
 			}
 		}

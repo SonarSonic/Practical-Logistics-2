@@ -46,12 +46,13 @@ import sonar.logistics.network.sync.SyncFilterList;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class TileInventoryReader extends TileAbstractListReader<MonitoredItemStack> implements IByteBufTile, IFilteredTile {
 
 	public static final ErrorMessage[] validStates = new ErrorMessage[] { ErrorMessage.NO_NETWORK, ErrorMessage.NO_STACK_SELECTED };
 
-	public SonarInventory inventory = new SonarInventory(this, 1);
+	public SonarInventory inventory = new SonarInventory(1);
 	public SyncEnum<InventoryReader.Modes> setting = (SyncEnum) new SyncEnum(InventoryReader.Modes.values(), 2).addSyncType(SyncType.SPECIAL);
 	public SyncTagType.INT targetSlot = (INT) new SyncTagType.INT(3).addSyncType(SyncType.SPECIAL);
 	public SyncTagType.INT posSlot = (INT) new SyncTagType.INT(4).addSyncType(SyncType.SPECIAL);
@@ -234,13 +235,13 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 	}
 
 	@Override
-	public boolean allowed(ItemStack stack) {
-		return filters.matches(new StoredItemStack(stack), NodeTransferMode.ADD_REMOVE);
+	public SyncFilterList getFilters() {
+		return filters;
 	}
 
 	@Override
-	public SyncFilterList getFilters() {
-		return filters;
+	public Predicate<ItemStack> getFilter() {
+		return s -> filters.matches(new StoredItemStack(s), NodeTransferMode.ADD_REMOVE);
 	}
 
 	@Override

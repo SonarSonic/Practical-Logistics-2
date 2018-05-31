@@ -141,7 +141,6 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 		displays.forEach(display -> setTopLeftScreen(display, display.getCoords().getBlockPos().equals(topLeft)));
 		canBeRendered.setObject(true);
 		gsi.updateScaling();
-		return;
 	}
 
 	@Override

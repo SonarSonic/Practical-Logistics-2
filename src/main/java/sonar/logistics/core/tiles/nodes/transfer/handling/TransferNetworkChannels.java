@@ -1,6 +1,7 @@
 package sonar.logistics.core.tiles.nodes.transfer.handling;
 
-import sonar.core.helpers.InventoryHelper.DefaultTransferOverride;
+import sonar.core.inventory.handling.ItemTransferHandler;
+import sonar.core.inventory.handling.methods.TransferMethodSimple;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
@@ -26,7 +27,11 @@ public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler>
 	private List<ITransferFilteredTile> nodes = new ArrayList<>();
 	private Iterator<ITransferFilteredTile> nodeIterator;
 	private int nodesPerTick = 0;
-	private DefaultTransferOverride override = new DefaultTransferOverride(128); // make one for the fluids
+	private ItemTransferHandler handler = new ItemTransferHandler();
+	{
+		handler.setMethod(new TransferMethodSimple(handler).setTransferRate(128));
+		handler.setFilter(IS -> !IS.isEmpty());
+	}
 
 	public TransferNetworkChannels(ILogisticsNetwork network) {
 		super(network, CacheHandler.TRANSFER_NODES);
@@ -51,14 +56,14 @@ public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler>
 		super.tickChannels();
 		this.nodesPerTick = nodes.size() > getUpdateRate() ? (int) Math.ceil(nodes.size() / Math.max(1, getUpdateRate())) : 1;
 		this.nodeIterator = nodes.iterator();
-		override.reset();
 	}
 
 	@Override
 	public void updateChannel() {
 		super.updateChannel();
 		//SimpleProfiler.start("transfer");
-		updateTransferNodes(network.getConnections(CacheType.ALL));
+		//updateTransferNodes(network.getConnections(CacheType.ALL));
+		handler.transfer();
 		//SimpleProfiler.finishMilli("transfer");
 	}
 
@@ -67,6 +72,11 @@ public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler>
 		if (!nodes.contains(connection) && nodes.add((ITransferFilteredTile) connection)) {
 			onChannelsChanged();
 			tickChannels();
+			BlockConnection block = ((ITransferFilteredTile) connection).getConnected();
+			if(((ITransferFilteredTile) connection).getTransferMode().shouldRemove()){
+				///FIXME !!!!
+				//handler.addSource(new Changeable);
+			}
 		}
 	}
 
@@ -79,6 +89,7 @@ public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler>
 	}
 
 	private void updateTransferNodes(List<NodeConnection> allChannels) {
+		/*
 		int used = 0;
 		while (nodeIterator.hasNext() && used != nodesPerTick) {
 			override.reset();
@@ -107,5 +118,6 @@ public class TransferNetworkChannels<M extends IInfo, H extends INetworkHandler>
 
 			used++;
 		}
+		*/
 	}
 }

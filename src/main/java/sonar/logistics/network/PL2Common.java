@@ -16,6 +16,7 @@ import sonar.logistics.core.tiles.connections.data.network.LogisticsNetworkHandl
 import sonar.logistics.core.tiles.connections.redstone.handling.RedstoneConnectionHandler;
 import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayViewerHandler;
+import sonar.logistics.core.tiles.displays.info.newinfoprofiding.DataFactory;
 import sonar.logistics.core.tiles.wireless.base.PacketClientEmitters;
 import sonar.logistics.core.tiles.wireless.handling.WirelessDataManager;
 import sonar.logistics.core.tiles.wireless.handling.WirelessRedstoneManager;
@@ -33,6 +34,7 @@ public class PL2Common {
 	public DisplayHandler server_display_manager;
 	public DisplayViewerHandler chunkViewer;
 	public LogisticsEventHandler eventHandler;
+	public DataFactory dataFactory;
 	public static int PACKET_ID = 0;
 	
 	public static void registerPackets() {
@@ -86,6 +88,9 @@ public class PL2Common {
 		
 		networkManager = new LogisticsNetworkHandler();
 		PL2.logger.info("Initialised Network Handler");
+
+		dataFactory = new DataFactory();
+		PL2.logger.info("Initialised Data Factory");
 		
 		wirelessDataManager = new WirelessDataManager();
 		PL2.logger.info("Initialised Wireless Data Manager");
@@ -118,6 +123,9 @@ public class PL2Common {
 		
 		networkManager.removeAll();
 		PL2.logger.info("Cleared Network Handler");
+
+		networkManager.removeAll();
+		PL2.logger.info("Cleared Data Factory");
 		
 		wirelessDataManager.removeAll();
 		PL2.logger.info("Cleared Wireless Data Manager");
