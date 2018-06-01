@@ -3,11 +3,10 @@ package sonar.logistics.core.tiles.readers.fluids.handling;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import sonar.core.SonarCore;
-import sonar.core.api.SonarAPI;
 import sonar.core.api.fluids.ISonarFluidHandler;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.helpers.FluidHelper.ITankFilter;
+import sonar.core.handlers.fluids.FluidHelper.ITankFilter;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.base.channels.BlockConnection;
@@ -88,10 +87,10 @@ public class FluidHelper {
 			int fill = fillCapabilityStack(heldItem, removed, cache, ActionType.PERFORM);
 			/*
 			if (player.getHeldItemMainhand().getCount() != 1) {
-				player.inventory.decrStackSize(player.inventory.currentItem, 1);
+				player.inventories.decrStackSize(player.inventories.currentItem, 1);
 				PL2API.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
 			} else {
-				player.inventory.setInventorySlotContents(player.inventory.currentItem, toAdd);
+				player.inventories.setInventorySlotContents(player.inventories.currentItem, toAdd);
 			}
 			
 		}
@@ -107,10 +106,10 @@ public class FluidHelper {
 			ItemStack toAdd = heldItem.copy();
 			transferFluids(cache, new StoredFluidStack(drainCapabilityStack(toAdd, toDrain, cache, ActionType.PERFORM)), NodeTransferMode.ADD, ActionType.PERFORM, null);
 			if (heldItem.getCount() != 1) {
-				player.inventory.decrStackSize(player.inventory.currentItem, 1);
+				player.inventories.decrStackSize(player.inventories.currentItem, 1);
 				PL2API.getItemHelper().addStackToPlayer(new StoredItemStack(toAdd), player, false, ActionType.PERFORM);
 			} else {
-				player.inventory.setInventorySlotContents(player.inventory.currentItem, toAdd);
+				player.inventories.setInventorySlotContents(player.inventories.currentItem, toAdd);
 			}
 		}
 	}

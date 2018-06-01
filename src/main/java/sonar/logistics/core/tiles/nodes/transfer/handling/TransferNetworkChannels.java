@@ -1,21 +1,16 @@
 package sonar.logistics.core.tiles.nodes.transfer.handling;
 
-import sonar.core.inventory.handling.ItemTransferHandler;
-import sonar.core.inventory.handling.methods.TransferMethodSimple;
+import sonar.core.handlers.inventories.handling.ItemTransferHandler;
+import sonar.core.handlers.inventories.handling.methods.TransferMethodSimple;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
-import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
-import sonar.logistics.api.core.tiles.nodes.TransferType;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkHandler;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.NodeConnection;
 import sonar.logistics.base.channels.handling.DefaultNetworkChannels;
 import sonar.logistics.base.filters.ITransferFilteredTile;
-import sonar.logistics.base.utils.CacheType;
-import sonar.logistics.core.tiles.connections.data.network.CacheHandler;
-import sonar.logistics.core.tiles.readers.fluids.handling.FluidHelper;
-import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
 import sonar.logistics.base.tiles.INetworkTile;
+import sonar.logistics.core.tiles.connections.data.network.CacheHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;

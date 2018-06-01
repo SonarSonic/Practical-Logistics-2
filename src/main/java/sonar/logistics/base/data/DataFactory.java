@@ -1,4 +1,4 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding;
+package sonar.logistics.base.data;
 
 import com.google.common.collect.Lists;
 import sonar.core.helpers.FunctionHelper;
@@ -6,11 +6,11 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.base.ServerInfoHandler;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.*;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.holders.DataHolderEmpty;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.holders.DataHolderMultiSource;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataMultiSource;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataSource;
+import sonar.logistics.base.data.api.*;
+import sonar.logistics.base.data.holders.DataHolderEmpty;
+import sonar.logistics.base.data.holders.DataHolderMultiSource;
+import sonar.logistics.base.data.sources.IDataMultiSource;
+import sonar.logistics.base.data.sources.IDataSource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

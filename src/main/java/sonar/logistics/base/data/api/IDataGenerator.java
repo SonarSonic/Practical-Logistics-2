@@ -1,6 +1,6 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.api;
+package sonar.logistics.base.data.api;
 
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataSource;
+import sonar.logistics.base.data.sources.IDataSource;
 
 /**used for generating {@IData} from a specific {@IDataSource}
  * also responsible for creating the correct IDataHolder*/

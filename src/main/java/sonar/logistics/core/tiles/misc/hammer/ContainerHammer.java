@@ -3,9 +3,9 @@ package sonar.logistics.core.tiles.misc.hammer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.core.inventory.containers.ContainerSync;
-import sonar.core.inventory.TransferSlotsManager;
-import sonar.core.inventory.slots.SlotBlockedInventory;
+import sonar.core.handlers.inventories.TransferSlotsManager;
+import sonar.core.handlers.inventories.containers.ContainerSync;
+import sonar.core.handlers.inventories.slots.SlotBlockedInventory;
 
 import javax.annotation.Nonnull;
 

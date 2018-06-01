@@ -1,8 +1,8 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding;
+package sonar.logistics.base.data;
 
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
+import sonar.logistics.base.data.api.IDataConvertor;
 import sonar.logistics.base.listeners.ILogicListenable;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.IDataConvertor;
 
 public abstract class AbstractDataConvertor<L extends ILogicListenable> implements IDataConvertor<L> {
 

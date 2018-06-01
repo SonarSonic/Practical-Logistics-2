@@ -21,7 +21,7 @@ import sonar.logistics.core.tiles.misc.signaller.RedstoneSignallerStatement;
 
 import java.util.Collections;
 
-/** called when the player clicks an items in the inventory reader */
+/** called when the player clicks an items in the inventories reader */
 public class PacketEmitterStatement extends PacketMultipart {
 
 	public RedstoneSignallerStatement statement;

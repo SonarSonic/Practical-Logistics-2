@@ -1,4 +1,4 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.api;
+package sonar.logistics.base.data.api;
 
 public interface IDataCombinable extends IData {
 

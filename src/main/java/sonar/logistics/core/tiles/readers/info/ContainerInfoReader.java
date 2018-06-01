@@ -1,7 +1,7 @@
 package sonar.logistics.core.tiles.readers.info;
 
 import net.minecraft.entity.player.EntityPlayer;
-import sonar.core.inventory.containers.ContainerMultipartSync;
+import sonar.core.handlers.inventories.containers.ContainerMultipartSync;
 import sonar.logistics.api.core.tiles.displays.info.IProvidableInfo;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.core.tiles.readers.base.TileAbstractLogicReader;

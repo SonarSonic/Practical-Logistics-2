@@ -3,7 +3,7 @@ package sonar.logistics.integration.jei;
 import mezz.jei.api.*;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.item.ItemStack;
-import sonar.core.helpers.ItemStackHelper;
+import sonar.core.handlers.inventories.ItemStackHelper;
 import sonar.core.integration.jei.IJEIHandler;
 import sonar.core.integration.jei.JEICategoryV2;
 import sonar.core.integration.jei.JEIHelper;
@@ -56,7 +56,7 @@ public class PracticalLogisticsJEI implements IModPlugin {
 
 		Handlers(IRecipeHelperV2 helper, Object stack, String textureName, Class<? extends JEIRecipeV2> recipeClass) {
 			this.helper = helper;
-			this.crafter = ItemStackHelper.createStack(stack);
+			this.crafter = ItemStackHelper.getOrCreateStack(stack);
 			this.unlocalizedName = crafter.getUnlocalizedName() + ".name";
 			this.textureName = textureName;
 			this.recipeClass = recipeClass;

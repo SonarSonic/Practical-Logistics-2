@@ -21,7 +21,7 @@ import sonar.logistics.network.sync.SyncFilterList;
 
 import java.util.Collections;
 
-/** called when the player clicks an items in the inventory reader */
+/** called when the player clicks an items in the inventories reader */
 public class PacketNodeFilter extends PacketMultipart {
 
 	public INodeFilter filter;

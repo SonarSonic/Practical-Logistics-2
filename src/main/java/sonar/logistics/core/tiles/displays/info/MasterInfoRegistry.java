@@ -27,6 +27,7 @@ import sonar.logistics.api.core.tiles.displays.info.register.RegistryType;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.EntityConnection;
 import sonar.logistics.base.channels.NodeConnection;
+import sonar.logistics.base.data.generators.items.ITileInventoryProvider;
 import sonar.logistics.core.tiles.displays.info.paths.CapabilityMethod;
 import sonar.logistics.core.tiles.displays.info.paths.InventoryField;
 import sonar.logistics.core.tiles.displays.info.paths.TileHandlerMethod;
@@ -58,6 +59,7 @@ public class MasterInfoRegistry implements IMasterInfoRegistry {
 	/** all custom handlers which can provide custom info on blocks for tricky situations */
 	public List<ITileInfoProvider> tileProviders = new ArrayList<>();
 	public List<IEntityInfoProvider> entityProviders = new ArrayList<>();
+	public List<ITileInventoryProvider> inventoryProviders = new ArrayList<>();
 
 	/** all the register validated returns, methods and fields from the registries */
 	public List<Class<?>> validReturns = new ArrayList<>();

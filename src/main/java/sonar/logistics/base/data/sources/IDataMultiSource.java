@@ -1,4 +1,4 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources;
+package sonar.logistics.base.data.sources;
 
 import java.util.List;
 

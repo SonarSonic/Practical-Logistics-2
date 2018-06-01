@@ -1,4 +1,4 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding;
+package sonar.logistics.base.data;
 
 public class InfoQuota {
 

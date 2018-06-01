@@ -35,6 +35,18 @@ public class ItemChangeableList extends AbstractChangeableList<MonitoredItemStac
 		}
 	}
 
+	/**generated the storage size list also*/
+	public void add(ItemStack stack, long stored, long maxStored) {
+		ItemCount found = find(stack);
+		if (found == null) {
+			values.add(createMonitoredValue(new MonitoredItemStack(new StoredItemStack(stack, stored))));
+		} else {
+			found.combine(stored);
+		}
+		sizing.add(stored);
+		sizing.addToMax(maxStored);
+	}
+
 	@Nullable
 	public ItemCount find(ItemStack obj) {
 		for (IMonitoredValue<MonitoredItemStack> value : values) {

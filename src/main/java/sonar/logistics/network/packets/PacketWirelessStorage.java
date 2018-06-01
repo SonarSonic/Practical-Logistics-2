@@ -10,7 +10,7 @@ import sonar.core.SonarCore;
 import sonar.core.network.utils.ByteBufWritable;
 import sonar.logistics.api.core.tiles.readers.IWirelessStorageReader;
 
-/** called when the player clicks an items in the inventory reader */
+/** called when the player clicks an items in the inventories reader */
 public class PacketWirelessStorage implements IMessage {
 
 	public int id;

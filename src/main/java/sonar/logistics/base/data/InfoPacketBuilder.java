@@ -1,11 +1,10 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding;
+package sonar.logistics.base.data;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import sonar.core.helpers.NBTHelper;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.IData;
+import sonar.logistics.base.data.api.IData;
 
-import java.util.List;
 import java.util.Map;
 
 

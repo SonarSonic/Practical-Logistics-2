@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.inventories.StoredItemStack;
+import sonar.core.handlers.energy.EnergyTransferHandler;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncCoords;
 import sonar.core.network.sync.SyncEnergyType;
@@ -86,7 +87,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 					MonitoredEnergyStack stack = value.getSaveableInfo();
 					if (stack.getMonitoredCoords().getCoords().equals(selected.getCoords())) {
 						MonitoredEnergyStack convert = stack.copy();
-						convert.getEnergyStack().convertEnergyType(energyType.getEnergyType());
+						convert.getEnergyStack().convertEnergyType(energyType.getEnergyType(), EnergyTransferHandler.PROXY_SC);
 						info = convert;
 						break;
 					}
@@ -103,7 +104,7 @@ public class TileEnergyReader extends TileAbstractListReader<MonitoredEnergyStac
 			for (IMonitoredValue<MonitoredEnergyStack> value : updateInfo.getList()) {
 				MonitoredEnergyStack stack = value.getSaveableInfo();
 				MonitoredEnergyStack convert = stack.copy();
-				convert.getEnergyStack().convertEnergyType(energyType.getEnergyType());
+				convert.getEnergyStack().convertEnergyType(energyType.getEnergyType(), EnergyTransferHandler.PROXY_SC);
 				energy = (MonitoredEnergyStack) energy.joinInfo(convert);
 			}
 			info = energy;

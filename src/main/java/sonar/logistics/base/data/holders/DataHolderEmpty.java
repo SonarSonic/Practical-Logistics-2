@@ -1,7 +1,10 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.holders;
+package sonar.logistics.base.data.holders;
 
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.*;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataSource;
+import sonar.logistics.base.data.api.IData;
+import sonar.logistics.base.data.api.IDataGenerator;
+import sonar.logistics.base.data.api.IDataHolder;
+import sonar.logistics.base.data.api.IDataWatcher;
+import sonar.logistics.base.data.sources.IDataSource;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

@@ -6,10 +6,10 @@ import sonar.core.api.inventories.StoredItemStack;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.core.tiles.nodes.TransferType;
+import sonar.logistics.base.data.sources.IDataSource;
 import sonar.logistics.base.filters.ITransferFilteredTile;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.tiles.IPriority;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataSource;
 
 import java.util.List;
 

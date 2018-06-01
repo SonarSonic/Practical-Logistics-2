@@ -7,11 +7,8 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import sonar.core.SonarCore;
-import sonar.core.api.utils.BlockInteraction;
-import sonar.core.common.block.SonarMachineBlock;
+import sonar.core.common.block.SonarBlockContainer;
 import sonar.core.common.block.SonarMaterials;
 import sonar.core.network.FlexibleGuiHandler;
 import sonar.logistics.PL2Blocks;
@@ -19,14 +16,14 @@ import sonar.logistics.PL2Blocks;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class BlockHammer extends SonarMachineBlock {
+public class BlockHammer extends SonarBlockContainer {
 
 	public BlockHammer() {
-		super(SonarMaterials.machine, true, true);
+		super(SonarMaterials.machine, true);
 	}
 
 	@Override
-	public boolean operateBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, BlockInteraction interact) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
 		TileEntity tile = world.getTileEntity(pos);
 		if (!world.isRemote && tile != null) {
 			FlexibleGuiHandler.instance().openBasicTile(player, world, pos, 0);
@@ -68,19 +65,8 @@ public class BlockHammer extends SonarMachineBlock {
 
 	//// RENDERING \\\\
 
-	public boolean hasSpecialRenderer() {
-		return true;
-	}
-
 	@Nonnull
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
-	}
-
-	//// DROPS \\\\
-
-	@Override
-	public boolean dropStandard(IBlockAccess world, BlockPos pos) {
-		return true;
 	}
 }

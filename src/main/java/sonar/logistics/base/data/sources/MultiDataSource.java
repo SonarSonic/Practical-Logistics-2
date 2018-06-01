@@ -1,10 +1,8 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources;
+package sonar.logistics.base.data.sources;
 
 import sonar.logistics.base.channels.ChannelList;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataMultiSource;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataSource;
 
 import java.util.ArrayList;
 import java.util.List;

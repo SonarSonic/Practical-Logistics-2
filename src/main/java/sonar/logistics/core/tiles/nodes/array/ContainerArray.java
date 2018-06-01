@@ -3,7 +3,7 @@ package sonar.logistics.core.tiles.nodes.array;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import sonar.core.inventory.containers.ContainerMultipartSync;
+import sonar.core.handlers.inventories.containers.ContainerMultipartSync;
 
 public class ContainerArray extends ContainerMultipartSync {
 

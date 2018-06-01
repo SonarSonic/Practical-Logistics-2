@@ -1,49 +1,38 @@
 package sonar.logistics.core.tiles.readers.items.handling;
 
 import com.google.common.collect.Lists;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import sonar.core.SonarCore;
-import sonar.core.api.SonarAPI;
-import sonar.core.api.StorageSize;
-import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.ActionType;
-import sonar.core.helpers.FontHelper;
-import static sonar.core.inventory.handling.ItemTransferHelper.*;
-
-import sonar.core.inventory.handling.ItemTransferHelper;
-import sonar.core.network.PacketStackUpdate;
+import sonar.core.handlers.inventories.handling.ItemTransferHelper;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
 import sonar.logistics.api.core.tiles.displays.info.lists.IMonitoredValue;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.core.tiles.readers.IListReader;
-import sonar.logistics.api.core.tiles.readers.IWirelessStorageReader;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.EntityConnection;
 import sonar.logistics.base.channels.NodeConnection;
+import sonar.logistics.base.data.generators.items.ITileInventoryProvider;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.core.tiles.connections.data.network.NetworkHelper;
-import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
+import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
 import sonar.logistics.core.tiles.displays.info.types.items.ItemChangeableList;
 import sonar.logistics.core.tiles.displays.info.types.items.MonitoredItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+
+import static sonar.core.handlers.inventories.handling.ItemTransferHelper.doSimpleTransfer;
+import static sonar.core.handlers.inventories.handling.ItemTransferHelper.getMainInventoryHandler;
 
 public class ItemHelper {
 
@@ -77,6 +66,9 @@ public class ItemHelper {
 	}
 
 	private static StoredItemStack transfer(NodeTransferMode mode, TileEntity tile, StoredItemStack stack, EnumFacing dir, ActionType action) {
+		IItemHandler handler = ItemTransferHelper.getItemHandler(tile, dir);
+
+		/* TODO FIXME - Redo PL2 transfer system.
 		List<ISonarInventoryHandler> handlers = SonarCore.inventoryHandlers;
 		for (ISonarInventoryHandler handler : handlers) {
 			if (handler.canHandleItems(tile, dir)) {
@@ -84,43 +76,8 @@ public class ItemHelper {
 				return stack = mode.shouldRemove() ? handler.removeStack(copy, tile, dir, action) : handler.addStack(stack, tile, dir, action);
 			}
 		}
+		*/
 		return null;
-	}
-
-	public static StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, List<BlockConnection> connections) {
-		for (BlockConnection entry : connections) {
-			storage = getTileInventory(storedStacks, storage, entry);
-		}
-		return storage;
-	}
-
-	public static StorageSize getTileInventory(List<StoredItemStack> storedStacks, StorageSize storage, BlockConnection entry) {
-		TileEntity tile = entry.coords.getTileEntity();
-		if (tile == null) {
-			return storage;
-		}
-		boolean specialProvider = false;
-		for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers)
-			if (provider.canHandleItems(tile, entry.face) && !specialProvider) {
-				StorageSize size = provider.getItems(storedStacks, tile, entry.face);
-				if (size != StorageSize.EMPTY) {
-					specialProvider = true;
-					storage.add(size);
-				}
-			}
-		return storage;
-	}
-
-	public static StorageSize getEntityInventory(List<StoredItemStack> storedStacks, StorageSize storage, List<Entity> entityList) {
-		for (Entity entity : entityList) {
-			if (entity instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer) entity;
-				StorageSize size = ItemTransferHelper.addInventoryToList(storedStacks, player.inventory);
-				storage.add(size);
-			}
-		}
-		return storage;
-
 	}
 
 	public static long getItemCount(ItemStack stack, ILogisticsNetwork network) {
@@ -174,10 +131,11 @@ public class ItemHelper {
 
 	@Deprecated
 	public static StoredItemStack getTileStack(BlockConnection connection, int slot) {
-		for (ISonarInventoryHandler provider : SonarCore.inventoryHandlers) {
-			TileEntity tile = connection.coords.getTileEntity();
-			if (tile != null && provider.canHandleItems(tile, connection.face)) {
-				return provider.getStack(slot, tile, connection.face);
+		TileEntity tile = connection.coords.getTileEntity();
+		for (ITileInventoryProvider provider : MasterInfoRegistry.INSTANCE.inventoryProviders) {
+			IItemHandler handler = provider.getHandler(tile, connection.face);
+			if (handler != null) {
+				return new StoredItemStack(handler.getStackInSlot(slot));
 			}
 		}
 		return null;

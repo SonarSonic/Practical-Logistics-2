@@ -17,7 +17,7 @@ import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork
 import sonar.logistics.core.tiles.readers.items.TileInventoryReader;
 import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
 
-/** called when the player clicks an items in the inventory reader */
+/** called when the player clicks an items in the inventories reader */
 public class PacketInventoryReader extends PacketMultipart {
 
 	public ItemStack selected;

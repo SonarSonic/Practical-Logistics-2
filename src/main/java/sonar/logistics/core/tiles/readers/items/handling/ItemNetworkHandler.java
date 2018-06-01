@@ -3,11 +3,10 @@ package sonar.logistics.core.tiles.readers.items.handling;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import sonar.core.SonarCore;
+import net.minecraftforge.items.IItemHandler;
 import sonar.core.api.StorageSize;
-import sonar.core.api.inventories.ISonarInventoryHandler;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.inventory.handling.ItemTransferHelper;
+import sonar.core.handlers.inventories.handling.ItemTransferHelper;
 import sonar.logistics.PL2Config;
 import sonar.logistics.api.core.tiles.readers.IListReader;
 import sonar.logistics.api.core.tiles.readers.channels.IEntityMonitorHandler;
@@ -17,6 +16,8 @@ import sonar.logistics.api.core.tiles.wireless.emitters.IDataEmitter;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.EntityConnection;
 import sonar.logistics.base.channels.handling.ListNetworkHandler;
+import sonar.logistics.base.data.generators.items.ITileInventoryProvider;
+import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
 import sonar.logistics.core.tiles.displays.info.types.items.ItemChangeableList;
 import sonar.logistics.core.tiles.displays.info.types.items.MonitoredItemStack;
 import sonar.logistics.core.tiles.wireless.emitters.TileDataEmitter;
@@ -42,19 +43,12 @@ public class ItemNetworkHandler extends ListNetworkHandler<MonitoredItemStack, I
 
 	@Override
 	public ItemChangeableList updateInfo(ItemNetworkChannels channels, ItemChangeableList itemList, BlockConnection connection) {
-		List<ISonarInventoryHandler> providers = SonarCore.inventoryHandlers;
 		TileEntity tile = connection.coords.getTileEntity();
 		if (tile != null) {
-			for (ISonarInventoryHandler provider : providers) {
-				if (provider.canHandleItems(tile, connection.face)) {
-					if (!provider.isLargeInventory() || channels.updateLargeInventory()) {
-						List<StoredItemStack> info = new ArrayList<>();
-						StorageSize size = provider.getItems(info, tile, connection.face);
-						itemList.sizing.add(size);
-						for (StoredItemStack item : info) {
-							itemList.add(item);
-						}
-					}
+			for (ITileInventoryProvider provider : MasterInfoRegistry.INSTANCE.inventoryProviders) {
+				IItemHandler handler = provider.getHandler(tile, connection.face);
+				if(handler != null){
+					provider.getItemList(itemList, handler, tile, connection.face);
 					break;
 				}
 			}

@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.client.gui.IGuiOrigin;
-import sonar.core.inventory.containers.ContainerMultipartSync;
+import sonar.core.handlers.inventories.containers.ContainerMultipartSync;
 import sonar.logistics.PL2Constants;
 import sonar.logistics.api.asm.ASMDisplayElement;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;

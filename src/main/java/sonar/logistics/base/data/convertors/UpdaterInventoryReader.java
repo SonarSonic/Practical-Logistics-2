@@ -1,4 +1,4 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.convertors;
+package sonar.logistics.base.data.convertors;
 
 import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
@@ -11,11 +11,11 @@ import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.EntityConnection;
 import sonar.logistics.base.channels.NodeConnection;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.AbstractDataConvertor;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.DataFactory;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.MultiDataSource;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.IDataHolder;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.IDataWatcher;
+import sonar.logistics.base.data.AbstractDataConvertor;
+import sonar.logistics.base.data.DataFactory;
+import sonar.logistics.base.data.api.IDataHolder;
+import sonar.logistics.base.data.api.IDataWatcher;
+import sonar.logistics.base.data.sources.MultiDataSource;
 import sonar.logistics.core.tiles.displays.info.types.InfoError;
 import sonar.logistics.core.tiles.displays.info.types.LogicInfoList;
 import sonar.logistics.core.tiles.displays.info.types.general.LogicInfo;

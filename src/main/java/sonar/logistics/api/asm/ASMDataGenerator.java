@@ -1,6 +1,6 @@
 package sonar.logistics.api.asm;
 
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.api.IDataGenerator;
+import sonar.logistics.base.data.api.IDataGenerator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

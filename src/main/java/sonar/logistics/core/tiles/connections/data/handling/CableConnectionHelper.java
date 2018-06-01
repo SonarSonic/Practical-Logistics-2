@@ -12,7 +12,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import sonar.core.integration.multipart.SonarMultipartHelper;
 import sonar.core.utils.Pair;
-import sonar.core.utils.SonarValidation;
 import sonar.logistics.api.core.tiles.connections.*;
 import sonar.logistics.api.core.tiles.connections.data.IDataCable;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
@@ -27,6 +26,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class CableConnectionHelper {
 
@@ -145,22 +145,18 @@ public class CableConnectionHelper {
 	}
 
 	public static List<INetworkTile> getConnectedTiles(IDataCable cable) {
-		return getConnectedTiles(cable, new SonarValidation.CLASS(INetworkTile.class));
+		return getConnectedTiles(cable, INetworkTile.class);
 	}
 
 	public static <T> List<T> getConnectedTiles(IDataCable cable, Class<T> type) {
-		return getConnectedTiles(cable, new SonarValidation.CLASS(type));
+		return getConnectedTiles(cable, type::isInstance);
 	}
 
-	public static List getConnectedTilesOfTypes(IDataCable cable, Class... type) {
-		return getConnectedTiles(cable, new SonarValidation.CLASSLIST(type));
-	}
-
-	public static <T> List<T> getConnectedTiles(IDataCable cable, SonarValidation validate) {
+	public static <T> List<T> getConnectedTiles(IDataCable cable, Predicate validate) {
 		List<T> logicTiles = new ArrayList<>();
 		for (EnumFacing face : EnumFacing.values()) {
 			ICableConnectable connection = getConnection(cable, face, EnumCableConnection.NETWORK, false);
-			if (connection != null && !(connection instanceof IDataCable) && validate.isValid(connection)) {
+			if (connection != null && !(connection instanceof IDataCable) && validate.test(connection)) {
 				logicTiles.add((T) connection);
 			}
 		}

@@ -1,8 +1,8 @@
-package sonar.logistics.core.tiles.displays.info.newinfoprofiding.api;
+package sonar.logistics.base.data.api;
 
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.DataFactory;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.holders.DataHolder;
-import sonar.logistics.core.tiles.displays.info.newinfoprofiding.sources.IDataSource;
+import sonar.logistics.base.data.DataFactory;
+import sonar.logistics.base.data.holders.DataHolder;
+import sonar.logistics.base.data.sources.IDataSource;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

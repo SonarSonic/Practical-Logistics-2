@@ -1,6 +1,6 @@
 package sonar.logistics.base.filters;
 
-import sonar.core.helpers.FluidHelper.ITankFilter;
+import sonar.core.handlers.fluids.FluidHelper.ITankFilter;
 import sonar.logistics.api.core.tiles.nodes.INode;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.core.tiles.nodes.TransferType;

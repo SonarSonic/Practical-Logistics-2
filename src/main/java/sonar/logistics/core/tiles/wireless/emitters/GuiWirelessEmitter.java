@@ -3,8 +3,8 @@ package sonar.logistics.core.tiles.wireless.emitters;
 import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.input.Keyboard;
 import sonar.core.client.gui.SonarTextField;
+import sonar.core.handlers.inventories.containers.ContainerMultipartSync;
 import sonar.core.helpers.FontHelper;
-import sonar.core.inventory.containers.ContainerMultipartSync;
 import sonar.logistics.base.gui.GuiLogistics;
 import sonar.logistics.base.gui.PL2Colours;
 

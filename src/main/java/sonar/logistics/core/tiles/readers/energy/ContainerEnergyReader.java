@@ -1,7 +1,7 @@
 package sonar.logistics.core.tiles.readers.energy;
 
 import net.minecraft.entity.player.EntityPlayer;
-import sonar.core.inventory.containers.ContainerMultipartSync;
+import sonar.core.handlers.inventories.containers.ContainerMultipartSync;
 import sonar.logistics.base.listeners.ListenerType;
 
 public class ContainerEnergyReader extends ContainerMultipartSync {
