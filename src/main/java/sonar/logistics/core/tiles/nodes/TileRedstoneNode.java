@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import sonar.core.integration.multipart.TileSonarMultipart;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
-import sonar.logistics.PL2;
+import sonar.logistics.PL2Logging;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnection;
 import sonar.logistics.api.core.tiles.connections.EnumCableConnectionType;
 import sonar.logistics.api.core.tiles.connections.EnumCableRenderSize;
@@ -79,7 +79,7 @@ public class TileRedstoneNode extends TileSonarMultipart implements IRedstoneCon
 			this.networkID.setObject(-1);
 			//states.markTileMessage(TileMessage.NO_NETWORK, true);
 		} else if (networkID.getObject() != -1) {
-			PL2.logger.info("%s : attempted to disconnect from the wrong handling with ID: %s expected %s", this, network.getNetworkID(), networkID.getObject());
+			PL2Logging.disconnectFromWrongRedstoneNetwork(this, getRedstoneNetwork(), network);
 		}		
 	}
 

@@ -18,6 +18,7 @@ import sonar.core.listener.PlayerListener;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Logging;
 import sonar.logistics.PL2Multiparts;
 import sonar.logistics.api.core.items.operator.IOperatorProvider;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
@@ -178,7 +179,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 			states.markTileMessage(ErrorMessage.NO_NETWORK, true);
 			// doRemovalEvent(PL2RemovalType.NETWORK_DISCONNECTED);
 		} else if (networkID.getObject() != -1) {
-			PL2.logger.info("%s : attempted to disconnect from the wrong handling with ID: %s expected %s", this, network.getNetworkID(), networkID.getObject());
+			PL2Logging.disconnectFromWrongDataNetwork(this, getNetwork(), network);
 		}
 	}
 

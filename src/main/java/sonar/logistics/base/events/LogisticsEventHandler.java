@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sonar.core.helpers.ListHelper;
 import sonar.core.utils.IWorldTile;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Logging;
 import sonar.logistics.api.core.tiles.connections.data.IDataCable;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.connections.redstone.IRedstoneCable;
@@ -274,7 +275,7 @@ public class LogisticsEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onNetworksConnected(NetworkEvent.ConnectedNetwork event) {
-		PL2.logger.info("Networks Connected: " + event.network.getNetworkID() + " " + event.connected_network.getNetworkID());
+		PL2Logging.logConnectedNetworkEvent(event);
 		List<IInfoProvider> tiles = event.connected_network.getGlobalInfoProviders();
 		tiles.forEach(t -> DisplayInfoReferenceHandler.queueUpdate(t, UpdateCause.NETWORK_CHANGE));
 
@@ -282,14 +283,14 @@ public class LogisticsEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onNetworksDisconnected(NetworkEvent.DisconnectedNetwork event) {
-		PL2.logger.info("Networks Disconnected: " + event.network.getNetworkID() + " " + event.disconnected_network.getNetworkID());
+		PL2Logging.logDisconnectedNetworkEvent(event);
 		List<IInfoProvider> tiles = event.disconnected_network.getGlobalInfoProviders();
 		tiles.forEach(t -> DisplayInfoReferenceHandler.queueUpdate(t, UpdateCause.NETWORK_CHANGE));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onTileConnected(NetworkEvent.ConnectedTile event) {
-		PL2.logger.info("Tile Connected: " + event.tile.getIdentity() + " " + event.tile);
+		PL2Logging.logConnectedTileEvent(event);
 		event.network.addConnection(event.tile);
 		event.tile.onNetworkConnect(event.network);
 
@@ -311,8 +312,7 @@ public class LogisticsEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onTileDisconnected(NetworkEvent.DisconnectedTile event) {
-
-		PL2.logger.info("Tile Disconnected: " + event.tile.getIdentity() + " " + event.tile);
+		PL2Logging.logDisconnectedTileEvent(event);
 		event.network.removeConnection(event.tile);
 		event.tile.onNetworkDisconnect(event.network);
 
@@ -361,7 +361,7 @@ public class LogisticsEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onLocalProviderConnected(NetworkEvent.ConnectedLocalProvider event) {
-		PL2.logger.info("Local Provider Connected: " + event.tile.getIdentity() + " " + event.tile);
+		PL2Logging.logConnectedLocalProviderEvent(event);
 		event.network.addLocalInfoProvider(event.tile);
 		queueNetworkChange(event.network, NetworkChanges.LOCAL_PROVIDERS);
 
@@ -369,7 +369,7 @@ public class LogisticsEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onLocalProviderDisconnected(NetworkEvent.DisconnectedLocalProvider event) {
-		PL2.logger.info("Local Provider Disconnected: " + event.tile.getIdentity() + " " + event.tile);
+		PL2Logging.logDisconnectedLocalProviderEvent(event);
 		event.network.removeLocalInfoProvider(event.tile);
 		queueNetworkChange(event.network, NetworkChanges.LOCAL_PROVIDERS);
 	}

@@ -23,6 +23,7 @@ import sonar.core.network.sync.*;
 import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
+import sonar.logistics.PL2Logging;
 import sonar.logistics.api.base.IInfoManager;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
@@ -757,14 +758,14 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public void validateElement(IDisplayElement e) {
 		if (e != null && isValid() && !isEditContainer(e.getHolder().getContainer())) {
 			e.validate(this);
-			PL2.logger.info("Validated Element: " + e.getElementIdentity() + " Client: " + this.getWorld().isRemote);
+			PL2Logging.onGSIElementValidated(this, e);
 		}
 	}
 
 	public void invalidateElement(IDisplayElement e) {
 		if (e != null && !isEditContainer(e.getHolder().getContainer())) {
 			e.invalidate(this);
-			PL2.logger.info("Invalidated Element: " + e.getElementIdentity() + " Client: " + this.getWorld().isRemote);
+			PL2Logging.onGSIElementInvalidated(this, e);
 		}
 	}
 
@@ -794,9 +795,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
                 updateScaling();
 			}
 			forEachElement(this::validateElement);
-
             display.onGSIValidate();
-			PL2.logger.info("Validated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
+			PL2Logging.onGSIValidated(this);
 		}
 	}
 
@@ -811,9 +811,8 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 				PL2.proxy.getClientManager().getGSIMap().remove(getDisplayGSIIdentity());
 			}
 			forEachElement(this::invalidateElement);
-
             display.onGSIInvalidate();
-			PL2.logger.info("Invalidated GSI: " + this.getDisplayGSIIdentity() + " Client: " + this.getWorld().isRemote);
+			PL2Logging.onGSIInvalidated(this);
 		}
 	}
 }

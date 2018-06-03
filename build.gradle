@@ -120,7 +120,7 @@ dependencies {
     if (!fluxnetworks_local) {
         //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
     } else {
-        compile project(':Flux-Networks')
+       compile project(':Flux-Networks')
     }
     if (!calculator_local) {
         //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
