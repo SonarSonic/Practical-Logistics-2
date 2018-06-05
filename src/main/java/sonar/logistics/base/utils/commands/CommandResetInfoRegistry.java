@@ -25,7 +25,7 @@ public class CommandResetInfoRegistry implements ICommand {
 
 	@Override
 	public int compareTo(@Nonnull ICommand o) {
-		return 0;
+		return this.getName().compareTo(o.getName());
 	}
 
 	@Nonnull
