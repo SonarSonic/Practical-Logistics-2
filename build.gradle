@@ -1,3 +1,5 @@
+import org.gradle.api.publish.maven.MavenPublication
+
 buildscript {
     repositories {
         jcenter()
@@ -46,11 +48,21 @@ repositories {
         name = "ic2"
         url = "http://maven.ic2.player.to/"
     }
+    maven { url = "http://maven.ironhide.de/" }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
+apply plugin: 'maven-publish'
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "${minecraft_version}-${mod_version}"
+if (hasProperty('appendBuildNumber')) {
+    version = version + "-" + appendBuildNumber.toString()
+} else {
+    version = version + "-unofficial"
+}
 group= "sonar.logistics"
 archivesBaseName = "logistics"
 sourceCompatibility = targetCompatibility = "1.8"
@@ -66,22 +78,27 @@ minecraft {
     replace "mcmultipart@[0.0.0,)", "mcmultipart@[" + "${mcmp_version}" +",)"
 
     mappings = "snapshot_20171003"
-    makeObfSourceJar = false
+    makeObfSourceJar = true
 }
 
 task deobfJar(type: Jar) { // Generate deobfuscated
     from sourceSets.main.output
     classifier = 'deobf'
-    archiveName = "practicallogistics2-${minecraft_version}-${mod_version}-deobf.jar"
+    archiveName = "practicallogistics2-${version}-deobf.jar"
 }
 tasks.build.dependsOn('deobfJar')
 artifacts {
     archives deobfJar
+    archives sourceJar
     archives jar
 }
 
 jar {
-    archiveName = "practicallogistics2-${minecraft_version}-${mod_version}.jar"
+    archiveName = "practicallogistics2-${version}.jar"
+}
+
+sourceJar {
+    archiveName = "practicallogistics2-${version}-sources.jar"
 }
 
 def sonarcore_local = false
@@ -112,18 +129,19 @@ dependencies {
     deobfCompile "mcp.mobius.waila:Hwyla:${waila_version}"
     compileOnly "mcjtylib:mcjtylib:${mcjtylib_version}"
     deobfCompile "MCMultiPart:MCMultiPart:${mcmp_version}"
+
     if (!sonarcore_local) {
-        //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
+        compileOnly "sonar:sonarcore:${minecraft_version}-${sonar_core_version}-${sonar_core_build_version}:deobf"
     } else {
         compile project(':Sonar-Core')
     }
     if (!fluxnetworks_local) {
-        //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
+        compileOnly "sonar:fluxnetworks:${minecraft_version}-${flux_networks_version}-${flux_networks_version}:deobf"
     } else {
        compile project(':Flux-Networks')
     }
     if (!calculator_local) {
-        //compileOnly "sonar-core:sonarcore:${minecraft_version}:${sonar_core_version}:deobf"
+        compileOnly "sonar:calculator:${minecraft_version}-${calculator_version}-${calculator_build_version}:deobf"
     } else {
         compile project(':Calculator')
     }
@@ -134,7 +152,6 @@ processResources
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
-
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
         expand 'version':project.version, 'mcversion':project.minecraft.version
@@ -142,5 +159,22 @@ processResources
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+publishing {
+    tasks.publish.dependsOn 'build'
+    publications {
+        mavenJava(MavenPublication) {
+            groupId group_prefix
+            version version
+            artifactId "practicallogistics2"
+            artifact jar
+            artifact sourceJar
+            artifact deobfJar
+        }
+    }
+    repositories {
+        mavenLocal()
     }
 }
