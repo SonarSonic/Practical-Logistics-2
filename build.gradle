@@ -136,7 +136,7 @@ dependencies {
         compile project(':Sonar-Core')
     }
     if (!fluxnetworks_local) {
-        compileOnly "sonar:fluxnetworks:${minecraft_version}-${flux_networks_version}-${flux_networks_version}:deobf"
+        compileOnly "sonar:fluxnetworks:${minecraft_version}-${flux_networks_version}-${flux_networks_build_version}:deobf"
     } else {
        compile project(':Flux-Networks')
     }
