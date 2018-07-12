@@ -2,6 +2,7 @@ package sonar.logistics.integration.minetweaker;
 
 import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
+import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
@@ -39,6 +40,7 @@ public class MineTweakerIntegration {
 	}
 
 	@ZenClass("mods.logistics.hammer")
+	@ZenRegister
 	public static class HammerHandler {
 
 		@ZenMethod
