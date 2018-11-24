@@ -28,7 +28,7 @@ public class EnergyNetworkHandler<C extends INetworkListChannels> extends ListNe
 		TileEntity tile = connection.coords.getTileEntity();
 		if(tile != null) {
 			ITileEnergyHandler handler = EnergyTransferHandler.INSTANCE_SC.getTileHandler(tile, connection.face);
-			if(handler.canReadEnergy(tile, connection.face)) {
+			if(handler != null && handler.canReadEnergy(tile, connection.face)) {
 				StoredEnergyStack energyStack = new StoredEnergyStack(handler.getEnergyType());
 				energyStack.setStorageValues(handler.getStored(tile, connection.face), handler.getCapacity(tile, connection.face));
 				MonitoredEnergyStack coords = new MonitoredEnergyStack(energyStack, new MonitoredBlockCoords(connection.coords, LogisticsHelper.getCoordItem(connection.coords, connection.coords.getWorld())));

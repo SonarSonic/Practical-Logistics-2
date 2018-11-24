@@ -1,6 +1,7 @@
 package sonar.logistics.core.tiles.connections.data.network;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.items.IItemHandler;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
@@ -96,7 +97,12 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork {
 	public List<IInfoProvider> getGlobalInfoProviders() {
 		return new ArrayList<>();
 	}
-	
+
+	@Override
+	public IItemHandler getNetworkItemHandler() {
+		return null;
+	}
+
 	@Override
 	public boolean isValid() {
 		return false;

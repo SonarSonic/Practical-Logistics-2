@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.IItemHandler;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ListenableList;
@@ -199,6 +200,11 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	@Override
 	public List<IInfoProvider> getGlobalInfoProviders() {
 		return globalProviders;
+	}
+
+	@Override
+	public IItemHandler getNetworkItemHandler(){
+		return null;
 	}
 
 	@Override

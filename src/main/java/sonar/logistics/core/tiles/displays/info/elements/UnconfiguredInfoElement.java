@@ -19,7 +19,6 @@ import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
 import sonar.logistics.core.tiles.displays.gsi.gui.GuiUnconfiguredInfoElement;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
 import sonar.logistics.core.tiles.displays.gsi.packets.GSIElementPacketHelper;
-import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler;
 import sonar.logistics.core.tiles.displays.info.InfoRenderHelper;
 import sonar.logistics.core.tiles.displays.info.elements.base.*;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
@@ -231,8 +230,8 @@ public class UnconfiguredInfoElement extends AbstractDisplayElement implements I
 	public void doInfoRequirementPacket(DisplayGSI gsi, EntityPlayer player, List<InfoUUID> require) {
 		InfoUUID infoUUID = require.get(0);
 		if(InfoUUID.valid(infoUUID)){
-			this.uuid = infoUUID;
-			gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
+			getHolder().getElements().addElement(new UnconfiguredInfoElement(infoUUID));
+			getHolder().getElements().removeElement(this);
 		}
 	}
 }

@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    id "com.matthewprenger.cursegradle" version "1.0.10"
+    id "com.matthewprenger.cursegradle" version "1.1.0"
 }
 
 repositories {
@@ -197,10 +197,10 @@ def getCommmitReleaseType(){
                 commandLine 'git', 'log', '-1', '--pretty=tformat:%s'
                 standardOutput = stdout
             }
-        }catch(Exception e){
+        } catch(Exception e) {
             System.print("SKIPPING CURSE RELEASE - FAILED TO RETRIEVE LAST COMMIT")
-            e.printStackTrace();
-            return 'none';
+            e.printStackTrace()
+            return 'none'
         }
 
         String commit = stdout.toString().trim()
@@ -218,12 +218,13 @@ def getCommmitReleaseType(){
             return 'alpha'
         }else{
             System.out.println("SKIPPING CURSE RELEASE - COMMIT: " + commit)
+            return 'none'
         }
 
     }
 
     System.out.println("SKIPPING CURSE RELEASE - NO CURSE API KEY")
-    return 'none';
+    return 'none'
 }
 
 tasks.curseforge.enabled = project.hasProperty("curseforge_key") && !commit_release_type.equals('none')
@@ -239,12 +240,12 @@ curseforge {
         id = curse_project_id
 
         relations {
-            requiredLibrary 'sonar-core'
-            requiredLibrary 'mcmultipart'
-            optionalLibrary 'tesla'
-            optionalLibrary 'industrial-craft'
-            optionalLibrary 'redstone-flux'
-            optionalLibrary 'applied-energistics-2'
+            requiredDependency 'sonar-core'
+            requiredDependency 'mcmultipart'
+            optionalDependency 'tesla'
+            optionalDependency 'industrial-craft'
+            optionalDependency 'redstone-flux'
+            optionalDependency 'applied-energistics-2'
         }
 
         mainArtifact(jar) {

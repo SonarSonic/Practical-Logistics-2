@@ -137,7 +137,7 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
 			return;
 		}
 		Vec3d[] vectors = getScreenVectors(this, getLookVector(getPitch(), getYaw()));
-		Vec3i topLeft = convertVector(getTopRight(screenOrigin, vectors[0], vectors[1], width, height));
+		Vec3i topLeft = convertVector(getTopRight(new Vec3d((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2), vectors[0], vectors[1], width, height));
 		displays.forEach(display -> setTopLeftScreen(display, display.getCoords().getBlockPos().equals(topLeft)));
 		canBeRendered.setObject(true);
 		gsi.updateScaling();

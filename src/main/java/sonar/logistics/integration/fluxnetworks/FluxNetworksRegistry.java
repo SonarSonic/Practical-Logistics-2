@@ -3,7 +3,7 @@ package sonar.logistics.integration.fluxnetworks;
 import com.google.common.collect.Lists;
 import sonar.flux.api.AccessType;
 import sonar.flux.api.network.EnergyStats;
-import sonar.flux.api.network.IFluxCommon;
+import sonar.flux.api.network.IFluxNetwork;
 import sonar.flux.api.tiles.IFlux;
 import sonar.flux.api.tiles.IFlux.ConnectionType;
 import sonar.flux.connection.transfer.stats.NetworkStatistics;
@@ -17,7 +17,7 @@ import sonar.logistics.api.core.tiles.displays.info.register.RegistryType;
 public class FluxNetworksRegistry implements IInfoRegistry {
 
 	public void registerBaseReturns(IMasterInfoRegistry registry) {
-		registry.registerValidReturn(IFluxCommon.class);
+		registry.registerValidReturn(IFluxNetwork.class);
 		registry.registerValidReturn(ConnectionType.class);
 		registry.registerValidReturn(AccessType.class);
 		registry.registerValidReturn(NetworkStatistics.class);
@@ -26,7 +26,7 @@ public class FluxNetworksRegistry implements IInfoRegistry {
 
 	public void registerBaseMethods(IMasterInfoRegistry registry) {
 		registry.registerMethods(IFlux.class, RegistryType.TILE, Lists.newArrayList("getCoords", "getNetwork", "getConnectionType", "getTransferLimit", "getCurrentTransferLimit", "getCurrentPriority", "getCustomName"), false);
-		registry.registerMethods(IFluxCommon.class, RegistryType.TILE, Lists.newArrayList("getAccessType", "getNetworkID", "getNetworkName", "getCachedPlayerName", "getEnergyAvailable", "getMaxEnergyStored", "getStatistics"), false);
+		registry.registerMethods(IFluxNetwork.class, RegistryType.TILE, Lists.newArrayList("getAccessType", "getNetworkID", "getNetworkName", "getCachedPlayerName", "getEnergyAvailable", "getMaxEnergyStored", "getStatistics"), false);
 		registry.registerMethods(AccessType.class, RegistryType.TILE, Lists.newArrayList("name"), false);
 		registry.registerMethods(NetworkStatistics.class, RegistryType.TILE, Lists.newArrayList("getLatestStats"), false);
 		registry.registerMethods(EnergyStats.class, RegistryType.TILE, Lists.newArrayList("getLatestStats"), false);

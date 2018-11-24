@@ -86,7 +86,7 @@ public class PL2Events {
 					BlockMultipartContainer container = (BlockMultipartContainer)block;
 					Pair<Vec3d, Vec3d> pair =  RayTraceHelper.getRayTraceVectors(player);
 					RayTraceResult result = container.collisionRayTrace(state, world, pos, pair.getLeft(), pair.getRight());
-					if(result.subHit != tile.getSlotID()){
+					if(result == null || result.subHit != tile.getSlotID()){
 						return;
 					}
 				}

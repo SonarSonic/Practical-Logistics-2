@@ -187,8 +187,10 @@ public class GuiStatementList extends GuiSelectionList<Object> {
 				this.reset();
 				break;
 			case 6:
-				PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
-				this.changeState(GuiState.LIST);
+				if(currentFilter.obj.hasObject() && InfoUUID.valid((InfoUUID)currentFilter.uuid1.obj) && currentFilter.key1.getObject() != null && (!InfoUUID.valid((InfoUUID)currentFilter.uuid2.obj) || currentFilter.key2.getObject() != null)) {
+					PL2.network.sendToServer(new PacketEmitterStatement(tile.getSlotID(), tile.getCoords().getBlockPos(), ListPacket.ADD, currentFilter));
+					this.changeState(GuiState.LIST);
+				}
 				break;
 			case 7:
 				// DON'T CHANGE. RESET!

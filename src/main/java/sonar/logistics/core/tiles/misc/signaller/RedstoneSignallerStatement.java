@@ -87,7 +87,7 @@ public class RedstoneSignallerStatement<T> extends BaseSyncListPart implements I
 			if (info1 instanceof IComparableInfo) {
 				IComparableInfo provider1 = (IComparableInfo) info1;
 				ComparableObject obj = ComparableObject.getComparableObject(provider1.getComparableObjects(new ArrayList<>()), key);
-				if (getComparator() != null && getComparator().isValidObject(obj.object)) {
+				if (obj != null && getComparator() != null && getComparator().isValidObject(obj.object)) {
 					return obj.object;
 				}
 

@@ -91,7 +91,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 	}
 
 	@Override
-	public void addConnection(CacheHandler cache, INetworkListener connection) {
+	public void queueConnectionAddition(CacheHandler cache, INetworkListener connection) {
 		// TODO check the cache handler before adding, in this situation it will always be a reader
 		IListReader reader = (IListReader) connection;
 		if (reader.getValidHandlers().contains(handler)) {
@@ -103,7 +103,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 	}
 
 	@Override
-	public void removeConnection(CacheHandler cache, INetworkListener connection) {
+	public void queueConnectionRemoval(CacheHandler cache, INetworkListener connection) {
 		if (readers.remove(connection)) {
 			createChannelLists();
 			updateTicks();
@@ -121,7 +121,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 		int used = 0;
 		while (channelIterator.hasNext() && used != channelsPerTick) {
 			Entry<NodeConnection, MonitoredList<M>> entry = channelIterator.next();
-			MonitoredList<M> oldList = entry.getValue() == null ? MonitoredList.<M>newMonitoredList(handling.getNetworkID()) : entry.getValue();
+			MonitoredList<M> oldList = entry.createValue() == null ? MonitoredList.<M>newMonitoredList(handling.getNetworkID()) : entry.createValue();
 			MonitoredList<M> newList = handler.updateConnection(MonitoredList.<M>newMonitoredList(handling.getNetworkID()), oldList, entry.getKey(), currentList);
 			if (subChannels != null && !subChannels.isEmpty()) {
 				subChannels.forEach(sub -> sub.onListUpdate(this, entry.getKey(), newList, false));
@@ -144,7 +144,7 @@ public class WIPListNetworkChannels<M extends IMonitorInfo, H extends INetworkLi
 
 	public void updateAllChannels(boolean updateMasters) {
 		for (Entry<NodeConnection, MonitoredList<M>> entry : localInfo.entrySet()) {
-			MonitoredList<M> oldList = entry.getValue() == null ? MonitoredList.<M>newMonitoredList(handling.getNetworkID()) : entry.getValue();
+			MonitoredList<M> oldList = entry.createValue() == null ? MonitoredList.<M>newMonitoredList(handling.getNetworkID()) : entry.createValue();
 			MonitoredList<M> newList = handler.updateConnection(MonitoredList.<M>newMonitoredList(handling.getNetworkID()), oldList, entry.getKey(), currentList);
 			if (subChannels != null && !subChannels.isEmpty()) {
 				subChannels.forEach(sub -> sub.onListUpdate(this, entry.getKey(), newList, true));

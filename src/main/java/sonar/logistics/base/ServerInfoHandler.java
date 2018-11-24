@@ -10,7 +10,6 @@ import sonar.core.listener.PlayerListener;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
-import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
 import sonar.logistics.base.guidance.errors.IInfoError;
 import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.listeners.ListenerType;
@@ -72,7 +71,7 @@ public class ServerInfoHandler extends CommonInfoHandler {
 				if (!listeners.isEmpty()) {
 					for (Integer i : id.getValue()) {
 						InfoUUID uuid = new InfoUUID(id.getKey().getIdentity(), i);
-						IInfo monitorInfo = infoMap.get(id);
+						IInfo monitorInfo = infoMap.get(uuid);
 						if (monitorInfo != null) {
 							NBTTagCompound saveTag = InfoHelper.writeInfoToNBT(new NBTTagCompound(), monitorInfo, SyncType.SAVE);
 							if (!saveTag.hasNoTags()) {

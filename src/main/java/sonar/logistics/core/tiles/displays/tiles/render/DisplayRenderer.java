@@ -1,24 +1,17 @@
 package sonar.logistics.core.tiles.displays.tiles.render;
 
-import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
-import sonar.core.helpers.RenderHelper;
 import sonar.logistics.api.core.tiles.displays.tiles.ILargeDisplay;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
-import sonar.logistics.core.tiles.displays.info.InfoRenderHelper;
-import sonar.logistics.core.tiles.displays.info.types.InfoError;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 import sonar.logistics.core.tiles.misc.hammer.render.RenderHammer;
 
-import static net.minecraft.client.renderer.GlStateManager.popMatrix;
-import static net.minecraft.client.renderer.GlStateManager.pushMatrix;
-import static net.minecraft.client.renderer.GlStateManager.translate;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDisplay> {
 
@@ -27,9 +20,13 @@ public class DisplayRenderer extends TileEntitySpecialRenderer<TileAbstractDispl
 	@Override
 	public void render(TileAbstractDisplay part, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		DisplayGSI container = part.getGSI();
-		if(container == null || (part instanceof ILargeDisplay && !((ILargeDisplay) part).shouldRender() || part instanceof ILargeDisplay && !((ILargeDisplay) part).getConnectedDisplay().get().canBeRendered.getObject())){
+		if(container == null){
 			return;
 		}
+		if(part instanceof ILargeDisplay && (!((ILargeDisplay) part).shouldRender() || !((ILargeDisplay) part).getConnectedDisplay().get().canBeRendered.getObject())){
+			return;
+		}
+
 		pushMatrix();
 		Vec3d origin = part.getScreenOrigin();
 		Vec3d rotation = part.getScreenRotation();

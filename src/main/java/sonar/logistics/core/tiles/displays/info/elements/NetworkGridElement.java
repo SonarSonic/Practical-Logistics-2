@@ -65,12 +65,14 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 
 		xSlots = (int) Math.floor(getActualScaling()[WIDTH] / width);
 		ySlots = (int) Math.floor(getActualScaling()[HEIGHT] / height);
+
 		X_SPACING = (getActualScaling()[WIDTH] - (xSlots * width)) / xSlots;
 		Y_SPACING = (getActualScaling()[HEIGHT] - (ySlots * height)) / ySlots;
 
+		//System.out.println(element_size);
+
 		perPage = xSlots * ySlots;
 		boolean needsPages = perPage < cachedList.size();
-
 		if (needsPages && perPage != 0) {
 			double adjusted_height = getActualScaling()[HEIGHT] - (getActualScaling()[HEIGHT] / 8);
 			ySlots = (int) Math.floor(adjusted_height / height);
@@ -191,14 +193,14 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		super.readData(nbt, type);
-		element_size = nbt.getDouble("sizing");
+		//element_size = nbt.getDouble("sizing");
 		text_colour = nbt.getInteger("colour");
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		super.writeData(nbt, type);
-		nbt.setDouble("sizing", element_size);
+		//nbt.setDouble("sizing", element_size);
 		nbt.setInteger("colour", text_colour);
 		return nbt;
 	}

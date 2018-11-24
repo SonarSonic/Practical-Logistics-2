@@ -31,11 +31,11 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 	}
 
 	public double getRenderWidth() {
-		return Math.min(element_size, Math.min(getActualScaling()[0], getActualScaling()[1]));
+		return Math.round(Math.min(element_size, Math.min(getActualScaling()[0], getActualScaling()[1])) * 10000d) / 10000d;
 	}
 
 	public double getRenderHeight() {
-		return Math.min(element_size, Math.min(getActualScaling()[0], getActualScaling()[1]));
+		return Math.round(Math.min(element_size, Math.min(getActualScaling()[0], getActualScaling()[1])) * 10000d) / 10000d;
 	}
 
 	public void renderGridElement(MonitoredItemStack stack, int index) {
@@ -57,6 +57,7 @@ public class NetworkItemGridElement extends NetworkGridElement<MonitoredItemStac
 
 	public void onGridElementClicked(DisplayScreenClick click, LogicInfoList list, @Nullable MonitoredItemStack stack) {
 		int networkID = (stack == null || stack.getNetworkSource() == -1) ? list.networkID.getObject() : stack.getNetworkSource();
+
 		GSIClickPacketHelper.sendGSIClickPacket(GSIClickPacketHelper.createItemClickPacket(stack == null ? null : stack.getStoredStack(), networkID), getHolder().getContainer(), click);
 	}
 

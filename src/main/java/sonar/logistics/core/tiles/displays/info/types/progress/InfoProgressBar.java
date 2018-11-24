@@ -37,7 +37,8 @@ public class InfoProgressBar implements IInfo<InfoProgressBar>, INBTSyncable, IN
 	}
 
 	public void checkInfo() {
-		if (isValid() && first.getInfoType().isNumber() && second.getInfoType().isNumber()) {
+		if (isValid() && first.isValid() && second.isValid() &&  first.getInfoType().isNumber()&& second.getInfoType().isNumber()) {
+			//TODO this should be available to us as numbers already somehow
 			firstNum = Double.valueOf(first.getInfo().toString());
 			secondNum = Double.valueOf(second.getInfo().toString());
 			compare = Double.compare(firstNum, secondNum);

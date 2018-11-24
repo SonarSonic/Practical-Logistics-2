@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.Loader;
+import sonar.core.network.sync.ObjectType;
 import sonar.core.utils.Pair;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
@@ -154,7 +155,7 @@ public class MasterInfoRegistry implements IMasterInfoRegistry {
 					validMethods.get(type).get(classType).add(method);
 					used.add(method.getName());
 				} else {
-					PL2.logger.error(String.format("Failed to load method: %s, Valid Parameters: %s, Valid Returns %s,", method.toString(), validParams, validReturns));
+					PL2.logger.warn(String.format("Failed to load method: %s, Valid Parameters: %s, Valid Returns %s,", method.toString(), validParams, validReturns));
 				}
 			}
 		}
@@ -186,7 +187,7 @@ public class MasterInfoRegistry implements IMasterInfoRegistry {
 				if (validReturns) {
 					validFields.get(type).get(classType).add(field);
 				} else {
-					PL2.logger.error(String.format("Failed to load field: %s, Valid Returns: %s,", field.toString(), validReturns));
+					PL2.logger.warn(String.format("Failed to load field: %s, Valid Returns: %s,", field.toString(), validReturns));
 				}
 			}
 
@@ -516,7 +517,7 @@ public class MasterInfoRegistry implements IMasterInfoRegistry {
 			}
 		}
 		for (Object arg : logicPath.path) {
-			if (returned == null) {
+			if (returned == null || arg == null) {
 				return null;
 			}
 
@@ -542,7 +543,7 @@ public class MasterInfoRegistry implements IMasterInfoRegistry {
 				return info;
 			}
 		}
-		if (returned != null) {
+		if (returned != null && ObjectType.getInfoType(returned) != ObjectType.NONE) {
 			info.setFromReturn(logicPath, returned);
 		}
 		return info;

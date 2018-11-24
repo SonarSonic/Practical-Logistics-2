@@ -174,7 +174,7 @@ public class DataFactory {
         for(Map.Entry<InfoUUID, IDataWatcher> entry : LOADED_WATCHERS.entrySet()){
             if(entry.getValue().isWatched()){
                 IInfo oldInfo = ServerInfoHandler.instance().getInfoMap().get(entry.getKey());
-               // IInfo newInfo = entry.getValue().update(oldInfo);
+               // IInfo newInfo = entry.createValue().update(oldInfo);
             }
         }
     }

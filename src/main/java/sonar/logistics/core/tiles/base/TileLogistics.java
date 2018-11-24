@@ -4,8 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -110,7 +108,7 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 		}
 	}
 
-	public boolean PART_ADDED = false;
+	private boolean PART_ADDED = false;
 
 	public void doChunkLoadEvent() {
 		if (!PART_ADDED) {
@@ -127,35 +125,28 @@ public abstract class TileLogistics extends TileSonarMultipart implements INetwo
 	}
 
 	@Override
-	public void onFirstTick() {
-		super.onFirstTick();
-		if (isServer()) { // only on server, the client is only added when identity is known
+	public void validate(){
+		super.validate();
+		if(isServer()) {
 			doChunkLoadEvent();
 		}
 	}
 
 	@Override
-	public void invalidate() {
+	public void invalidate(){
 		super.invalidate();
 		if (getIdentity() != -1) {
 			doChunkUnloadEvent();
 		}
-		if(this instanceof ILogicListenable){
+		if(this instanceof ILogicListenable) {
 			((ILogicListenable) this).getListenerList().invalidateList();
 		}
 	}
 
+
 	@Override
 	public void handleUpdateTag(NBTTagCompound tag){
 		super.handleUpdateTag(tag);
-		if (isClient()) {
-			doChunkLoadEvent();
-		}
-	}
-
-	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-		super.onDataPacket(net, packet);
 		if (isClient()) {
 			doChunkLoadEvent();
 		}

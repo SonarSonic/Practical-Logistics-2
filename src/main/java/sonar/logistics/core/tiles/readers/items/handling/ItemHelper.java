@@ -38,7 +38,7 @@ public class ItemHelper {
 
 	@Nonnull
 	public static IItemHandler getNetworkItemHandler(ILogisticsNetwork network){
-		return null;
+		return network.getNetworkItemHandler();
 	}
 
 	public static void transferPlayerInventoryToNetwork(EntityPlayer player, ILogisticsNetwork network, Predicate<ItemStack> filter, int toTransfer){

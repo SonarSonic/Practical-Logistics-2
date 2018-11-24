@@ -197,6 +197,7 @@ public class LogicInfo extends BaseInfo<LogicInfo> implements IProvidableInfo<Lo
 		}
 		if (this.obj.obj == null || !this.obj.obj.equals(returned)) {
 			this.obj.obj = returned;
+			this.obj.objType = ObjectType.getInfoType(obj);
 			this.markDirty = true;
 		}
 	}

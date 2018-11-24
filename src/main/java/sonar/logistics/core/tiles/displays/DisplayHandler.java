@@ -6,8 +6,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper;
 import sonar.core.utils.Pair;
@@ -133,7 +131,10 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 
 
 	public static void removeClientDisplay(IDisplay display, PL2RemovalType type) {
-		ClientInfoHandler.instance().displays_tile.remove(display.getIdentity());
+		IDisplay current = ClientInfoHandler.instance().displays_tile.get(display.getIdentity());
+		if(current == display){
+			ClientInfoHandler.instance().displays_tile.remove(display.getIdentity());
+		}
 	}
 
     public void validateGSI(IDisplay display, DisplayGSI gsi) {

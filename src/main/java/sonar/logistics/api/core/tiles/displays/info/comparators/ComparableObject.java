@@ -2,6 +2,7 @@ package sonar.logistics.api.core.tiles.displays.info.comparators;
 
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ComparableObject {
@@ -16,6 +17,7 @@ public class ComparableObject {
 		this.object = object;
 	}
 
+	@Nullable
 	public static ComparableObject getComparableObject(List<ComparableObject> objs, String key) {
 		for (ComparableObject obj : objs) {
 			if (key.equals(obj.string)) {

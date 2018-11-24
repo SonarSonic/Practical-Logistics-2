@@ -2,7 +2,6 @@ package sonar.logistics.base;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
-import sonar.logistics.PL2;
 import sonar.logistics.api.base.IInfoManager;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
@@ -51,16 +50,15 @@ public abstract class CommonInfoHandler implements IInfoManager {
 
     @Override
     public void addIdentityTile(ILogicListenable infoProvider, PL2AdditionType type) {
-        if (identityTiles.containsValue(infoProvider) || infoProvider.getIdentity() == -1) {
-            PL2.logger.error("The Network Tile: " + infoProvider + " was adding twice on or has no identity:  " + infoProvider.getIdentity());
-            return;
-        }
         identityTiles.put(infoProvider.getIdentity(), infoProvider);
     }
 
     @Override
     public void removeIdentityTile(ILogicListenable monitor, PL2RemovalType type) {
-        identityTiles.remove(monitor.getIdentity());
+        ILogicListenable loaded = identityTiles.get(monitor.getIdentity());
+        if(monitor == loaded){ // due to queue sometimes different instances are unloaded and loaded in the same tick.
+            identityTiles.remove(monitor.getIdentity());
+        }
     }
 
     @Override

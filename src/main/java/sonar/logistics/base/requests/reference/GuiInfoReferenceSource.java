@@ -156,8 +156,10 @@ public class GuiInfoReferenceSource extends GuiSelectionList<Object> {
 				Object next = it.next();
 				if (next instanceof InfoUUID && expanded.contains(next)) {
 					IInfo monitorInfo = ClientInfoHandler.instance().getInfoMap().get(next);
-					for (ReferenceType type : ReferenceType.values()) {
-						it.add(new InfoReference((InfoUUID) next, type, monitorInfo.getID().hashCode()));
+					if(monitorInfo != null && monitorInfo.isValid()) {
+						for (ReferenceType type : ReferenceType.values()) {
+							it.add(new InfoReference((InfoUUID) next, type, monitorInfo.getID().hashCode()));
+						}
 					}
 				}
 			}

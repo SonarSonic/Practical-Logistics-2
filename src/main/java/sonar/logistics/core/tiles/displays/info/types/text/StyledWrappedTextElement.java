@@ -48,6 +48,9 @@ public class StyledWrappedTextElement extends StyledTextElement {
 		if (pageCount >= totalPages) {
 			pageCount = totalPages - 1;
 		}
+		if(pageCount<0){
+			pageCount = 0;
+		}
 
 		GlStateManager.scale(textScale / 100D, textScale / 100D, 1D);
 		StyledStringRenderer.instance().renderWrappedText(handler, getActualScaling()[0] * (textScale * 100), (needsPages ? (getActualScaling()[1] - getActualScaling()[1] / 8) : getActualScaling()[1]) * (textScale * 100), pageCount*handler.linesPerPage, (pageCount*handler.linesPerPage) +handler.linesPerPage);

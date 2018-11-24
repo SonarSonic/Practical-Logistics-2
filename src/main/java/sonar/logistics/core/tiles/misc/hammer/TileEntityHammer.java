@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import sonar.core.SonarCore;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.common.tileentity.TileEntityInventory;
+import sonar.core.handlers.inventories.handling.EnumFilterType;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncTagType;
 import sonar.core.network.utils.IByteBufTile;
@@ -27,6 +28,8 @@ public class TileEntityHammer extends TileEntityInventory implements ISidedInven
 	public TileEntityHammer() {
 		super.inv.setSize(2);
 		syncList.addParts(progress, coolDown);
+		inv.getInsertFilters().put((slot, amount, face) -> slot == 0, EnumFilterType.EXTERNAL);
+		inv.getExtractFilters().put((slot, amount, face) -> slot == 1, EnumFilterType.EXTERNAL);
 	}
 	
 	public SyncType getUpdateTagType(){
