@@ -1,11 +1,11 @@
 package sonar.logistics.core.tiles.connections.data.network;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.items.IItemHandler;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ListenableList;
 import sonar.core.listener.ListenerTally;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
+import sonar.logistics.api.core.tiles.connections.data.network.INetworkItemHandler;
 import sonar.logistics.api.core.tiles.readers.IInfoProvider;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.base.channels.NodeConnection;
@@ -99,7 +99,7 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	@Override
-	public IItemHandler getNetworkItemHandler() {
+	public INetworkItemHandler getNetworkItemHandler() {
 		return null;
 	}
 

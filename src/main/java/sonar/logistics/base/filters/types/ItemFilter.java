@@ -58,12 +58,12 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 	}
 
 	@Override
-	public boolean canTransferItem(StoredItemStack stack) {
+	public boolean canTransferItem(ItemStack stack) {
 		for (StoredItemStack item : list.objs) {
-			ItemStack item1 = item.item, item2 = stack.item;
-			if (item1.getItem() == item2.getItem() || (matchModid.getObject() && ItemStackHelper.matchingModid(item1, item2)) || (matchOreDict.getObject() && ItemStackHelper.matchingOreDictID(item1, item2))) {
-				if (ignoreDamage.getObject() || item1.getItemDamage() == item2.getItemDamage()) {
-					if (!matchNBT.getObject() || ItemStack.areItemStackTagsEqual(item1, item2)) {
+			ItemStack item1 = item.item;
+			if (item1.getItem() == stack.getItem() || (matchModid.getObject() && ItemStackHelper.matchingModid(item1, stack)) || (matchOreDict.getObject() && ItemStackHelper.matchingOreDictID(item1, stack))) {
+				if (ignoreDamage.getObject() || item1.getItemDamage() == stack.getItemDamage()) {
+					if (!matchNBT.getObject() || ItemStack.areItemStackTagsEqual(item1, stack)) {
 						return true;
 					}
 				}

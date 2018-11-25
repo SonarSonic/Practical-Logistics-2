@@ -31,7 +31,7 @@ import sonar.logistics.base.utils.worlddata.IdentityCountData;
 import sonar.logistics.base.utils.worldgen.SapphireOreGen;
 import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
 import sonar.logistics.core.tiles.displays.tiles.holographic.EntityHolographicDisplay;
-import sonar.logistics.integration.minetweaker.MineTweakerIntegration;
+import sonar.logistics.integration.minetweaker.CraftTweakerIntegration;
 import sonar.logistics.network.PL2Common;
 
 @Mod.EventBusSubscriber
@@ -111,9 +111,9 @@ public class PL2 {
 	@EventHandler
 	public void postLoad(FMLPostInitializationEvent evt) {
 		logger.info("Please Wait: We are saving Harambe with a time machine");
-		if (Loader.isModLoaded("MineTweaker3") || Loader.isModLoaded("MineTweaker3".toLowerCase())) {
-			MineTweakerIntegration.init();
-			logger.info("'Mine Tweaker' integration was loaded");
+		if (Loader.isModLoaded("crafttweaker") || Loader.isModLoaded("crafttweaker2")) {
+			CraftTweakerIntegration.init();
+			logger.info("CraftTweaker2 integration was loaded");
 		}
 		proxy.postLoad(evt);
 	}

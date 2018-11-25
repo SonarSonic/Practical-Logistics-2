@@ -1,9 +1,9 @@
 package sonar.logistics.base.filters;
 
-import sonar.core.api.inventories.StoredItemStack;
+import net.minecraft.item.ItemStack;
 
 public interface IItemFilter {
 
-	boolean canTransferItem(StoredItemStack stack);
+	boolean canTransferItem(ItemStack stack);
 	
 }

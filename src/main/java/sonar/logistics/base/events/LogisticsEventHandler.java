@@ -1,5 +1,6 @@
 package sonar.logistics.base.events;
 
+import com.google.common.collect.Maps;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -88,11 +89,16 @@ public class LogisticsEventHandler {
 
 	public void triggerConstructingPhase() {
 		queue_handlers.keySet().forEach(TYPE -> {
+
 			Map added = queued_additions.get(TYPE);
 			Map removed = queued_removals.get(TYPE);
-			queue_handlers.get(TYPE).flushQueue(added, removed);
-			added.clear();
-			removed.clear();
+			//if(!added.isEmpty() || !removed.isEmpty()) {
+				Map added_copy = Maps.newHashMap(added);
+				Map removed_copy = Maps.newHashMap(removed);
+				queued_additions.get(TYPE).clear();
+				queued_removals.get(TYPE).clear();
+				queue_handlers.get(TYPE).flushQueue(added_copy, removed_copy);
+			//}
 		});
 		doNetworkChanges();
 		RedstoneConnectionHandler.instance().tick();
@@ -238,14 +244,17 @@ public class LogisticsEventHandler {
 			if (event.tile instanceof ILargeDisplay) {
 				DisplayHandler.instance().markConnectedDisplayChanged(((ILargeDisplay) event.tile).getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 			} else if (event.tile instanceof IDisplay) {
-				((IDisplay) event.tile).getGSI().validateAllInfoReferences();
+				DisplayGSI gsi = ((IDisplay) event.tile).getGSI();
+				if(gsi != null) {
+					gsi.validateAllInfoReferences();
+				}
 			}
 			if (event.type == PL2AdditionType.PLAYER_ADDED) {
 				event.tile.onTileAddition();
 			}
 		}else{
 			if (event.tile instanceof IDisplay) {
-				DisplayHandler.instance().addClientDisplay((IDisplay) event.tile, event.type);
+				DisplayHandler.addClientDisplay((IDisplay) event.tile, event.type);
 			}
 		}
 
@@ -261,14 +270,17 @@ public class LogisticsEventHandler {
 			if (event.tile instanceof ILargeDisplay) {
 				DisplayHandler.instance().markConnectedDisplayChanged(((ILargeDisplay) event.tile).getRegistryID(), ConnectedDisplayChange.SUB_NETWORK_CHANGED);
 			} else if (event.tile instanceof IDisplay) {
-				((IDisplay) event.tile).getGSI().validateAllInfoReferences();
+				DisplayGSI gsi = ((IDisplay) event.tile).getGSI();
+				if(gsi != null) {
+					gsi.validateAllInfoReferences();
+				}
 			}
 			if (event.type == PL2RemovalType.PLAYER_REMOVED) {
 				event.tile.onTileRemoval();
 			}
 		}else{
-			if (event.tile instanceof IDisplay && event.world.isRemote) {
-				DisplayHandler.instance().removeClientDisplay((IDisplay) event.tile, event.type);
+			if (event.tile instanceof IDisplay) {
+				DisplayHandler.removeClientDisplay((IDisplay) event.tile, event.type);
 			}
 		}
 	}

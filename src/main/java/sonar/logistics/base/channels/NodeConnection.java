@@ -1,8 +1,9 @@
 package sonar.logistics.base.channels;
 
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 import sonar.core.api.energy.StoredEnergyStack;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.core.tiles.nodes.TransferType;
@@ -11,6 +12,7 @@ import sonar.logistics.base.filters.ITransferFilteredTile;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.tiles.IPriority;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class NodeConnection<T extends IInfo> implements IDataSource {
@@ -26,6 +28,9 @@ public abstract class NodeConnection<T extends IInfo> implements IDataSource {
 	}
 	
 	public abstract T getChannel();
+
+	@Nullable
+	public abstract IItemHandler getItemHandler();
 	
 	public abstract NodeConnectionType getType();
 
@@ -37,7 +42,7 @@ public abstract class NodeConnection<T extends IInfo> implements IDataSource {
 		return true;
 	}
 
-	public boolean canTransferItem(NodeConnection connection, StoredItemStack stack, NodeTransferMode mode) {
+	public boolean canTransferItem(NodeConnection connection, ItemStack stack, NodeTransferMode mode) {
 		if (isFiltered) {
 			ITransferFilteredTile node = (ITransferFilteredTile) source;
             return node.getChannels().isMonitored(connection) || (node.getTransferMode().matches(mode) && node.getFilters().matches(stack, mode));

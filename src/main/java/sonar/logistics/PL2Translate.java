@@ -36,9 +36,9 @@ public class PL2Translate {
 	public static final Localisation ARRAY = t("tile.Array.name");
 	public static final Localisation TRANSFER_NODE = t("tile.TransferNode.name");
 	public static final Localisation REDSTONE_NODE = t("tile.RedstoneNode.name");
-	public static final Localisation TRANSCEIVER = t("items.Transceiver.name");
-	public static final Localisation ENTITY_TRANSCEIVER = t("items.EntityTransceiver.name");
-	public static final Localisation WIRELESS_STORAGE_READER = t("items.WirelessStorage.name");
+	public static final Localisation TRANSCEIVER = t("item.Transceiver.name");
+	public static final Localisation ENTITY_TRANSCEIVER = t("item.EntityTransceiver.name");
+	public static final Localisation WIRELESS_STORAGE_READER = t("item.WirelessStorage.name");
 	public static final Localisation REDSTONE_SIGNALLER = t("tile.RedstoneSignaller.name"); 
 	public static final Localisation CLOCK = t("tile.Clock.name");
 	public static final Localisation MINI_DISPLAY = t("tile.MiniDisplay.name");
@@ -98,8 +98,8 @@ public class PL2Translate {
 	public static final Localisation SCREEN_NO_DATA = t("pl.display.nodata");
 
 	/// DATA EMITTER
-	public static final Localisation DATA_EMITTER_PUBLIC = t("pl.emitters.public");
-	public static final Localisation DATA_EMITTER_PRIVATE = t("pl.emitters.private");
+	public static final Localisation DATA_EMITTER_PUBLIC = t("pl.emitter.public");
+	public static final Localisation DATA_EMITTER_PRIVATE = t("pl.emitter.private");
 
 	/// INFO READER
 	public static final Localisation INFO_READER_HELP = t("pl.info.reader.help");

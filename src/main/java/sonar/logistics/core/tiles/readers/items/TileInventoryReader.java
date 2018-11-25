@@ -107,7 +107,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 
 	public boolean canMonitorInfo(IMonitoredValue<MonitoredItemStack> info, InfoUUID uuid, Map<NodeConnection, AbstractChangeableList<MonitoredItemStack>> channels, List<NodeConnection> usedChannels) {
 		if (this.setting.getObject() == Modes.FILTERED) {
-			return filters.matches(info.getSaveableInfo().getStoredStack(), NodeTransferMode.ADD_REMOVE);
+			return filters.matches(info.getSaveableInfo().getStoredStack().getFullStack(), NodeTransferMode.ADD_REMOVE);
 		}
 		return true;
 	}
@@ -241,7 +241,7 @@ public class TileInventoryReader extends TileAbstractListReader<MonitoredItemSta
 
 	@Override
 	public Predicate<ItemStack> getFilter() {
-		return s -> filters.matches(new StoredItemStack(s), NodeTransferMode.ADD_REMOVE);
+		return s -> filters.matches(s, NodeTransferMode.ADD_REMOVE);
 	}
 
 	@Override

@@ -4,12 +4,12 @@ import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.items.IItemHandler;
 import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ListenableList;
 import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
+import sonar.logistics.api.core.tiles.connections.data.network.INetworkItemHandler;
 import sonar.logistics.api.core.tiles.nodes.IEntityNode;
 import sonar.logistics.api.core.tiles.nodes.INode;
 import sonar.logistics.api.core.tiles.readers.IInfoProvider;
@@ -28,6 +28,7 @@ import sonar.logistics.core.tiles.displays.DisplayInfoReferenceHandler.UpdateCau
 import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
 import sonar.logistics.core.tiles.displays.info.types.general.InfoChangeableList;
+import sonar.logistics.core.tiles.nodes.transfer.handling.NetworkItemHandler;
 import sonar.logistics.core.tiles.readers.info.handling.InfoHelper;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	public int networkID;
 	public boolean isValid = true;
+	public INetworkItemHandler networkItemHandler;
 
 	public LogisticsNetwork(int networkID) {
 		this.networkID = networkID;
@@ -57,7 +59,9 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 
 	//// NETWORK EVENTS \\\\
 
-	public void onNetworkCreated() {}
+	public void onNetworkCreated() {
+		networkItemHandler = new NetworkItemHandler(this);
+	}
 
 	public void onNetworkTick() {
 		tickStart = System.nanoTime();
@@ -203,8 +207,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	}
 
 	@Override
-	public IItemHandler getNetworkItemHandler(){
-		return null;
+	public INetworkItemHandler getNetworkItemHandler(){
+		return networkItemHandler;
 	}
 
 	@Override

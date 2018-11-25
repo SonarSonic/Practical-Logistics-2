@@ -95,7 +95,7 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			int index = i - start;
 			int xLevel = (int) (index - ((Math.floor((index / xSlots))) * xSlots));
 			int yLevel = (int) (Math.floor((index / xSlots)));
-			translate((xLevel * width) + centreX + (X_SPACING * (xLevel + 0.5D)), (yLevel * height) + centreY + (Y_SPACING * (yLevel + 0.5D)), 0);
+			translate((xLevel * width) + centreX + (X_SPACING * (xLevel + 0.5D)), (yLevel * height) + centreY + (Y_SPACING * (yLevel + 0.5D)), 0.005);
 			renderGridElement(cachedList.get(i), index);
 			popMatrix();
 		}
@@ -148,7 +148,17 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+		DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { click.clickX - 0.5, click.clickY });
+		subClick.identity = click.identity;
+		subClick.doubleClick = click.doubleClick;
+		subClick.gsi = click.gsi;
+		subClick.type = click.type;
+		subClick.intersect = click.intersect;
+
 		if (cachedList == null || cachedList.isEmpty()) {
+			if (info instanceof LogicInfoList) {
+				onGridElementClicked(subClick, (LogicInfoList) info, null);
+			}
 			return -1;
 		}
 		int xSlot = 0, ySlot = 0;
@@ -171,13 +181,6 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 		int slot = ((ySlot * xSlots) + xSlot) + start;
 		if (info instanceof LogicInfoList) {
 			LogicInfoList list = (LogicInfoList) info;
-			double[] align = this.getHolder().getAlignmentTranslation(this);
-			DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { click.clickX - 0.5, click.clickY });
-			subClick.identity = click.identity;
-			subClick.doubleClick = click.doubleClick;
-			subClick.gsi = click.gsi;
-			subClick.type = click.type;
-			subClick.intersect = click.intersect;
 			L stack = slot < cachedList.size() ? cachedList.get(slot) : null;
 			onGridElementClicked(subClick, list, stack);
 		}
@@ -187,20 +190,20 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
 			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);
 		}
-		return 0;
+		return -1;
 	}
 
 	@Override
 	public void readData(NBTTagCompound nbt, SyncType type) {
 		super.readData(nbt, type);
-		//element_size = nbt.getDouble("sizing");
+		element_size = nbt.getDouble("sizing");
 		text_colour = nbt.getInteger("colour");
 	}
 
 	@Override
 	public NBTTagCompound writeData(NBTTagCompound nbt, SyncType type) {
 		super.writeData(nbt, type);
-		//nbt.setDouble("sizing", element_size);
+		nbt.setDouble("sizing", element_size);
 		nbt.setInteger("colour", text_colour);
 		return nbt;
 	}

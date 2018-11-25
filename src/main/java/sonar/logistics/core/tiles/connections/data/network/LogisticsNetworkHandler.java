@@ -4,8 +4,8 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.base.events.LogisticsEventHandler;
 import sonar.logistics.base.events.NetworkChanges;
-import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.base.tiles.INetworkTile;
+import sonar.logistics.base.utils.CacheType;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -71,6 +71,7 @@ public class LogisticsNetworkHandler {
 		ILogisticsNetwork networkCache = cache.get(networkID);
 		if (networkCache == null || !networkCache.isValid()) {
 			LogisticsNetwork network = new LogisticsNetwork(networkID);// TODO int arg
+			network.onNetworkCreated();
 			cache.put(networkID, network);
 			networkCache = cache.get(networkID);
 		}

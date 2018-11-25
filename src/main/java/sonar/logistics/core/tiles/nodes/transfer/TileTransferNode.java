@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import sonar.core.api.IFlexibleGui;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockCoords;
 import sonar.core.helpers.FontHelper;
 import sonar.core.integration.multipart.SonarMultipartHelper;
@@ -81,7 +80,7 @@ public class TileTransferNode extends TileSidedLogistics implements INode, IOper
 
 	@Override
 	public Predicate<ItemStack> getFilter() {
-		return s -> filters.matches(new StoredItemStack(s), transferMode.getObject());
+		return s -> filters.matches(s, transferMode.getObject());
 	}
 
 	@Override

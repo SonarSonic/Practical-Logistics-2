@@ -1,10 +1,10 @@
 package sonar.logistics.base.filters.types;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.oredict.OreDictionary;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.client.gui.GuiSonar;
 import sonar.core.helpers.FontHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
@@ -66,10 +66,10 @@ public class OreDictFilter extends BaseFilter implements IItemFilter {
 	}
 
 	@Override
-	public boolean canTransferItem(StoredItemStack stack) {
+	public boolean canTransferItem(ItemStack stack) {
 		if (oreDict != null && !oreDict.getObjects().isEmpty() && stack != null) {
 			ArrayList<Integer> oreIDs = getOres();
-			int[] names = OreDictionary.getOreIDs(stack.item);
+			int[] names = OreDictionary.getOreIDs(stack);
 			if (names.length != 0 && !oreIDs.isEmpty()) {
 				for (Integer id : names) {
 					for (Integer oreName : oreIDs) {

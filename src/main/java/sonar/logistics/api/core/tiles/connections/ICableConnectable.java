@@ -8,7 +8,7 @@ public interface ICableConnectable extends IWorldTile {
 
     /** can the Tile connect to connections on the given direction
      * @param registryID the id of the connection trying to connect
-     * @param type TODO
+     * @param type the cable connect type
      * @param dir the direction it is connecting from
      * @param internal if this cable is within the bounds of this block.
      * @return if the tile can connect. */

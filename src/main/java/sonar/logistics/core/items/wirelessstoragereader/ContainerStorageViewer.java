@@ -5,12 +5,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.utils.ActionType;
 import sonar.core.handlers.inventories.slots.SlotLimiter;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.core.tiles.wireless.emitters.IDataEmitter;
 import sonar.logistics.base.channels.handling.ListNetworkChannels;
 import sonar.logistics.base.listeners.ListenerType;
@@ -51,18 +49,16 @@ public class ContainerStorageViewer extends Container {
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
+			lastStack = itemstack1;
 			if (id < 36) {
 				if (!player.getEntityWorld().isRemote) {
 					ILogisticsNetwork network = emitter.getNetwork();
 
 					StoredItemStack stack = new StoredItemStack(itemstack1);
 					if (lastStack != null && ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						ItemHelper.addItemsFromPlayer(stack, player, network, ActionType.PERFORM, null);
+						ItemHelper.transferPlayerInventoryToNetwork(player, network, s -> StoredItemStack.isEqualStack(lastStack, s), lastStack.getCount());
 					} else {
-						StoredItemStack perform = ItemHelper.transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
-						lastStack = itemstack1;
-						itemstack1.setCount((int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize())));
-						player.inventory.markDirty();
+						itemstack1 = ItemHelper.insertItemStack(network, itemstack1, 64);
 					}
 					ListNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 					if (channels != null) channels.sendLocalRapidUpdate(emitter, player);

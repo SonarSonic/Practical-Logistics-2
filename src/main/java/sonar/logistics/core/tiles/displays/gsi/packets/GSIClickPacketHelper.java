@@ -2,8 +2,6 @@ package sonar.logistics.core.tiles.displays.gsi.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.SonarCore;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper;
@@ -73,11 +71,7 @@ public class GSIClickPacketHelper {
 	public static void doItemPacket(DisplayGSI gsi, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		StoredItemStack clicked = NBTHelper.instanceNBTSyncable(StoredItemStack.class, clickTag);
 		int networkID = clickTag.getInteger("networkID");
-
-		SonarCore.proxy.getThreadListener(Side.SERVER).addScheduledTask(() -> {
-			GSIInteractionHelper.screenItemStackClicked(networkID, clicked.item.isEmpty() ? null : clicked, click, player, clickTag);
-		});
-		
+		GSIInteractionHelper.screenItemStackClicked(networkID, clicked.item.isEmpty() ? null : clicked, click, player, clickTag);
 	}
 
 	//// FLUID PACKET \\\\

@@ -1,10 +1,16 @@
 package sonar.logistics.base.channels;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.IItemHandler;
 import sonar.core.api.utils.BlockCoords;
+import sonar.logistics.base.data.generators.items.ITileInventoryProvider;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.LogisticsHelper;
+import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
+
+import javax.annotation.Nullable;
 
 public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {
 
@@ -31,6 +37,21 @@ public class BlockConnection extends NodeConnection<MonitoredBlockCoords> {
 	@Override
 	public MonitoredBlockCoords getChannel() {
 		return new MonitoredBlockCoords(coords, LogisticsHelper.getCoordItem(coords, coords.getWorld()));
+	}
+
+	@Nullable
+	@Override
+	public IItemHandler getItemHandler() {
+		TileEntity tile = coords.getTileEntity();
+		if (tile != null) {
+			for (ITileInventoryProvider provider : MasterInfoRegistry.INSTANCE.inventoryProviders) {
+				IItemHandler handler = provider.getHandler(tile, face);
+				if (handler != null) {
+					return handler;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

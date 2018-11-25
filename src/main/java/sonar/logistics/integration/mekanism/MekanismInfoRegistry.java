@@ -1,18 +1,15 @@
 package sonar.logistics.integration.mekanism;
-/*FIXME
-import com.google.base.collect.Lists;
-
+/* TODO
+import com.google.common.collect.Lists;
 import mekanism.api.IEvaporationSolar;
 import mekanism.api.IHeatTransfer;
 import mekanism.api.lasers.ILaserReceptor;
-import mekanism.api.reactor.IFusionReactor;
-import mekanism.api.reactor.IReactorBlock;
-import mekanism.base.tile.prefab.TileEntityBasicMachine;
+import mekanism.common.tile.prefab.TileEntityBasicMachine;
 import sonar.logistics.api.asm.ASMInfoRegistry;
-import sonar.logistics.api.info.ClientNameConstants;
-import sonar.logistics.api.info.register.IInfoRegistry;
-import sonar.logistics.api.info.register.IMasterInfoRegistry;
-import sonar.logistics.api.info.register.RegistryType;
+import sonar.logistics.api.core.tiles.displays.info.ClientNameConstants;
+import sonar.logistics.api.core.tiles.displays.info.register.IInfoRegistry;
+import sonar.logistics.api.core.tiles.displays.info.register.IMasterInfoRegistry;
+import sonar.logistics.api.core.tiles.displays.info.register.RegistryType;
 
 @ASMInfoRegistry(modid = "Mekanism")
 public class MekanismInfoRegistry implements IInfoRegistry {

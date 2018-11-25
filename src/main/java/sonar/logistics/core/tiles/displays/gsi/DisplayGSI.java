@@ -128,7 +128,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			// only clicks on client side, like a GUI, positioning may not be the same on server
 			return true;
 		}
-		System.out.println(type);
 		if (display instanceof ConnectedDisplay && !((ConnectedDisplay) display).canBeRendered.getObject()) {
 			player.sendMessage(new TextComponentTranslation("THE DISPLAY IS INCOMPLETE"));
 			return true;

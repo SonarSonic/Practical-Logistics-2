@@ -1,7 +1,6 @@
 package sonar.logistics.api.core.tiles.connections.data.network;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.items.IItemHandler;
 import sonar.core.listener.ISonarListenable;
 import sonar.core.listener.ISonarListener;
 import sonar.logistics.api.core.tiles.connections.data.IDataCable;
@@ -85,7 +84,7 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 
 	List<IInfoProvider> getGlobalInfoProviders();
 
-	IItemHandler getNetworkItemHandler();
+	INetworkItemHandler getNetworkItemHandler();
 	
 	//// MONITORING \\\\
 	/**returns the connections last tick time in nanoseconds*/

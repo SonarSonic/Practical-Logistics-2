@@ -18,7 +18,7 @@ import sonar.logistics.integration.jei.PracticalLogisticsJEI.Handlers;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
-public class MineTweakerIntegration {
+public class CraftTweakerIntegration {
 
 	public static void init() {
 		CraftTweakerAPI.registerClass(HammerHandler.class);

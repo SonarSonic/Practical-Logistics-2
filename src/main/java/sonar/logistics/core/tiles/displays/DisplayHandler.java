@@ -96,7 +96,7 @@ public class DisplayHandler extends AbstractConnectionHandler<ILargeDisplay> {
 			ISmallDisplay screen = (ISmallDisplay) display;
             if(type == PL2RemovalType.PLAYER_REMOVED){
                 GSIData.unloadedGSI.remove(display.getInfoContainerID());
-            }else{
+            }else if(display.getGSI() != null){
                 GSIData.unloadedGSI.put(display.getInfoContainerID(), display.getGSI().writeData(new NBTTagCompound(), NBTHelper.SyncType.SAVE));
             }
         }

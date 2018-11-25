@@ -5,12 +5,9 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import sonar.core.api.IFlexibleContainer;
-import sonar.core.api.inventories.StoredItemStack;
-import sonar.core.api.utils.ActionType;
 import sonar.core.handlers.inventories.containers.ContainerMultipartSync;
 import sonar.core.handlers.inventories.slots.SlotList;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.core.tiles.readers.items.InventoryReader.Modes;
 import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
@@ -58,21 +55,11 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
+			lastStack = itemstack1;
 			if (id < 36) {
 				if (!part.getWorld().isRemote) {
 					ILogisticsNetwork network = part.getNetwork();
-					StoredItemStack stack = new StoredItemStack(itemstack1);
-					if (ItemStack.areItemStackTagsEqual(itemstack1, lastStack) && lastStack.isItemEqual(itemstack1)) {
-						ItemHelper.addItemsFromPlayer(stack, player, network, ActionType.PERFORM, null);
-					} else {
-						StoredItemStack perform = ItemHelper.transferItems(network, stack, NodeTransferMode.ADD, ActionType.PERFORM, null);
-						lastStack = itemstack1;
-						itemstack1.setCount((int) (perform == null || perform.stored == 0 ? 0 : (perform.getStackSize())));
-						player.inventory.markDirty();
-					}
-					ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
-					if (channels != null)channels.sendLocalRapidUpdate(part, player);		
-					this.detectAndSendChanges();
+					itemstack1 = ItemHelper.insertItemStack(network, itemstack1, itemstack1.getCount());
 				}
 			} else if (!this.mergeItemStack(itemstack1, 0, 36, false)) {
 				return ItemStack.EMPTY;
@@ -90,6 +77,13 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 
 			slot.onTake(player, itemstack1);
 		}
+
+
+		ItemNetworkChannels channels = part.getNetwork().getNetworkChannels(ItemNetworkChannels.class);
+		if (channels != null)
+			channels.sendLocalRapidUpdate(part, player);
+		this.detectAndSendChanges();
+
 		return itemstack;
 	}
 

@@ -1,12 +1,12 @@
 package sonar.logistics.network.sync;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import sonar.core.api.fluids.StoredFluidStack;
-import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.network.sync.SyncPart;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
@@ -36,7 +36,7 @@ public class SyncFilterList extends SyncPart {
 		markChanged();
 	}
 
-	public boolean matches(StoredItemStack stack, NodeTransferMode mode) {
+	public boolean matches(ItemStack stack, NodeTransferMode mode) {
 		boolean hasWhiteLists = false;
 		boolean whitelisted = objs.isEmpty();
 		for (INodeFilter filter : objs) {

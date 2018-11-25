@@ -5,13 +5,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import sonar.core.api.fluids.StoredFluidStack;
 import sonar.core.api.inventories.StoredItemStack;
 import sonar.core.api.utils.BlockInteractionType;
@@ -104,38 +102,32 @@ public class GSIInteractionHelper {
 
 	public static void screenItemStackClicked(int networkID, StoredItemStack storedItemStack, DisplayScreenClick click, EntityPlayer player, NBTTagCompound clickTag) {
 		Pair<Integer, ItemInteractionType> toRemove = getItemsToRemove(click.type);
-		EnumFacing facing = click.gsi.getFacing();
 		ILogisticsNetwork network = LogisticsNetworkHandler.instance().getNetwork(networkID);
 		if (toRemove.a != 0 && network.isValid()) {
 			switch (toRemove.b) {
 				case ADD:
-					ItemStack stack = player.getHeldItem(player.getActiveHand());
+					ItemStack stack = player.getHeldItem(player.getActiveHand()).copy();
 					if (!stack.isEmpty()) {
-						long changed = 0;
+						long prev = ItemHelper.getItemCount(stack, network);
 						if (!click.doubleClick) {
-							changed = ItemHelper.insertItemStack(network, player.inventory.getCurrentItem(), 64).getCount();
+							player.setHeldItem(player.getActiveHand(), ItemHelper.insertItemStack(network, stack, 64));
 						} else {
-							ItemStack toTransfer = player.inventory.getCurrentItem().copy();
-							ItemHelper.transferPlayerInventoryToNetwork(player, network, IS -> StoredItemStack.isEqualStack(IS, toTransfer), Integer.MAX_VALUE);
-							//FIXME - HOW TO GET THE CHANGE
+							ItemHelper.transferPlayerInventoryToNetwork(player, network, IS -> StoredItemStack.isEqualStack(IS, stack), Integer.MAX_VALUE);
 						}
-						if (changed > 0) {
-							long itemCount = ItemHelper.getItemCount(stack, network);
-
-							PL2.network.sendTo(new PacketItemInteractionText(stack, itemCount, changed), (EntityPlayerMP) player);
+						long after = ItemHelper.getItemCount(stack, network);
+						if (prev != after) {
+							PL2.network.sendTo(new PacketItemInteractionText(stack, after, (after- prev)), (EntityPlayerMP) player);
 							InfoPacketHelper.createRapidItemUpdate(Lists.newArrayList(stack), networkID);
 						}
 					}
 					break;
 				case REMOVE:
 					if (storedItemStack != null) {
-						ItemStack extract = ItemHelper.extractItemStack(network, IS -> storedItemStack.equalStack(IS), toRemove.a);
-						if (!extract.isEmpty()) {
-							long r = extract.getCount();
-							ItemHandlerHelper.giveItemToPlayer(player, extract, player.inventory.currentItem);
-							long itemCount = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
-
-							PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), itemCount, -r), (EntityPlayerMP) player);
+						long prev = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
+						ItemHelper.transferNetworkInventoryToPlayer(player, network, IS -> storedItemStack.equalStack(IS), toRemove.a);
+						long after = ItemHelper.getItemCount(storedItemStack.getItemStack(), network);
+						if (prev != after) {
+							PL2.network.sendTo(new PacketItemInteractionText(storedItemStack.getItemStack(), after, -(prev-after)), (EntityPlayerMP) player);
 							InfoPacketHelper.createRapidItemUpdate(Lists.newArrayList(storedItemStack.getItemStack()), networkID);
 						}
 					}
