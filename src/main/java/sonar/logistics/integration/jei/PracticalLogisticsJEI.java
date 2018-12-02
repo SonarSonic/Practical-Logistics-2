@@ -15,7 +15,12 @@ import sonar.logistics.core.tiles.misc.hammer.HammerRecipes;
 @JEIPlugin
 public class PracticalLogisticsJEI extends JEISonarPlugin {
 
-    private JEISonarProvider HAMMER = p(HammerRecipes.instance(), PL2Blocks.hammer, ForgingHammerJEI.Hammer.class, ForgingHammerJEI.Hammer::new, ForgingHammerJEI::new, "hammer", PL2Constants.MODID);
+    private JEISonarProvider HAMMER;
+
+    @Override
+    public void registerProviders() {
+        HAMMER = p(HammerRecipes.instance(), PL2Blocks.hammer, ForgingHammerJEI.Hammer.class, ForgingHammerJEI.Hammer::new, ForgingHammerJEI::new, "hammer", PL2Constants.MODID);
+    }
 
     @Override
     public void register(IModRegistry registry) {
