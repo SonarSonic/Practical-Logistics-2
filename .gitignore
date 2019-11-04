@@ -53,4 +53,6 @@ Temporary Items
 
 #Forge Stuff
 /run/
+/build/
+/.gradle/
 settings.gradle

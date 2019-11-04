@@ -23,6 +23,7 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 
 	public static final String id = "items";
 
+	//TODO REMOVE RELIANCE ON OLD SYNC TAG TYPES, MOVE TO NEW SYSTEM, WHICH ALLOWS MORE CUSTOMISATION, and checks for each type that needs syncing etc.
 	public SyncNBTAbstractList<StoredItemStack> list = new SyncNBTAbstractList<>(StoredItemStack.class, 1);
 	public SyncTagType.BOOLEAN matchNBT = new SyncTagType.BOOLEAN(2), ignoreDamage = new SyncTagType.BOOLEAN(3), matchOreDict = new SyncTagType.BOOLEAN(4), matchModid = new SyncTagType.BOOLEAN(5);
 	{
@@ -61,10 +62,12 @@ public class ItemFilter extends BaseFilter implements IItemFilter {
 	public boolean canTransferItem(ItemStack stack) {
 		for (StoredItemStack item : list.objs) {
 			ItemStack item1 = item.item;
-			if (item1.getItem() == stack.getItem() || (matchModid.getObject() && ItemStackHelper.matchingModid(item1, stack)) || (matchOreDict.getObject() && ItemStackHelper.matchingOreDictID(item1, stack))) {
-				if (ignoreDamage.getObject() || item1.getItemDamage() == stack.getItemDamage()) {
-					if (!matchNBT.getObject() || ItemStack.areItemStackTagsEqual(item1, stack)) {
-						return true;
+			if(!item1.isEmpty()) {
+				if (item1.getItem() == stack.getItem() || (matchModid.getObject() && ItemStackHelper.matchingModid(item1, stack)) || (matchOreDict.getObject() && ItemStackHelper.matchingOreDictID(item1, stack))) {
+					if (ignoreDamage.getObject() || item1.getItemDamage() == stack.getItemDamage()) {
+						if (!matchNBT.getObject() || ItemStack.areItemStackTagsEqual(item1, stack)) {
+							return true;
+						}
 					}
 				}
 			}

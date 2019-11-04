@@ -148,6 +148,14 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 
 	@Override
 	public int onGSIClicked(DisplayScreenClick click, EntityPlayer player, double subClickX, double subClickY) {
+		double[] scaling = getActualScaling();
+		boolean needsPages = perPage < cachedList.size();
+		if (needsPages && subClickY > scaling[HEIGHT] - (scaling[HEIGHT] / 8)) {
+			int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
+			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);
+			return -1;
+		}
+
 		DisplayScreenClick subClick = new DisplayScreenClick().setClickPosition(new double[] { click.clickX - 0.5, click.clickY });
 		subClick.identity = click.identity;
 		subClick.doubleClick = click.doubleClick;
@@ -183,12 +191,6 @@ public abstract class NetworkGridElement<L> extends AbstractInfoElement<LogicInf
 			LogicInfoList list = (LogicInfoList) info;
 			L stack = slot < cachedList.size() ? cachedList.get(slot) : null;
 			onGridElementClicked(subClick, list, stack);
-		}
-
-		boolean needsPages = perPage < cachedList.size();
-		if (needsPages) {
-			int totalPages = (int) (Math.ceil((double) cachedList.size() / (double) perPage));
-			pageCount = DisplayElementHelper.doPageClick(subClickX, subClickY, getActualScaling(), pageCount, totalPages);
 		}
 		return -1;
 	}
