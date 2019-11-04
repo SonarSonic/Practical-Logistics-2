@@ -20,13 +20,20 @@ import java.util.List;
 public class GuiGuide extends GuiSelectionList<IGuidePage> {
 
 	public static IGuidePage currentPage;
-	public static int pagePos;
-	public static int currentPos = -1;
-	public int lastPos = -1;
-	public int lastPagePos = -1;
+	public static int currentPageId = -1;
+	public static int currentPageSection = 0;
+	public int lastPageId = -1;
+	public int lastPageSection = -1;
 	private SonarTextField searchField;
 	public boolean updateSearchList;
 	public int coolDown = 0;
+
+	////BUTTON IDS
+	public static final int RETURN = 0;
+	public static final int PREV_PAGE = -1;
+	public static final int NEXT_PAGE = -2;
+	public static final int PREV_SECTION = -3;
+	public static final int NEXT_SECTION = -4;
 
 	public GuiGuide(EntityPlayer player) {
 		super(new ContainerGuide(player), null);
@@ -34,7 +41,6 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		listWidth = 330;
 		this.xSize = 350;// (182 + 66);
 		this.ySize = 250;// 166
-
 	}
 
 	public double listScale() {
@@ -48,12 +54,12 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		if (scroller != null)
 			scroller.renderScroller = enableListRendering;
 		if (currentPage != null) {
-			currentPage.initGui(this, pagePos);
-			buttonList.add(new LogisticsButton(this, 0, guiLeft + 6, guiTop + 3, 512 - 24, 0, 16, 11, PL2Translate.BUTTON_BACK.t(), ""));
-			buttonList.add(new GuiButton(-1, guiLeft + 6, guiTop + ySize - 26, 20, 20, "<<"));
-			buttonList.add(new GuiButton(-2, guiLeft + xSize - 26, guiTop + ySize - 26, 20, 20, ">>"));
-			buttonList.add(new GuiButton(-3, guiLeft + 26, guiTop + ySize - 26, 20, 20, "<"));
-			buttonList.add(new GuiButton(-4, guiLeft + xSize - 26 - 20, guiTop + ySize - 26, 20, 20, ">"));
+			currentPage.initGui(this, currentPageSection);
+			buttonList.add(new LogisticsButton(this, RETURN, guiLeft + 6, guiTop + 3, 512 - 24, 0, 16, 11, PL2Translate.BUTTON_BACK.t(), ""));
+			buttonList.add(new GuiButton(PREV_PAGE, guiLeft + 6, guiTop + ySize - 26, 20, 20, "<<"));
+			buttonList.add(new GuiButton(NEXT_PAGE, guiLeft + xSize - 26, guiTop + ySize - 26, 20, 20, ">>"));
+			buttonList.add(new GuiButton(PREV_SECTION, guiLeft + 26, guiTop + ySize - 26, 20, 20, "<"));
+			buttonList.add(new GuiButton(NEXT_SECTION, guiLeft + xSize - 26 - 20, guiTop + ySize - 26, 20, 20, ">"));
 		} else {
 			infoList = GuidePageRegistry.pages;
 			Keyboard.enableRepeatEvents(true);
@@ -84,17 +90,17 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 
 	public void setCurrentPage(int pageID, int newPos) {
 		if (currentPage == null || currentPage.pageID() != pageID) {
-			lastPos = currentPage == null ? -1 : currentPage.pageID();
-			lastPagePos = currentPage == null ? -1 : pagePos;
+			lastPageId = currentPage == null ? -1 : currentPage.pageID();
+			lastPageSection = currentPage == null ? -1 : currentPageSection;
 			if (searchField != null)
 				searchField.setText("");
 			infoList = GuidePageRegistry.pages;
 			for (int i = 0; i < infoList.size(); i++) {
 				IGuidePage listPage = infoList.get(i);
 				if (listPage.pageID() == pageID) {
-					currentPos = i;
-					currentPage = infoList.get(currentPos);
-					pagePos = newPos;
+					currentPageId = i;
+					currentPage = infoList.get(currentPageId);
+					currentPageSection = newPos;
 					reset();
 					break;
 				}
@@ -103,13 +109,13 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	}
 
 	public void resetLastPos() {
-		this.lastPos = -1;
-		this.lastPagePos = -1;
+		this.lastPageId = -1;
+		this.lastPageSection = -1;
 	}
 
 	public void updatePage() {
-		currentPage = infoList.get(currentPos);
-		pagePos = 0;
+		currentPage = infoList.get(currentPageId);
+		currentPageSection = 0;
 		resetLastPos();
 		reset();
 		Element3DRenderer.reset();
@@ -125,52 +131,54 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 
 	public void buttonAction(int buttonID) {
 		switch (buttonID) {
-		case 0:
-			if (lastPos != -1) {
-				this.setCurrentPage(this.lastPos, this.lastPagePos);
-				this.lastPos = -1;
-				this.lastPagePos = -1;
+		case RETURN:
+			if (lastPageId != -1) {
+				this.setCurrentPage(this.lastPageId, this.lastPageSection);
+				this.lastPageId = -1;
+				this.lastPageSection = -1;
 				return;
 			} else if (currentPage != null) {
 				currentPage = null;
+				currentPageId = -1;
+				currentPageSection = 0;
 				reset();
 			} else {
 				Element3DRenderer.reset();
 				this.mc.player.closeScreen();
 			}
 			break;
-		case -1:
-			if (currentPos - 1 >= 0) {
-				currentPos--;
+		case PREV_PAGE:
+			if (currentPageId - 1 >= 0) {
+				currentPageId--;
 				updatePage();
 			} else {
-				currentPos = infoList.size() - 1;
+				currentPageId = infoList.size() - 1;
 				updatePage();
 			}
 			break;
-		case -2:
-			if (currentPos + 1 < infoList.size()) {
-				currentPos++;
+		case NEXT_PAGE:
+			if (currentPageId + 1 < infoList.size()) {
+				currentPageId++;
 				updatePage();
 			} else {
-				currentPos = 0;
+				currentPageId = 0;
 				updatePage();
 			}
 			break;
-		case -3:
-			if (pagePos - 1 >= 0) {
-				pagePos--;
+		case PREV_SECTION:
+			if (currentPageSection - 1 >= 0) {
+				currentPageSection--;
 			} else {
-				pagePos = currentPage.getPageCount() - 1;
+				currentPageSection = currentPage.getPageCount() - 1;
 			}
 			reset();
 			Element3DRenderer.reset();
 			break;
-		case -4:
-			if (pagePos + 1 < currentPage.getPageCount()) {
-				pagePos++;
+		case NEXT_SECTION:
+			if (currentPageSection + 1 < currentPage.getPageCount()) {
+				currentPageSection++;
 			} else {
-				pagePos = 0;
+				currentPageSection = 0;
 			}
 			reset();
 			Element3DRenderer.reset();
@@ -182,7 +190,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		if (currentPage != null) {
 			//net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
-			currentPage.drawPage(this, mouseX, mouseY, pagePos);
+			currentPage.drawPage(this, mouseX, mouseY, currentPageSection);
 			//net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 		}
 	}
@@ -191,9 +199,9 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (currentPage != null) {
 			FontHelper.textCentre(currentPage.getDisplayName(), xSize, 6, -1);
-			currentPage.drawForegroundPage(this, x, y, pagePos, 0);
-			FontHelper.textCentre("Sub Page: " + (pagePos + 1) + "/" + currentPage.getPageCount(), xSize, ySize - 26, -1);
-			FontHelper.textCentre("Page: " + (currentPos + 1) + "/" + infoList.size(), xSize, ySize - 16, -1);
+			currentPage.drawForegroundPage(this, x, y, currentPageSection, 0);
+			FontHelper.textCentre("Sub Page: " + (currentPageSection + 1) + "/" + currentPage.getPageCount(), xSize, ySize - 26, -1);
+			FontHelper.textCentre("Page: " + (currentPageId + 1) + "/" + infoList.size(), xSize, ySize - 16, -1);
 		} else {
 			FontHelper.text("Search: ", 8, 18, -1);
 			FontHelper.textCentre(PL2Translate.GUIDE_TITLE.t(), xSize, 6, -1);
@@ -208,7 +216,7 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	public void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		super.drawGuiContainerBackgroundLayer(var1, var2, var3);
 		if (currentPage != null) {
-			currentPage.drawBackgroundPage(this, var2, var3, pagePos);
+			currentPage.drawBackgroundPage(this, var2, var3, currentPageSection);
 		}
 	}
 
@@ -220,8 +228,8 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	@Override
 	public void selectionPressed(GuiButton button, int infoPos, int buttonID, IGuidePage info) {
 		currentPage = info;
-		pagePos = 0;
-		currentPos = infoPos;
+		currentPageSection = 0;
+		currentPageId = infoPos;
 		reset();
 	}
 
@@ -259,31 +267,33 @@ public class GuiGuide extends GuiSelectionList<IGuidePage> {
 	}
 
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if (keyCode == Keyboard.KEY_LEFT) {
-			if (pagePos == 0) {
-				this.buttonAction(-1);
-				pagePos = currentPage.getPageCount() - 1;
+		if (currentPage != null && keyCode == Keyboard.KEY_LEFT) {
+			if (currentPageSection == 0) {
+				this.buttonAction(PREV_PAGE);
+				currentPageSection = currentPage.getPageCount() - 1;
 				this.reset();
 			} else {
-				this.buttonAction(-3);
+				this.buttonAction(PREV_SECTION);
 			}
+
 			return;
 		} else if (keyCode == Keyboard.KEY_RIGHT) {
-			if (pagePos == currentPage.getPageCount() - 1) {
-				this.buttonAction(-2);
+			if (currentPage == null || currentPageSection == currentPage.getPageCount() - 1) {
+				this.buttonAction(NEXT_PAGE);
 			} else {
-				this.buttonAction(-4);
+				this.buttonAction(NEXT_SECTION);
 			}
 			return;
 		}
+
 		Element3DRenderer.reset();
 		if ((keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode)) && currentPage != null) {
-			if (lastPos == -1 || lastPagePos == -1) {
+			if (lastPageId == -1 || lastPageSection == -1) {
 				currentPage = null;
 				reset();
 				return;
 			}
-			setCurrentPage(lastPos, lastPagePos);
+			setCurrentPage(lastPageId, lastPageSection);
 			resetLastPos();
 			reset();
 			return;
