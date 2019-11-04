@@ -4,5 +4,4 @@ package sonar.logistics.base.data.sources;
 public interface IDataSource {
 
 
-
 }

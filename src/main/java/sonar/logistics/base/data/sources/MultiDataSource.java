@@ -1,6 +1,5 @@
 package sonar.logistics.base.data.sources;
 
-import sonar.logistics.base.channels.ChannelList;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
 
@@ -9,10 +8,10 @@ import java.util.List;
 
 public class MultiDataSource implements IDataMultiSource {
 
-    public final ChannelList list;
+    public final MultiSourceList list;
     public final INetworkTile tile;
 
-    public MultiDataSource(ChannelList list, INetworkTile tile){
+    public MultiDataSource(MultiSourceList list, INetworkTile tile){
         this.list = list;
         this.tile = tile;
     }

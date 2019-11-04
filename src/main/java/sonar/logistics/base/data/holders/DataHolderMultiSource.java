@@ -2,17 +2,16 @@ package sonar.logistics.base.data.holders;
 
 import sonar.logistics.base.data.api.IDataCombinable;
 import sonar.logistics.base.data.api.IDataFactory;
-import sonar.logistics.base.data.api.IDataHolder;
 import sonar.logistics.base.data.api.IDataWatcher;
 import sonar.logistics.base.data.sources.IDataMultiSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataHolderMultiSource<D extends IDataCombinable> extends DataHolder<D, DataHolderMultiSource<D>> implements IDataWatcher {
+public class DataHolderMultiSource<D extends IDataCombinable> extends DataHolder implements IDataWatcher {
 
-    public final List<IDataHolder> subDataHolders;
-    public final List<IDataHolder<IDataCombinable>> changedHolders;
+    public final List<DataHolder> subDataHolders;
+    public final List<DataHolder> changedHolders;
     public final IDataFactory<D> factory;
 
     public DataHolderMultiSource(IDataMultiSource source, IDataFactory<D> factory, int tickRate) {
@@ -20,32 +19,31 @@ public class DataHolderMultiSource<D extends IDataCombinable> extends DataHolder
         subDataHolders = new ArrayList<>();
         changedHolders = new ArrayList<>();
         this.factory = factory;
-
     }
 
-    public void addDataHolder(IDataHolder<D> holder){
+    public void addDataHolder(DataHolder holder){
         if(holder != null)
             subDataHolders.add(holder);
     }
 
-    public void removeDataHolder(IDataHolder<D> holder){
+    public void removeDataHolder(DataHolder holder){
         if(holder != null)
             subDataHolders.remove(holder);
     }
 
     @Override
-    public boolean isWatched() {
-        return this.hasWatchers();
+    public boolean isWatcherActive() {
+        return hasWatchers;
     }
 
     @Override
-    public List<IDataHolder> getDataHolders() {
+    public List<DataHolder> getDataHolders() {
         return subDataHolders;
     }
 
     @Override
-    public void onDataChanged(IDataHolder holder){
-        if(holder.getData() instanceof IDataCombinable){
+    public void onDataChanged(DataHolder holder){
+        if(holder.data instanceof IDataCombinable){
             changedHolders.add(holder);
         }
     }
@@ -63,9 +61,9 @@ public class DataHolderMultiSource<D extends IDataCombinable> extends DataHolder
 
     public void updateMultiSourceData(){
         boolean changed = false;
-        for(IDataHolder<IDataCombinable> holder : changedHolders) {
-            if (getData().canCombine(holder.getData())) {
-                if(getData().doCombine(holder.getData())){
+        for(DataHolder holder : changedHolders) {
+            if (((IDataCombinable)data).canCombine((IDataCombinable)holder.data)) {
+                if(((IDataCombinable)data).doCombine((IDataCombinable)holder.data)){
                     changed = true;
                 }
             }
