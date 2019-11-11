@@ -1,5 +1,5 @@
 package sonar.logistics.core.tiles.readers.items;
-
+/*
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
@@ -11,7 +11,6 @@ import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.core.tiles.readers.items.InventoryReader.Modes;
 import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
-import sonar.logistics.core.tiles.readers.items.handling.ItemNetworkChannels;
 
 import javax.annotation.Nonnull;
 
@@ -79,12 +78,14 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 		}
 
 
+		/* TODO make smarted version of this
 		ItemNetworkChannels channels = part.getNetwork().getNetworkChannels(ItemNetworkChannels.class);
 		if (channels != null)
 			channels.sendLocalRapidUpdate(part, player);
 		this.detectAndSendChanges();
 
-		return itemstack;
+
+import javax.annotation.Nonnull;return itemstack;
 	}
 
 	public void onContainerClosed(EntityPlayer player) {
@@ -111,3 +112,4 @@ public class ContainerInventoryReader extends ContainerMultipartSync implements 
 		return part.setting.getObject();
 	}
 }
+*/

@@ -1,14 +1,18 @@
 package sonar.logistics.base.data.api;
 
+import sonar.logistics.base.data.api.methods.IMethod;
 import sonar.logistics.base.data.holders.DataHolder;
-import sonar.logistics.base.data.sources.IDataSource;
 
-/**used for generating {@IData} from a specific {@IDataSource}
- * also responsible for creating the correct IDataHolder*/
-public interface IDataGenerator<S extends IDataSource, D extends IData> {
+import java.util.List;
 
-    boolean canGenerateForSource(IDataSource source);
+public interface IDataGenerator<D extends IData> {
 
-    boolean updateData(DataHolder holder, D data, S source);
+    Class<D> getDataType();
+
+    IMethod getDataMethod();
+
+    void generateData(D data, List<DataHolder> validHolders);
+
+    boolean isValidHolder(DataHolder holder);
 
 }

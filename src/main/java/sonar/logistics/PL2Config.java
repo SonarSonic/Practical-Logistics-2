@@ -20,14 +20,14 @@ public class PL2Config extends PL2 {
 	public static void loadMainConfig() {
 		Configuration config = new Configuration(new File("config/Practical-Logistics/Main-Config.cfg"));
 		config.load();
-		inventoryUpdate = config.getInt("Inventory Reader Rate", "settings", 20, 0, 100, "how frequently to update inventories, increase if server is lagging");
-		fluidUpdate = config.getInt("Fluid Reader Rate", "settings", 10, 0, 100, "how frequently to update fluids, increase if server is lagging");
-		energyUpdate = config.getInt("Energy Reader Rate", "settings", 10, 0, 100, "how frequently to update energy, increase if server is lagging");
-		infoUpdate = config.getInt("Info Reader Rate", "settings", 20, 0, 100, "how frequently to update info, increase if server is lagging");
+		inventoryUpdate = config.getInt("Inventory Reader Rate", "settings", 20, 0, 100, "how frequently to updateData inventories, increase if server is lagging");
+		fluidUpdate = config.getInt("Fluid Reader Rate", "settings", 10, 0, 100, "how frequently to updateData fluids, increase if server is lagging");
+		energyUpdate = config.getInt("Energy Reader Rate", "settings", 10, 0, 100, "how frequently to updateData energy, increase if server is lagging");
+		infoUpdate = config.getInt("Info Reader Rate", "settings", 20, 0, 100, "how frequently to updateData info, increase if server is lagging");
 
 		log_connection_events = config.getBoolean("Log Connection Events", "settings", false, "logs when anything is connected to and from a networks, good for debugging");
 
-		transferUpdate = config.getInt("Transfer Network Rate", "settings", 20, 0, 100, "how frequently to update each Transfer Node, increase if server is lagging");
+		transferUpdate = config.getInt("Transfer Network Rate", "settings", 20, 0, 100, "how frequently to updateData each Transfer Node, increase if server is lagging");
 		
 		sapphireOre = config.getBoolean("Generate Ore", "sapphire_ore", true, "Should Sapphire Ore be spawned in the world.");
 		sapphireMinVeinSize = config.getInt("Min Vein Size", "sapphire_ore", 2, 1, 500, "the smallest amount of sapphire found in one vein");

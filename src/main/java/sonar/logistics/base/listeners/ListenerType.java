@@ -8,19 +8,19 @@ import java.util.List;
 
 public enum ListenerType {
 
-	NEW_GUI_LISTENER(UpdateType.GUI, SyncType.SAVE, 10), // should update all entire monitored info list, and send it
+	NEW_GUI_LISTENER(UpdateType.GUI, SyncType.SAVE, 10), // should updateData all entire monitored info list, and send it
 
-	TEMPORARY_LISTENER(UpdateType.GUI, SyncType.SAVE, 1), // should update everything shown in gui?
+	TEMPORARY_LISTENER(UpdateType.GUI, SyncType.SAVE, 1), // should updateData everything shown in gui?
 
-	OLD_GUI_LISTENER(UpdateType.GUI, SyncType.DEFAULT_SYNC, 0), // should update monitored list, but only send changes
+	OLD_GUI_LISTENER(UpdateType.GUI, SyncType.DEFAULT_SYNC, 0), // should updateData monitored list, but only send changes
 
-	NEW_DISPLAY_LISTENER(UpdateType.DISPLAY, SyncType.SAVE, 10), // should update all info/monitored list on display, and send it
+	NEW_DISPLAY_LISTENER(UpdateType.DISPLAY, SyncType.SAVE, 10), // should updateData all info/monitored list on display, and send it
 
-	OLD_DISPLAY_LISTENER(UpdateType.DISPLAY, SyncType.DEFAULT_SYNC, 0), // should update all info/monitored list on display, but only send changes
+	OLD_DISPLAY_LISTENER(UpdateType.DISPLAY, SyncType.DEFAULT_SYNC, 0), // should updateData all info/monitored list on display, but only send changes
 
-	NEW_CHANNEL_LISTENER(UpdateType.CHANNEL, SyncType.SAVE, 10), // should update channels list, and send it
+	NEW_CHANNEL_LISTENER(UpdateType.CHANNEL, SyncType.SAVE, 10), // should updateData channels list, and send it
 
-	OLD_CHANNEL_LISTENER(UpdateType.CHANNEL, SyncType.DEFAULT_SYNC, 0), // should update channel list, and send changes.
+	OLD_CHANNEL_LISTENER(UpdateType.CHANNEL, SyncType.DEFAULT_SYNC, 0), // should updateData channel list, and send changes.
 
 	NONE(UpdateType.NONE, SyncType.NONE, 0); // nothing needs updating
 

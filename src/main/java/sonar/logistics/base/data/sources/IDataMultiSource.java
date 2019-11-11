@@ -7,4 +7,6 @@ public interface IDataMultiSource extends IDataSource {
 
     List<IDataSource> getDataSources();
 
+    int getIdentity();
+
 }

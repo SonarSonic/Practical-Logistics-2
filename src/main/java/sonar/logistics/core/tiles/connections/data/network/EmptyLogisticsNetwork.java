@@ -9,6 +9,7 @@ import sonar.logistics.api.core.tiles.connections.data.network.INetworkItemHandl
 import sonar.logistics.api.core.tiles.readers.IInfoProvider;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.base.channels.NodeConnection;
+import sonar.logistics.base.data.sources.IDataMultiSource;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.core.tiles.displays.info.types.channels.MonitoredBlockCoords;
@@ -76,6 +77,11 @@ public class EmptyLogisticsNetwork implements ILogisticsNetwork {
 	@Override
 	public InfoChangeableList<MonitoredBlockCoords> createConnectionsList(CacheType cacheType) {
 		return new InfoChangeableList();
+	}
+
+	@Override
+	public IDataMultiSource getSources() {
+		return null;
 	}
 
 	@Override

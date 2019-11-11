@@ -23,7 +23,7 @@ public interface IMasterInfoRegistry {
 	/**registers a valid Return Type which can be used to provide LogicInfo*/
     void registerValidReturn(Class<?> classType);
 	
-	/**attempts to register all accessible methods in the given Class which can be used to provide LogicInfo, 
+	/**attempts to register all accessible methods in the given Class which can be used to provide LogicInfo,
 	 * only methods with Valid Returns will be registered, use the "registerReturn" method to make sure a specific return type is registered*/
     void registerMethods(Class<?> classType, RegistryType type);
 

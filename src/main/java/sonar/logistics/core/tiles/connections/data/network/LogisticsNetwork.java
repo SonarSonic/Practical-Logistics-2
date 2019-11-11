@@ -17,8 +17,12 @@ import sonar.logistics.api.core.tiles.readers.IListReader;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.api.core.tiles.wireless.emitters.IDataEmitter;
 import sonar.logistics.api.core.tiles.wireless.receivers.IDataReceiver;
+import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.NodeConnection;
 import sonar.logistics.base.channels.PacketChannels;
+import sonar.logistics.base.data.sources.IDataMultiSource;
+import sonar.logistics.base.data.sources.MultiDataSource;
+import sonar.logistics.base.data.sources.SourceCoord4D;
 import sonar.logistics.base.filters.ITransferFilteredTile;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
@@ -46,6 +50,8 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 	public List<IInfoProvider> globalProviders = new ArrayList<>();
 	private Map<CacheHandler, List> caches = LogisticsHelper.getCachesMap();
 	private List<NodeConnection> localChannels = new ArrayList<>(), globalChannels = new ArrayList<>(), allChannels = new ArrayList<>();
+	private IDataMultiSource all_sources = new MultiDataSource(Lists.newArrayList());
+
 	private long tickStart = 0;
 	private long updateTick = 0; // in nano seconds
 
@@ -89,6 +95,11 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		InfoChangeableList list = new InfoChangeableList();
 		getConnections(cacheType).forEach(CHANNEL -> list.add(CHANNEL.getChannel()));
 		return list;
+	}
+
+	@Override
+	public IDataMultiSource getSources() {
+		return all_sources;
 	}
 
 	public <T extends INetworkTile> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType) {
@@ -171,6 +182,18 @@ public class LogisticsNetwork implements ILogisticsNetwork {
 		NodeConnection.sortConnections(all);
 		this.allChannels = all;
 		updateHandlerChannels();
+
+		///FIXME - TEMPORARY!
+
+		all_sources.getDataSources().clear();
+		for(NodeConnection node : allChannels)
+			if(node instanceof BlockConnection) {
+				BlockConnection connection = (BlockConnection) node;
+				SourceCoord4D coord4D = new SourceCoord4D(connection.coords.getX(),connection.coords.getY(),connection.coords.getZ(),connection.coords.getDimension(), connection.face);
+				ListHelper.addWithCheck(all_sources.getDataSources(), coord4D);
+			}
+
+		//DataManager.instance().onMultiSourceChanged(all_sources); FIXME
 	}
 
 	public void createGlobalProviders() {

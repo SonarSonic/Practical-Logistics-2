@@ -1,5 +1,5 @@
 package sonar.logistics.integration.ae2;
-
+/*
 import appeng.api.storage.ICellInventory;
 import appeng.api.storage.ICellInventoryHandler;
 import appeng.api.storage.IMEInventoryHandler;
@@ -127,3 +127,4 @@ public class AE2DriveInfo extends BaseInfo<AE2DriveInfo> implements IProvidableI
 		//custom handlers
 	}
 }
+*/

@@ -42,7 +42,7 @@ public class InfoHelper {
 				if (change.shouldUpdate()) {
 					NBTTagCompound compound = new NBTTagCompound();
 					IInfo info = value.getSaveableInfo();
-					list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE));// change to sync so info can do it's update
+					list.appendTag(InfoHelper.writeInfoToNBT(compound, info, SyncType.SAVE));// change to sync so info can do it's updateData
 					if (value.shouldDelete(change))
 						compound.setBoolean(REMOVED, true);
 				}

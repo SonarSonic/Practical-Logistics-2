@@ -52,7 +52,7 @@ public class TileArray extends TileSidedLogistics implements INode, IFlexibleGui
 
 	public void update() {
 		super.update();
-		/* TODO update entities properly if (isServer() && entityChanged) { this.updateConnectionLists(); } */
+		/* TODO updateData entities properly if (isServer() && entityChanged) { this.updateConnectionLists(); } */
 	}
 
 	@Override

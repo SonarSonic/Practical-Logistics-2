@@ -1,5 +1,5 @@
 package sonar.logistics.integration.fluxnetworks;
-
+/*
 import com.google.common.collect.Lists;
 import sonar.flux.api.AccessType;
 import sonar.flux.api.network.EnergyStats;
@@ -44,3 +44,4 @@ public class FluxNetworksRegistry implements IInfoRegistry {
 	}
 	
 }
+*/

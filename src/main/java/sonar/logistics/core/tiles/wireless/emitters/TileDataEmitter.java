@@ -22,8 +22,6 @@ import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.base.listeners.PL2ListenerList;
 import sonar.logistics.core.tiles.displays.info.types.fluids.InfoNetworkFluid;
 import sonar.logistics.core.tiles.displays.info.types.items.MonitoredItemStack;
-import sonar.logistics.core.tiles.readers.fluids.handling.FluidNetworkHandler;
-import sonar.logistics.core.tiles.readers.items.handling.ItemNetworkHandler;
 import sonar.logistics.core.tiles.wireless.handling.WirelessDataManager;
 
 import java.util.List;
@@ -86,9 +84,7 @@ public class TileDataEmitter extends TileAbstractEmitter implements IDataEmitter
 
 	@Override
 	public List<INetworkHandler> getValidHandlers() {
-		if (validHandlers == null) {
-			validHandlers = Lists.newArrayList(ItemNetworkHandler.INSTANCE, FluidNetworkHandler.INSTANCE);
-		}
+		//TODO REMOVE THIS METHOD
 		return validHandlers;
 	}
 

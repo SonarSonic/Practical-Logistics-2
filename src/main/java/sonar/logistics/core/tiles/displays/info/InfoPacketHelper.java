@@ -37,7 +37,6 @@ import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 import sonar.logistics.core.tiles.misc.signaller.TileRedstoneSignaller;
 import sonar.logistics.core.tiles.readers.fluids.handling.FluidNetworkChannels;
 import sonar.logistics.core.tiles.readers.info.handling.InfoHelper;
-import sonar.logistics.core.tiles.readers.items.handling.ItemNetworkChannels;
 import sonar.logistics.core.tiles.wireless.base.PacketClientEmitters;
 import sonar.logistics.network.packets.PacketInfoUpdates;
 import sonar.logistics.network.packets.PacketLocalProviders;
@@ -159,10 +158,12 @@ public class InfoPacketHelper {
 	}
 
 	public static void createRapidItemUpdate(List<ItemStack> toUpdate, int networkID) {
+		/* TODO
 		ItemNetworkChannels channels = NetworkHelper.getNetwork(networkID).getNetworkChannels(ItemNetworkChannels.class);
 		if (channels != null) {
 			channels.createRapidItemUpdate(toUpdate);
 		}
+		*/
 	}
 
 	public static void sendRapidItemUpdate(ILogicListenable reader, InfoUUID listUUID, ItemChangeableList list, List<ItemStack> toUpdate) {

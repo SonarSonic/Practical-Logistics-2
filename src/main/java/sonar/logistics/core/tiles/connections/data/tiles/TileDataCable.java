@@ -160,11 +160,11 @@ public class TileDataCable extends TileSonarMultipart implements IDataCable, IOp
 					CableConnectionHandler.instance().addConnection(adjCable);
 					CableConnectionHandler.instance().addConnection(this);
 					
-					//update connections
+					//updateData connections
 
 					ILogisticsNetwork thisNet = LogisticsNetworkHandler.instance().getOrCreateNetwork(getRegistryID());
 					ILogisticsNetwork adjNetNet = LogisticsNetworkHandler.instance().getOrCreateNetwork(adjCable.getRegistryID());
-					//update cable render
+					//updateData cable render
 					SonarMultipartHelper.sendMultipartUpdateSyncAround(this, 128);
 					SonarMultipartHelper.sendMultipartUpdateSyncAround(adjCable, 128);
 				}

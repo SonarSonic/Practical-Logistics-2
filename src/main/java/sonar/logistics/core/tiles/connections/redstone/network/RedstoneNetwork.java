@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RedstoneNetwork implements IRedstoneNetwork {
 
-	public final List<IRedstonePowerProvider> providers = new ArrayList<>(); // local providers
+	public final List<IRedstonePowerProvider> providers = new ArrayList<>(); // local methods
 	public final List<IRedstoneReceiver> receivers = new ArrayList<>(); // receivers
 	public final List<IRedstoneEmitter> emitters = new ArrayList<>(); // emitters
 	public final ListenableList<IRedstoneNetwork> subNetworks = new ListenableList(this, 2);

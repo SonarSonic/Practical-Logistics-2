@@ -36,7 +36,7 @@ public class LogisticsNetworkHandler {
 		Set<Entry<Integer, ILogisticsNetwork>> entrySet = cache.entrySet();
 		for (final Iterator<Entry<Integer, ILogisticsNetwork>> iterator = entrySet.iterator(); iterator.hasNext();) {
 			Entry<Integer, ILogisticsNetwork> entry = iterator.next();
-			ILogisticsNetwork network = entry.getValue(); // TODO does it need to update networkID
+			ILogisticsNetwork network = entry.getValue(); // TODO does it need to updateData networkID
 			if (!network.isValid()) {			
 				iterator.remove();
 			} else {

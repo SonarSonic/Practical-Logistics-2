@@ -10,7 +10,7 @@ import sonar.logistics.api.base.IInfoManager;
 import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.channels.PacketChannels;
-import sonar.logistics.base.data.DataFactory;
+import sonar.logistics.base.data.DataManager;
 import sonar.logistics.base.events.LogisticsEventHandler;
 import sonar.logistics.core.tiles.connections.data.handling.CableConnectionHandler;
 import sonar.logistics.core.tiles.connections.data.network.LogisticsNetworkHandler;
@@ -34,7 +34,7 @@ public class PL2Common {
 	public DisplayHandler server_display_manager;
 	public DisplayViewerHandler chunkViewer;
 	public LogisticsEventHandler eventHandler;
-	public DataFactory dataFactory;
+	public DataManager dataManager;
 	public static int PACKET_ID = 0;
 	
 	public static void registerPackets() {
@@ -42,7 +42,7 @@ public class PL2Common {
 		PL2.network.registerMessage(PacketMonitoredList.Handler.class, PacketMonitoredList.class, PACKET_ID++, Side.CLIENT);
 		PL2.network.registerMessage(PacketChannels.Handler.class, PacketChannels.class, PACKET_ID++, Side.CLIENT);
 		PL2.network.registerMessage(PacketInfoUpdates.Handler.class, PacketInfoUpdates.class, PACKET_ID++, Side.CLIENT);
-		PL2.network.registerMessage(PacketInventoryReader.Handler.class, PacketInventoryReader.class, PACKET_ID++, Side.SERVER);
+		//PL2.network.registerMessage(PacketInventoryReader.Handler.class, PacketInventoryReader.class, PACKET_ID++, Side.SERVER);
 		PL2.network.registerMessage(PacketClientEmitters.Handler.class, PacketClientEmitters.class, PACKET_ID++, Side.CLIENT);
 		PL2.network.registerMessage(PacketLocalProviders.Handler.class, PacketLocalProviders.class, PACKET_ID++, Side.CLIENT);
 		PL2.network.registerMessage(PacketConnectedDisplayUpdate.Handler.class, PacketConnectedDisplayUpdate.class, PACKET_ID++, Side.CLIENT);
@@ -89,8 +89,8 @@ public class PL2Common {
 		networkManager = new LogisticsNetworkHandler();
 		PL2.logger.info("Initialised Network Handler");
 
-		dataFactory = new DataFactory();
-		PL2.logger.info("Initialised Data Factory");
+		dataManager = new DataManager();
+		PL2.logger.info("Initialised Data Manager");
 		
 		wirelessDataManager = new WirelessDataManager();
 		PL2.logger.info("Initialised Wireless Data Manager");

@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import sonar.core.SonarCore;
@@ -14,42 +13,42 @@ import sonar.core.handlers.inventories.handling.ItemTransferHelper;
 import sonar.core.network.PacketStackUpdate;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.displays.info.lists.AbstractChangeableList;
-import sonar.logistics.api.core.tiles.displays.info.lists.IMonitoredValue;
 import sonar.logistics.api.core.tiles.readers.IListReader;
 import sonar.logistics.base.channels.BlockConnection;
 import sonar.logistics.base.channels.EntityConnection;
-import sonar.logistics.base.channels.NodeConnection;
-import sonar.logistics.base.data.generators.items.ITileInventoryProvider;
-import sonar.logistics.core.tiles.displays.info.MasterInfoRegistry;
-import sonar.logistics.core.tiles.displays.info.types.items.ItemChangeableList;
 import sonar.logistics.core.tiles.displays.info.types.items.MonitoredItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.Map.Entry;
 import java.util.function.Predicate;
 
 import static sonar.core.handlers.inventories.handling.ItemTransferHelper.doSimpleTransfer;
 import static sonar.core.handlers.inventories.handling.ItemTransferHelper.getMainInventoryHandler;
 
+@Deprecated
 public class ItemHelper {
 
+	@Deprecated
 	@Nonnull
 	public static IItemHandler getNetworkItemHandler(ILogisticsNetwork network){
 		return network.getNetworkItemHandler().initiliseTransfer();
 	}
 
+	@Deprecated
 	public static void transferPlayerInventoryToNetwork(EntityPlayer player, ILogisticsNetwork network, Predicate<ItemStack> filter, int toTransfer){
 		doSimpleTransfer(Lists.newArrayList(getMainInventoryHandler(player)), Lists.newArrayList(getNetworkItemHandler(network)), filter, toTransfer);
 	}
 
+	@Deprecated
 	public static void transferNetworkInventoryToPlayer(EntityPlayer player, ILogisticsNetwork network, Predicate<ItemStack> filter, int toTransfer){
 		doSimpleTransfer(Lists.newArrayList(getNetworkItemHandler(network)), Lists.newArrayList(getMainInventoryHandler(player)), filter, toTransfer);
 	}
 
+	@Deprecated
 	public static ItemStack insertItemStack(ILogisticsNetwork network, ItemStack stack, int toTransfer){
 		return ItemHandlerHelper.insertItem(getNetworkItemHandler(network), stack, false);
 	}
 
+	@Deprecated
 	public static ItemStack extractItemStack(ILogisticsNetwork network, Predicate<ItemStack> filter, int toTransfer){
 		return ItemTransferHelper.doExtract(Lists.newArrayList(getNetworkItemHandler(network)), filter, toTransfer);
 	}
@@ -63,7 +62,9 @@ public class ItemHelper {
 	}
 	*/
 
+	@Deprecated
 	public static long getItemCount(ItemStack stack, ILogisticsNetwork network) {
+		/* TODO FIX ME!
 		if (network.isValid()) {
 			ItemNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
 			channels.updateLargeInventory = true;
@@ -80,6 +81,7 @@ public class ItemHelper {
 			}
 			return updateList.getItemCount(stack);
 		}
+		*/
 		return 0;
 
 	}
@@ -115,6 +117,7 @@ public class ItemHelper {
 
 	@Deprecated
 	public static StoredItemStack getTileStack(BlockConnection connection, int slot) {
+		/*
 		TileEntity tile = connection.coords.getTileEntity();
 		for (ITileInventoryProvider provider : MasterInfoRegistry.INSTANCE.inventoryProviders) {
 			IItemHandler handler = provider.getHandler(tile, connection.face);
@@ -122,6 +125,7 @@ public class ItemHelper {
 				return new StoredItemStack(handler.getStackInSlot(slot));
 			}
 		}
+		*/
 		return null;
 	}
 

@@ -1,5 +1,5 @@
 package sonar.logistics.core.tiles.readers.items;
-
+/*
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -236,3 +236,4 @@ public class GuiInventoryReader extends GuiSelectionGrid<MonitoredItemStack> {
 		}
 	}
 }
+*/

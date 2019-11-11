@@ -10,10 +10,8 @@ import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.logistics.PL2Items;
 import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
 import sonar.logistics.api.core.tiles.wireless.emitters.IDataEmitter;
-import sonar.logistics.base.channels.handling.ListNetworkChannels;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
-import sonar.logistics.core.tiles.readers.items.handling.ItemNetworkChannels;
 import sonar.logistics.core.tiles.wireless.handling.WirelessDataManager;
 
 public class ContainerStorageViewer extends Container {
@@ -60,8 +58,11 @@ public class ContainerStorageViewer extends Container {
 					} else {
 						itemstack1 = ItemHelper.insertItemStack(network, itemstack1, 64);
 					}
+					/* TODO MAKE SMARTER VERSION OF THIS
 					ListNetworkChannels channels = network.getNetworkChannels(ItemNetworkChannels.class);
+
 					if (channels != null) channels.sendLocalRapidUpdate(emitter, player);
+					*/
 					this.detectAndSendChanges();
 				}
 			} else if (id < 27) {

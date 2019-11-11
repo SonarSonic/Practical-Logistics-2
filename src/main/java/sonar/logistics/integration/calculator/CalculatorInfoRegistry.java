@@ -1,5 +1,5 @@
 package sonar.logistics.integration.calculator;
-
+/*
 import com.google.common.collect.Lists;
 import sonar.calculator.mod.api.machines.IFlawlessGreenhouse;
 import sonar.calculator.mod.api.machines.IGreenhouse;
@@ -38,3 +38,4 @@ public class CalculatorInfoRegistry implements IInfoRegistry {
 	}
 
 }
+*/

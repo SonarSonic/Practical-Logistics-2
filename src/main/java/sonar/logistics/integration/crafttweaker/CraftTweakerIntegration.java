@@ -1,5 +1,5 @@
 package sonar.logistics.integration.crafttweaker;
-
+/*
 import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
@@ -28,3 +28,4 @@ public class CraftTweakerIntegration {
 		}
 	}
 }
+*/
