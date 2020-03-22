@@ -15,4 +15,6 @@ public interface IDataGenerator<D extends IData> {
 
     boolean isValidHolder(DataHolder holder);
 
+    //FIXME - WRITE TO NBT / READ FROM NBT
+
 }

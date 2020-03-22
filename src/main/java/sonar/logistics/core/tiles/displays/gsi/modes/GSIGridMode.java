@@ -60,7 +60,7 @@ public class GSIGridMode implements IGSIMode {
 
 		// render the other containers
 		for (DisplayElementContainer container : gsi.containers.values()) {
-			if (!gsi.isEditContainer(container) && containerResizing != container.getContainerIdentity()) {
+			if (containerResizing != container.getContainerIdentity()) {
 				double[] translation = container.getTranslation();
 				double[] scaling = container.getContainerMaxScaling();
 				DisplayElementHelper.drawRect(translation[0], translation[1], translation[0] + scaling[0], translation[1] + scaling[1], new CustomColour(255, 153, 51).getRGB());
@@ -91,11 +91,6 @@ public class GSIGridMode implements IGSIMode {
 
 	@Override
 	public boolean renderElements() {
-		return false;
-	}
-
-	@Override
-	public boolean renderEditContainer() {
 		return false;
 	}
 

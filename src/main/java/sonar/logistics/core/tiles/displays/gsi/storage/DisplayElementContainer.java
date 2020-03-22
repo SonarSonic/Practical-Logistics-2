@@ -85,14 +85,11 @@ public class DisplayElementContainer implements IElementStorageHolder, INBTSynca
 			elements.forEach(IDisplayRenderable::updateRender);
 			DisplayElementHelper.align(getAlignmentTranslation());
 			DisplayElementHelper.renderElementStorageHolder(this);
-			if (!gsi.isEditContainer(this)) {
-				translate(0, 0, -0.02);
-				if (gsi.mode == gsi.selection_mode) {
-					if (gsi.selection_mode.selected_identities.contains(getContainerIdentity())) {
-						DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], gsi.selection_mode.selectionType.getTypeColour());
-					}
+			translate(0, 0, -0.02);
+			if (gsi.mode == gsi.selection_mode) {
+				if (gsi.selection_mode.selected_identities.contains(getContainerIdentity())) {
+					DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], gsi.selection_mode.selectionType.getTypeColour());
 				}
-				/* translate(0, 0, -0.002); CustomColour green = new CustomColour(255, 255, 255); double borderWidth = 0.0625 / 8; DisplayElementHelper.drawRect(0, 0, getContainerMaxScaling()[0], borderWidth, green.getRGB()); DisplayElementHelper.drawRect(0, getContainerMaxScaling()[1] - borderWidth, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB()); DisplayElementHelper.drawRect(0, 0, borderWidth, getContainerMaxScaling()[1], green.getRGB()); DisplayElementHelper.drawRect(getContainerMaxScaling()[0] - borderWidth, 0, getContainerMaxScaling()[0], getContainerMaxScaling()[1], green.getRGB()); */
 			}
 			popMatrix();
 		}

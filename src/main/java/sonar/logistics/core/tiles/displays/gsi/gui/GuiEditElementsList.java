@@ -53,11 +53,9 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 	public void updateElementsList() {
 		List elements = new ArrayList<>();
 		for (DisplayElementContainer c : gsi.containers.values()) {
-			if (!gsi.isEditContainer(c)) {
-				elements.add(c);
-				for (IDisplayElement e : c.getElements()) {
-					elements.add(e);
-				}
+			elements.add(c);
+			for (IDisplayElement e : c.getElements()) {
+				elements.add(e);
 			}
 		}
 		this.elements = elements;
@@ -204,7 +202,7 @@ public class GuiEditElementsList extends GuiAbstractEditGSI implements IGridGui 
 		GlStateManager.scale(getActualScaling()[2], getActualScaling()[2], 1);
 		for (DisplayElementContainer container : gsi.containers.values()) {
 			boolean match = selected.stream().anyMatch(e -> e.getHolder().getContainer() == container);
-			if (match && container.canRender() && !gsi.isEditContainer(container)) {
+			if (match && container.canRender()) {
 				double[] translation = container.getTranslation();
 				double[] scaling = container.getContainerMaxScaling();
 				sonar.core.helpers.RenderHelper.saveBlendState();

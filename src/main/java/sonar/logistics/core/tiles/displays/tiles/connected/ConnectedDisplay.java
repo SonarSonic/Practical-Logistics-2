@@ -28,7 +28,6 @@ import sonar.logistics.core.tiles.connections.data.handling.CableConnectionHelpe
 import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayHelper;
 import sonar.logistics.core.tiles.displays.gsi.DisplayGSI;
-import sonar.logistics.core.tiles.displays.gsi.storage.EditContainer;
 import sonar.logistics.core.tiles.displays.tiles.DisplayVectorHelper;
 import sonar.logistics.core.tiles.displays.tiles.TileAbstractDisplay;
 
@@ -75,9 +74,6 @@ public class ConnectedDisplay implements IDisplay, INBTSyncable, ISyncPart, ISyn
         if (tag != null) {
             display.readData(tag, SyncType.SAVE);
             ConnectedDisplayData.unloadedDisplays.remove(registryID);
-        }
-        if (world.isRemote) {
-            EditContainer.addEditContainer(display.gsi);
         }
         return display;
     }

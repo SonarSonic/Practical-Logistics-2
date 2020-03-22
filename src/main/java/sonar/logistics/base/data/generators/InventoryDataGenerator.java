@@ -11,6 +11,8 @@ import java.util.List;
 
 public class InventoryDataGenerator implements IDataGenerator<InventoryData> {
 
+    public InventoryDataGenerator(){}
+
     @Override
     public Class<InventoryData> getDataType() {
         return InventoryData.class;

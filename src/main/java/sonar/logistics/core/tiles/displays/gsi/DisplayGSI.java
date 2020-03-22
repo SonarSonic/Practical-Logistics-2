@@ -20,7 +20,6 @@ import sonar.core.helpers.ListHelper;
 import sonar.core.helpers.NBTHelper.SyncType;
 import sonar.core.listener.ISonarListener;
 import sonar.core.network.sync.*;
-import sonar.core.network.sync.SyncTagType.BOOLEAN;
 import sonar.core.network.sync.SyncTagType.INT;
 import sonar.logistics.PL2;
 import sonar.logistics.PL2Logging;
@@ -34,23 +33,21 @@ import sonar.logistics.base.guidance.errors.IInfoError;
 import sonar.logistics.base.listeners.ILogicListenable;
 import sonar.logistics.base.listeners.ListenerType;
 import sonar.logistics.base.requests.colour.GuiColourSelection;
-import sonar.logistics.base.utils.LogisticsHelper;
 import sonar.logistics.core.tiles.displays.DisplayHandler;
 import sonar.logistics.core.tiles.displays.DisplayInfoReferenceHandler;
 import sonar.logistics.core.tiles.displays.DisplayViewerHandler;
-import sonar.logistics.core.tiles.displays.gsi.gui.GuiEditElementsList;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenClick;
 import sonar.logistics.core.tiles.displays.gsi.interaction.DisplayScreenLook;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSIGridMode;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSIModeDefault;
 import sonar.logistics.core.tiles.displays.gsi.modes.GSISelectionMode;
 import sonar.logistics.core.tiles.displays.gsi.modes.IGSIMode;
+import sonar.logistics.core.tiles.displays.gsi.newgui.GuiCategorySelection;
 import sonar.logistics.core.tiles.displays.gsi.packets.GSIElementPacketHelper;
 import sonar.logistics.core.tiles.displays.gsi.render.GSIOverlays;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayElementContainer;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler;
 import sonar.logistics.core.tiles.displays.gsi.storage.DisplayGSISaveHandler.DisplayGSISavedData;
-import sonar.logistics.core.tiles.displays.gsi.storage.EditContainer;
 import sonar.logistics.core.tiles.displays.info.InfoPacketHelper;
 import sonar.logistics.core.tiles.displays.info.elements.base.*;
 import sonar.logistics.core.tiles.displays.info.types.InfoError;
@@ -84,8 +81,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 
 	public SyncableList syncParts = new SyncableList(this);
 
-	public static final int EDIT_CONTAINER_ID = 0;
-
 	// click info
 	public long lastClickTime;
 	public UUID lastClickUUID;
@@ -96,7 +91,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	private long lastLookElementUpdate;
 
 	public SyncTagType.INT container_identity = (INT) new SyncTagType.INT(0).setDefault(-1);
-	public SyncTagType.BOOLEAN edit_mode = (BOOLEAN) new SyncTagType.BOOLEAN(2).setDefault(true);
 
 	public double[] currentScaling;
 
@@ -107,7 +101,7 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	public IGSIMode mode = default_mode;
 
 	{
-		syncParts.addParts(container_identity, edit_mode);// , width, height, scale);
+		syncParts.addParts(container_identity);// , width, height, scale);
 	}
 
 	public final World world;
@@ -116,9 +110,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 		this.display = display;
 		this.world = world;
 		container_identity.setObject(id);
-		if (!(display instanceof ConnectedDisplay) && world.isRemote) {
-			EditContainer.addEditContainer(this);
-		}
 	}
 
 	//// MAIN ACTIONS \\\\
@@ -132,18 +123,9 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			player.sendMessage(new TextComponentTranslation("THE DISPLAY IS INCOMPLETE"));
 			return true;
 		}
-		if (mode != grid_mode && (type == BlockInteractionType.SHIFT_RIGHT) || LogisticsHelper.isPlayerUsingOperator(player)) {
-			GSIElementPacketHelper.sendGSIPacket(GSIElementPacketHelper.createEditModePacket(!edit_mode.getObject()), -1, this);
-			player.sendMessage(new TextComponentTranslation("Edit Mode: " + !edit_mode.getObject()));
-			return true;
-		}
 		DisplayScreenClick click = getClientClick(DisplayVectorHelper.createClick(player, display, type));
 		if(click != null) {
 			click.doubleClick = wasDoubleClick(world, player);
-			if(mode.renderEditContainer() && isEditContainer(click.clickedContainer) && click.clickedElement != null){
-				doDefaultElementClick(part, pos, click, type, player);
-				return true;
-			}
 			if(!mode.onClicked(part, pos, click, type, player) && mode.renderElements() && click.clickedElement != null){
 				List<IInfoError> errors = getErrors(click.clickedElement);
 				if (errors != null && !errors.isEmpty()) {
@@ -550,7 +532,9 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 			switch (id) {
 			case 0:
 				TileAbstractDisplay display = (TileAbstractDisplay) obj.getActualDisplay();
-				return new GuiEditElementsList(this, display);
+				///return new GuiEditElementsList(this, display);
+
+				return new GuiCategorySelection(this, new ContainerMultipartSync(display));
 			case 1:
 				display = (TileAbstractDisplay) obj.getActualDisplay();
 				int element_id = tag.getInteger("clicked");
@@ -580,14 +564,6 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	}
 
 	//// ELEMENTS \\\\
-
-	public DisplayElementContainer getEditContainer() {
-		return containers.get(EDIT_CONTAINER_ID);
-	}
-
-	public boolean isEditContainer(DisplayElementContainer c) {
-		return c != null && c.getContainerIdentity() == EDIT_CONTAINER_ID;
-	}
 
 	/** creates a new Element Container with the given properties */
 	public DisplayElementContainer addElementContainer(double[] translate, double[] scale, double pScale) {
@@ -744,26 +720,26 @@ public class DisplayGSI extends DirtyPart implements ISyncPart, ISyncableListene
 	//// VALIDATION \\\\
 
 	public void validateContainer(DisplayElementContainer c) {
-		if (c != null && !isEditContainer(c)) {
+		if (c != null) {
 			c.getElements().forEach(this::validateElement);
 		}
 	}
 
 	public void invalidateContainer(DisplayElementContainer c) {
-		if (c != null && !isEditContainer(c)) {
+		if (c != null) {
 			c.getElements().forEach(this::invalidateElement);
 		}
 	}
 
 	public void validateElement(IDisplayElement e) {
-		if (e != null && isValid() && !isEditContainer(e.getHolder().getContainer())) {
+		if (e != null && isValid()) {
 			e.validate(this);
 			PL2Logging.onGSIElementValidated(this, e);
 		}
 	}
 
 	public void invalidateElement(IDisplayElement e) {
-		if (e != null && !isEditContainer(e.getHolder().getContainer())) {
+		if (e != null) {
 			e.invalidate(this);
 			PL2Logging.onGSIElementInvalidated(this, e);
 		}

@@ -61,7 +61,7 @@ public class GSISelectionMode implements IGSIMode {
 	@Override
 	public boolean onClicked(TileAbstractDisplay part, BlockPos pos, DisplayScreenClick click, BlockInteractionType type, EntityPlayer player) {
 		for (DisplayElementContainer container : gsi.containers.values()) {
-			if (!gsi.isEditContainer(container) && container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
+			if (container.canRender() && container.canClickContainer(click.clickX, click.clickY)) {
 				gsi.selection_mode.onElementSelected(container.getContainerIdentity(), type);
 				break;
 			}
@@ -74,11 +74,6 @@ public class GSISelectionMode implements IGSIMode {
 
 	@Override
 	public boolean renderElements() {
-		return true;
-	}
-
-	@Override
-	public boolean renderEditContainer() {
 		return true;
 	}
 }

@@ -246,20 +246,6 @@ public class GSIElementPacketHelper {
 		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 
-	//// EDIT MODE \\\\
-
-	public static NBTTagCompound createEditModePacket(boolean set) {
-		NBTTagCompound tag = new NBTTagCompound();
-		writePacketID(tag, GSIElementPacket.EDIT_MODE);
-		tag.setBoolean("edit_mode", set);
-		return tag;
-	}
-
-	public static void doEditModePacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
-		gsi.edit_mode.setObject(packetTag.getBoolean("edit_mode"));
-		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.SYNC_PARTS);
-	}
-
 	//// UPDATE ELEMENT \\\\
 
 	public static NBTTagCompound createUpdateElementPacket(IDisplayElement element, SyncType type) {
@@ -285,7 +271,6 @@ public class GSIElementPacketHelper {
 
 	public static void doResetGSIPacket(DisplayGSI gsi, IDisplayElement element, EntityPlayer player, NBTTagCompound packetTag) {
 		gsi.containers.clear();
-		gsi.edit_mode.setObject(true);
 		gsi.sendInfoContainerPacket(DisplayGSISaveHandler.DisplayGSISavedData.ALL_DATA);
 	}
 }

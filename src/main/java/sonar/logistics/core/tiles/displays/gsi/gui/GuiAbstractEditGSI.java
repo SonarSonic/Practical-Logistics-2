@@ -21,7 +21,7 @@ public class GuiAbstractEditGSI extends GuiAbstractEditScreen {
 
 	@Override
 	public void renderDisplayScreen(float partialTicks, int x, int y) {
-		gsi.getViewableContainers().filter(c -> !gsi.isEditContainer(c)).forEach(DisplayElementContainer::render);
+		gsi.getViewableContainers().forEach(DisplayElementContainer::render);
 	}
 
 	public boolean doDisplayScreenClick(double clickX, double clickY, int key) {

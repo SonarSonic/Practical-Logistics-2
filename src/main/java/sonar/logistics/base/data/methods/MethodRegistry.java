@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import sonar.logistics.PL2;
+import sonar.logistics.base.data.api.categories.IDataCategory;
 import sonar.logistics.base.data.api.methods.MethodBlock;
 import sonar.logistics.base.data.api.methods.MethodTileEntity;
 import sonar.logistics.base.data.api.methods.MethodWorld;
@@ -28,8 +29,8 @@ public class MethodRegistry {
         VanillaMethods.init();
     }
 
-    public static <O, T extends TileEntity> IMethod<O> registerMethodTileEntity(String domain, String name, Class<O> returnType, Class<T> tileEntity, IMethodTileEntity<O,T> method){
-        ResourceLocation identifier = new ResourceLocation(domain, name);
+    public static <O, T extends TileEntity> IMethod<O> registerMethodTileEntity(IDataCategory category, String name, Class<O> returnType, Class<T> tileEntity, IMethodTileEntity<O,T> method){
+        ResourceLocation identifier = new ResourceLocation(category.getID(), name);
         IMethod hashTest = hashTest(identifier.hashCode());
         if(hashTest != null){
             logHashError(hashTest.getIdentifier(), identifier);
@@ -42,8 +43,8 @@ public class MethodRegistry {
 
     }
 
-    public static <O, B extends Block> IMethod<O> registerMethodBlock(String domain, String name, Class<O> returnType, Class<B> block, IMethodBlock<O,B> method){
-        ResourceLocation identifier = new ResourceLocation(domain, name);
+    public static <O, B extends Block> IMethod<O> registerMethodBlock(IDataCategory category, String name, Class<O> returnType, Class<B> block, IMethodBlock<O,B> method){
+        ResourceLocation identifier = new ResourceLocation(category.getID(), name);
         IMethod hashTest = hashTest(identifier.hashCode());
         if(hashTest != null){
             logHashError(hashTest.getIdentifier(), identifier);
@@ -56,8 +57,8 @@ public class MethodRegistry {
     }
 
 
-    public static <O> IMethod<O> registerMethodWorld(String domain, String name, Class<O> returnType, IMethodWorld<O> method){
-        ResourceLocation identifier = new ResourceLocation(domain, name);
+    public static <O> IMethod<O> registerMethodWorld(IDataCategory category, String name, Class<O> returnType, IMethodWorld<O> method){
+            ResourceLocation identifier = new ResourceLocation(category.getID(), name);
             IMethod hashTest = hashTest(identifier.hashCode());
             if(hashTest != null){
                 logHashError(hashTest.getIdentifier(), identifier);
@@ -69,7 +70,7 @@ public class MethodRegistry {
             }
     }
 
-    public static <O, E extends Entity> IMethod<O> registerMethodEntity(String domain, String name, Class<O> returnType, Class<E> entity, IMethodEntity<O,E> method){
+    public static <O, E extends Entity> IMethod<O> registerMethodEntity(IDataCategory category, String name, Class<O> returnType, Class<E> entity, IMethodEntity<O,E> method){
         /* FIXME ENTITY SYSTEM
         ResourceLocation identifier = new ResourceLocation(domain, name);
         IFunction hashTest = hashTest(identifier.hashCode());

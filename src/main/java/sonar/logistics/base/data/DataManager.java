@@ -1,6 +1,7 @@
 package sonar.logistics.base.data;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -10,6 +11,8 @@ import sonar.logistics.PL2;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.base.data.api.*;
 import sonar.logistics.base.data.api.methods.IMethod;
+import sonar.logistics.base.data.generators.InventoryDataGenerator;
+import sonar.logistics.base.data.generators.StoredItemDataGenerator;
 import sonar.logistics.base.data.holders.DataGeneratorHolder;
 import sonar.logistics.base.data.holders.DataHolder;
 import sonar.logistics.base.data.holders.SourceMethodHolder;
@@ -24,6 +27,8 @@ import sonar.logistics.base.data.types.general.PrimitiveDataTypes;
 import sonar.logistics.base.data.types.general.SpecialDataTypes;
 import sonar.logistics.base.data.types.inventory.InventoryData;
 import sonar.logistics.base.data.types.inventory.InventoryDataFactory;
+import sonar.logistics.base.data.types.inventory.StoredItemData;
+import sonar.logistics.base.data.types.inventory.StoredItemDataFactory;
 import sonar.logistics.base.data.types.items.ItemHandlerData;
 import sonar.logistics.base.data.types.items.ItemHandlerDataFactory;
 
@@ -47,7 +52,7 @@ public class DataManager {
 
     {
         DATA_TYPES.put(InventoryData.class, 0);
-        //GENERATORS.computeIfAbsent(InventoryData.class, (c) -> new ArrayList<>()).add(new InventoryDataGenerator());
+        GENERATORS.computeIfAbsent(InventoryData.class, (c) -> new ArrayList<>()).add(new InventoryDataGenerator());
         FACTORIES.put(InventoryData.class, new InventoryDataFactory());
 
         DATA_TYPES.put(EnergyStorageData.class, 1);
@@ -83,6 +88,10 @@ public class DataManager {
 
         DATA_TYPES.put(FluidHandlerData.class, 11);
         FACTORIES.put(FluidHandlerData.class, new FluidHandlerDataFactory());
+
+        DATA_TYPES.put(StoredItemData.class, 12);
+        GENERATORS.computeIfAbsent(StoredItemData.class, (c) -> new ArrayList<>()).add(new StoredItemDataGenerator(ItemStack.EMPTY)); //FIXME GENERATORS NEED INPUTS!
+        FACTORIES.put(StoredItemData.class, new StoredItemDataFactory());
 
     }
 

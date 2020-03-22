@@ -113,7 +113,6 @@ public class DisplayGSISaveHandler {
                 loaded.add(c.getContainerIdentity());
             }
         });
-        loaded.add(DisplayGSI.EDIT_CONTAINER_ID);
         List<Integer> toDelete = new ArrayList<>();
         gsi.forEachContainer(c -> {
             if (!loaded.contains(c.getContainerIdentity())) {
@@ -142,9 +141,6 @@ public class DisplayGSISaveHandler {
     }
 
     public static NBTTagCompound saveContainer(DisplayGSI gsi, DisplayElementContainer c, NBTHelper.SyncType type) {
-        if (gsi.isEditContainer(c) && !gsi.edit_mode.getObject()) {
-            return new NBTTagCompound(); // don't send the edit container if it isn't being viewed
-        }
         if(c.getElements().getElementCount() == 0){
             gsi.invalidateContainer(c);
             return new NBTTagCompound();
