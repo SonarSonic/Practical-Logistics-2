@@ -1,5 +1,5 @@
 package sonar.logistics.integration.ae2;
-/*
+
 import appeng.api.AEApi;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.channels.IFluidStorageChannel;
@@ -67,4 +67,3 @@ public class AE2DriveProvider implements ITileInfoProvider {
 	}
 
 }
-*/

@@ -63,8 +63,8 @@ public class RedstoneConnectionHandler extends AbstractConnectionHandler<IRedsto
 			networks.values().forEach(IRedstoneNetwork::updateGlobalPower);
 			// connections.values().forEach(handling -> handling.notifyWatchingNetworksOfChange());
 			networks.values().forEach(IRedstoneNetwork::updateActualPower);
-			// L//ist<Integer> updateData = Lists.newArrayList(forUpdate);
-			// updateData.forEach(registryID -> updatePower(registryID));
+			// L//ist<Integer> update = Lists.newArrayList(forUpdate);
+			// update.forEach(registryID -> updatePower(registryID));
 			forUpdate.clear();
 		}
 	}

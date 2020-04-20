@@ -116,7 +116,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 		List<IInfoProvider> cached_providers = cable_providers.getOrDefault(cable, new ArrayList<>());
 		List<IInfoProvider> updated_providers = CableConnectionHelper.getLocalMonitors(cable);
 
-		// disconnect old local methods
+		// disconnect old local providers
 		for (IInfoProvider tile : cached_providers) {
 			ILogisticsNetwork subNetwork = getSubNetwork(tile);
 			if (!updated_providers.contains(tile) && subNetwork.isValid()) {
@@ -125,7 +125,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 			}
 		}
 
-		// connect new local methods
+		// connect new local providers
 		for (IInfoProvider tile : updated_providers) {
 			ILogisticsNetwork subNetwork = getSubNetwork(tile);
 			if (subNetwork.isValid() && subNetwork != network) {
@@ -137,7 +137,7 @@ public class CableConnectionHandler extends AbstractConnectionHandler<IDataCable
 			}
 		}
 
-		// cache connections's local methods
+		// cache connections's local providers
 		cable_providers.put(cable, updated_providers);
 	}
 	

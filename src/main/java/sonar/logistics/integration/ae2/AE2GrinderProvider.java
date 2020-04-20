@@ -1,5 +1,5 @@
 package sonar.logistics.integration.ae2;
-/*
+
 import appeng.api.AEApi;
 import appeng.api.features.IGrinderRecipe;
 import appeng.tile.grindstone.TileGrinder;
@@ -42,4 +42,3 @@ public class AE2GrinderProvider implements ITileInfoProvider {
 	}
 
 }
-*/

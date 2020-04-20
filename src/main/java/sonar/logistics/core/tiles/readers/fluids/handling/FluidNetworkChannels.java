@@ -24,7 +24,7 @@ public class FluidNetworkChannels extends ListNetworkChannels<InfoNetworkFluid, 
 	}
 
 	public void updateChannel() {
-		// as every reader is updated during the rapid updateData there is no need to updateData the queued channels/readers
+		// as every reader is updated during the rapid update there is no need to update the queued channels/readers
 		if (forRapidUpdate.isEmpty()) {
 			super.updateChannel();
 		} else {

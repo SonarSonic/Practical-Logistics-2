@@ -1,39 +1,27 @@
 package sonar.logistics.base.data;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import com.google.common.collect.Lists;
+import sonar.core.helpers.FunctionHelper;
 import sonar.logistics.PL2;
+import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
+import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.data.api.*;
-import sonar.logistics.base.data.api.methods.IMethod;
-import sonar.logistics.base.data.holders.DataGeneratorHolder;
 import sonar.logistics.base.data.holders.DataHolder;
-import sonar.logistics.base.data.holders.SourceMethodHolder;
-import sonar.logistics.base.data.methods.MethodRegistry;
+import sonar.logistics.base.data.holders.DataHolderMultiSource;
+import sonar.logistics.base.data.inventory.InventoryData;
+import sonar.logistics.base.data.inventory.InventoryDataFactory;
+import sonar.logistics.base.data.inventory.InventoryDataGenerator;
+import sonar.logistics.base.data.sources.IDataMultiSource;
 import sonar.logistics.base.data.sources.IDataSource;
-import sonar.logistics.base.data.sources.SourceCoord4D;
-import sonar.logistics.base.data.types.energy.EnergyStorageData;
-import sonar.logistics.base.data.types.energy.EnergyStorageDataFactory;
-import sonar.logistics.base.data.types.fluid.FluidHandlerData;
-import sonar.logistics.base.data.types.fluid.FluidHandlerDataFactory;
-import sonar.logistics.base.data.types.general.PrimitiveDataTypes;
-import sonar.logistics.base.data.types.general.SpecialDataTypes;
-import sonar.logistics.base.data.types.inventory.InventoryData;
-import sonar.logistics.base.data.types.inventory.InventoryDataFactory;
-import sonar.logistics.base.data.types.items.ItemHandlerData;
-import sonar.logistics.base.data.types.items.ItemHandlerDataFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class DataManager {
 
 
-    private Map<Class, Integer> DATA_TYPES = new HashMap<>();
     private Map<Class, List<IDataGenerator>> GENERATORS = new HashMap<>();
     private Map<Class, IDataFactory> FACTORIES = new HashMap<>();
 
@@ -41,61 +29,25 @@ public class DataManager {
     private List<IDataWatcher> addedWatchers = new ArrayList<>();
     private List<IDataWatcher> removedWatchers = new ArrayList<>();
     private Map<InfoUUID, IDataWatcher> LOADED_WATCHERS = new HashMap<>();
-    private Map<IDataSource, SourceMethodHolder> DATA_SOURCES = new HashMap<>();
-    //private Map<IDataSource, DataGeneratorHolder> DATA_GENERATORS = new HashMap<>();
-    private List<DataGeneratorHolder> DATA_GENERATORS = new ArrayList<>();
+    private Map<IDataSource, List<DataHolder>> HOLDER_SOURCE_MAP = new HashMap<>();
+    private Map<IDataMultiSource, List<DataHolderMultiSource>> HOLDER_MULTI_SOURCE_MAP = new HashMap<>();
 
     {
-        DATA_TYPES.put(InventoryData.class, 0);
-        //GENERATORS.computeIfAbsent(InventoryData.class, (c) -> new ArrayList<>()).add(new InventoryDataGenerator());
+        GENERATORS.computeIfAbsent(InventoryData.class, (c) -> new ArrayList<>()).add(new InventoryDataGenerator());
         FACTORIES.put(InventoryData.class, new InventoryDataFactory());
-
-        DATA_TYPES.put(EnergyStorageData.class, 1);
-        //GENERATORS.computeIfAbsent(EnergyData.class, (c) -> new ArrayList<>()).add(new EnergyDataGenerator());
-        FACTORIES.put(EnergyStorageData.class, new EnergyStorageDataFactory());
-
-        DATA_TYPES.put(PrimitiveDataTypes.BooleanData.class, 2);
-        FACTORIES.put(PrimitiveDataTypes.BooleanData.class, new PrimitiveDataTypes.BooleanDataFactory());
-
-        DATA_TYPES.put(PrimitiveDataTypes.IntegerData.class, 3);
-        FACTORIES.put(PrimitiveDataTypes.IntegerData.class, new PrimitiveDataTypes.IntegerDataFactory());
-
-        DATA_TYPES.put(PrimitiveDataTypes.LongData.class, 4);
-        FACTORIES.put(PrimitiveDataTypes.LongData.class, new PrimitiveDataTypes.LongDataFactory());
-
-        DATA_TYPES.put(PrimitiveDataTypes.DoubleData.class, 5);
-        FACTORIES.put(PrimitiveDataTypes.DoubleData.class, new PrimitiveDataTypes.DoubleDataFactory());
-
-        DATA_TYPES.put(PrimitiveDataTypes.FloatData.class, 6);
-        FACTORIES.put(PrimitiveDataTypes.FloatData.class, new PrimitiveDataTypes.FloatDataFactory());
-
-        DATA_TYPES.put(SpecialDataTypes.StringData.class, 7);
-        FACTORIES.put(SpecialDataTypes.StringData.class, new SpecialDataTypes.StringDataFactory());
-
-        DATA_TYPES.put(SpecialDataTypes.ItemStackData.class, 8);
-        FACTORIES.put(SpecialDataTypes.ItemStackData.class, new SpecialDataTypes.ItemStackDataFactory());
-
-        DATA_TYPES.put(SpecialDataTypes.NBTData.class, 9);
-        FACTORIES.put(SpecialDataTypes.NBTData.class, new SpecialDataTypes.NBTDataFactory());
-
-        DATA_TYPES.put(ItemHandlerData.class, 10);
-        FACTORIES.put(ItemHandlerData.class, new ItemHandlerDataFactory());
-
-        DATA_TYPES.put(FluidHandlerData.class, 11);
-        FACTORIES.put(FluidHandlerData.class, new FluidHandlerDataFactory());
 
     }
 
     public static DataManager instance(){
-        return PL2.proxy.dataManager;
+        return PL2.proxy.dataFactory;
     }
 
     public void removeAll(){
         addedWatchers.clear();
         removedWatchers.clear();
         LOADED_WATCHERS.clear();
-        DATA_SOURCES.clear();
-        DATA_GENERATORS.clear();
+        HOLDER_SOURCE_MAP.clear();
+        HOLDER_MULTI_SOURCE_MAP.clear();
     }
 
     public void flushWatchers(){
@@ -107,22 +59,30 @@ public class DataManager {
     }
 
     public void flushUpdates(){
-        DATA_SOURCES.values().forEach(SourceMethodHolder::updateData);
-        DATA_GENERATORS.forEach(DataGeneratorHolder::doTick);
+        HOLDER_SOURCE_MAP.values().forEach(l -> l.forEach(h -> {
+            h.tick();
+            if(h.canUpdateData()){
+                h.generator.updateData(h, h.data, h.source);
+                h.onDataChanged();
+            }
+        }));
+        HOLDER_MULTI_SOURCE_MAP.values().forEach(l -> l.forEach(h -> {
+            h.tick();
+            if(h.canUpdateData()){
+                h.updateMultiSourceData();
+            }
+        }));
     }
 
 
     @Nonnull
-    public static IDataFactory getFactory(Class dataType){
-        if(IData.class.isAssignableFrom(dataType)){
-            return getFactoryForData(dataType);
-        }else{
-            return getFactoryForPrimitive(dataType);
-        }
+    public static <S extends IDataSource, D extends IData> IDataGenerator<S, D> getValidGenerator(S source, Class<D> dataType){
+        return instance().GENERATORS.get(dataType).stream().filter(d -> d.canGenerateForSource(source)).findFirst().get();
     }
 
+
     @Nonnull
-    public static <D extends IData> IDataFactory<D> getFactoryForData(Class<D> dataType){
+    public static <D extends IData> IDataFactory<D> getFactory(Class<D> dataType){
         IDataFactory factory = instance().FACTORIES.get(dataType);
         if(factory == null){
             throw new NullPointerException("NO DATA FACTORY FOR: " + dataType);
@@ -130,89 +90,8 @@ public class DataManager {
         return factory;
     }
 
-
     @Nonnull
-    public static IDataFactory getFactoryForPrimitive(Class returnType){
-        Optional<IDataFactory> factory = instance().FACTORIES.values().stream().filter(f -> f.canConvert(returnType)).findFirst();
-        if(!factory.isPresent()){
-            throw new NullPointerException("NO DATA CONVERTOR FOR: " + returnType);
-        }
-        return factory.get();
-    }
-
-    public void addDataSource(SourceCoord4D source){
-        if(!DATA_SOURCES.containsKey(source)){
-            World world = DimensionManager.getWorld(source.getDimension());
-            IEnvironment env = new IEnvironment() {
-                @Override
-                public World world() {
-                    return world;
-                }
-
-                @Override
-                public IBlockState state() {
-                    return world.getBlockState(pos());
-                }
-
-                @Override
-                public BlockPos pos() {
-                    return source.getPos();
-                }
-
-                @Override
-                public EnumFacing face() {
-                    return source.facing;
-                }
-
-                @Override
-                public TileEntity tile() {
-                    return world.getTileEntity(pos());
-                }
-            };
-            SourceMethodHolder dataHolder = new SourceMethodHolder(source, env);
-
-            MethodRegistry.tileEntityFunction.stream().filter(f -> f.canInvoke(env)).forEach(f -> dataHolder.holders.put(f, new DataHolder(20)));
-            MethodRegistry.blockFunction.stream().filter(f -> f.canInvoke(env)).forEach(f -> dataHolder.holders.put(f, new DataHolder(20)));
-            MethodRegistry.worldFunction.stream().filter(f -> f.canInvoke(env)).forEach(f -> dataHolder.holders.put(f, new DataHolder(20)));
-
-            DATA_SOURCES.putIfAbsent(source, dataHolder);
-        }
-    }
-
-    public void addDataGenerator(IDataGenerator generator, int tickRate, List<SourceCoord4D> sources){
-        DataGeneratorHolder generatorHolder = new DataGeneratorHolder(generator, tickRate);
-        IMethod method = generator.getDataMethod();
-        for(SourceCoord4D source : sources){
-            SourceMethodHolder holder = DATA_SOURCES.get(source);
-            if(holder != null) {
-                DataHolder dataHolder = holder.holders.get(method);
-                if (dataHolder != null) {
-                    generatorHolder.addDataHolder(dataHolder);
-                    dataHolder.addWatcher(generatorHolder);
-                }
-            }
-        }
-        DATA_GENERATORS.add(generatorHolder);
-    }
-
-    public void onSourceChanged(IDataSource source){
-        SourceMethodHolder methodHolder = DATA_SOURCES.get(source);
-        if(methodHolder != null){
-            ///?
-        }
-    }
-
-    public void onSourceAdded(IDataSource source){
-
-    }
-
-    public void onSourceRemoved(IDataSource source){
-
-    }
-
-    /*
-    @Nonnull
-    public <D extends IData> DataHolder<D> getOrCreateDataHolder(Class<D> dataType, IDataSource source, int tickRate){
+    public <D extends IData> DataHolder getOrCreateDataHolder(Class<D> dataType, IDataSource source, int tickRate){
         DataHolder holder = getDataHolder(dataType, source);
         if(holder != null){
             return holder;
@@ -249,50 +128,26 @@ public class DataManager {
         return null;
     }
 
-    public void removeDataHolder(DataHolder holder){
-        if(holder instanceof DataHolderMultiSource){
-            DataHolderMultiSource multiHolder = (DataHolderMultiSource) holder;
-            List<DataHolderMultiSource> holders = HOLDER_MULTI_SOURCE_MAP.get(multiHolder.source);
-            holders.remove(holder);
-            if(holders.size() == 0){
-                HOLDER_SOURCE_MAP.remove(holder.source);
-            }
-            multiHolder.subDataHolders.forEach(h -> ((DataHolder)h).removeWatcher(multiHolder));
-            holder.onHolderDestroyed();
-        }else{
-            List<DataHolder> holders = HOLDER_SOURCE_MAP.get(holder.source);
-            holders.remove(holder);
-            if(holders.size() == 0){
-                HOLDER_SOURCE_MAP.remove(holder.source);
-            }
-            holder.onHolderDestroyed();
-        }
-    }
-
-
+    /*
     public void removeDataSource(IDataSource source){
-        List<DataHolder> holders = HOLDER_SOURCE_MAP.get(source);
+        List<IDataHolder> holders = HOLDER_SOURCE_MAP.get(source);
         if(holders != null && !holders.isEmpty()){
             holders.forEach(h -> h.onHolderDestroyed());
             holders.clear();
         }
     }
-
+    */
 
     public Map<InfoUUID, IDataWatcher> getDataWatchers(){
         return LOADED_WATCHERS;
     }
 
     public void addWatcher(IDataWatcher watcher){
-        if(watcher != null) {
-            addedWatchers.add(watcher);
-        }
+        addedWatchers.add(watcher);
     }
 
     public void removeWatcher(IDataWatcher watcher){
-        if(watcher != null) {
-            removedWatchers.add(watcher);
-        }
+        removedWatchers.add(watcher);
     }
 
     public void onWatcherChanged(IDataWatcher watcher){
@@ -331,9 +186,9 @@ public class DataManager {
         for(Map.Entry<InfoUUID, IDataWatcher> entry : LOADED_WATCHERS.entrySet()){
             if(entry.getValue().isWatcherActive()){
                 IInfo oldInfo = ServerInfoHandler.instance().getInfoMap().get(entry.getKey());
-               // IInfo newInfo = entry.createValue().updateData(oldInfo);
+               // IInfo newInfo = entry.createValue().update(oldInfo);
             }
         }
     }
-    */
+
 }

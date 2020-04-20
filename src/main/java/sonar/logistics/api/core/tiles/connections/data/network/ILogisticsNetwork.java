@@ -7,7 +7,6 @@ import sonar.logistics.api.core.tiles.connections.data.IDataCable;
 import sonar.logistics.api.core.tiles.readers.IInfoProvider;
 import sonar.logistics.api.core.tiles.readers.channels.INetworkChannels;
 import sonar.logistics.base.channels.NodeConnection;
-import sonar.logistics.base.data.sources.IDataMultiSource;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.utils.CacheType;
 import sonar.logistics.core.tiles.connections.data.network.CacheHandler;
@@ -32,7 +31,7 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	/**called when the handling is first created*/
 	void onNetworkCreated();
 	
-	/**called on every server tick, used to updateData the handling
+	/**called on every server tick, used to update the handling
 	 * this shouldn't be called from anywhere but the main tick event*/
 	void onNetworkTick();	
 	
@@ -65,16 +64,11 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	void sendConnectionsPacket(EntityPlayer player);
 
 	/**returns a list of all connections connected to the connections, within the given CacheType space*/
-	@Deprecated
 	List<NodeConnection> getConnections(CacheType cacheType);	
 	
 	/**creates a connections list of block coords
 	 * see {@link #sendConnectionsPacket(EntityPlayer)} which takes care of also sending the packet to a player*/
-	@Deprecated
 	InfoChangeableList<MonitoredBlockCoords> createConnectionsList(CacheType cacheType);
-
-	@Nullable
-	IDataMultiSource getSources();
 	
 	/**gets the cached list of the given CacheHandler, within the given CacheType space*/
 	<T extends INetworkTile> List<T> getCachedTiles(CacheHandler<T> handler, CacheType cacheType);
@@ -85,7 +79,7 @@ public interface ILogisticsNetwork extends ISonarListener, ISonarListenable<ILog
 	/**gets the required {@link INetworkChannels}, if it is null one will be created*/
 	<T extends INetworkChannels> T getOrCreateNetworkChannels(Class<T> channelClass);
 	
-	/**gets a list of all connected local info methods*/
+	/**gets a list of all connected local info providers*/
 	List<IInfoProvider> getLocalInfoProviders();
 
 	List<IInfoProvider> getGlobalInfoProviders();

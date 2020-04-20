@@ -146,7 +146,7 @@ public class TileFluidReader extends TileAbstractListReader<InfoNetworkFluid> im
 		if (id == sortingOrder.id || id == sortingType.id) {
 			sorting_changed = true;
 		}
-		// when the order of the list is changed the listeners need to recieve a full updateData
+		// when the order of the list is changed the listeners need to recieve a full update
 		if (id == 5 || id == 6) {
 			FluidNetworkChannels list = network.getNetworkChannels(FluidNetworkChannels.class);
 			if (list != null) {

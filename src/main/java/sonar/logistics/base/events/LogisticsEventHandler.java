@@ -23,7 +23,6 @@ import sonar.logistics.api.core.tiles.wireless.emitters.IDataEmitter;
 import sonar.logistics.api.core.tiles.wireless.receivers.IDataReceiver;
 import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.ServerInfoHandler;
-import sonar.logistics.base.data.DataManager;
 import sonar.logistics.base.events.types.InfoEvent;
 import sonar.logistics.base.events.types.NetworkCableEvent;
 import sonar.logistics.base.events.types.NetworkEvent;
@@ -104,8 +103,6 @@ public class LogisticsEventHandler {
 		doNetworkChanges();
 		RedstoneConnectionHandler.instance().tick();
 		LogisticsNetworkHandler.instance().tick();
-		DataManager.instance().flushWatchers();
-		DataManager.instance().flushUpdates();
 		CONSTRUCTING.flushEvents();
 	}
 
@@ -211,7 +208,7 @@ public class LogisticsEventHandler {
 		List<LogisticsNetwork> watching = network_changes.get(NetworkChanges.GLOBAL_PROVIDERS);
 		ListHelper.addWithCheck(watching, networks);
 		networks.forEach(network -> {
-			// info methods have already been added by connections.
+			// info providers have already been added by connections.
 			List<ILogisticsNetwork> watchers = NetworkHelper.getAllNetworks(network, ILogisticsNetwork.WATCHING_NETWORK);
 			watchers.stream().filter(ILogisticsNetwork::isValid).forEach(N -> ListHelper.addWithCheck(watching, (LogisticsNetwork) N));
 

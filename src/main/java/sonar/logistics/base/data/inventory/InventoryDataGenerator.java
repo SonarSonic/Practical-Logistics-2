@@ -1,5 +1,5 @@
-package sonar.logistics.base.data.types.inventory;
-/*
+package sonar.logistics.base.data.inventory;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -21,29 +21,27 @@ public class InventoryDataGenerator implements IDataGenerator<SourceCoord4D, Inv
 
     @Override
     public boolean updateData(DataHolder holder, InventoryData data, SourceCoord4D source) {
-
-        data.preUpdate();
+        ///TODO SHOULD WE CHECK THE SOURCE IS LOADED?
+        data.onGenerationStart();
 
         World world = DimensionManager.getWorld(source.getDimension());
         BlockPos pos = source.getPos();
-        if(world.isBlockLoaded(pos)){///TODO SHOULD WE CHECK THE SOURCE IS LOADED OR NO, lets do it for now
+        if(world.isBlockLoaded(pos)){
             TileEntity tile = world.getTileEntity(pos);
             if(tile != null){
                 IItemHandler handler = tile.getCapability(ItemTransferHelper.ITEM_HANDLER_CAPABILITY, source.facing);
                 if(handler != null){
                     for(int i = 0; i < handler.getSlots(); i++){
                         ItemStack stack = handler.getStackInSlot(i);
-                        data.addStack(stack, stack.getCount());
-                        data.addStorage(stack.getCount(), handler.getSlotLimit(i));
+                        if(!stack.isEmpty()) {
+                            data.addStack(stack, stack.getCount());
+                            data.addStorage(stack.getCount(), handler.getSlotLimit(i));
+                        }
                     }
                 }
             }
         }
-
-        data.postUpdate();
-
-        return data.hasUpdated();
+        return true; //TODO check there has been a change!
     }
 
 }
-*/

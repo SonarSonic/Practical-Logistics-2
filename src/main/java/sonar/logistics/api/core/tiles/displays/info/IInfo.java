@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** for your info to be registered you must use {@link ASMInfo} implement this for all types of info */
-@Deprecated
 public interface IInfo<T extends IInfo> extends INBTSyncable {
 
 	/** this must be the same as the ID specified in {@link ASMInfo} */

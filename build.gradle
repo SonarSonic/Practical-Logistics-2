@@ -1,77 +1,269 @@
+import org.gradle.api.publish.maven.MavenPublication
+
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+
+plugins {
+    id "com.matthewprenger.cursegradle" version "1.1.0"
+}
+
+repositories {
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
+    maven {
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
+    }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "modmaven.k-4u.nl"
+    }
+    maven {
+        name = "Refined Storage"
+        url = "https://repo.raoulvdberge.com/"
+    }
+    maven {
+        name = "HWYLA"
+        url = "http://tehnut.info/maven"
+    }
+    maven {
+        name = "MCMultipart"
+        url = "http://maven.amadornes.com/"
+    }
+    maven {
+        name = "ic2"
+        url = "http://maven.ic2.player.to/"
+    }
+    maven { url = "http://maven.ironhide.de/" }
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+apply plugin: 'maven-publish'
 apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-
-version = "3.0.9"
-group = "sonar.logistics" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "${minecraft_version}-${mod_version}"
+if (hasProperty('appendBuildNumber')) {
+    version = version + "-" + appendBuildNumber.toString()
+} else if(!hasProperty('official_build')){
+    version = version + "-unofficial"
+}
+group= "sonar.logistics"
 archivesBaseName = "logistics"
-
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = "1.8"
 compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
+    sourceCompatibility = targetCompatibility = "1.8"
 }
 
 minecraft {
-    version = "1.12.2-14.23.5.2768"
+    version = "${forge_version}"
     runDir = "run"
-    
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // simply re-run your setup task after changing the mappings to updateData your workspace.
+    replace "@VERSION@", "${mod_version}"
+    replace "sonarcore@[0.0.0,)", "sonarcore@[" + "${sonar_core_version}" +",)"
+    replace "mcmultipart@[0.0.0,)", "mcmultipart@[" + "${mcmp_version}" +",)"
+
     mappings = "snapshot_20171003"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    makeObfSourceJar = true
 }
+
+task deobfJar(type: Jar) { // Generate deobfuscated
+    from sourceSets.main.output
+    classifier = 'deobf'
+    archiveName = "practicallogistics2-${version}-deobf.jar"
+}
+tasks.build.dependsOn('deobfJar')
+artifacts {
+    archives deobfJar
+    archives sourceJar
+    archives jar
+}
+
+jar {
+    archiveName = "practicallogistics2-${version}.jar"
+}
+
+sourceJar {
+    archiveName = "practicallogistics2-${version}-sources.jar"
+}
+
+def sonarcore_local = false
+if (project.allprojects.findAll({it.name == "Sonar-Core"}).size() > 0) { sonarcore_local = true }
+
+def fluxnetworks_local = false
+if (project.allprojects.findAll({it.name == "Flux-Networks"}).size() > 0) { fluxnetworks_local = true }
+
+def calculator_local = false
+if (project.allprojects.findAll({it.name == "Calculator"}).size() > 0) { calculator_local = true }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
+    compileOnly "tesla:Tesla:${tesla_version}"
+    deobfCompile "cofh:RedstoneFlux:${redstoneflux_version}"
+    // compile against the JEI API but do not include it at runtime
+    deobfProvided "mezz.jei:jei_${minecraft_version}:${jei_version}:api"
+    // at runtime, use the full JEI jar
+    runtime "mezz.jei:jei_${minecraft_version}:${jei_version}"
+    compileOnly "crafttweaker:CraftTweaker2:${crafttweaker_version}"
+    compileOnly "storage-drawers:StorageDrawers:${storagedrawers_version}"
+    compileOnly "deep-resonance:deepresonance:${deep_resonance_version}"
+    compileOnly "appeng:appliedenergistics2:${ae2_version}"
+    compileOnly "eleccore:ElecCore:${elec_core_version}"
+    compileOnly "mekanism:Mekanism:${mekanism_version}"
+    compileOnly "refinedstorage:refinedstorage:${refinedstorage_version}:api"
+    compile group: "net.industrial-craft", name: "industrialcraft-2", version: "2.8.75-ex112", classifier: "api"
+    compile group: "net.industrial-craft", name: "industrialcraft-2", version: "2.8.75-ex112", classifier: "dev"
+    deobfCompile "mcp.mobius.waila:Hwyla:${waila_version}"
+    compileOnly "mcjtylib:mcjtylib:${mcjtylib_version}"
+    deobfCompile "MCMultiPart:MCMultiPart:${mcmp_version}"
 
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    if (!sonarcore_local) {
+        compileOnly "sonar:sonarcore:${minecraft_version}-${sonar_core_version}-${sonar_core_build_version}:deobf"
+    } else {
+        compile project(':Sonar-Core')
+    }
+    if (!fluxnetworks_local) {
+        compileOnly "sonar:fluxnetworks:${minecraft_version}-${flux_networks_version}-${flux_networks_build_version}:deobf"
+    } else {
+       compile project(':Flux-Networks')
+    }
+    if (!calculator_local) {
+        compileOnly "sonar:calculator:${minecraft_version}-${calculator_version}-${calculator_build_version}:deobf"
+    } else {
+        compile project(':Calculator')
+    }
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
+processResources
+{
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
-    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
-        // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    // copy everything else except the mcmod.info
+    }        
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+publishing {
+    tasks.publish.dependsOn 'build'
+    publications {
+        mavenJava(MavenPublication) {
+            groupId group_prefix
+            version version
+            artifactId "practicallogistics2"
+            artifact jar
+            artifact sourceJar
+            artifact deobfJar
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+
+//// DETECTING COMMIT NAME AND ACTIVATING CURSE RELEASE \\\\
+
+def commit_release_type = getCommmitReleaseType()
+
+def getCommmitReleaseType(){
+    if(project.hasProperty("curseforge_key")){
+
+        def stdout = new ByteArrayOutputStream()
+        try {
+            exec {
+                commandLine 'git', 'log', '-1', '--pretty=tformat:%s'
+                standardOutput = stdout
+            }
+        } catch(Exception e) {
+            System.print("SKIPPING CURSE RELEASE - FAILED TO RETRIEVE LAST COMMIT")
+            e.printStackTrace()
+            return 'none'
+        }
+
+        String commit = stdout.toString().trim()
+
+        if(commit.startsWith("Release") || commit.startsWith("release")){
+            System.out.println("FOUND NEW RELEASE - COMMIT: " + commit);
+            return 'release'
+
+        }else if(commit.startsWith("Beta") || commit.startsWith("beta")){
+            System.out.println("FOUND NEW BETA - COMMIT: " + commit);
+            return 'beta'
+
+        }else if(commit.startsWith("Alpha") || commit.startsWith("alpha")){
+            System.out.println("FOUND NEW ALPHA - COMMIT: " + commit);
+            return 'alpha'
+        }else{
+            System.out.println("SKIPPING CURSE RELEASE - COMMIT: " + commit)
+            return 'none'
+        }
+
+    }
+
+    System.out.println("SKIPPING CURSE RELEASE - NO CURSE API KEY")
+    return 'none'
+}
+
+tasks.curseforge.enabled = project.hasProperty("curseforge_key") && !commit_release_type.equals('none')
+
+curseforge {
+
+    if(project.hasProperty("curseforge_key") && !commit_release_type.equals('none')) {
+        System.out.println("ATTEMPTING CURSE RELEASE")
+        apiKey = project.properties["curseforge_key"]
+    }
+
+    project {
+        id = curse_project_id
+
+        relations {
+            requiredDependency 'sonar-core'
+            requiredDependency 'mcmultipart'
+            optionalDependency 'tesla'
+            optionalDependency 'industrial-craft'
+            optionalDependency 'redstone-flux'
+            optionalDependency 'applied-energistics-2'
+        }
+
+        mainArtifact(jar) {
+            displayName = "PracticalLogistics2-${minecraft_version}-${mod_version}"
+            //throws if not release, beta or alpha
+            releaseType = !commit_release_type.equals('none') ? commit_release_type : 'release'
+            changelog = file("${projectDir}/change_log.html").text
+            changelogType = 'html'
+        }
+
+        addArtifact(sourceJar){
+            changelog = "For experienced users only"
+            releaseType = 'alpha'
+        }
+
+        addArtifact(deobfJar){
+            changelog = "For experienced users only"
+            releaseType = 'alpha'
+        }
     }
 }

@@ -16,6 +16,7 @@ import sonar.logistics.api.core.tiles.displays.info.handlers.IEntityInfoProvider
 import sonar.logistics.api.core.tiles.displays.info.handlers.ITileInfoProvider;
 import sonar.logistics.api.core.tiles.displays.info.register.IInfoRegistry;
 import sonar.logistics.api.core.tiles.readers.ILogicListSorter;
+import sonar.logistics.base.data.generators.items.ITileInventoryProvider;
 import sonar.logistics.base.filters.INodeFilter;
 import sonar.logistics.base.guidance.errors.IInfoError;
 import sonar.logistics.base.statements.comparators.ILogicComparator;
@@ -73,6 +74,7 @@ public class PL2ASMLoader {
 		MasterInfoRegistry.INSTANCE.infoRegistries.addAll(PL2ASMLoader.getInfoRegistries(asmDataTable));
 		MasterInfoRegistry.INSTANCE.tileProviders.addAll(PL2ASMLoader.getTileProviders(asmDataTable));
 		MasterInfoRegistry.INSTANCE.entityProviders.addAll(PL2ASMLoader.getEntityProviders(asmDataTable));
+		MasterInfoRegistry.INSTANCE.inventoryProviders.addAll(PL2ASMLoader.getInventoryProviders(asmDataTable));
 		PL2ASMLoader.loadASMLoadable(asmDataTable, IInfoError.class, ASMInfoError.class, "IEuiD", true);
 	}
 
@@ -86,6 +88,10 @@ public class PL2ASMLoader {
 
 	public static List<IEntityInfoProvider> getEntityProviders(@Nonnull ASMDataTable asmDataTable) {
 		return ASMLoader.getInstances(PL2.logger, asmDataTable, ASMEntityInfoProvider.class, IEntityInfoProvider.class, true, false);
+	}
+
+	public static List<ITileInventoryProvider> getInventoryProviders(@Nonnull ASMDataTable asmDataTable) {
+		return ASMLoader.getInstances(PL2.logger, asmDataTable, ASMTileInventoryProvider.class, ITileInventoryProvider.class, true, true);
 	}
 
 	public static void loadComparatorTypes(@Nonnull ASMDataTable asmDataTable) {

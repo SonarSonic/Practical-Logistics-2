@@ -1,5 +1,5 @@
 package sonar.logistics.integration.ae2;
-/*
+
 import appeng.helpers.IPriorityHost;
 import appeng.tile.grindstone.TileGrinder;
 import appeng.tile.misc.TileInscriber;
@@ -32,4 +32,3 @@ public class AE2Registry implements IInfoRegistry {
 		
 	}
 }
-*/

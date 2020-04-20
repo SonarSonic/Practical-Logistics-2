@@ -17,25 +17,7 @@ import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork
 import sonar.logistics.core.tiles.readers.items.TileInventoryReader;
 import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
 
-/*
-import io.netty.buffer.ByteBuf;
-import mcmultipart.api.multipart.IMultipartTile;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import sonar.core.SonarCore;
-import sonar.core.network.PacketMultipart;
-import sonar.core.network.PacketMultipartHandler;
-import sonar.logistics.api.core.tiles.connections.data.network.ILogisticsNetwork;
-import sonar.logistics.core.tiles.readers.items.TileInventoryReader;
-import sonar.logistics.core.tiles.readers.items.handling.ItemHelper;
-
-/** called when the player clicks an items in the inventories reader
+/** called when the player clicks an items in the inventories reader */
 public class PacketInventoryReader extends PacketMultipart {
 
 	public ItemStack selected;
@@ -74,7 +56,7 @@ public class PacketInventoryReader extends PacketMultipart {
 		@Override
 		public IMessage processMessage(PacketInventoryReader message, EntityPlayer player, World world, IMultipartTile part, MessageContext ctx) {
 			if (ctx.side == Side.SERVER) {
-				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {
+				SonarCore.proxy.getThreadListener(ctx.side).addScheduledTask(() -> {					
 					if (!(part instanceof TileInventoryReader)) {
 						return;
 					}
@@ -89,4 +71,3 @@ public class PacketInventoryReader extends PacketMultipart {
 		}
 	}
 }
-*/

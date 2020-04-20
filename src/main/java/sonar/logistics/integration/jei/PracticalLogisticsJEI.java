@@ -1,5 +1,5 @@
 package sonar.logistics.integration.jei;
-/*
+
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
@@ -33,4 +33,3 @@ public class PracticalLogisticsJEI extends JEISonarPlugin {
     }
 
 }
-*/

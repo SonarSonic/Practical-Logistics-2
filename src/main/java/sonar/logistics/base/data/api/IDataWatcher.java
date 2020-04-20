@@ -14,8 +14,4 @@ public interface IDataWatcher {
     List<DataHolder> getDataHolders();
 
     default void onDataChanged(DataHolder holder){}
-
-    default void addDataHolder(DataHolder holder){}
-
-    default void removeDataHolder(DataHolder holder){}
 }

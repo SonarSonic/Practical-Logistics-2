@@ -1,4 +1,4 @@
-package sonar.logistics.base.data.newinfo;
+package sonar.logistics.base.data.readers;
 
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.base.data.api.IDataReader;

@@ -21,9 +21,6 @@ public enum EnumListChange {
 	}
 
 	public static EnumListChange getChange(long count, long old){
-		if(old == 0 && count != 0){
-			return EnumListChange.NEW_VALUE;
-		}
 		if (count == 0) {
 			return EnumListChange.OLD_VALUE;
 		}

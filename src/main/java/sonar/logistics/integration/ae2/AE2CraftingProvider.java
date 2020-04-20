@@ -1,5 +1,5 @@
 package sonar.logistics.integration.ae2;
-/*
+
 import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.crafting.TileCraftingMonitorTile;
 import net.minecraft.block.Block;
@@ -36,4 +36,3 @@ public class AE2CraftingProvider implements ITileInfoProvider {
 		infoList.add(new MonitoredItemStack(stack != null ? AE2Helper.convertAEItemStack(monitorTile.getJobProgress()) : new StoredItemStack(new ItemStack(Blocks.AIR, 0))).setPath(currentPath.dupe())); //needs to be called what's crafting somehow!!!!
 	}
 }
-*/

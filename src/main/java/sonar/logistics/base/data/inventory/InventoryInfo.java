@@ -1,15 +1,15 @@
-package sonar.logistics.base.data.types.energy;
+package sonar.logistics.base.data.inventory;
 
 import net.minecraft.nbt.NBTTagCompound;
 import sonar.logistics.api.core.tiles.displays.info.InfoUUID;
 import sonar.logistics.base.data.DataManager;
 import sonar.logistics.base.data.newinfo.BaseNewInfo;
 
-public class EnergyInfo extends BaseNewInfo {
+public class InventoryInfo extends BaseNewInfo {
 
-    public EnergyStorageData energyData = DataManager.getFactoryForData(EnergyStorageData.class).create();
+    public InventoryData inventoryData = DataManager.getFactory(InventoryData.class).create();
 
-    public EnergyInfo(InfoUUID uuid) {
+    public InventoryInfo(InfoUUID uuid) {
         super(uuid);
     }
 
@@ -19,12 +19,12 @@ public class EnergyInfo extends BaseNewInfo {
 
     @Override
     public void save(NBTTagCompound tag) {
-        DataManager.getFactoryForData(EnergyStorageData.class).save(energyData, "energy", tag);
+        DataManager.getFactory(InventoryData.class).save(inventoryData, tag);
     }
 
     @Override
     public void read(NBTTagCompound tag) {
-        DataManager.getFactoryForData(EnergyStorageData.class).read(energyData, "energy", tag);
+        DataManager.getFactory(InventoryData.class).read(inventoryData, tag);
     }
 
 }
