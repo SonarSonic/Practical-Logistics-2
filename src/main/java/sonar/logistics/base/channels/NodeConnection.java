@@ -7,7 +7,6 @@ import sonar.core.api.fluids.StoredFluidStack;
 import sonar.logistics.api.core.tiles.displays.info.IInfo;
 import sonar.logistics.api.core.tiles.nodes.NodeTransferMode;
 import sonar.logistics.api.core.tiles.nodes.TransferType;
-import sonar.logistics.base.data.sources.IDataSource;
 import sonar.logistics.base.filters.ITransferFilteredTile;
 import sonar.logistics.base.tiles.INetworkTile;
 import sonar.logistics.base.tiles.IPriority;
@@ -15,7 +14,7 @@ import sonar.logistics.base.tiles.IPriority;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class NodeConnection<T extends IInfo> implements IDataSource {
+public abstract class NodeConnection<T extends IInfo> {
 	
 	public INetworkTile source;
 	public boolean isFiltered;

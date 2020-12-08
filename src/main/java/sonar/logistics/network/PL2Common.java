@@ -10,7 +10,6 @@ import sonar.logistics.api.base.IInfoManager;
 import sonar.logistics.base.ClientInfoHandler;
 import sonar.logistics.base.ServerInfoHandler;
 import sonar.logistics.base.channels.PacketChannels;
-import sonar.logistics.base.data.DataFactory;
 import sonar.logistics.base.events.LogisticsEventHandler;
 import sonar.logistics.core.tiles.connections.data.handling.CableConnectionHandler;
 import sonar.logistics.core.tiles.connections.data.network.LogisticsNetworkHandler;
@@ -34,7 +33,6 @@ public class PL2Common {
 	public DisplayHandler server_display_manager;
 	public DisplayViewerHandler chunkViewer;
 	public LogisticsEventHandler eventHandler;
-	public DataFactory dataFactory;
 	public static int PACKET_ID = 0;
 	
 	public static void registerPackets() {
@@ -89,9 +87,6 @@ public class PL2Common {
 		networkManager = new LogisticsNetworkHandler();
 		PL2.logger.info("Initialised Network Handler");
 
-		dataFactory = new DataFactory();
-		PL2.logger.info("Initialised Data Factory");
-		
 		wirelessDataManager = new WirelessDataManager();
 		PL2.logger.info("Initialised Wireless Data Manager");
 		

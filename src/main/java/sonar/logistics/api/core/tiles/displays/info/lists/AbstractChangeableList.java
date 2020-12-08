@@ -1,13 +1,12 @@
 package sonar.logistics.api.core.tiles.displays.info.lists;
 
 import sonar.logistics.api.core.tiles.readers.ILogicListSorter;
-import sonar.logistics.base.data.api.IData;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractChangeableList<T> implements IData {
+public abstract class AbstractChangeableList<T> {
 
 	public List<IMonitoredValue<T>> values = new ArrayList<>();
 	public boolean wasLastListNull = false;
