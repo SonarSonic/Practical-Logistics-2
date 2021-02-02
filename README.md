@@ -1,4 +1,6 @@
-### Practical Logistics by Ollie Lansdell
+### Practical Logistics 2 by Ollie Lansdell
+[![Curseforge Name](http://cf.way2muchnoise.eu/full_263048_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/practical-logistics-2)
+[![Curseforge For](http://cf.way2muchnoise.eu/versions/For%20MC_263048_all.svg)](https://www.curseforge.com/minecraft/mc-mods/practical-logistics-2)
 
 #### Reporting a bug?
  - Include versions for Forge, Sonar Core and PL2.
